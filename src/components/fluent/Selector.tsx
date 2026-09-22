@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { ENTER, EXIT } from "@/lib/motion";
@@ -30,17 +31,23 @@ interface SelectorProps<T extends string | number> {
  */
 export function Selector<T extends string | number>({ id, label, value, options, onChange, className }: SelectorProps<T>) {
   const [abierto, setAbierto] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0, ancho: 0, arriba: false });
+  const [pos, setPos] = useState({ x: 0, y: 0, ancho: 0, alto: 0, arriba: false });
+  const [montado, setMontado] = useState(false);
   const disparador = useRef<HTMLButtonElement>(null);
   const lista = useRef<HTMLDivElement>(null);
   const actual = options.find((o) => o.value === value);
+
+  // La lista se saca por portal a <body>: dentro de un diálogo animado (Framer Motion le pone
+  // `transform`), un `position: fixed` normal se posiciona relativo a ESE ancestro, no a la ventana,
+  // y el menú aparece descolocado. document solo existe en el cliente, de ahí este montado en efecto.
+  useEffect(() => setMontado(true), []);
 
   const abrir = () => {
     const r = disparador.current?.getBoundingClientRect();
     if (!r) return;
     const alto = Math.min(options.length * 32 + 8, 280);
     const arriba = r.bottom + alto > window.innerHeight - 8 && r.top > alto;
-    setPos({ x: r.left, y: arriba ? r.top : r.bottom, ancho: r.width, arriba });
+    setPos({ x: r.left, y: arriba ? r.top - alto : r.bottom, ancho: r.width, alto, arriba });
     setAbierto(true);
   };
 
@@ -108,42 +115,46 @@ export function Selector<T extends string | number>({ id, label, value, options,
         <Glifo nombre="chevronAbajo" tam={10} className="shrink-0 text-fg-secondary" />
       </button>
 
-      <AnimatePresence>
-        {abierto && (
-          <motion.div
-            ref={lista}
-            role="listbox"
-            aria-label={label}
-            onKeyDown={onKeyDownLista}
-            initial={{ opacity: 0, y: pos.arriba ? 4 : -4 }}
-            animate={{ opacity: 1, y: 0, transition: ENTER }}
-            exit={{ opacity: 0, transition: EXIT }}
-            style={{ left: pos.x, top: pos.y, width: pos.ancho, transform: pos.arriba ? "translateY(-100%)" : undefined, maxHeight: 280 }}
-            className="acrylic fixed z-50 overflow-y-auto rounded-control p-1 shadow-flyout"
-          >
-            {options.map((o) => (
-              <button
-                key={o.value}
-                type="button"
-                role="option"
-                aria-selected={o.value === value}
-                onClick={() => {
-                  onChange(o.value);
-                  setAbierto(false);
-                  disparador.current?.focus();
-                }}
-                className={clsx(
-                  "rounded-control flex h-8 w-full items-center px-3 text-left text-body transition-colors duration-exit ease-fluent",
-                  "hover:bg-layer-alt focus-visible:bg-layer-alt",
-                  o.value === value ? "font-semibold text-accent-text" : "text-fg",
-                )}
+      {montado &&
+        createPortal(
+          <AnimatePresence>
+            {abierto && (
+              <motion.div
+                ref={lista}
+                role="listbox"
+                aria-label={label}
+                onKeyDown={onKeyDownLista}
+                initial={{ opacity: 0, y: pos.arriba ? 4 : -4 }}
+                animate={{ opacity: 1, y: 0, transition: ENTER }}
+                exit={{ opacity: 0, transition: EXIT }}
+                style={{ left: pos.x, top: pos.y, width: pos.ancho, maxHeight: pos.alto }}
+                className="acrylic fixed z-[70] overflow-y-auto rounded-control p-1 shadow-flyout"
               >
-                {o.label}
-              </button>
-            ))}
-          </motion.div>
+                {options.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="option"
+                    aria-selected={o.value === value}
+                    onClick={() => {
+                      onChange(o.value);
+                      setAbierto(false);
+                      disparador.current?.focus();
+                    }}
+                    className={clsx(
+                      "rounded-control flex h-8 w-full items-center px-3 text-left text-body transition-colors duration-exit ease-fluent",
+                      "hover:bg-layer-alt focus-visible:bg-layer-alt",
+                      o.value === value ? "font-semibold text-accent-text" : "text-fg",
+                    )}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </>
   );
 }

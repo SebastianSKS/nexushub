@@ -1,0 +1,51 @@
+{
+  "name": "nexushub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Video, música y documentos en una sola ventana con el lenguaje de diseño Fluent de Windows 11.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "node scripts/arreglar-exportacion.mjs",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "release:manifest": "node scripts/generar-latest-json.mjs"
+  },
+  "dependencies": {
+    "@fluentui/react-icons": "^2.0.341",
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-autostart": "^2.5.0",
+    "@tauri-apps/plugin-dialog": "^2.7.3",
+    "@tauri-apps/plugin-fs": "^2.5.2",
+    "@tauri-apps/plugin-http": "^2.6.1",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-shell": "^2.3.6",
+    "@tauri-apps/plugin-updater": "^2.9.0",
+    "@tauri-apps/plugin-window-state": "^2.4.1",
+    "clsx": "^2.1.1",
+    "fast-xml-parser": "^5.11.1",
+    "file-type": "^22.1.1",
+    "framer-motion": "^13.4.0",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.12.3",
+    "next": "^16.3.5",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.3.289",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.5",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "NexusHub",
+  "mainBinaryName": "NexusHub",
+  "version": "0.1.0",
+  "identifier": "com.nexushub.app",
+  "build": {
+    "frontendDist": "../out",
+    "devUrl": "http://127.0.0.1:3000",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "NexusHub",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
+        "dragDropEnabled": false,
+        "windowEffects": {
+          "effects": ["mica"]
+        }
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "Sebastián",
+    "copyright": "© 2026 NexusHub",
+    "shortDescription": "Video, música, documentos y calendario en una sola ventana.",
+    "longDescription": "NexusHub reúne YouTube, Spotify, conversión de documentos y un calendario de cumpleaños en una sola aplicación con el lenguaje de diseño Fluent de Windows 11.",
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": {
+        "languages": ["Spanish"],
+        "displayLanguageSelector": false,
+        "installMode": "currentUser"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU1RjM4ODQzNEE0NDQ2MEQKUldRTlJrUktRNGp6VmZzR2lTVkVNNEplb1l6RU9LNzhkdkZ1MjRiek9VYVhMeHlsaTJ6SkVzTysK",
+      "endpoints": ["https://github.com/SebastianSKS/nexushub/releases/latest/download/latest.json"]
+    }
+  }
+}

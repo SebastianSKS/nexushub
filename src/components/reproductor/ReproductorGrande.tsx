@@ -1,0 +1,153 @@
+"use client";
+
+import { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Glifo } from "@/components/fluent/Glifo";
+import { IconButton } from "@/components/fluent/IconButton";
+import { Slider } from "@/components/fluent/Slider";
+import { ENTER, EXIT } from "@/lib/motion";
+import { formatDuration } from "@/lib/video/format";
+import { useProgreso } from "@/hooks/useProgreso";
+import { useAppStore } from "@/store/app-store";
+import { useFavoritosStore } from "@/store/favoritos-store";
+import { useReproductorStore } from "@/store/reproductor-store";
+import { EcualizadorVisual } from "./EcualizadorVisual";
+
+/** Vista grande "Reproduciendo ahora": carátula grande, controles y favorito, a pantalla completa. */
+export function ReproductorGrande() {
+  const abierto = useAppStore((s) => s.reproductorGrandeAbierto);
+  const cerrar = () => useAppStore.getState().setReproductorGrandeAbierto(false);
+  const pista = useReproductorStore((s) => s.pista);
+  const reproduciendo = useReproductorStore((s) => s.reproduciendo);
+  const capacidades = useReproductorStore((s) => s.capacidades);
+  const cola = useReproductorStore((s) => s.cola);
+  const volumen = useReproductorStore((s) => s.volumen);
+  const favorito = useFavoritosStore((s) => (pista ? s.esFavorito(pista) : false));
+  const progreso = useProgreso();
+  const st = useReproductorStore.getState;
+
+  // Se cierra sola si la pista termina (cerrar/cambiar de fuente) para no quedar mostrando nada.
+  useEffect(() => {
+    if (!pista && abierto) cerrar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pista, abierto]);
+
+  useEffect(() => {
+    if (!abierto) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && cerrar();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [abierto]);
+
+  if (!pista) return null;
+  const puedeSaltar = capacidades.saltar || cola.length > 1;
+  const duracion = pista.duracion;
+
+  return (
+    <AnimatePresence>
+      {abierto && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Reproduciendo ahora"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: ENTER }}
+          exit={{ opacity: 0, transition: EXIT }}
+          className="fixed inset-0 z-[55] flex items-center justify-center overflow-hidden p-6"
+          onMouseDown={(e) => e.target === e.currentTarget && cerrar()}
+        >
+          <div className="absolute inset-0 -z-10 bg-[#0b0b0c]" aria-hidden>
+            {pista.caratula && (
+              // eslint-disable-next-line @next/next/no-img-element -- fondo decorativo, difuminado
+              <img src={pista.caratula} alt="" className="h-full w-full scale-110 object-cover opacity-40 blur-[80px]" />
+            )}
+          </div>
+
+          <IconButton label="Cerrar" onClick={cerrar} className="absolute right-4 top-4 h-9 w-9 text-white hover:bg-white/10">
+            <Glifo nombre="cerrar" tam={14} />
+          </IconButton>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: ENTER }}
+            exit={{ opacity: 0, y: 8, transition: EXIT }}
+            className="flex w-full max-w-[420px] flex-col items-center gap-6"
+          >
+            {pista.caratula ? (
+              // eslint-disable-next-line @next/next/no-img-element -- carátula grande
+              <img src={pista.caratula} alt="" className="aspect-square w-full max-w-[320px] rounded-[12px] object-cover shadow-dialog" draggable={false} />
+            ) : (
+              <div className="flex aspect-square w-full max-w-[320px] items-center justify-center rounded-[12px] bg-white/10 shadow-dialog">
+                <Glifo nombre="musica" tam={48} className="text-white/60" />
+              </div>
+            )}
+
+            <div className="flex w-full items-center gap-3">
+              <div className="min-w-0 flex-1 text-center">
+                <h2 className="truncate text-subtitle font-semibold text-white">{pista.titulo}</h2>
+                <p className="truncate text-body text-white/70">{pista.artista}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <EcualizadorVisual activo={reproduciendo} />
+              <IconButton
+                label={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+                onClick={() => useFavoritosStore.getState().alternarFavorito(pista)}
+                className={favorito ? "text-accent-text hover:bg-white/10" : "text-white hover:bg-white/10"}
+              >
+                <Glifo nombre={favorito ? "favoritoLleno" : "favorito"} tam={16} />
+              </IconButton>
+            </div>
+
+            <div className="flex w-full items-center gap-2 text-caption text-white/70">
+              <span className="tabular w-10 text-right">{formatDuration(progreso)}</span>
+              <div className="min-w-0 flex-1">
+                <Slider
+                  label="Posición de la canción"
+                  value={Math.min(progreso, duracion || progreso)}
+                  max={Math.max(duracion, 1)}
+                  disabled={!capacidades.buscar || duracion <= 0}
+                  valueText={`${formatDuration(progreso)} de ${formatDuration(duracion)}`}
+                  onCommit={(v) => st().buscar(v)}
+                />
+              </div>
+              <span className="tabular w-10">{duracion > 0 ? formatDuration(duracion) : "--:--"}</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {puedeSaltar && (
+                <IconButton label="Anterior" onClick={() => st().anterior()} className="h-10 w-10 text-white hover:bg-white/10">
+                  <Glifo nombre="anterior" tam={18} />
+                </IconButton>
+              )}
+              <button
+                type="button"
+                onClick={() => st().alternar()}
+                aria-label={reproduciendo ? "Pausar" : "Reproducir"}
+                title={reproduciendo ? "Pausar" : "Reproducir"}
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-on shadow-flyout transition-colors duration-exit ease-fluent hover:bg-accent-hover active:bg-accent-pressed"
+              >
+                <Glifo nombre={reproduciendo ? "pausar" : "reproducir"} tam={24} />
+              </button>
+              {puedeSaltar && (
+                <IconButton label="Siguiente" onClick={() => st().siguiente()} className="h-10 w-10 text-white hover:bg-white/10">
+                  <Glifo nombre="siguiente" tam={18} />
+                </IconButton>
+              )}
+            </div>
+
+            {capacidades.volumen && (
+              <div className="flex w-full max-w-[220px] items-center gap-2 text-white/70">
+                <Glifo nombre="volumen" tam={14} />
+                <div className="min-w-0 flex-1">
+                  <Slider label="Volumen" value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

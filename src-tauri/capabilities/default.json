@@ -1,0 +1,42 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permisos de la ventana principal de NexusHub",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+    "core:window:allow-is-maximized",
+    "core:window:allow-set-effects",
+    "core:window:allow-hide",
+    "autostart:default",
+    "updater:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://www.youtube.com/*" },
+        { "url": "https://youtube.com/*" },
+        { "url": "https://i.ytimg.com/*" },
+        { "url": "https://accounts.spotify.com/*" },
+        { "url": "https://api.spotify.com/*" },
+        { "url": "https://open.spotify.com/*" },
+        { "url": "https://i.scdn.co/*" },
+        { "url": "https://image-cdn-ak.spotifycdn.com/*" },
+        { "url": "https://*.spotifycdn.com/*" }
+      ]
+    },
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message",
+    "fs:default",
+    "fs:allow-write-file",
+    "fs:scope-download",
+    "fs:scope-document",
+    "fs:scope-desktop",
+    "shell:allow-open",
+    "process:allow-restart"
+  ]
+}

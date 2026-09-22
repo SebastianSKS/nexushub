@@ -1,0 +1,112 @@
+/* ==========================================================================
+   NexusHub · Tokens de diseño Fluent / Windows 11
+   Único lugar donde viven los colores. No se inventan colores fuera de esta
+   paleta: los estados derivados se calculan con color-mix() sobre estos tokens.
+   ========================================================================== */
+
+:root {
+  /* --- Superficies (modo oscuro, por defecto) --- */
+  --mica-base: #202020;
+  --layer: rgba(255, 255, 255, 0.05);
+  --layer-alt: rgba(255, 255, 255, 0.08);
+  --stroke: rgba(255, 255, 255, 0.08);
+  --stroke-strong: rgba(255, 255, 255, 0.16);
+
+  /* --- Acento --- */
+  --accent: #0078d4;
+  --accent-hover: #1a86d9;
+  --accent-pressed: #005fb8;
+  --on-accent: #ffffff;
+  /* El acento como texto sobre fondo oscuro no llega a AA: se aclara hacia blanco. */
+  --accent-text: color-mix(in srgb, var(--accent) 58%, white);
+
+  /* --- Semánticos --- */
+  --success: #6ccb5f;
+  --warning: #fce100;
+  --error: #ff99a4;
+  --success-fg: var(--success);
+  --warning-fg: var(--warning);
+  --error-fg: var(--error);
+
+  /* --- Texto (blanco / negro con opacidad, nunca grises inventados) --- */
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.786);
+  --text-tertiary: rgba(255, 255, 255, 0.6);
+  --text-disabled: rgba(255, 255, 255, 0.36);
+
+  /* --- Anillo de foco Fluent: 2px, alto contraste con la superficie --- */
+  --focus-ring: #ffffff;
+
+  /* --- Acrylic / Mica / Reveal --- */
+  --acrylic-tint: color-mix(in srgb, var(--mica-base) 70%, transparent);
+  --noise-opacity: 0.045;
+  --mica-glow-a: rgba(0, 120, 212, 0.13);
+  --mica-glow-b: rgba(0, 120, 212, 0.07);
+  --reveal-stroke: rgba(255, 255, 255, 0.55);
+  --reveal-fill: rgba(255, 255, 255, 0.05);
+  --scrim: rgba(0, 0, 0, 0.45);
+
+  /* --- Elevación: siempre dos capas (sombra ambiental + sombra proyectada) --- */
+  --elev-card: 0 0 2px rgba(0, 0, 0, 0.24), 0 2px 4px rgba(0, 0, 0, 0.28);
+  --elev-flyout: 0 0 2px rgba(0, 0, 0, 0.24), 0 8px 16px rgba(0, 0, 0, 0.28);
+  --elev-dialog: 0 0 8px rgba(0, 0, 0, 0.24), 0 32px 64px rgba(0, 0, 0, 0.36);
+
+  /* --- Geometría --- */
+  --radius-control: 8px;
+  --radius-input: 4px;
+  --radius-window: 7px;
+
+  /* --- Movimiento --- */
+  --ease: cubic-bezier(0, 0, 0, 1);
+  --dur-enter: 250ms;
+  --dur-exit: 150ms;
+
+  /* --- Tipografía (escala) --- */
+  --font-sans: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system,
+    sans-serif;
+  --fs-display: 68px;
+  --fs-title: 28px;
+  --fs-subtitle: 20px;
+  --fs-body: 14px;
+  --fs-caption: 12px;
+
+  color-scheme: dark;
+}
+
+/* --- Modo claro --- */
+:root[data-theme="light"] {
+  --mica-base: #f3f3f3;
+  --layer: rgba(255, 255, 255, 0.7);
+  --layer-alt: rgba(249, 249, 249, 0.85);
+  --stroke: rgba(0, 0, 0, 0.06);
+  --stroke-strong: rgba(0, 0, 0, 0.14);
+
+  --accent-text: var(--accent-pressed);
+
+  /* Los semánticos claros no tienen contraste como icono sobre fondo claro:
+     se oscurecen para uso como primer plano, y se conservan como relleno. */
+  --success-fg: color-mix(in srgb, var(--success) 45%, black);
+  --warning-fg: color-mix(in srgb, var(--warning) 25%, black);
+  --error-fg: color-mix(in srgb, var(--error) 30%, #a4262c);
+
+  --text-primary: rgba(0, 0, 0, 0.9);
+  --text-secondary: rgba(0, 0, 0, 0.72);
+  --text-tertiary: rgba(0, 0, 0, 0.58);
+  --text-disabled: rgba(0, 0, 0, 0.36);
+
+  --focus-ring: #000000;
+
+  --acrylic-tint: color-mix(in srgb, var(--mica-base) 78%, transparent);
+  --noise-opacity: 0.03;
+  --mica-glow-a: rgba(0, 120, 212, 0.1);
+  --mica-glow-b: rgba(0, 120, 212, 0.05);
+  --reveal-stroke: rgba(0, 0, 0, 0.32);
+  --reveal-fill: rgba(0, 0, 0, 0.04);
+  --scrim: rgba(0, 0, 0, 0.3);
+
+  --elev-card: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
+  --elev-flyout: 0 0 2px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.14);
+  --elev-dialog: 0 0 8px rgba(0, 0, 0, 0.12), 0 32px 64px rgba(0, 0, 0, 0.2);
+
+  color-scheme: light;
+}

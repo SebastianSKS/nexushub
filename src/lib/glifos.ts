@@ -1,0 +1,64 @@
+/**
+ * Glifos de Segoe Fluent Icons (Windows 11; en Windows 10 la fuente de respaldo
+ * Segoe MDL2 Assets usa los mismos códigos). Se definen como números para que el
+ * código fuente sea legible: los caracteres reales viven en el área de uso privado
+ * y no se ven en un editor.
+ */
+export const GLIFOS = {
+  atras: 0xe72b,
+  adelante: 0xe72a,
+  menu: 0xe700,
+  video: 0xe714,
+  musica: 0xe8d6,
+  documentos: 0xe8a5,
+  configuracion: 0xe713,
+  atajos: 0xe765,
+  buscar: 0xe721,
+  minimizar: 0xe921,
+  maximizar: 0xe922,
+  restaurar: 0xe923,
+  cerrar: 0xe8bb,
+  anterior: 0xe892,
+  reproducir: 0xe768,
+  pausar: 0xe769,
+  siguiente: 0xe893,
+  aleatorio: 0xe8b1,
+  repetir: 0xe8ee,
+  repetirUna: 0xe8ed,
+  volumen: 0xe767,
+  silencio: 0xe74f,
+  expandir: 0xe740,
+  contraer: 0xe73f,
+  arriba: 0xe70e,
+  abajo: 0xe70d,
+  mas: 0xe712,
+  agregar: 0xe710,
+  actualizar: 0xe72c,
+  descargar: 0xe896,
+  cargar: 0xe898,
+  eliminar: 0xe74d,
+  externo: 0xe8a7,
+  aviso: 0xe7ba,
+  error: 0xea39,
+  info: 0xe946,
+  exito: 0xe930,
+  paleta: 0xe790,
+  pantalla: 0xe7f4,
+  carpeta: 0xe8b7,
+  informacion: 0xe946,
+  chevronDerecha: 0xe76c,
+  chevronIzquierda: 0xe76b,
+  calendario: 0xe787,
+  persona: 0xe77b,
+  campana: 0xea8f,
+  camara: 0xe722,
+  energia: 0xe7e8,
+  favorito: 0xe734,
+  favoritoLleno: 0xe735,
+  chevronAbajo: 0xe70d,
+  chevronArriba: 0xe70e,
+} as const;
+
+export type NombreGlifo = keyof typeof GLIFOS;
+
+export const glifo = (nombre: NombreGlifo): string => String.fromCodePoint(GLIFOS[nombre]);

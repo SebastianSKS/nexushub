@@ -1,0 +1,302 @@
+/* ==========================================================================
+   NexusHub · Materiales y efectos Fluent
+   Mica · Acrylic · Reveal highlight · Anillo de foco · Scrollbars
+   ========================================================================== */
+
+/* Ruido sutil reutilizable (SVG feTurbulence embebido, sin petición de red) */
+:root {
+  --noise-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* --- Mica: fondo de la aplicación ---------------------------------------- */
+.mica {
+  position: relative;
+  background-color: var(--mica-base);
+  background-image: radial-gradient(
+      900px 620px at 8% -12%,
+      var(--mica-glow-a),
+      transparent 62%
+    ),
+    radial-gradient(
+      820px 620px at 104% 108%,
+      var(--mica-glow-b),
+      transparent 62%
+    );
+  background-attachment: fixed;
+  isolation: isolate;
+}
+.mica::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--noise-image);
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+}
+
+/* --- Acrylic: paneles flotantes ------------------------------------------ */
+.acrylic {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--acrylic-tint);
+  background-image: linear-gradient(var(--layer-alt), var(--layer-alt));
+  -webkit-backdrop-filter: blur(30px) saturate(125%);
+  backdrop-filter: blur(30px) saturate(125%);
+  border: 1px solid var(--stroke-strong);
+}
+.acrylic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: var(--noise-image);
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+}
+
+/* --- Reveal highlight -----------------------------------------------------
+   El listener de mousemove (useRevealHighlight) actualiza --mx / --my en los
+   elementos .reveal cercanos al cursor. El borde se ilumina con un degradado
+   radial recortado a 1px con máscara; el relleno con un resplandor tenue.  */
+.reveal {
+  position: relative;
+  --mx: -999px;
+  --my: -999px;
+}
+.reveal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    110px circle at var(--mx) var(--my),
+    var(--reveal-stroke),
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  pointer-events: none;
+  z-index: 1;
+}
+.reveal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    140px circle at var(--mx) var(--my),
+    var(--reveal-fill),
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-exit) var(--ease);
+  pointer-events: none;
+}
+.reveal:hover::after {
+  opacity: 1;
+  transition-duration: var(--dur-enter);
+}
+
+/* --- Anillo de foco Fluent (2px) ----------------------------------------- */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-input);
+}
+/* Los controles con radio propio conservan su radio en el anillo */
+.rounded-control:focus-visible {
+  border-radius: var(--radius-control);
+}
+.rounded-full:focus-visible {
+  border-radius: 9999px;
+}
+
+/* --- Scrollbars finas estilo Windows 11 ---------------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--stroke-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--stroke-strong);
+  border-radius: 9999px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+  background-clip: content-box;
+  border: 4px solid transparent;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* --- Animaciones CSS reutilizables --------------------------------------- */
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  border-radius: var(--radius-input);
+  background-color: var(--layer);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--layer-alt) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Slider Fluent (progreso, volumen) ----------------------------------------
+   El relleno usa --fill (0-100%) que fija el componente.                       */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--accent) var(--fill, 0%),
+    var(--layer-alt) var(--fill, 0%)
+  );
+}
+.slider::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--layer-alt);
+}
+.slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--accent);
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  margin-top: -6px;
+  border-radius: 9999px;
+  background: var(--text-primary);
+  border: 4px solid var(--accent);
+  box-shadow: 0 0 0 1px var(--stroke-strong);
+  transition: transform var(--dur-exit) var(--ease);
+}
+.slider::-moz-range-thumb {
+  height: 8px;
+  width: 8px;
+  border-radius: 9999px;
+  background: var(--text-primary);
+  border: 4px solid var(--accent);
+  transition: transform var(--dur-exit) var(--ease);
+}
+.slider:hover::-webkit-slider-thumb,
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.slider:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* --- Degradado con el color de la carátula: --tint se anima al cambiar de canción --- */
+@property --tint {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+.tint-panel {
+  background-image: linear-gradient(180deg, var(--tint) 0%, transparent 90%);
+  transition: --tint 700ms var(--ease);
+}
+
+/* --- Visualizador de barras (decorativo, se detiene al pausar) ------------------- */
+@keyframes viz-bounce {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+.viz-bar {
+  transform-origin: bottom;
+  transform: scaleY(0.25);
+}
+.viz-playing .viz-bar {
+  animation: viz-bounce 900ms ease-in-out infinite;
+}
+
+/* --- Efecto de ventana (Configuración → Apariencia) -----------------------------------
+   mica: el material por defecto. acrilico: fondo más translúcido con más ruido.
+   ninguno: color liso, sin degradados ni ruido.                                        */
+[data-efecto="acrilico"] .mica {
+  background-color: var(--acrylic-tint);
+}
+[data-efecto="acrilico"] .mica::before {
+  opacity: calc(var(--noise-opacity) * 2);
+}
+[data-efecto="ninguno"] .mica {
+  background-image: none;
+}
+[data-efecto="ninguno"] .mica::before {
+  display: none;
+}
+
+/* --- Aplicación de escritorio: el material lo dibuja Windows detrás de la ventana (transparent:true +
+   windowEffects). Aquí solo queda un tinte translúcido para que el texto siga siendo legible; sin esto
+   se vería el degradado/ruido de la imitación DUPLICADO encima del material real. --------------------- */
+[data-escritorio="true"] body {
+  background-color: transparent;
+}
+[data-escritorio="true"][data-efecto="mica"] .mica {
+  background-color: color-mix(in srgb, var(--mica-base) 55%, transparent);
+  background-image: none;
+}
+[data-escritorio="true"][data-efecto="acrilico"] .mica {
+  background-color: color-mix(in srgb, var(--mica-base) 42%, transparent);
+  background-image: none;
+}
+
+/* --- Título que se desplaza cuando no cabe (barra de reproducción) ---------------------- */
+@keyframes marquesina {
+  0%, 18% { transform: translateX(0); }
+  82%, 100% { transform: translateX(var(--desborde, 0px)); }
+}
+.marquesina-mov {
+  animation: marquesina 9s linear infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquesina-mov { animation: none; }
+}

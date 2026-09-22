@@ -5,6 +5,7 @@ import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
 import { Glifo } from "@/components/fluent/Glifo";
 import { InfoBar } from "@/components/fluent/InfoBar";
+import { Selector } from "@/components/fluent/Selector";
 import { Switch } from "@/components/fluent/Switch";
 import { notificarSistema } from "@/hooks/useAvisosCumples";
 import { useCalendarioStore } from "@/store/calendario-store";
@@ -57,16 +58,15 @@ export function PanelAvisos() {
 
       <div className="flex items-center justify-between gap-3 py-1.5">
         <label htmlFor="hora-aviso" className="text-body text-fg">Avisar a partir de las</label>
-        <select
-          id="hora-aviso"
-          value={avisos.hora}
-          onChange={(e) => cambiar({ hora: Number(e.target.value) })}
-          className="h-8 rounded-input border border-stroke bg-layer-alt px-2 text-body text-fg focus-visible:border-accent focus-visible:outline-none"
-        >
-          {Array.from({ length: 24 }, (_, h) => (
-            <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>
-          ))}
-        </select>
+        <div className="w-[110px]">
+          <Selector
+            id="hora-aviso"
+            label="Avisar a partir de las"
+            value={avisos.hora}
+            onChange={(hora) => cambiar({ hora })}
+            options={Array.from({ length: 24 }, (_, h) => ({ value: h, label: `${String(h).padStart(2, "0")}:00` }))}
+          />
+        </div>
       </div>
 
       <div className="mt-3 flex flex-col gap-2 border-t border-stroke pt-3">

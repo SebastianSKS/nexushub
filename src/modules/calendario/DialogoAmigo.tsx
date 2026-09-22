@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
 import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
+import { Selector } from "@/components/fluent/Selector";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
 import { diasEnMes, MESES } from "@/lib/calendario/fechas";
@@ -81,15 +82,11 @@ export function DialogoAmigo({ abierto, inicial, onCerrar }: { abierto: boolean;
         <div className="grid grid-cols-[88px_1fr_110px] gap-3">
           <div>
             <label htmlFor={idDia} className="mb-1.5 block text-caption text-fg-secondary">Día</label>
-            <select id={idDia} value={dia} onChange={(e) => setDia(Number(e.target.value))} className={CAMPO}>
-              {Array.from({ length: maxDia }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
+            <Selector id={idDia} label="Día" value={dia} onChange={setDia} options={Array.from({ length: maxDia }, (_, i) => ({ value: i + 1, label: String(i + 1) }))} />
           </div>
           <div>
             <label htmlFor={idMes} className="mb-1.5 block text-caption text-fg-secondary">Mes</label>
-            <select id={idMes} value={mes} onChange={(e) => setMes(Number(e.target.value))} className={clsx(CAMPO, "capitalize")}>
-              {MESES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-            </select>
+            <Selector id={idMes} label="Mes" value={mes} onChange={setMes} className="capitalize" options={MESES.map((m, i) => ({ value: i + 1, label: m }))} />
           </div>
           <div>
             <label htmlFor={idAnio} className="mb-1.5 block text-caption text-fg-secondary">Año (opcional)</label>

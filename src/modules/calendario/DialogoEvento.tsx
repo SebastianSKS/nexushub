@@ -6,6 +6,7 @@ import { Button } from "@/components/fluent/Button";
 import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
+import { Selector } from "@/components/fluent/Selector";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
 import { claveFecha, diasEnMes, MESES, type Repeticion } from "@/lib/calendario/fechas";
@@ -82,15 +83,11 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
         <div className="grid grid-cols-[80px_1fr_90px] gap-3">
           <div>
             <label htmlFor="evento-dia" className="mb-1.5 block text-caption text-fg-secondary">{repetir === "no" ? "Día" : "Empieza el"}</label>
-            <select id="evento-dia" value={dia} onChange={(e) => setDia(Number(e.target.value))} className={CAMPO}>
-              {Array.from({ length: maxDia }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
+            <Selector id="evento-dia" label="Día" value={dia} onChange={setDia} options={Array.from({ length: maxDia }, (_, i) => ({ value: i + 1, label: String(i + 1) }))} />
           </div>
           <div>
             <label htmlFor="evento-mes" className="mb-1.5 block text-caption text-fg-secondary">Mes</label>
-            <select id="evento-mes" value={mes} onChange={(e) => setMes(Number(e.target.value))} className={clsx(CAMPO, "capitalize")}>
-              {MESES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-            </select>
+            <Selector id="evento-mes" label="Mes" value={mes} onChange={setMes} className="capitalize" options={MESES.map((m, i) => ({ value: i + 1, label: m }))} />
           </div>
           <div>
             <label htmlFor="evento-anio" className="mb-1.5 block text-caption text-fg-secondary">Año</label>

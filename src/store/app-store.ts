@@ -10,6 +10,8 @@ interface AppState {
   searchOpen: boolean;
   /** Vista grande "reproduciendo ahora", a pantalla completa sobre el contenido. */
   reproductorGrandeAbierto: boolean;
+  /** Recorrido de bienvenida (la primera vez que se abre, o "Ver de nuevo" desde Configuración). */
+  tourAbierto: boolean;
 
   operation: StatusOperation | null;
   nowPlaying: NowPlaying | null;
@@ -19,6 +21,7 @@ interface AppState {
   setSidebarCollapsed: (v: boolean) => void;
   setSearchOpen: (open: boolean) => void;
   setReproductorGrandeAbierto: (v: boolean) => void;
+  setTourAbierto: (v: boolean) => void;
 
   setOperation: (op: StatusOperation | null) => void;
   setNowPlaying: (np: NowPlaying | null) => void;
@@ -29,6 +32,7 @@ export const useAppStore = create<AppState>((set) => ({
   sidebarCollapsed: false,
   searchOpen: false,
   reproductorGrandeAbierto: false,
+  tourAbierto: false,
 
   operation: null,
   nowPlaying: null,
@@ -38,6 +42,7 @@ export const useAppStore = create<AppState>((set) => ({
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   setSearchOpen: (searchOpen) => set({ searchOpen }),
   setReproductorGrandeAbierto: (reproductorGrandeAbierto) => set({ reproductorGrandeAbierto }),
+  setTourAbierto: (tourAbierto) => set({ tourAbierto }),
 
   setOperation: (operation) => set({ operation }),
   setNowPlaying: (nowPlaying) => set({ nowPlaying }),

@@ -11,6 +11,7 @@ import { useEfectoVentana } from "@/hooks/useEfectoVentana";
 import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { useRecientesMusica } from "@/hooks/useRecientesMusica";
 import { useRevealHighlight } from "@/hooks/useRevealHighlight";
+import { useTourAutomatico } from "@/hooks/useTourAutomatico";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useAppStore } from "@/store/app-store";
 import { BarraReproduccion } from "@/components/reproductor/BarraReproduccion";
@@ -21,6 +22,7 @@ import { BarraTitulo } from "./BarraTitulo";
 import { MemoriaSesion } from "./MemoriaSesion";
 import { PanelNavegacion } from "./PanelNavegacion";
 import { StatusBar } from "./StatusBar";
+import { TourBienvenida } from "./TourBienvenida";
 
 /** Por debajo de este ancho de ventana el panel de navegación se colapsa solo. */
 const ANCHO_COLAPSO = 1000;
@@ -42,6 +44,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useBandeja();
   useCerrarABandeja();
   useDropGlobal();
+  useTourAutomatico();
 
   useEffect(() => {
     cargarAjustes();
@@ -93,6 +96,7 @@ export function Ventana({ children }: { children: ReactNode }) {
       <ReproductorGrande />
       <AvisosCumple />
       <MemoriaSesion />
+      <TourBienvenida />
     </MotionConfig>
   );
 }

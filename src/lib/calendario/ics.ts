@@ -55,6 +55,8 @@ export function generarIcs(amigos: Amigo[], eventos: Evento[]): string {
     } else {
       lineas.push(`DTSTART;VALUE=DATE:${fecha}`);
     }
+    if (e.repetir === "semanal") lineas.push("RRULE:FREQ=WEEKLY");
+    else if (e.repetir === "mensual") lineas.push("RRULE:FREQ=MONTHLY");
     lineas.push(`SUMMARY:${escapar(e.titulo)}`);
     if (e.nota) lineas.push(`DESCRIPTION:${escapar(e.nota)}`);
     lineas.push("END:VEVENT");
@@ -113,7 +115,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
   let enEvento = false;
   let resumen: string | null = null;
   let fecha: ReturnType<typeof partirFecha> | null = null;
-  let anual = false;
+  let repeticion: "no" | "anual" | "semanal" | "mensual" = "no";
   let nota = "";
 
   const cerrar = () => {
@@ -122,7 +124,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
       return;
     }
     const colorAsignado = COLORES_AMIGO[(amigos.length + eventos.length) % COLORES_AMIGO.length]!.valor;
-    if (anual) {
+    if (repeticion === "anual") {
       const anioRazonable = fecha.anio >= 1900 && fecha.anio <= new Date().getFullYear() && fecha.anio !== 2000;
       amigos.push({
         nombre: resumen.replace(/^cumpleaños de /i, "").trim().slice(0, 40) || resumen,
@@ -141,6 +143,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
         color: colorAsignado,
         nota,
         avisar: true,
+        repetir: repeticion === "semanal" || repeticion === "mensual" ? repeticion : "no",
       });
     }
   };
@@ -150,7 +153,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
       enEvento = true;
       resumen = null;
       fecha = null;
-      anual = false;
+      repeticion = "no";
       nota = "";
       continue;
     }
@@ -165,7 +168,11 @@ export function parsearIcs(texto: string): ResultadoImportacion {
     if (par.nombre === "SUMMARY") resumen = desescapar(par.valor).trim();
     else if (par.nombre === "DESCRIPTION") nota = desescapar(par.valor).trim().slice(0, 200);
     else if (par.nombre === "DTSTART") fecha = partirFecha(linea);
-    else if (par.nombre === "RRULE" && /FREQ=YEARLY/i.test(par.valor)) anual = true;
+    else if (par.nombre === "RRULE") {
+      if (/FREQ=YEARLY/i.test(par.valor)) repeticion = "anual";
+      else if (/FREQ=WEEKLY/i.test(par.valor)) repeticion = "semanal";
+      else if (/FREQ=MONTHLY/i.test(par.valor)) repeticion = "mensual";
+    }
   }
 
   return { amigos, eventos, omitidos };

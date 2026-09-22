@@ -15,6 +15,7 @@ import { DialogoPerfil } from "@/components/shell/DialogoPerfil";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { esEscritorio } from "@/lib/entorno";
 import { ACENTOS, useAjustesStore, type AlTerminar, type EfectoVentana, type PreferenciaTema } from "@/store/ajustes-store";
+import { useAppStore } from "@/store/app-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { AjusteActualizaciones } from "./AjusteActualizaciones";
 import { AjusteCanales } from "./AjusteCanales";
@@ -164,6 +165,9 @@ export function PaginaConfiguracion() {
             </Seccion>
 
             <Seccion titulo="Acerca de">
+              <TarjetaAjuste glifo="informacion" titulo="Recorrido de bienvenida" descripcion="Las 5 pantallas que explican qué hace cada sección.">
+                <Button onClick={() => useAppStore.getState().setTourAbierto(true)}>Ver de nuevo</Button>
+              </TarjetaAjuste>
               <AjusteActualizaciones />
               <ExpansorAjuste
                 glifo="informacion"

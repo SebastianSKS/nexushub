@@ -14,17 +14,19 @@ export interface Amigo {
   avisar: boolean;
 }
 
-/** Evento general (cita, recordatorio…): una fecha concreta, no todos los años como un cumpleaños. */
+/** Evento general (cita, recordatorio…): una fecha, con la opción de repetirse cada semana o cada mes. */
 export interface Evento {
   id: string;
   titulo: string;
-  /** Fecha en formato "AAAA-MM-DD". */
+  /** Fecha de la primera ocurrencia, en formato "AAAA-MM-DD". */
   fecha: string;
   /** Hora "HH:MM", o null si es de todo el día. */
   hora: string | null;
   color: string;
   nota: string;
   avisar: boolean;
+  /** "no" = una sola vez; si no, se repite indefinidamente desde `fecha`. */
+  repetir: "no" | "semanal" | "mensual";
 }
 
 export interface ConfigAvisos {
@@ -109,6 +111,7 @@ function eventoValido(x: unknown): Evento | null {
     color: typeof e.color === "string" && /^#[0-9a-f]{6}$/i.test(e.color) ? e.color : COLORES_AMIGO[0]!.valor,
     nota: typeof e.nota === "string" ? e.nota.slice(0, 200) : "",
     avisar: e.avisar !== false,
+    repetir: e.repetir === "semanal" || e.repetir === "mensual" ? e.repetir : "no",
   };
 }
 

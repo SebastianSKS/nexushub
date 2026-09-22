@@ -5,9 +5,10 @@ import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
 import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
+import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
-import { claveFecha, diasEnMes, MESES } from "@/lib/calendario/fechas";
+import { claveFecha, diasEnMes, MESES, type Repeticion } from "@/lib/calendario/fechas";
 import { COLORES_AMIGO, useCalendarioStore, type Evento } from "@/store/calendario-store";
 
 export type BorradorEvento = Partial<Evento> & { dia: number; mes: number; anio: number };
@@ -24,6 +25,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
   const [mes, setMes] = useState(1);
   const [anio, setAnio] = useState(new Date().getFullYear());
   const [hora, setHora] = useState("");
+  const [repetir, setRepetir] = useState<Repeticion>("no");
   const [color, setColor] = useState(COLORES_AMIGO[0]!.valor);
   const [nota, setNota] = useState("");
   const [avisar, setAvisar] = useState(true);
@@ -40,6 +42,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
     setMes(inicial.mes);
     setAnio(inicial.anio);
     setHora(inicial.hora ?? "");
+    setRepetir(inicial.repetir ?? "no");
     setColor(inicial.color ?? COLORES_AMIGO[eventos.length % COLORES_AMIGO.length]!.valor);
     setNota(inicial.nota ?? "");
     setAvisar(inicial.avisar ?? true);
@@ -62,7 +65,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
       return;
     }
     const fecha = claveFecha(new Date(anio, mes - 1, dia));
-    useCalendarioStore.getState().guardarEvento({ id: inicial?.id, titulo: titulo.trim(), fecha, hora: hora || null, color, nota: nota.trim(), avisar });
+    useCalendarioStore.getState().guardarEvento({ id: inicial?.id, titulo: titulo.trim(), fecha, hora: hora || null, color, nota: nota.trim(), avisar, repetir });
     onCerrar();
   };
 
@@ -78,7 +81,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
 
         <div className="grid grid-cols-[80px_1fr_90px] gap-3">
           <div>
-            <label htmlFor="evento-dia" className="mb-1.5 block text-caption text-fg-secondary">Día</label>
+            <label htmlFor="evento-dia" className="mb-1.5 block text-caption text-fg-secondary">{repetir === "no" ? "Día" : "Empieza el"}</label>
             <select id="evento-dia" value={dia} onChange={(e) => setDia(Number(e.target.value))} className={CAMPO}>
               {Array.from({ length: maxDia }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
@@ -98,6 +101,24 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
         <div>
           <label htmlFor={idHora} className="mb-1.5 block text-caption text-fg-secondary">Hora (opcional)</label>
           <input id={idHora} type="time" value={hora} onChange={(e) => setHora(e.target.value)} className={clsx(CAMPO, "w-[140px]")} />
+        </div>
+
+        <div>
+          <span className="mb-1.5 block text-caption text-fg-secondary">Repetir</span>
+          <SegmentedControl<Repeticion>
+            label="Repetir"
+            etiquetaVisible={false}
+            value={repetir}
+            options={[
+              { value: "no", label: "Nunca" },
+              { value: "semanal", label: "Cada semana" },
+              { value: "mensual", label: "Cada mes" },
+            ]}
+            onChange={setRepetir}
+          />
+          {repetir === "mensual" && dia > 28 && (
+            <p className="mt-1.5 text-caption text-fg-tertiary">En los meses más cortos se marcará el último día del mes.</p>
+          )}
         </div>
 
         <fieldset>

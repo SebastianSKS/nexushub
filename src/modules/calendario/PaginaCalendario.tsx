@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/fluent/Button";
 import { Glifo } from "@/components/fluent/Glifo";
+import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { Avatar } from "@/components/shell/Avatar";
 import { DialogoPerfil } from "@/components/shell/DialogoPerfil";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
@@ -17,6 +18,9 @@ import { PanelAvisos } from "./PanelAvisos";
 import { ProximosCumples } from "./ProximosCumples";
 import { ProximosEventos } from "./ProximosEventos";
 import { RespaldoCalendario } from "./RespaldoCalendario";
+import { VistaSemana } from "./VistaSemana";
+
+type Vista = "mes" | "semana";
 
 /** Frase corta con lo más importante de hoy o de lo que viene. */
 function resumen(amigos: Amigo[]): string {
@@ -41,6 +45,8 @@ export function PaginaCalendario() {
   const hoy = new Date();
   const [anio, setAnio] = useState(hoy.getFullYear());
   const [mes, setMes] = useState(hoy.getMonth() + 1);
+  const [vista, setVista] = useState<Vista>("mes");
+  const [semanaBase, setSemanaBase] = useState(hoy);
   const [borrador, setBorrador] = useState<BorradorAmigo | null>(null);
   const [dialogo, setDialogo] = useState(false);
   const [borradorEvento, setBorradorEvento] = useState<BorradorEvento | null>(null);
@@ -81,6 +87,8 @@ export function PaginaCalendario() {
     setAnio(h.getFullYear());
     setMes(h.getMonth() + 1);
   };
+  const moverSemana = (delta: -1 | 1) => setSemanaBase((s) => new Date(s.getFullYear(), s.getMonth(), s.getDate() + delta * 7));
+  const irAHoySemana = () => setSemanaBase(new Date());
 
   return (
     <>
@@ -116,17 +124,43 @@ export function PaginaCalendario() {
               )}
             </section>
 
-            <CuadriculaMes
-              anio={anio}
-              mes={mes}
-              amigos={amigos}
-              eventos={eventos}
-              onMes={mover}
-              onHoy={irAHoy}
-              onDia={(f) => abrir({ dia: f.getDate(), mes: f.getMonth() + 1 })}
-              onAmigo={(a) => abrir(a)}
-              onEvento={editarEvento}
-            />
+            <div className="flex justify-end">
+              <SegmentedControl<Vista>
+                label="Vista del calendario"
+                etiquetaVisible={false}
+                value={vista}
+                options={[
+                  { value: "mes", label: "Mes" },
+                  { value: "semana", label: "Semana" },
+                ]}
+                onChange={setVista}
+              />
+            </div>
+
+            {vista === "mes" ? (
+              <CuadriculaMes
+                anio={anio}
+                mes={mes}
+                amigos={amigos}
+                eventos={eventos}
+                onMes={mover}
+                onHoy={irAHoy}
+                onDia={(f) => abrir({ dia: f.getDate(), mes: f.getMonth() + 1 })}
+                onAmigo={(a) => abrir(a)}
+                onEvento={editarEvento}
+              />
+            ) : (
+              <VistaSemana
+                fechaBase={semanaBase}
+                amigos={amigos}
+                eventos={eventos}
+                onSemana={moverSemana}
+                onHoy={irAHoySemana}
+                onDia={(f) => abrir({ dia: f.getDate(), mes: f.getMonth() + 1 })}
+                onAmigo={(a) => abrir(a)}
+                onEvento={editarEvento}
+              />
+            )}
           </>
         }
         lateral={

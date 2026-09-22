@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { Glifo } from "@/components/fluent/Glifo";
-import { claveFecha, cumpleEn, DIAS_CORTOS, diasDelMes, fechaLarga, inicioDelDia, MESES, mayuscula } from "@/lib/calendario/fechas";
+import { cumpleEn, DIAS_CORTOS, diasDelMes, eventoOcurreEn, fechaLarga, inicioDelDia, MESES, mayuscula } from "@/lib/calendario/fechas";
 import type { Amigo, Evento } from "@/store/calendario-store";
 
 interface Props {
@@ -78,7 +78,7 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
         {dias.map(({ fecha, delMes }, i) => {
           const esHoy = fecha.getTime() === hoy.getTime();
           const cumples = amigos.filter((a) => cumpleEn(a, fecha)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-          const eventosDia = eventos.filter((e) => e.fecha === claveFecha(fecha)).sort((a, b) => a.titulo.localeCompare(b.titulo, "es"));
+          const eventosDia = eventos.filter((e) => eventoOcurreEn(e.fecha, e.repetir, fecha)).sort((a, b) => a.titulo.localeCompare(b.titulo, "es"));
           const etiquetas: Etiqueta[] = [
             ...cumples.map((a): Etiqueta => ({ clave: `a-${a.id}`, nombre: a.nombre, color: a.color, onAbrir: () => onAmigo(a) })),
             ...eventosDia.map((e): Etiqueta => ({ clave: `e-${e.id}`, nombre: e.titulo, color: e.color, onAbrir: () => onEvento(e) })),

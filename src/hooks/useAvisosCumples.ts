@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { claveFecha, diasHastaIso, fechaDesdeIso, fechaLarga, inicioDelDia, proximoCumple } from "@/lib/calendario/fechas";
+import { claveFecha, fechaLarga, inicioDelDia, proximaOcurrenciaEvento, proximoCumple } from "@/lib/calendario/fechas";
 import { useCalendarioStore } from "@/store/calendario-store";
 
 export function textoAviso(nombre: string, dias: number, edad: number | null, fecha: Date): { titulo: string; texto: string } {
@@ -59,12 +59,13 @@ export function useAvisosCumples() {
 
       for (const evento of st.eventos) {
         if (!evento.avisar) continue;
-        const dias = diasHastaIso(evento.fecha, hoy);
-        if (!anticipaciones.includes(dias)) continue;
-        const clave = `evento:${evento.id}|${evento.fecha}|${dias}`;
+        const p = proximaOcurrenciaEvento(evento.fecha, evento.repetir, hoy);
+        if (!p || !anticipaciones.includes(p.dias)) continue;
+        // La ocurrencia (no la fecha de inicio) entra en la clave: así un evento que se repite avisa cada vez.
+        const clave = `evento:${evento.id}|${claveFecha(p.fecha)}|${p.dias}`;
         if (st.yaAvisado(clave)) continue;
         st.marcarAvisado(clave);
-        const { titulo, texto } = textoAvisoEvento(evento.titulo, dias, fechaDesdeIso(evento.fecha));
+        const { titulo, texto } = textoAvisoEvento(evento.titulo, p.dias, p.fecha);
         notificarSistema(titulo, texto, clave);
         st.mostrarAviso({ titulo, texto });
       }

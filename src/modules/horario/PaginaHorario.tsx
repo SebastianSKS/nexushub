@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
@@ -44,6 +45,18 @@ export function PaginaHorario() {
   const [hoy] = useState(() => diaDeSemana(new Date()));
 
   useEffect(() => useHorarioStore.getState().cargar(), []);
+
+  // Desde el buscador global: «?clase=<id>» abre esa clase para verla o editarla.
+  const router = useRouter();
+  const idClase = useSearchParams().get("clase");
+  useEffect(() => {
+    if (!idClase) return;
+    const c = clases.find((x) => x.id === idClase);
+    if (!c) return; // aún no se cargan las clases: se reintenta cuando lleguen
+    setBorrador(c);
+    setDialogo(true);
+    router.replace("/horario");
+  }, [idClase, clases, router]);
 
   const abrir = (b: BorradorClase) => {
     setBorrador(b);

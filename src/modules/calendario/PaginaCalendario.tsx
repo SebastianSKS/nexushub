@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/fluent/Button";
 import { Glifo } from "@/components/fluent/Glifo";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
@@ -59,6 +60,30 @@ export function PaginaCalendario() {
   }, []);
 
   const frase = useMemo(() => resumen(amigos), [amigos]);
+
+  // Desde el buscador global: «?evento=<id>» o «?amigo=<id>» abre esa cosa para verla o editarla.
+  const router = useRouter();
+  const params = useSearchParams();
+  const idEvento = params.get("evento");
+  const idAmigo = params.get("amigo");
+  useEffect(() => {
+    if (!idEvento && !idAmigo) return;
+    const e = idEvento ? eventos.find((x) => x.id === idEvento) : undefined;
+    const a = idAmigo ? amigos.find((x) => x.id === idAmigo) : undefined;
+    if (!e && !a) return; // los datos aún no se han cargado: se reintenta cuando lleguen
+    if (e) {
+      const [an, m, d] = e.fecha.split("-").map(Number);
+      setAnio(an!);
+      setMes(m!);
+      setSemanaBase(new Date(an!, m! - 1, d!));
+      abrirEvento({ ...e, dia: d!, mes: m!, anio: an! });
+    } else if (a) {
+      setMes(a.mes);
+      abrir(a);
+    }
+    router.replace("/calendario"); // quita el parámetro para que no se vuelva a abrir
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- abrir/abrirEvento cambian en cada render; solo importa cuándo llegan los datos y el parámetro
+  }, [idEvento, idAmigo, eventos, amigos]);
 
   const abrir = (b: BorradorAmigo) => {
     setBorrador(b);

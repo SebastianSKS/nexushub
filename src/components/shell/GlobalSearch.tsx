@@ -5,15 +5,35 @@ import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { Search20Regular } from "@fluentui/react-icons";
 import { useRouter } from "next/navigation";
+import { Glifo } from "@/components/fluent/Glifo";
+import { prepararBusqueda, buscarContenido } from "@/lib/busqueda";
 import { buildCommands, filterCommands } from "@/lib/commands";
 import { ENTER, EXIT } from "@/lib/motion";
 import { useAppStore } from "@/store/app-store";
+import { useCanalesStore } from "@/store/canales-store";
+import { useCalendarioStore } from "@/store/calendario-store";
+import { useFavoritosStore } from "@/store/favoritos-store";
+import { useHorarioStore } from "@/store/horario-store";
+import { useNotasStore } from "@/store/notas-store";
 import type { Command } from "@/types";
 
 /**
- * Buscador global (Ctrl+K). En esta fase actúa como paleta de comandos;
- * los módulos de Video y Música le sumarán búsqueda de contenido.
+ * Buscador global (Ctrl+K o clic en la barra). Busca en TODO NexusHub —tareas y eventos, clases del horario,
+ * cumpleaños, apuntes, canales y sus videos, favoritos y herramientas de Documentos— y además ofrece los
+ * comandos de siempre (ir a una sección, abrir Configuración…). Si escribes una cuenta, la resuelve.
  */
+/** Un número que cambia cuando cambia algo que el buscador lee (para volver a buscar con datos frescos). */
+function useDatosBuscables(): string {
+  const eventos = useCalendarioStore((s) => s.eventos);
+  const amigos = useCalendarioStore((s) => s.amigos);
+  const notas = useNotasStore((s) => s.notas);
+  const clases = useHorarioStore((s) => s.clases);
+  const favoritos = useFavoritosStore((s) => s.favoritos);
+  const canales = useCanalesStore((s) => s.canales);
+  const feeds = useCanalesStore((s) => s.feeds);
+  return [eventos.length, amigos.length, notas.length, clases.length, favoritos.length, canales.length, Object.keys(feeds).length, Object.values(feeds).reduce((n, f) => n + f.videos.length, 0)].join("-");
+}
+
 export function GlobalSearch() {
   const router = useRouter();
   const open = useAppStore((s) => s.searchOpen);
@@ -24,11 +44,20 @@ export function GlobalSearch() {
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
 
-  const results = useMemo<Command[]>(() => filterCommands(buildCommands(query, (r) => router.push(r)), query), [query, router]);
+  // Cambia cuando los datos que se buscan cambian (una tarea nueva, una nota…): así los resultados están al día.
+  const version = useDatosBuscables();
+  const results = useMemo<Command[]>(() => {
+    const ir = (r: string) => router.push(r);
+    return [...buscarContenido(query, ir), ...filterCommands(buildCommands(query, ir), query)];
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` fuerza a rehacer la búsqueda cuando cambian los datos
+  }, [query, router, version]);
 
-  // Ctrl+K abre el panel desde cualquier parte: enfocar el campo.
+  // Ctrl+K abre el panel desde cualquier parte: enfocar el campo. Al abrirlo se leen los datos que se buscan.
   useEffect(() => {
-    if (open && document.activeElement !== inputRef.current) inputRef.current?.focus();
+    if (!open) return;
+    if (document.activeElement !== inputRef.current) inputRef.current?.focus();
+    prepararBusqueda();
+    useCanalesStore.getState().iniciar(); // los videos de tus canales (usa el caché de 15 min si ya se cargaron)
   }, [open]);
 
   // Clic fuera cierra
@@ -135,7 +164,7 @@ export function GlobalSearch() {
             <div id={listId} role="listbox" aria-label="Resultados">
               {groups.length === 0 && (
                 <p className="px-3 py-6 text-center text-body text-fg-secondary">
-                  Sin resultados para «{query}». Prueba con «documentos» o «atajos».
+                  No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal o «documentos».
                 </p>
               )}
               {groups.map(([group, items]) => (
@@ -153,11 +182,16 @@ export function GlobalSearch() {
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => run(cmd)}
                       className={clsx(
-                        "rounded-control flex cursor-default items-center justify-between gap-4 px-3 py-2",
+                        "rounded-control flex cursor-default items-center gap-3 px-3 py-2",
                         index === activeIndex ? "bg-layer-alt" : "bg-transparent",
                       )}
                     >
-                      <span className="min-w-0">
+                      {cmd.icon && (
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center" style={{ color: cmd.color }} aria-hidden>
+                          <Glifo nombre={cmd.icon} tam={16} />
+                        </span>
+                      )}
+                      <span className="min-w-0 flex-1">
                         <span className="block truncate text-body text-fg">{cmd.label}</span>
                         {cmd.hint && (
                           <span className="block truncate text-caption text-fg-tertiary">{cmd.hint}</span>

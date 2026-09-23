@@ -1,3 +1,5 @@
+import type { NombreGlifo } from "@/lib/glifos";
+
 /** Operación en curso mostrada en la barra de estado */
 export interface StatusOperation {
   label: string;
@@ -23,6 +25,11 @@ export interface Command {
   hint?: string;
   keywords: string[];
   shortcut?: string[];
-  group: "Navegación" | "Buscar" | "Ayuda";
+  /** Título del grupo bajo el que sale: «Navegación», «Tareas y eventos», «Canales»… */
+  group: string;
+  /** Ícono de Segoe Fluent Icons delante del resultado (los resultados de contenido lo llevan). */
+  icon?: NombreGlifo;
+  /** Color con el que se marca el ícono (el de la clase, el evento…). */
+  color?: string;
   run: () => void;
 }

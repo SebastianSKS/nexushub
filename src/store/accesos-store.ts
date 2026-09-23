@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { listarApps, type AppInstalada } from "@/services/apps";
 
 const CLAVE = "nexushub-accesos";
 
@@ -9,6 +10,10 @@ export interface Acceso {
   url: string;
   /** Color del cuadro (hexadecimal). */
   color: string;
+  /** Programa instalado que se abre en vez de la página web (si falla, se usa la dirección). */
+  app?: AppInstalada;
+  /** true = la persona eligió el navegador a propósito: la búsqueda automática de programas no lo cambia. */
+  web?: boolean;
 }
 
 /** Los de siempre. Se pueden quitar, cambiar y añadir; «Restaurar» los devuelve. */
@@ -42,10 +47,20 @@ export function normalizarUrl(texto: string): string | null {
 function accesoValido(x: unknown): Acceso | null {
   if (typeof x !== "object" || x === null) return null;
   const a = x as Record<string, unknown>;
-  if (typeof a.id !== "string" || typeof a.nombre !== "string" || !a.nombre.trim() || typeof a.url !== "string") return null;
-  const url = normalizarUrl(a.url);
-  if (!url) return null;
-  return { id: a.id, nombre: a.nombre.trim().slice(0, 40), url, color: typeof a.color === "string" && /^#[0-9a-f]{6}$/i.test(a.color) ? a.color : COLORES_ACCESO[0] };
+  if (typeof a.id !== "string" || typeof a.nombre !== "string" || !a.nombre.trim()) return null;
+  const ap = a.app as Record<string, unknown> | undefined;
+  const app = ap && typeof ap.nombre === "string" && typeof ap.id === "string" && ap.id ? { nombre: ap.nombre, id: ap.id } : undefined;
+  // Un acceso necesita una dirección web o un programa (o las dos cosas).
+  const url = typeof a.url === "string" && a.url.trim() ? normalizarUrl(a.url) : "";
+  if (url === null || (!url && !app)) return null;
+  return {
+    id: a.id,
+    nombre: a.nombre.trim().slice(0, 40),
+    url,
+    color: typeof a.color === "string" && /^#[0-9a-f]{6}$/i.test(a.color) ? a.color : COLORES_ACCESO[0],
+    ...(app ? { app } : {}),
+    ...(a.web === true ? { web: true } : {}),
+  };
 }
 
 function leer(): Acceso[] {
@@ -67,10 +82,34 @@ function escribir(accesos: Acceso[]) {
   }
 }
 
+/** Cómo se reconoce, entre los programas instalados, el de cada acceso de siempre. */
+const PATRON_APP: Record<string, RegExp> = {
+  word: /^(microsoft )?word( \d+)?$/i,
+  excel: /^(microsoft )?excel( \d+)?$/i,
+  powerpoint: /^(microsoft )?powerpoint( \d+)?$/i,
+  canva: /^canva/i,
+  drive: /^(google )?drive( for desktop)?$/i,
+};
+
+const plano = (t: string) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+
+/** El programa instalado que corresponde a un acceso, si hay alguno. */
+export function programaDe(a: Acceso, apps: AppInstalada[]): AppInstalada | undefined {
+  const patron = PATRON_APP[a.id];
+  if (patron) return apps.find((p) => patron.test(p.nombre.trim()));
+  const n = plano(a.nombre);
+  return n.length >= 3 ? apps.find((p) => plano(p.nombre) === n) : undefined; // los que añade la persona: solo si el nombre es el mismo
+}
+
 interface AccesosState {
   cargado: boolean;
   accesos: Acceso[];
+  /** Programas instalados que se encontraron (vacío fuera de la app de escritorio o mientras se buscan). */
+  apps: AppInstalada[];
+  buscandoApps: boolean;
   cargar: () => void;
+  /** Busca los programas instalados y asigna el que corresponde a cada acceso que aún no tiene uno. */
+  buscarApps: (forzar?: boolean) => Promise<void>;
   guardar: (a: Omit<Acceso, "id"> & { id?: string }) => void;
   quitar: (id: string) => void;
   restaurar: () => void;
@@ -79,10 +118,28 @@ interface AccesosState {
 export const useAccesosStore = create<AccesosState>((set, get) => ({
   cargado: false,
   accesos: [],
+  apps: [],
+  buscandoApps: false,
 
   cargar: () => {
     if (get().cargado) return;
     set({ cargado: true, accesos: leer() });
+  },
+
+  buscarApps: async (forzar = false) => {
+    get().cargar();
+    set({ buscandoApps: true });
+    const apps = await listarApps(forzar);
+    let cambio = false;
+    const accesos = get().accesos.map((a) => {
+      if (a.app || a.web) return a; // ya tiene programa, o se eligió el navegador a propósito
+      const p = programaDe(a, apps);
+      if (!p) return a;
+      cambio = true;
+      return { ...a, app: p };
+    });
+    set({ apps, buscandoApps: false, ...(cambio ? { accesos } : {}) });
+    if (cambio) escribir(accesos);
   },
 
   guardar: (datos) => {

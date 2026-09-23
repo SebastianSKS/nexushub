@@ -3,6 +3,7 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, Tray
 use tauri::{Emitter, Manager};
 
 mod captura_spotify;
+mod apps;
 mod carpetas;
 
 /// Lo que el comando `actualizar_bandeja` necesita tocar cada vez que cambia la reproducción:
@@ -185,7 +186,9 @@ pub fn run() {
             carpetas::archivo_guardar,
             carpetas::archivo_borrar,
             carpetas::archivo_renombrar,
-            carpetas::abrir_en_sistema
+            carpetas::abrir_en_sistema,
+            apps::apps_instaladas,
+            apps::abrir_app
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

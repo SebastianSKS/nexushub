@@ -7,7 +7,6 @@ import { evaluar, formatear } from "@/lib/calculadora/evaluar";
 import { DIAS } from "@/lib/horario/horario";
 import { rutaCanal, rutaHerramienta, rutaVer } from "@/lib/rutas";
 import { normalize } from "@/lib/text";
-import { abrirExterno } from "@/lib/entorno";
 import { useAccesosStore } from "@/store/accesos-store";
 import { useCalendarioStore } from "@/store/calendario-store";
 import { useCanalesStore } from "@/store/canales-store";
@@ -15,6 +14,7 @@ import { useFavoritosStore } from "@/store/favoritos-store";
 import { useHorarioStore } from "@/store/horario-store";
 import { useNotasStore } from "@/store/notas-store";
 import { useReproductorStore } from "@/store/reproductor-store";
+import { abrirAcceso } from "@/services/accesos";
 import type { Command } from "@/types";
 
 /** Cuántos resultados se muestran como máximo de cada tipo (el resto se afina escribiendo más). */
@@ -36,6 +36,7 @@ function ordenar<T>(items: T[], titulo: (x: T) => string, q: string): T[] {
 export function prepararBusqueda() {
   useCalendarioStore.getState().cargar();
   useAccesosStore.getState().cargar();
+  void useAccesosStore.getState().buscarApps(); // ya lo sabe si se leyó antes en esta sesión
   useNotasStore.getState().cargar();
   useHorarioStore.getState().cargar();
   useFavoritosStore.getState().cargar();
@@ -178,9 +179,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
   // Accesos directos (Word, Canva, Drive…): abren la página en el navegador.
   useAccesosStore
     .getState()
-    .accesos.filter((a) => coincide(terminos, a.nombre, a.url))
+    .accesos.filter((a) => coincide(terminos, a.nombre, a.url, a.app?.nombre))
     .slice(0, POR_GRUPO)
-    .forEach((a) => salida.push({ id: `acceso-${a.id}`, group: "Accesos directos", label: a.nombre, hint: a.url, keywords: [], icon: "externo", color: a.color, run: () => void abrirExterno(a.url) }));
+    .forEach((a) => salida.push({ id: `acceso-${a.id}`, group: "Accesos directos", label: a.nombre, hint: a.app ? `Programa: ${a.app.nombre}` : a.url, keywords: [], icon: "externo", color: a.color, run: () => void abrirAcceso(a) }));
 
   // Herramientas de Documentos.
   TOOLS.filter((t) => coincide(terminos, t.name, t.description, t.action))

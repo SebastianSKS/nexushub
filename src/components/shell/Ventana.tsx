@@ -4,6 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
 import { useAvisoCancion } from "@/hooks/useAvisoCancion";
 import { useAvisosCumples } from "@/hooks/useAvisosCumples";
+import { useRespaldoLocal } from "@/hooks/useRespaldoLocal";
 import { useBandeja } from "@/hooks/useBandeja";
 import { useCerrarABandeja } from "@/hooks/useCerrarABandeja";
 import { useDropGlobal } from "@/hooks/useDropGlobal";
@@ -41,6 +42,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useAvisoCancion();
   useRecientesMusica();
   useEfectoVentana();
+  useRespaldoLocal();
   useBandeja();
   useCerrarABandeja();
   useDropGlobal();

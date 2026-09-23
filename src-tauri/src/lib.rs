@@ -37,6 +37,41 @@ fn actualizar_bandeja(
     Ok(())
 }
 
+/// Carpeta del respaldo de datos: la carpeta de datos del usuario (AppData/Roaming) + NexusHub. Es
+/// deliberadamente distinta de la del identificador de la aplicación (`com.nexushub.app`, donde vive el
+/// almacenamiento de la ventana), para que sobreviva aunque esa carpeta se borre (desinstalar con «borrar
+/// datos», limpiar el navegador incrustado, etc.).
+fn ruta_respaldo(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+    let base = app.path().data_dir().map_err(|e| e.to_string())?;
+    Ok(base.join("NexusHub").join("respaldo.json"))
+}
+
+/// Devuelve el último respaldo guardado (JSON en texto), o `None` si nunca se guardó uno.
+#[tauri::command]
+fn leer_respaldo(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    let ruta = ruta_respaldo(&app)?;
+    match std::fs::read_to_string(&ruta) {
+        Ok(t) => Ok(Some(t)),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+/// Guarda el respaldo. Se escribe a un archivo temporal y se renombra, así un cierre a mitad de escritura
+/// nunca deja un respaldo a medias; y se conserva la copia anterior por si la nueva saliera mala.
+#[tauri::command]
+fn guardar_respaldo(app: tauri::AppHandle, contenido: String) -> Result<(), String> {
+    let ruta = ruta_respaldo(&app)?;
+    let carpeta = ruta.parent().ok_or("ruta inválida")?;
+    std::fs::create_dir_all(carpeta).map_err(|e| e.to_string())?;
+    let tmp = carpeta.join("respaldo.json.tmp");
+    std::fs::write(&tmp, contenido).map_err(|e| e.to_string())?;
+    if ruta.exists() {
+        let _ = std::fs::copy(&ruta, carpeta.join("respaldo.anterior.json"));
+    }
+    std::fs::rename(&tmp, &ruta).map_err(|e| e.to_string())
+}
+
 /// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar NexusHub» del menú).
 fn mostrar_ventana(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
@@ -71,7 +106,7 @@ pub fn run() {
             None,
         ))
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![actualizar_bandeja])
+        .invoke_handler(tauri::generate_handler![actualizar_bandeja, leer_respaldo, guardar_respaldo])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

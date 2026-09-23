@@ -72,7 +72,7 @@ export function seccionDe(pathname: string): SeccionId | null {
   return SECCIONES.find((s) => p === s.ruta || p.startsWith(`${s.ruta}/`))?.id ?? null;
 }
 
-const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/calendario", "/horario", "/calculadora", "/configuracion", "/atajos"]);
+const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/documentos/carpetas", "/calendario", "/horario", "/calculadora", "/configuracion", "/atajos"]);
 
 /** ¿Existe esta ruta? Se usa antes de restaurar la última sesión: una ruta guardada puede haber dejado de existir. */
 export function rutaValida(rutaConConsulta: string): boolean {

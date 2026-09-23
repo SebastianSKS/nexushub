@@ -10,13 +10,17 @@ import { useHorarioStore } from "@/store/horario-store";
 /** «Lo que sigue hoy»: las clases del día con la que está en curso y la que viene marcadas. */
 export function ClasesDeHoy() {
   const clases = useHorarioStore((s) => s.clases);
-  const [ahora, setAhora] = useState(() => new Date());
+  // Null hasta montar en el navegador: la hora no puede calcularse al generar la página (ver PaginaInicio).
+  const [ahora, setAhora] = useState<Date | null>(null);
 
   useEffect(() => {
     useHorarioStore.getState().cargar();
+    setAhora(new Date());
     const t = setInterval(() => setAhora(new Date()), 30_000);
     return () => clearInterval(t);
   }, []);
+
+  if (!ahora) return null;
 
   if (clases.length === 0) {
     return (

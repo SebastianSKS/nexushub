@@ -46,6 +46,7 @@ export const GLIFOS = {
   paleta: 0xe790,
   pantalla: 0xe7f4,
   carpeta: 0xe8b7,
+  editar: 0xe70f,
   informacion: 0xe946,
   chevronDerecha: 0xe76c,
   chevronIzquierda: 0xe76b,

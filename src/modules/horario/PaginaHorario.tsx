@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
@@ -10,6 +11,8 @@ import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { DIAS, aMinutos, colorDeTexto, diaDeSemana, type Clase } from "@/lib/horario/horario";
 import { useHorarioStore } from "@/store/horario-store";
 import { DialogoClase, type BorradorClase } from "./DialogoClase";
+import { useEsEscritorio } from "@/hooks/useEsEscritorio";
+import { DialogoCarpetasHorario } from "../carpetas/DialogoCarpetasHorario";
 import { DialogoEscaneo } from "./DialogoEscaneo";
 
 const PX_POR_MINUTO = 1.15;
@@ -43,6 +46,8 @@ export function PaginaHorario() {
   const [dialogo, setDialogo] = useState(false);
   const [borrador, setBorrador] = useState<BorradorClase | null>(null);
   const [hoy] = useState(() => diaDeSemana(new Date()));
+  const [materiasNuevas, setMateriasNuevas] = useState<string[] | null>(null);
+  const escritorio = useEsEscritorio() === true;
 
   useEffect(() => useHorarioStore.getState().cargar(), []);
 
@@ -88,6 +93,7 @@ export function PaginaHorario() {
         accion={
           <div className="flex gap-2">
             <Button onClick={() => abrir({ dia: Math.min(hoy, 4) })}>Añadir clase</Button>
+            {escritorio && <Link href="/documentos/carpetas" className="rounded-control inline-flex h-8 items-center gap-2 border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer"><Glifo nombre="carpeta" tam={14} />Mis tareas</Link>}
             <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>Escanear imagen</Button>
           </div>
         }
@@ -172,7 +178,13 @@ export function PaginaHorario() {
           ) : undefined
         }
       />
-      <DialogoEscaneo abierto={escaneo} onCerrar={() => setEscaneo(false)} />
+      <DialogoEscaneo
+        abierto={escaneo}
+        onCerrar={() => setEscaneo(false)}
+        // Solo en la aplicación de escritorio (las carpetas son de tu computadora): se pregunta, nunca se crea solo.
+        onGuardado={(materias) => escritorio && setMateriasNuevas(materias)}
+      />
+      <DialogoCarpetasHorario abierto={materiasNuevas !== null} materias={materiasNuevas ?? []} onCerrar={() => setMateriasNuevas(null)} />
       <DialogoClase abierto={dialogo} inicial={borrador} onCerrar={() => setDialogo(false)} />
     </>
   );

@@ -14,6 +14,7 @@ import { SECCIONES } from "@/lib/rutas";
 import { useCalendarioStore } from "@/store/calendario-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { ProximosEventos } from "../calendario/ProximosEventos";
+import { AccesosDirectos } from "./AccesosDirectos";
 import { ClasesDeHoy } from "./ClasesDeHoy";
 
 /** Lo que hace cada sección, en una línea, para quien abre NexusHub por primera vez. */
@@ -41,15 +42,17 @@ export function PaginaInicio() {
   const amigos = useCalendarioStore((s) => s.amigos);
   const eventos = useCalendarioStore((s) => s.eventos);
   const [perfil, setPerfil] = useState(false);
-  // La hora se fija al montar: evita que el saludo cambie a media lectura.
-  const [hoy] = useState(() => new Date());
+  // La hora se toma al montar en el navegador (no al generar la página): el saludo y la fecha dependen de
+  // cuándo se abre, y calcularlos antes haría que el HTML de la página no coincidiera con lo que se dibuja.
+  const [hoy, setHoy] = useState<Date | null>(null);
 
   useEffect(() => {
+    setHoy(new Date());
     usePerfilStore.getState().cargar();
     useCalendarioStore.getState().cargar();
   }, []);
 
-  const deHoy = useMemo(() => itemsDelDia(amigos, eventos, hoy).map((i) => i.titulo), [amigos, eventos, hoy]);
+  const deHoy = useMemo(() => (hoy ? itemsDelDia(amigos, eventos, hoy).map((i) => i.titulo) : []), [amigos, eventos, hoy]);
   const secciones = SECCIONES.filter((s) => s.id in DESCRIPCION);
 
   return (
@@ -67,9 +70,9 @@ export function PaginaInicio() {
             >
               <Avatar nombre={nombre} foto={foto} tam={64} className="ring-2 ring-white/60" />
               <div className="min-w-0 flex-1">
-                <p className="text-title">{nombre ? `${saludo(hoy.getHours())}, ${nombre}` : "Te damos la bienvenida a NexusHub"}</p>
-                <p className="mt-1 text-body opacity-95">{frase(deHoy)}</p>
-                <p className="mt-0.5 text-caption opacity-80">{mayuscula(fechaLarga(hoy))}</p>
+                <p className="text-title">{nombre ? `${hoy ? saludo(hoy.getHours()) : "Hola"}, ${nombre}` : "Te damos la bienvenida a NexusHub"}</p>
+                <p className="mt-1 text-body opacity-95">{hoy ? frase(deHoy) : " "}</p>
+                <p className="mt-0.5 text-caption opacity-80">{hoy ? mayuscula(fechaLarga(hoy)) : " "}</p>
               </div>
               {!nombre && (
                 <button type="button" onClick={() => setPerfil(true)} className="rounded-control h-8 shrink-0 border border-white/50 px-3 text-body text-white transition-colors duration-exit ease-fluent hover:bg-white/15">
@@ -79,6 +82,8 @@ export function PaginaInicio() {
             </section>
 
             <ClasesDeHoy />
+
+            <AccesosDirectos />
 
             <ul className="grid gap-3 min-[700px]:grid-cols-2" aria-label="Secciones">
               {secciones.map((s) => (

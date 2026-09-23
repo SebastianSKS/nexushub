@@ -7,6 +7,8 @@ import { evaluar, formatear } from "@/lib/calculadora/evaluar";
 import { DIAS } from "@/lib/horario/horario";
 import { rutaCanal, rutaHerramienta, rutaVer } from "@/lib/rutas";
 import { normalize } from "@/lib/text";
+import { abrirExterno } from "@/lib/entorno";
+import { useAccesosStore } from "@/store/accesos-store";
 import { useCalendarioStore } from "@/store/calendario-store";
 import { useCanalesStore } from "@/store/canales-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
@@ -33,6 +35,7 @@ function ordenar<T>(items: T[], titulo: (x: T) => string, q: string): T[] {
 /** Prepara los almacenes que se leen al buscar (leen de este equipo; no hacen ninguna petición a internet). */
 export function prepararBusqueda() {
   useCalendarioStore.getState().cargar();
+  useAccesosStore.getState().cargar();
   useNotasStore.getState().cargar();
   useHorarioStore.getState().cargar();
   useFavoritosStore.getState().cargar();
@@ -171,6 +174,13 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
         run: () => (p.fuente === "youtube" ? ir(rutaVer(p.id)) : useReproductorStore.getState().reproducir(p, [p])),
       }),
     );
+
+  // Accesos directos (Word, Canva, Drive…): abren la página en el navegador.
+  useAccesosStore
+    .getState()
+    .accesos.filter((a) => coincide(terminos, a.nombre, a.url))
+    .slice(0, POR_GRUPO)
+    .forEach((a) => salida.push({ id: `acceso-${a.id}`, group: "Accesos directos", label: a.nombre, hint: a.url, keywords: [], icon: "externo", color: a.color, run: () => void abrirExterno(a.url) }));
 
   // Herramientas de Documentos.
   TOOLS.filter((t) => coincide(terminos, t.name, t.description, t.action))

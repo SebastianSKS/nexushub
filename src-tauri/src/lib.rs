@@ -3,6 +3,7 @@ use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, Tray
 use tauri::{Emitter, Manager};
 
 mod captura_spotify;
+mod carpetas;
 
 /// Lo que el comando `actualizar_bandeja` necesita tocar cada vez que cambia la reproducción:
 /// el texto de «Reproducir/Pausar», si «Siguiente» tiene sentido, y el tooltip del icono.
@@ -170,7 +171,22 @@ pub fn run() {
             None,
         ))
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![actualizar_bandeja, leer_respaldo, guardar_respaldo, leer_historial_respaldo])
+        .invoke_handler(tauri::generate_handler![
+            actualizar_bandeja,
+            leer_respaldo,
+            guardar_respaldo,
+            leer_historial_respaldo,
+            carpetas::carpetas_ruta,
+            carpetas::carpetas_listar,
+            carpetas::carpeta_crear,
+            carpetas::carpeta_renombrar,
+            carpetas::carpeta_borrar,
+            carpetas::archivos_listar,
+            carpetas::archivo_guardar,
+            carpetas::archivo_borrar,
+            carpetas::archivo_renombrar,
+            carpetas::abrir_en_sistema
+        ])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

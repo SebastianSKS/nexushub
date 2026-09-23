@@ -18,7 +18,7 @@ type Fase = { tipo: "elegir" } | { tipo: "leyendo"; fraccion: number; texto: str
  * Escanear un horario a partir de una imagen: se elige (o se arrastra) la imagen, se lee, y ANTES de guardar
  * se muestra lo que se encontró para quitar lo que sobre. Después se puede corregir clase por clase.
  */
-export function DialogoEscaneo({ abierto, onCerrar }: { abierto: boolean; onCerrar: () => void }) {
+export function DialogoEscaneo({ abierto, onCerrar, onGuardado }: { abierto: boolean; onCerrar: () => void; onGuardado?: (materias: string[]) => void }) {
   const [fase, setFase] = useState<Fase>({ tipo: "elegir" });
   const [encima, setEncima] = useState(false);
   const entrada = useRef<HTMLInputElement>(null);
@@ -56,6 +56,7 @@ export function DialogoEscaneo({ abierto, onCerrar }: { abierto: boolean; onCerr
     if (modo === "reemplazar") useHorarioStore.getState().reemplazar(datos);
     else useHorarioStore.getState().agregar(datos);
     onCerrar();
+    onGuardado?.(datos.map((c) => c.materia));
   };
 
   const quitar = (i: number) => fase.tipo === "revisar" && setFase({ tipo: "revisar", clases: fase.clases.filter((_, k) => k !== i) });

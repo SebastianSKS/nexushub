@@ -37,7 +37,7 @@ export function leerUltimaRuta(): string | null {
   }
 }
 
-/** Adónde va NexusHub al abrirse: la sección fija que eligió el usuario, o la última que usaba. */
+/** Adónde va NexusHub al abrirse: por defecto Inicio (la bienvenida); o la sección fija o la última usada, según lo elegido. */
 export function rutaDeInicio(): string {
   const elegida = leerSeccionInicial();
   if (elegida !== "ultima") return SECCIONES.find((s) => s.id === elegida)?.ruta ?? RUTA_INICIAL;

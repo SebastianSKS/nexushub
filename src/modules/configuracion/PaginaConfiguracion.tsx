@@ -135,6 +135,7 @@ export function PaginaConfiguracion() {
                   label="Pantalla de inicio"
                   value={a.seccionInicial}
                   options={[
+                    { value: "inicio", label: "Inicio (bienvenida)" },
                     { value: "ultima", label: "La última usada" },
                     { value: "video", label: "Video" },
                     { value: "musica", label: "Música" },

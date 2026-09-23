@@ -7,18 +7,19 @@ import type { ToolId } from "@/types/documents";
  * de consulta (?id=), porque la exportación estática no admite segmentos dinámicos abiertos.
  */
 
-export type SeccionId = "video" | "musica" | "documentos" | "calendario" | "configuracion" | "atajos";
+export type SeccionId = "inicio" | "video" | "musica" | "documentos" | "calendario" | "configuracion" | "atajos";
 
 export interface Seccion {
   id: SeccionId;
   etiqueta: string;
   ruta: string;
   glifo: NombreGlifo;
-  /** Atajo Ctrl+n; solo las tres secciones principales lo tienen. */
-  atajo?: "1" | "2" | "3" | "4";
+  /** Atajo Ctrl+n; solo las secciones principales lo tienen. */
+  atajo?: "0" | "1" | "2" | "3" | "4";
 }
 
 export const SECCIONES: readonly Seccion[] = [
+  { id: "inicio", etiqueta: "Inicio", ruta: "/inicio", glifo: "inicio", atajo: "0" },
   { id: "video", etiqueta: "Video", ruta: "/video", glifo: "video", atajo: "1" },
   { id: "musica", etiqueta: "Música", ruta: "/musica", glifo: "musica", atajo: "2" },
   { id: "documentos", etiqueta: "Documentos", ruta: "/documentos", glifo: "documentos", atajo: "3" },
@@ -69,7 +70,7 @@ export function seccionDe(pathname: string): SeccionId | null {
   return SECCIONES.find((s) => p === s.ruta || p.startsWith(`${s.ruta}/`))?.id ?? null;
 }
 
-const FIJAS = new Set(["/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/calendario", "/configuracion", "/atajos"]);
+const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/calendario", "/configuracion", "/atajos"]);
 
 /** ¿Existe esta ruta? Se usa antes de restaurar la última sesión: una ruta guardada puede haber dejado de existir. */
 export function rutaValida(rutaConConsulta: string): boolean {
@@ -79,4 +80,4 @@ export function rutaValida(rutaConConsulta: string): boolean {
   return m ? SLUGS.includes(m[1]!) : false;
 }
 
-export const RUTA_INICIAL = "/video";
+export const RUTA_INICIAL = "/inicio";

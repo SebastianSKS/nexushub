@@ -10,6 +10,7 @@ export const SHORTCUTS: readonly ShortcutDefinition[] = [
   { keys: ["Botón 4 del mouse"], description: "Atrás" },
   { keys: ["Botón 5 del mouse"], description: "Adelante" },
   { keys: ["Esc"], description: "Subir un nivel en la jerarquía (la miga anterior)" },
+  { keys: ["Ctrl", "0"], description: "Ir a Inicio" },
   { keys: ["Ctrl", "1"], description: "Ir a Video" },
   { keys: ["Ctrl", "2"], description: "Ir a Música" },
   { keys: ["Ctrl", "3"], description: "Ir a Documentos" },

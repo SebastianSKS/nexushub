@@ -8,6 +8,7 @@ export const GLIFOS = {
   atras: 0xe72b,
   adelante: 0xe72a,
   menu: 0xe700,
+  inicio: 0xe80f,
   video: 0xe714,
   musica: 0xe8d6,
   documentos: 0xe8a5,

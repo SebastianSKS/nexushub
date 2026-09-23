@@ -20,7 +20,7 @@ function hayCapaAbierta(): boolean {
  * Atajos globales. La navegación pasa SIEMPRE por el router (la URL manda):
  *   Alt+← / Alt+→ · botones 4 y 5 del mouse   historial (router.back / forward)
  *   Escape                                    sube un nivel en la jerarquía (la miga anterior)
- *   Ctrl+1/2/3 · Ctrl+K · Espacio · ?
+ *   Ctrl+0/1/2/3/4 · Ctrl+K · Espacio · ?
  */
 export function useGlobalShortcuts() {
   const router = useRouter();

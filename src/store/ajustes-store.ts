@@ -4,7 +4,7 @@ export type PreferenciaTema = "claro" | "oscuro" | "sistema";
 export type EfectoVentana = "mica" | "acrilico" | "ninguno";
 export type AlTerminar = "nada" | "descargar" | "abrir-carpeta";
 /** Con qué pantalla se abre NexusHub: la última que se estaba usando, o una sección fija. */
-export type SeccionInicial = "ultima" | "video" | "musica" | "documentos" | "calendario";
+export type SeccionInicial = "inicio" | "ultima" | "video" | "musica" | "documentos" | "calendario";
 
 export interface Ajustes {
   tema: PreferenciaTema;
@@ -47,7 +47,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   carpetaSalida: null,
   segundoPlano: false,
   avisarCambioCancion: false,
-  seccionInicial: "ultima",
+  seccionInicial: "inicio",
 };
 
 export const CLAVE_AJUSTES = "nexushub-ajustes";
@@ -68,7 +68,7 @@ function leer(): Ajustes {
       carpetaSalida: typeof d.carpetaSalida === "string" ? d.carpetaSalida : null,
       segundoPlano: d.segundoPlano === true,
       avisarCambioCancion: d.avisarCambioCancion === true,
-      seccionInicial: d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "ultima",
+      seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",
     };
   } catch {
     return AJUSTES_PREDETERMINADOS; // almacenamiento bloqueado o JSON dañado: se usan los valores por defecto

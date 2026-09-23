@@ -105,7 +105,9 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
                   onClick={() => elegirCategoria(c.id)}
                   className={clsx("rounded-control inline-flex h-8 items-center gap-2 border px-3 text-body transition-colors duration-exit ease-fluent", activa ? "border-accent bg-layer-alt text-fg" : "border-stroke bg-layer text-fg-secondary hover:bg-layer-alt")}
                 >
-                  <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+                  <span style={{ color: c.color }}>
+                    <Glifo nombre={c.glifo} tam={14} />
+                  </span>
                   {c.nombre}
                 </button>
               );
@@ -119,7 +121,9 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
                 }}
                 className="rounded-control inline-flex h-8 items-center gap-2 border border-stroke bg-layer px-3 text-body text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt"
               >
-                <span aria-hidden>🎂</span>
+                <span style={{ color: "#e5509f" }}>
+                  <Glifo nombre="regalo" tam={14} />
+                </span>
                 Cumpleaños
               </button>
             )}

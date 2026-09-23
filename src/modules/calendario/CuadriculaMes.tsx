@@ -142,12 +142,16 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
       <ul aria-label="Leyenda de colores" className="flex flex-wrap gap-x-4 gap-y-1 border-t border-stroke px-4 py-2.5">
         {CATEGORIAS.filter((c) => c.id !== "otro").map((c) => (
           <li key={c.id} className="flex items-center gap-1.5 text-caption text-fg-secondary">
-            <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+            <span style={{ color: c.color }}>
+              <Glifo nombre={c.glifo} tam={14} />
+            </span>
             {c.nombre}
           </li>
         ))}
         <li className="flex items-center gap-1.5 text-caption text-fg-secondary">
-          <span aria-hidden>🎂</span>
+          <span style={{ color: "#e5509f" }}>
+            <Glifo nombre="regalo" tam={14} />
+          </span>
           Cumpleaños (cada amigo con su color)
         </li>
       </ul>

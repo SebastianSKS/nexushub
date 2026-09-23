@@ -36,11 +36,17 @@ const CIENTIFICAS: Tecla[][] = [
   [{ etiqueta: "ln", texto: "ln(", nombre: "Logaritmo natural" }, { etiqueta: "log", texto: "log(", nombre: "Logaritmo base 10" }, { etiqueta: "10ˣ", texto: "10^", nombre: "Diez a la" }, { etiqueta: "eˣ", texto: "exp(", nombre: "e a la" }, { etiqueta: "n!", texto: "!", nombre: "Factorial" }],
 ];
 
+/**
+ * Como en la calculadora de Windows: los números son la tecla más clara y en negrita, los operadores y las
+ * funciones quedan más discretos y «=» lleva el color de acento. Los tonos salen del color del texto, así
+ * que valen igual en tema claro y oscuro.
+ */
+const tono = (n: number) => `bg-[color-mix(in_srgb,var(--text-primary)_${n}%,transparent)]`;
 const ESTILO_TECLA: Record<NonNullable<Tecla["tipo"]>, string> = {
-  numero: "bg-layer-alt hover:bg-layer",
-  operador: "bg-layer hover:bg-layer-alt",
-  funcion: "bg-layer hover:bg-layer-alt text-fg-secondary",
-  acento: "",
+  numero: `${tono(11)} hover:bg-[color-mix(in_srgb,var(--text-primary)_16%,transparent)] active:bg-[color-mix(in_srgb,var(--text-primary)_7%,transparent)] text-[20px] font-semibold`,
+  operador: `${tono(6)} hover:bg-[color-mix(in_srgb,var(--text-primary)_12%,transparent)] active:bg-[color-mix(in_srgb,var(--text-primary)_4%,transparent)] text-[18px]`,
+  funcion: `${tono(6)} hover:bg-[color-mix(in_srgb,var(--text-primary)_12%,transparent)] active:bg-[color-mix(in_srgb,var(--text-primary)_4%,transparent)] text-[15px]`,
+  acento: "bg-accent text-accent-on hover:bg-accent-hover active:bg-accent-pressed text-[24px] font-semibold",
 };
 
 /** /calculadora — normal y científica, con historial. Se puede escribir con el teclado o pulsar los botones. */
@@ -150,9 +156,9 @@ export function PaginaCalculadora() {
       onClick={() => pulsar(t)}
       aria-label={t.nombre ?? t.etiqueta}
       className={clsx(
-        "rounded-control reveal flex h-12 items-center justify-center border border-stroke text-body shadow-card transition-colors duration-exit ease-fluent select-none",
-        t.tipo === "acento" ? "bg-accent text-accent-on hover:bg-accent-hover active:bg-accent-pressed" : clsx(ESTILO_TECLA[t.tipo ?? "numero"], "text-fg active:bg-layer"),
-        t.tipo === undefined && "text-subtitle",
+        "rounded-control flex h-14 select-none items-center justify-center text-fg transition-[background-color,transform] duration-exit ease-fluent active:scale-[0.97]",
+        ESTILO_TECLA[t.tipo ?? "numero"],
+        t.tipo !== "acento" && "border border-stroke",
       )}
     >
       {t.etiqueta}
@@ -177,8 +183,19 @@ export function PaginaCalculadora() {
         />
       }
       principal={
-        <Card className={clsx("mx-auto w-full p-4", modo === "cientifica" ? "max-w-[760px]" : "max-w-[380px]")}>
-          <div className="mb-3 rounded-[8px] border border-stroke bg-layer-alt px-4 py-3">
+        <Card className={clsx("mx-auto w-full overflow-hidden", modo === "cientifica" ? "max-w-[820px]" : "max-w-[420px]")}>
+          {/* Pantalla: la cuenta arriba, en pequeño, y debajo el resultado en grande (como la calculadora de Windows). */}
+          <div className="px-5 pb-3 pt-4" style={{ backgroundImage: "linear-gradient(to bottom, color-mix(in srgb, var(--accent) 14%, transparent), transparent)" }}>
+            <div className="flex h-6 items-center justify-between">
+              {modo === "cientifica" ? (
+                <button type="button" onClick={() => setGrados((g) => !g)} title="Cambiar entre grados y radianes" aria-label={`Ángulos en ${grados ? "grados" : "radianes"}. Pulsa para cambiar`} className="rounded-control h-6 border border-stroke px-2 text-caption text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt">
+                  {grados ? "Grados" : "Radianes"}
+                </button>
+              ) : (
+                <span />
+              )}
+              <Button variant="subtle" className="h-6 px-2 text-caption" onClick={copiar} disabled={resultado === null}>{copiado ? "Copiado" : "Copiar"}</Button>
+            </div>
             <input
               ref={campo}
               value={expr}
@@ -201,45 +218,26 @@ export function PaginaCalculadora() {
               spellCheck={false}
               autoComplete="off"
               inputMode="text"
-              className="tabular w-full bg-transparent text-right text-title text-fg placeholder:text-fg-tertiary focus-visible:outline-none"
+              className={clsx("tabular mt-1 w-full bg-transparent text-right focus-visible:outline-none placeholder:text-fg-tertiary", resultado !== null ? "text-[20px] text-fg-secondary" : "text-[40px] font-light leading-[52px] text-fg")}
             />
-            <div className="mt-1 flex min-h-[28px] items-center justify-between gap-3" role="status" aria-live="polite">
-              <span className="text-caption text-fg-tertiary">{modo === "cientifica" ? (grados ? "Grados" : "Radianes") : ""}</span>
+            <div className="flex min-h-[52px] items-end justify-end" role="status" aria-live="polite">
               {error ? (
                 <span className="text-body text-danger">{error}</span>
               ) : resultado !== null ? (
-                <span className="tabular text-subtitle font-semibold text-fg">= {resultado}</span>
+                <span className="tabular truncate text-[44px] font-light leading-[52px] text-fg">{resultado}</span>
               ) : vista !== null && /[+\-−×÷*/^%!()a-zπ√]/.test(expr.replace(/^-/, "")) ? (
-                <span className="tabular text-body text-fg-secondary">{vista}</span>
+                <span className="tabular truncate text-[20px] text-fg-secondary">= {vista}</span>
               ) : null}
             </div>
           </div>
 
-          {modo === "cientifica" && (
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <SegmentedControl<"grados" | "radianes">
-                label="Unidad de los ángulos"
-                value={grados ? "grados" : "radianes"}
-                options={[
-                  { value: "grados", label: "Grados" },
-                  { value: "radianes", label: "Radianes" },
-                ]}
-                onChange={(v) => setGrados(v === "grados")}
-              />
-            </div>
-          )}
-
-          <div className={clsx("grid gap-2", modo === "cientifica" ? "min-[700px]:grid-cols-[1.25fr_1fr]" : "")}>
+          <div className={clsx("grid gap-1.5 p-3 pt-1", modo === "cientifica" ? "min-[760px]:grid-cols-[1.25fr_1fr]" : "")}>
             {modo === "cientifica" && (
-              <div className="grid grid-cols-5 gap-2 self-start">
+              <div className="grid grid-cols-5 gap-1.5 self-start">
                 {CIENTIFICAS.flat().map((t, i) => boton({ ...t, tipo: "funcion" }, i))}
               </div>
             )}
-            <div className="grid grid-cols-4 gap-2">{NUMERICAS.flat().map(boton)}</div>
-          </div>
-
-          <div className="mt-3 flex justify-end">
-            <Button onClick={copiar} disabled={resultado === null}>{copiado ? "Copiado" : "Copiar resultado"}</Button>
+            <div className="grid grid-cols-4 gap-1.5">{NUMERICAS.flat().map(boton)}</div>
           </div>
         </Card>
       }

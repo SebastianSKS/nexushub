@@ -37,8 +37,12 @@ function leerTokens(): Tokens | null {
 }
 function guardarTokens(t: Tokens | null) {
   try {
-    if (t) window.localStorage.setItem(CLAVE_TOKENS, JSON.stringify(t));
-    else window.localStorage.removeItem(CLAVE_TOKENS);
+    if (t) {
+      window.localStorage.setItem(CLAVE_TOKENS, JSON.stringify(t));
+      window.localStorage.removeItem("nexushub-spotify-cerrada");
+    } else {
+      window.localStorage.removeItem(CLAVE_TOKENS);
+    }
   } catch {
     /* sin almacenamiento: la sesión dura solo esta pestaña */
   }
@@ -81,7 +85,16 @@ interface RespuestaToken {
   refresh_token?: string;
 }
 
-async function pedirTokens(cuerpo: Record<string, string>): Promise<RespuestaToken | null> {
+/**
+ * Pide tokens a Spotify. Devuelve:
+ *  - los tokens, si todo salió bien;
+ *  - "rechazado" si Spotify contestó que el código o el refresh token ya no valen (HTTP 400/401): la sesión
+ *    de verdad se acabó y hay que volver a iniciar sesión;
+ *  - null si no se pudo saber (sin internet, tiempo agotado, Spotify caído…): la sesión guardada sigue
+ *    siendo buena y se reintenta luego. Antes, cualquier fallo borraba la sesión: bastaba abrir NexusHub
+ *    un momento sin conexión para tener que iniciar sesión otra vez.
+ */
+async function pedirTokens(cuerpo: Record<string, string>): Promise<RespuestaToken | "rechazado" | null> {
   const clientId = obtenerClientId();
   if (!clientId) return null;
   try {
@@ -91,6 +104,7 @@ async function pedirTokens(cuerpo: Record<string, string>): Promise<RespuestaTok
       body: new URLSearchParams({ client_id: clientId, ...cuerpo }),
       timeoutMs: 10_000,
     });
+    if (res.status === 400 || res.status === 401) return "rechazado";
     if (!res.ok) return null;
     return (await res.json()) as RespuestaToken;
   } catch {
@@ -118,7 +132,7 @@ export async function procesarCallback(params: URLSearchParams): Promise<Resulta
   if (!pkce || params.get("state") !== pkce.s) return "error";
 
   const tokens = await pedirTokens({ grant_type: "authorization_code", code, redirect_uri: redirectUri(), code_verifier: pkce.v });
-  if (!tokens) return "error";
+  if (!tokens || tokens === "rechazado") return "error";
 
   guardarTokens({ access_token: tokens.access_token, expires_at: Date.now() + tokens.expires_in * 1000, refresh_token: tokens.refresh_token });
   return "connected";
@@ -126,7 +140,8 @@ export async function procesarCallback(params: URLSearchParams): Promise<Resulta
 
 /**
  * El access token vigente, renovándolo con el refresh token si hace falta. null = no hay sesión
- * (o Spotify la rechazó, en cuyo caso también se borra lo guardado).
+ * (o Spotify la rechazó, en cuyo caso también se borra lo guardado). Si solo falló la conexión, la sesión
+ * se conserva y este intento devuelve null.
  */
 export async function obtenerAccessToken(): Promise<string | null> {
   const actuales = leerTokens();
@@ -137,10 +152,11 @@ export async function obtenerAccessToken(): Promise<string | null> {
     return null;
   }
   const tokens = await pedirTokens({ grant_type: "refresh_token", refresh_token: actuales.refresh_token });
-  if (!tokens) {
+  if (tokens === "rechazado") {
     guardarTokens(null);
     return null;
   }
+  if (!tokens) return null; // sin conexión o Spotify no contestó: no se toca la sesión
   const nuevos: Tokens = { access_token: tokens.access_token, expires_at: Date.now() + tokens.expires_in * 1000, refresh_token: tokens.refresh_token ?? actuales.refresh_token };
   guardarTokens(nuevos);
   return nuevos.access_token;
@@ -148,4 +164,10 @@ export async function obtenerAccessToken(): Promise<string | null> {
 
 export function cerrarSesionSpotify(): void {
   guardarTokens(null);
+  // Cerrar sesión a propósito: el respaldo automático no debe devolver los tokens (ver useRespaldoLocal).
+  try {
+    window.localStorage.setItem("nexushub-spotify-cerrada", "1");
+  } catch {
+    /* sin almacenamiento */
+  }
 }

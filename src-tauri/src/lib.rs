@@ -57,19 +57,83 @@ fn leer_respaldo(app: tauri::AppHandle) -> Result<Option<String>, String> {
     }
 }
 
+/// Claves de datos que trae un respaldo (JSON con `datos: { clave: valor }`); vacío si no se puede leer.
+fn claves_de(texto: &str) -> std::collections::HashSet<String> {
+    serde_json::from_str::<serde_json::Value>(texto)
+        .ok()
+        .and_then(|v| v.get("datos").and_then(|d| d.as_object()).map(|o| o.keys().cloned().collect()))
+        .unwrap_or_default()
+}
+
+const COPIAS_HISTORIAL: usize = 12;
+const CADA_CUANTO_UNA_COPIA_SEGS: u64 = 6 * 60 * 60;
+
 /// Guarda el respaldo. Se escribe a un archivo temporal y se renombra, así un cierre a mitad de escritura
-/// nunca deja un respaldo a medias; y se conserva la copia anterior por si la nueva saliera mala.
+/// nunca deja un respaldo a medias.
+///
+/// Antes de reemplazar el respaldo anterior se archiva en `historial/` cuando el nuevo trae MENOS datos
+/// (por ejemplo, si el almacenamiento de la ventana se vació y esto es lo poco que se ha vuelto a escribir),
+/// o cuando la última copia archivada tiene más de 6 horas. Así un almacenamiento vacío nunca destruye la
+/// única copia buena. Se conservan las 12 más recientes.
 #[tauri::command]
 fn guardar_respaldo(app: tauri::AppHandle, contenido: String) -> Result<(), String> {
     let ruta = ruta_respaldo(&app)?;
     let carpeta = ruta.parent().ok_or("ruta inválida")?;
     std::fs::create_dir_all(carpeta).map_err(|e| e.to_string())?;
     let tmp = carpeta.join("respaldo.json.tmp");
-    std::fs::write(&tmp, contenido).map_err(|e| e.to_string())?;
-    if ruta.exists() {
-        let _ = std::fs::copy(&ruta, carpeta.join("respaldo.anterior.json"));
+    std::fs::write(&tmp, &contenido).map_err(|e| e.to_string())?;
+
+    if let Ok(viejo) = std::fs::read_to_string(&ruta) {
+        let hist = carpeta.join("historial");
+        let ahora = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+        let mut copias: Vec<(u64, std::path::PathBuf)> = std::fs::read_dir(&hist)
+            .map(|rd| {
+                rd.filter_map(|e| e.ok())
+                    .filter_map(|e| {
+                        let n = e.file_name().to_string_lossy().to_string();
+                        let t = n.strip_prefix("respaldo-")?.strip_suffix(".json")?.parse::<u64>().ok()?;
+                        Some((t, e.path()))
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+        copias.sort_by(|a, b| b.0.cmp(&a.0));
+        let nuevas = claves_de(&contenido);
+        let pierde = claves_de(&viejo).iter().any(|k| !nuevas.contains(k));
+        let toca_por_tiempo = copias.first().map(|(t, _)| ahora.saturating_sub(*t) > CADA_CUANTO_UNA_COPIA_SEGS).unwrap_or(true);
+        if (pierde || toca_por_tiempo) && !claves_de(&viejo).is_empty() {
+            let _ = std::fs::create_dir_all(&hist);
+            let _ = std::fs::write(hist.join(format!("respaldo-{ahora}.json")), &viejo);
+            copias.insert(0, (ahora, hist.join(format!("respaldo-{ahora}.json"))));
+            for (_, sobra) in copias.iter().skip(COPIAS_HISTORIAL) {
+                let _ = std::fs::remove_file(sobra);
+            }
+        }
     }
     std::fs::rename(&tmp, &ruta).map_err(|e| e.to_string())
+}
+
+/// Las copias archivadas en `historial/`, de la más reciente a la más antigua (cada una, JSON en texto).
+#[tauri::command]
+fn leer_historial_respaldo(app: tauri::AppHandle) -> Result<Vec<String>, String> {
+    let ruta = ruta_respaldo(&app)?;
+    let hist = ruta.parent().ok_or("ruta inválida")?.join("historial");
+    let mut copias: Vec<(u64, std::path::PathBuf)> = match std::fs::read_dir(&hist) {
+        Ok(rd) => rd
+            .filter_map(|e| e.ok())
+            .filter_map(|e| {
+                let n = e.file_name().to_string_lossy().to_string();
+                let t = n.strip_prefix("respaldo-")?.strip_suffix(".json")?.parse::<u64>().ok()?;
+                Some((t, e.path()))
+            })
+            .collect(),
+        Err(_) => return Ok(vec![]),
+    };
+    copias.sort_by(|a, b| b.0.cmp(&a.0));
+    Ok(copias.into_iter().filter_map(|(_, p)| std::fs::read_to_string(p).ok()).collect())
 }
 
 /// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar NexusHub» del menú).
@@ -106,7 +170,7 @@ pub fn run() {
             None,
         ))
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![actualizar_bandeja, leer_respaldo, guardar_respaldo])
+        .invoke_handler(tauri::generate_handler![actualizar_bandeja, leer_respaldo, guardar_respaldo, leer_historial_respaldo])
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

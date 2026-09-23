@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 const CLAVE = "nexushub-perfil";
+const MARCA_SESION_CERRADA = "nexushub-sesion-cerrada";
 
 /**
  * Perfil local y OPCIONAL. No es una cuenta en internet: el nombre y la foto se guardan solo en este
@@ -19,8 +20,14 @@ interface PerfilState {
 
 function guardar(nombre: string | null, foto: string | null) {
   try {
-    if (nombre) window.localStorage.setItem(CLAVE, JSON.stringify({ nombre, foto }));
-    else window.localStorage.removeItem(CLAVE);
+    if (nombre) {
+      window.localStorage.setItem(CLAVE, JSON.stringify({ nombre, foto }));
+      window.localStorage.removeItem(MARCA_SESION_CERRADA);
+    } else {
+      window.localStorage.removeItem(CLAVE);
+      // Cerrar sesión a propósito: el respaldo automático no debe devolver el perfil (ver useRespaldoLocal).
+      window.localStorage.setItem(MARCA_SESION_CERRADA, "1");
+    }
   } catch {
     /* sin almacenamiento: el perfil dura solo esta sesión */
   }

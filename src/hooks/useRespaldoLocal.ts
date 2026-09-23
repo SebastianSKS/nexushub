@@ -9,6 +9,17 @@ const VERSION = 1;
 const CLAVE_RESTAURADO = "nexushub-respaldo-restaurado";
 const CADA_MS = 5_000;
 
+/**
+ * Datos que el usuario puede quitar a propósito (cerrar sesión). Si al cerrar sesión se dejó su marca, esa
+ * clave no se recupera del respaldo: sería «resucitar» algo que la persona borró.
+ */
+const MARCA_DE_BAJA: Record<string, string> = {
+  "nexushub-perfil": "nexushub-sesion-cerrada",
+  "nexushub-spotify-tokens": "nexushub-spotify-cerrada",
+};
+
+type Copia = { version?: number; datos?: Record<string, unknown> };
+
 /** Foto instantánea de todo lo que NexusHub guarda (perfil, ajustes, canales, favoritos, calendario, notas…). */
 function instantanea(): Record<string, string> {
   const datos: Record<string, string> = {};
@@ -41,15 +52,27 @@ export function useRespaldoLocal() {
     void (async () => {
       const { invoke } = await import("@tauri-apps/api/core");
 
-      // 1) Recuperar lo que falte.
+      // 1) Recuperar lo que falte: primero del último respaldo y, si allí no está, de las copias archivadas.
       try {
-        const crudo = await invoke<string | null>("leer_respaldo");
-        const copia = crudo ? (JSON.parse(crudo) as { version?: number; datos?: Record<string, unknown> }) : null;
-        if (copia?.datos && copia.version === VERSION && !window.sessionStorage.getItem(CLAVE_RESTAURADO)) {
+        if (!window.sessionStorage.getItem(CLAVE_RESTAURADO)) {
+          const leer = (t: string | null): Copia | null => {
+            try {
+              return t ? (JSON.parse(t) as Copia) : null;
+            } catch {
+              return null;
+            }
+          };
+          const ultimo = leer(await invoke<string | null>("leer_respaldo"));
+          const historial = (await invoke<string[]>("leer_historial_respaldo").catch(() => [])).map(leer);
+          const copias = [ultimo, ...historial].filter((c): c is Copia => !!c?.datos && c.version === VERSION);
+          const claves = new Set(copias.flatMap((c) => Object.keys(c.datos ?? {})));
           let recuperados = 0;
-          for (const [clave, valor] of Object.entries(copia.datos)) {
-            if (!clave.startsWith(PREFIJO) || typeof valor !== "string") continue;
-            if (window.localStorage.getItem(clave) === null) {
+          for (const clave of claves) {
+            if (!clave.startsWith(PREFIJO) || window.localStorage.getItem(clave) !== null) continue;
+            const marca = MARCA_DE_BAJA[clave];
+            if (marca && window.localStorage.getItem(marca) !== null) continue;
+            const valor = copias.map((c) => c.datos?.[clave]).find((v) => typeof v === "string");
+            if (typeof valor === "string") {
               window.localStorage.setItem(clave, valor);
               recuperados++;
             }

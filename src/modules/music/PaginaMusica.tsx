@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowSync20Regular } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
+import { InfoBar } from "@/components/fluent/InfoBar";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { clienteIdConfigurado } from "@/services/music/oauth";
 import { useMusicStore } from "@/store/music-store";
@@ -17,6 +18,7 @@ export function PaginaMusica() {
   const estado = useMusicStore((s) => s.connection.status);
   const connectAvailable = clienteIdConfigurado();
   const cargando = useMusicStore((s) => s.status === "loading");
+  const faltanPermisos = useMusicStore((s) => s.permisosExtra === false && s.query === "");
   const [guia, setGuia] = useState(false);
 
   // Abre con contenido y detecta qué modos ofrece este equipo.
@@ -26,10 +28,26 @@ export function PaginaMusica() {
   }, []);
 
   const conectado = estado === "connected";
+
+  // La cuenta se detecta un momento después de abrir la página: al quedar conectada, las sugerencias se
+  // vuelven a pedir para que sean las de tu cuenta (lo que escuchas, novedades…) y no las de invitado.
+  const estabaConectado = useRef(false);
+  useEffect(() => {
+    if (conectado && !estabaConectado.current) {
+      const store = useMusicStore.getState();
+      if (store.status !== "idle") void store.load(store.query);
+    }
+    estabaConectado.current = conectado;
+  }, [conectado]);
+  const actualizar = (
+    <Button icon={<ArrowSync20Regular />} disabled={cargando} onClick={() => void useMusicStore.getState().load("")}>
+      Otras sugerencias
+    </Button>
+  );
   const accion =
     conectado ? (
       <Button variant="accent" icon={<ArrowSync20Regular />} disabled={cargando} onClick={() => void useMusicStore.getState().load("")}>
-        Actualizar sugeridos
+        Otras sugerencias
       </Button>
     ) : estado === "connecting" ? (
       <Button variant="accent" disabled>
@@ -54,7 +72,19 @@ export function PaginaMusica() {
         accion={accion}
         principal={
           <>
-            <MusicSearchBar />
+            <div className="flex flex-wrap items-center gap-3">
+              <MusicSearchBar />
+              {!conectado && actualizar}
+            </div>
+            {conectado && faltanPermisos && (
+              <InfoBar
+                severity="info"
+                title="Vuelve a conectar Spotify para ver más"
+                action={<Button onClick={conectarSpotify}>Reconectar</Button>}
+              >
+                Con un permiso más te mostramos lo que escuchaste hace poco y lo que más suena en tu cuenta.
+              </InfoBar>
+            )}
             <FavoritosRecientes />
             <MusicGrid />
           </>

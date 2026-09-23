@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { cargarCatalogo } from "@/services/music/catalogo";
+import { cargarCatalogo, type SeccionMusica } from "@/services/music/catalogo";
 import { MusicApiError } from "@/services/music/errores";
 import type { MusicItem, SpotifyConnection, SpotifyPlaylist } from "@/types/music";
 
@@ -9,6 +9,10 @@ export type MusicStatus = "idle" | "loading" | "ready" | "error";
 interface MusicState {
   status: MusicStatus;
   items: MusicItem[];
+  /** Los renglones que se muestran (cada uno con su título). */
+  secciones: SeccionMusica[];
+  /** Solo con la cuenta conectada: false = falta volver a conectar para leer lo más escuchado. */
+  permisosExtra: boolean | null;
   heading: string;
   query: string;
   error: { message: string; hint?: string; code?: string } | null;
@@ -27,6 +31,8 @@ let requestSeq = 0;
 export const useMusicStore = create<MusicState>((set, get) => ({
   status: "idle",
   items: [],
+  secciones: [],
+  permisosExtra: null,
   heading: "",
   query: "",
   error: null,
@@ -40,7 +46,7 @@ export const useMusicStore = create<MusicState>((set, get) => ({
     try {
       const res = await cargarCatalogo(query, get().connection.status === "connected");
       if (seq !== requestSeq) return;
-      set({ status: "ready", items: res.items, heading: res.heading });
+      set({ status: "ready", items: res.items, secciones: res.secciones, heading: res.heading, permisosExtra: query.trim() ? get().permisosExtra : (res.permisosExtra ?? null) });
     } catch (err) {
       if (seq !== requestSeq) return;
       const e = err instanceof MusicApiError ? err : new MusicApiError("No se pudo cargar la música.", "Inténtalo de nuevo.");

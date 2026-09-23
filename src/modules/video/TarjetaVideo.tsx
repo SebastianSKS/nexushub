@@ -7,6 +7,7 @@ import { IconButton } from "@/components/fluent/IconButton";
 import { abrirExterno } from "@/lib/entorno";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { formatDuration } from "@/lib/video/format";
+import { useProgresoVideoStore } from "@/store/progreso-video-store";
 import type { VideoCanal } from "@/types/canal";
 
 interface TarjetaVideoProps {
@@ -29,6 +30,8 @@ interface TarjetaVideoProps {
  */
 export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, duracion, onReproducir, onEncolar, onAlternarFavorito }: TarjetaVideoProps) {
   const meta = [video.canalNombre, fechaRelativa(video.publicado)].filter(Boolean).join(" · ");
+  // Cuánto va visto (la barra roja de abajo de la miniatura, como en YouTube).
+  const visto = useProgresoVideoStore((s) => s.progreso[video.videoId]);
   const urlYouTube = `https://www.youtube.com/watch?v=${video.videoId}`;
 
   const abrir = () => {
@@ -86,6 +89,11 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
           {activo && incrustable && (
             <span className="absolute left-1.5 top-1.5 rounded-[4px] bg-accent px-1.5 py-0.5 text-caption font-semibold text-accent-on" aria-hidden>
               Reproduciendo
+            </span>
+          )}
+          {visto && (
+            <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-black/50" title={`Vas en ${formatDuration(visto.t)}`}>
+              <span className="block h-full bg-[#ff0000]" style={{ width: `${Math.min(100, (visto.t / visto.d) * 100)}%` }} />
             </span>
           )}
           {duracion !== null && (

@@ -9,7 +9,7 @@ import { crearChallenge, crearEstado, crearVerificador } from "@/lib/music/pkce"
 
 const CLAVE_PKCE = "nexushub-spotify-pkce";
 const CLAVE_TOKENS = "nexushub-spotify-tokens";
-const SCOPES = ["streaming", "user-read-email", "user-read-private", "user-read-playback-state", "user-modify-playback-state", "playlist-read-private", "playlist-read-collaborative"].join(" ");
+const SCOPES = ["streaming", "user-read-email", "user-read-private", "user-read-playback-state", "user-modify-playback-state", "playlist-read-private", "playlist-read-collaborative", "user-top-read", "user-read-recently-played"].join(" ");
 
 interface Tokens {
   access_token: string;

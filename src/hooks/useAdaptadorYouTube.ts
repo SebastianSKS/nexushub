@@ -5,6 +5,7 @@ import { cargarApiYouTube, fijarReproductor } from "@/services/canales/youtube-i
 import { registrarControlador } from "@/services/reproductor/controladores";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useCanalesStore } from "@/store/canales-store";
+import { useProgresoVideoStore } from "@/store/progreso-video-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 
 /** Código de error de la IFrame API → qué pasó y qué hacer. */
@@ -20,6 +21,23 @@ function describirError(codigo: number): string {
     default:
       return "YouTube no pudo reproducir este video. Inténtalo de nuevo o salta al siguiente.";
   }
+}
+
+/** Anota en qué segundo va el video actual (para retomarlo después). */
+function guardarProgreso(p: YT.Player) {
+  try {
+    const id = p.getVideoData().video_id;
+    if (id) useProgresoVideoStore.getState().guardar(id, p.getCurrentTime(), p.getDuration());
+  } catch {
+    /* el reproductor aún no puede responder */
+  }
+}
+
+/** Carga un video retomando donde se quedó la última vez (o desde el principio si no hay nada guardado). */
+function cargarVideo(p: YT.Player, id: string, reproducir: boolean) {
+  const startSeconds = useProgresoVideoStore.getState().inicioDe(id);
+  if (reproducir) p.loadVideoById({ videoId: id, startSeconds });
+  else p.cueVideoById({ videoId: id, startSeconds });
 }
 
 /**
@@ -72,23 +90,31 @@ export function useAdaptadorYouTube(hostRef: RefObject<HTMLDivElement | null>) {
               e.target.setVolume(useReproductorStore.getState().volumen);
               const p = pendienteRef.current;
               pendienteRef.current = null;
-              if (p) {
-                if (p.reproducir) e.target.loadVideoById(p.pista.id);
-                else e.target.cueVideoById(p.pista.id);
-              }
+              e.target.setPlaybackRate(useProgresoVideoStore.getState().velocidad);
+              if (p) cargarVideo(e.target, p.pista.id, p.reproducir);
             },
+            // La velocidad se puede cambiar también desde el menú del propio reproductor: se recuerda igual.
+            onPlaybackRateChange: (e) => useProgresoVideoStore.getState().setVelocidad(e.data),
             onStateChange: (e) => {
               const st = useReproductorStore.getState();
               // Un video que se pausa porque arrancó Spotify no debe pisar el estado de la otra fuente.
               if (st.fuente !== "youtube") return;
               if (e.data === YTApi.PlayerState.PLAYING) {
+                const velocidad = useProgresoVideoStore.getState().velocidad;
+                if (e.target.getPlaybackRate() !== velocidad) e.target.setPlaybackRate(velocidad);
                 st.informar({ reproduciendo: true, progreso: e.target.getCurrentTime() });
                 informarDuracion(e.target);
               } else if (e.data === YTApi.PlayerState.PAUSED) {
                 st.informar({ reproduciendo: false, progreso: e.target.getCurrentTime() });
+                guardarProgreso(e.target);
               } else if (e.data === YTApi.PlayerState.CUED) {
                 informarDuracion(e.target);
               } else if (e.data === YTApi.PlayerState.ENDED) {
+                try {
+                  useProgresoVideoStore.getState().olvidar(e.target.getVideoData().video_id); // visto completo: la próxima vez, desde cero
+                } catch {
+                  /* el reproductor ya no responde */
+                }
                 st.informar({ reproduciendo: false });
                 st.siguiente(true); // paso automático
               }
@@ -131,16 +157,18 @@ export function useAdaptadorYouTube(hostRef: RefObject<HTMLDivElement | null>) {
       pendienteRef.current = { pista: st.pista, reproducir };
       return;
     }
-    if (reproducir) p.loadVideoById(st.pista.id);
-    else p.cueVideoById(st.pista.id);
+    cargarVideo(p, st.pista.id, reproducir);
   }, [solicitud]);
 
   // 3) Progreso real mientras suena.
   useEffect(() => {
     if (!reproduciendo || !esYouTube) return;
+    let vueltas = 0;
     const id = setInterval(() => {
       const p = playerRef.current;
-      if (p && listoRef.current) useReproductorStore.getState().informar({ progreso: p.getCurrentTime() });
+      if (!p || !listoRef.current) return;
+      useReproductorStore.getState().informar({ progreso: p.getCurrentTime() });
+      if (++vueltas % 10 === 0) guardarProgreso(p); // cada 5 s
     }, 500);
     return () => clearInterval(id);
   }, [reproduciendo, esYouTube]);
@@ -150,10 +178,8 @@ export function useAdaptadorYouTube(hostRef: RefObject<HTMLDivElement | null>) {
     registrarControlador("youtube", {
       cargar: (pista, reproducir) => {
         const p = playerRef.current;
-        if (p && listoRef.current) {
-          if (reproducir) p.loadVideoById(pista.id);
-          else p.cueVideoById(pista.id);
-        } else pendienteRef.current = { pista, reproducir };
+        if (p && listoRef.current) cargarVideo(p, pista.id, reproducir);
+        else pendienteRef.current = { pista, reproducir };
       },
       reanudar: () => playerRef.current?.playVideo(),
       pausar: () => {
@@ -169,8 +195,9 @@ export function useAdaptadorYouTube(hostRef: RefObject<HTMLDivElement | null>) {
     return () => registrarControlador("youtube", null);
   }, []);
 
-  // Volumen por defecto al arrancar.
+  // Volumen por defecto al arrancar, y lo guardado de velocidad y de dónde se quedó cada video.
   useEffect(() => {
+    useProgresoVideoStore.getState().cargar();
     useReproductorStore.setState({ volumen: useAjustesStore.getState().volumenPorDefecto });
   }, []);
 }

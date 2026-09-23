@@ -19,6 +19,11 @@ declare namespace YT {
     data: number;
   }
 
+  interface OnPlaybackRateChangeEvent extends PlayerEvent {
+    /** La velocidad nueva (0.25 a 2). */
+    data: number;
+  }
+
   interface PlayerOptions {
     width?: string | number;
     height?: string | number;
@@ -28,13 +33,16 @@ declare namespace YT {
       onReady?: (e: PlayerEvent) => void;
       onStateChange?: (e: OnStateChangeEvent) => void;
       onError?: (e: OnErrorEvent) => void;
+      onPlaybackRateChange?: (e: OnPlaybackRateChangeEvent) => void;
     };
   }
 
   class Player {
     constructor(element: HTMLElement | string, options: PlayerOptions);
-    loadVideoById(videoId: string): void;
-    cueVideoById(videoId: string): void;
+    loadVideoById(videoId: string | { videoId: string; startSeconds?: number }): void;
+    cueVideoById(videoId: string | { videoId: string; startSeconds?: number }): void;
+    getPlaybackRate(): number;
+    setPlaybackRate(rate: number): void;
     playVideo(): void;
     pauseVideo(): void;
     getPlayerState(): number;

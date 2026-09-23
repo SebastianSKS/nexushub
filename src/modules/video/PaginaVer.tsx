@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Next20Regular, Previous20Regular } from "@fluentui/react-icons";
 import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
 import { Glifo } from "@/components/fluent/Glifo";
 import { InfoBar } from "@/components/fluent/InfoBar";
+import { Selector } from "@/components/fluent/Selector";
 import { HuecoReproductor } from "@/components/reproductor/HuecoReproductor";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { fechaRelativa } from "@/lib/canales/fecha";
@@ -14,9 +15,12 @@ import { pistaDeVideo } from "@/lib/canales/pistas";
 import { rutaCanal } from "@/lib/rutas";
 import { abrirExterno } from "@/lib/entorno";
 import { fetchExterno } from "@/lib/red";
+import { formatDuration } from "@/lib/video/format";
+import { obtenerReproductor } from "@/services/canales/youtube-iframe";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useCanalesStore } from "@/store/canales-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
+import { useProgresoVideoStore, VELOCIDADES } from "@/store/progreso-video-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 import type { VideoCanal } from "@/types/canal";
 import { ColaVideos } from "./ColaVideos";
@@ -52,10 +56,16 @@ export function PaginaVer() {
     .flatMap((f) => f.videos)
     .find((v) => v.videoId === id);
   const favorito = useFavoritosStore((s) => valido && s.favoritos.some((f) => f.id === id && f.fuente === "youtube"));
+  const velocidad = useProgresoVideoStore((s) => s.velocidad);
+  // Desde dónde se retoma este video: se lee una sola vez al abrirlo (luego el progreso cambia sin parar).
+  const retomadoEn = useMemo(() => (valido ? useProgresoVideoStore.getState().inicioDe(id) : 0), [id, valido]);
+  const [empezoDeCero, setEmpezoDeCero] = useState(false);
+  useEffect(() => setEmpezoDeCero(false), [id]);
 
   useEffect(() => {
     useCanalesStore.getState().iniciar();
     useFavoritosStore.getState().cargar();
+    useProgresoVideoStore.getState().cargar();
     setDev(new URLSearchParams(window.location.search).get("dev") === "1");
   }, []);
 
@@ -121,6 +131,37 @@ export function PaginaVer() {
             <>
               <div className="mx-auto w-full max-w-[calc((100vh-300px)*16/9)]">
                 <HuecoReproductor />
+              </div>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-body text-fg-secondary">Velocidad</span>
+                  <Selector<number>
+                    label="Velocidad de reproducción"
+                    value={velocidad}
+                    options={VELOCIDADES.map((v) => ({ value: v, label: v === 1 ? "Normal" : `${v}×` }))}
+                    onChange={(v) => {
+                      useProgresoVideoStore.getState().setVelocidad(v);
+                      obtenerReproductor()?.setPlaybackRate(v);
+                    }}
+                    className="w-[110px]"
+                  />
+                </div>
+                {retomadoEn > 0 && !empezoDeCero && (
+                  <p className="flex items-center gap-2 text-body text-fg-secondary">
+                    Retomaste desde {formatDuration(retomadoEn)}.
+                    <Button
+                      variant="subtle"
+                      className="h-7"
+                      onClick={() => {
+                        obtenerReproductor()?.seekTo(0, true);
+                        useProgresoVideoStore.getState().olvidar(id);
+                        setEmpezoDeCero(true);
+                      }}
+                    >
+                      Empezar de nuevo
+                    </Button>
+                  </p>
+                )}
               </div>
               {error && (
                 <InfoBar

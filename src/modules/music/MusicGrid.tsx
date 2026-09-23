@@ -10,23 +10,24 @@ import { MusicCardSkeleton } from "./MusicCardSkeleton";
 
 const GRID = "grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4";
 
-/** Cuadrícula de música con sus estados: cargando (esqueletos), error, vacío y listo. */
+/** Cuadrícula de música por renglones, con sus estados: cargando (esqueletos), error, vacío y listo. */
 export function MusicGrid() {
   const status = useMusicStore((s) => s.status);
-  const items = useMusicStore((s) => s.items);
-  const heading = useMusicStore((s) => s.heading);
+  const secciones = useMusicStore((s) => s.secciones);
   const error = useMusicStore((s) => s.error);
   const query = useMusicStore((s) => s.query);
   const currentId = useReproductorStore((s) => (s.fuente === "spotify" ? s.pista?.id : undefined));
   const { load } = useMusicStore.getState();
-  const reproducir = (i: number) => {
-    // Las canciones visibles forman la cola: siguiente pasa a la canción de al lado.
+
+  const reproducir = (renglon: number, i: number) => {
+    // Las canciones del mismo renglón forman la cola: «siguiente» pasa a la canción de al lado.
+    const items = secciones[renglon]!.items;
     const canciones = items.filter((x) => x.kind === "track").map(pistaDeItem);
     const pista = pistaDeItem(items[i]!);
     useReproductorStore.getState().reproducir(pista, canciones.length > 0 ? canciones : [pista]);
   };
 
-  if (status === "idle" || (status === "loading" && items.length === 0)) {
+  if (status === "idle" || (status === "loading" && secciones.length === 0)) {
     return (
       <div className={GRID} role="status" aria-label="Cargando música">
         {Array.from({ length: 12 }, (_, i) => (
@@ -51,28 +52,30 @@ export function MusicGrid() {
     );
   }
 
+  if (secciones.length === 0) {
+    return (
+      <Card className="p-6">
+        <p className="text-body text-fg">No encontré nada para «{query}».</p>
+        <p className="mt-1 text-body text-fg-secondary">Prueba con otra palabra, o abre Spotify, pulsa Compartir → Copiar enlace de la canción y pégalo en el buscador.</p>
+        <Button className="mt-4" onClick={() => void load("")}>
+          Ver sugeridos
+        </Button>
+      </Card>
+    );
+  }
+
   return (
-    <section aria-labelledby="music-results-heading" aria-busy={status === "loading"}>
-      <h2 id="music-results-heading" className="mb-3 text-subtitle text-fg">
-        {heading}
-      </h2>
-      {items.length === 0 ? (
-        <Card className="p-6">
-          <p className="text-body text-fg">No hay sugeridos que coincidan con «{query}».</p>
-          <p className="mt-1 text-body text-fg-secondary">
-            Prueba con otra palabra, o abre Spotify, pulsa Compartir → Copiar enlace de la canción y pégalo en el buscador.
-          </p>
-          <Button className="mt-4" onClick={() => void load("")}>
-            Ver sugeridos
-          </Button>
-        </Card>
-      ) : (
-        <div className={GRID}>
-          {items.map((item, i) => (
-            <MusicCard key={`${item.kind}:${item.id}`} item={item} active={currentId === `${item.kind}:${item.id}`} onPlay={() => reproducir(i)} />
-          ))}
-        </div>
-      )}
-    </section>
+    <div className="flex flex-col gap-8" aria-busy={status === "loading"}>
+      {secciones.map((s, r) => (
+        <section key={s.titulo} aria-label={s.titulo}>
+          <h2 className="mb-3 text-subtitle text-fg">{s.titulo}</h2>
+          <div className={GRID}>
+            {s.items.map((item, i) => (
+              <MusicCard key={`${item.kind}:${item.id}`} item={item} active={currentId === `${item.kind}:${item.id}`} onPlay={() => reproducir(r, i)} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }

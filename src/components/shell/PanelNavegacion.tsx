@@ -21,7 +21,7 @@ const COLAPSADO = 48;
 /** Ítem de navegación: un <Link> real (clic con rueda, menú contextual) con la píldora de selección deslizante. */
 function Item({ seccion, activa, colapsado, insignia = 0 }: { seccion: Seccion; activa: boolean; colapsado: boolean; insignia?: number }) {
   return (
-    <Tooltip text={seccion.atajo ? `${seccion.etiqueta}  ·  Ctrl+${seccion.atajo}` : seccion.etiqueta} enabled={colapsado}>
+    <Tooltip text={seccion.etiqueta} enabled={colapsado}>
       <Link
         href={seccion.ruta}
         data-nav-item

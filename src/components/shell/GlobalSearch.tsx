@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { Search20Regular } from "@fluentui/react-icons";
 import { useRouter } from "next/navigation";
-import { KbdCombo } from "@/components/fluent/Kbd";
 import { buildCommands, filterCommands } from "@/lib/commands";
 import { ENTER, EXIT } from "@/lib/motion";
 import { useAppStore } from "@/store/app-store";
@@ -123,7 +122,6 @@ export function GlobalSearch() {
           onKeyDown={onKeyDown}
           className="min-w-0 flex-1 bg-transparent text-body text-fg placeholder:text-fg-tertiary focus-visible:outline-none"
         />
-        <KbdCombo keys={["Ctrl", "K"]} className="hidden shrink-0 md:inline-flex" />
       </div>
 
       <AnimatePresence>
@@ -165,7 +163,6 @@ export function GlobalSearch() {
                           <span className="block truncate text-caption text-fg-tertiary">{cmd.hint}</span>
                         )}
                       </span>
-                      {cmd.shortcut && <KbdCombo keys={cmd.shortcut} className="shrink-0" />}
                     </div>
                   ))}
                 </div>

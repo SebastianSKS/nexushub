@@ -3,6 +3,7 @@ import { ID_VIDEO } from "@/lib/canales/ids";
 import type { TipoCanal, VideoCanal } from "@/types/canal";
 import { ErrorApi } from "./errores";
 import { getTextoYouTube } from "./http";
+import { feedDesdePagina } from "./pagina";
 
 const TTL_FEED_MS = 15 * 60 * 1000;
 const MAX_CACHE = 300;
@@ -55,6 +56,26 @@ export function parsearFeed(xml: string): FeedParseado {
   return { nombre: texto(feed.title), videos };
 }
 
+/** Feed RSS oficial de YouTube: la primera opción (trae la fecha exacta de cada video). */
+async function feedDesdeRss(id: string, tipo: TipoCanal): Promise<FeedParseado> {
+  const res = await getTextoYouTube(urlFeed(id, tipo), { timeoutMs: 10_000 });
+  if (res.status === 404 || res.status === 400) {
+    throw new ErrorApi(
+      tipo === "canal" ? "Ese canal no existe o ya no tiene videos públicos." : "Esa lista de reproducción no existe o es privada.",
+      "Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador.",
+      "FEED_NO_ENCONTRADO",
+    );
+  }
+  if (res.status !== 200) {
+    throw new ErrorApi("YouTube no pudo entregar los videos de este canal.", "Inténtalo de nuevo en unos minutos.", "FEED_ERROR");
+  }
+  return parsearFeed(res.text);
+}
+
+/** Mientras dure, el RSS se da por roto y se va directo a la página del canal. */
+let rssRotoHasta = 0;
+const PAUSA_RSS_MS = 30 * 60 * 1000;
+
 export interface ResultadoFeed extends FeedParseado {
   obtenidoEn: string;
   desdeCache: boolean;
@@ -77,18 +98,21 @@ export async function obtenerFeed(id: string, tipo: TipoCanal, opts: { fresco?: 
   }
 
   try {
-    const res = await getTextoYouTube(urlFeed(id, tipo), { timeoutMs: 10_000 });
-    if (res.status === 404 || res.status === 400) {
-      throw new ErrorApi(
-        tipo === "canal" ? "Ese canal no existe o ya no tiene videos públicos." : "Esa lista de reproducción no existe o es privada.",
-        "Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador.",
-        "FEED_NO_ENCONTRADO",
-      );
+    let parseado: FeedParseado;
+    if (Date.now() < rssRotoHasta) {
+      parseado = await feedDesdePagina(id, tipo);
+    } else {
+      try {
+        parseado = await feedDesdeRss(id, tipo);
+      } catch (err) {
+        // Sin red o sin respuesta, la página de YouTube tampoco va a contestar: se avisa tal cual.
+        if (err instanceof ErrorApi && (err.codigo === "TIMEOUT" || err.codigo === "NETWORK")) throw err;
+        // Cualquier otro fallo del RSS (404 incluido: hoy YouTube lo devuelve para canales que sí existen)
+        // se comprueba en la página del canal. Si allí tampoco existe, el error es de verdad «no encontrado».
+        parseado = await feedDesdePagina(id, tipo);
+        rssRotoHasta = Date.now() + PAUSA_RSS_MS; // no se vuelve a probar el RSS durante un rato: ahorra una petición por canal
+      }
     }
-    if (res.status !== 200) {
-      throw new ErrorApi("YouTube no pudo entregar los videos de este canal.", "Inténtalo de nuevo en unos minutos.", "FEED_ERROR");
-    }
-    const parseado = parsearFeed(res.text);
     guardarEnCache(clave, parseado);
     return { ...parseado, obtenidoEn: new Date().toISOString(), desdeCache: false };
   } catch (err) {

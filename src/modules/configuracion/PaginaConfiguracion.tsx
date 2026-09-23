@@ -7,6 +7,7 @@ import { Button } from "@/components/fluent/Button";
 import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
+import { Selector } from "@/components/fluent/Selector";
 import { Slider } from "@/components/fluent/Slider";
 import { Switch } from "@/components/fluent/Switch";
 import { ExpansorAjuste, FilaAjuste, TarjetaAjuste } from "@/components/fluent/TarjetaAjuste";
@@ -14,7 +15,7 @@ import { Avatar } from "@/components/shell/Avatar";
 import { DialogoPerfil } from "@/components/shell/DialogoPerfil";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { esEscritorio } from "@/lib/entorno";
-import { ACENTOS, useAjustesStore, type AlTerminar, type EfectoVentana, type PreferenciaTema } from "@/store/ajustes-store";
+import { ACENTOS, useAjustesStore, type AlTerminar, type EfectoVentana, type PreferenciaTema, type SeccionInicial } from "@/store/ajustes-store";
 import { useAppStore } from "@/store/app-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { AjusteActualizaciones } from "./AjusteActualizaciones";
@@ -125,6 +126,23 @@ export function PaginaConfiguracion() {
               </TarjetaAjuste>
               <TarjetaAjuste glifo="campana" titulo="Avisar qué canción suena" descripcion="Una notificación del sistema cada vez que empieza una canción nueva.">
                 <Switch checked={a.avisarCambioCancion} onChange={(v) => a.cambiar({ avisarCambioCancion: v })} label="Avisar qué canción suena" />
+              </TarjetaAjuste>
+            </Seccion>
+
+            <Seccion titulo="Inicio">
+              <TarjetaAjuste glifo="pantalla" titulo="Al abrir NexusHub, mostrar" descripcion="La pantalla con la que arranca. «La última que usaste» retoma donde lo dejaste (sin volver a Configuración).">
+                <Selector<SeccionInicial>
+                  label="Pantalla de inicio"
+                  value={a.seccionInicial}
+                  options={[
+                    { value: "ultima", label: "La última usada" },
+                    { value: "video", label: "Video" },
+                    { value: "musica", label: "Música" },
+                    { value: "documentos", label: "Documentos" },
+                    { value: "calendario", label: "Calendario" },
+                  ]}
+                  onChange={(seccionInicial) => a.cambiar({ seccionInicial })}
+                />
               </TarjetaAjuste>
             </Seccion>
 

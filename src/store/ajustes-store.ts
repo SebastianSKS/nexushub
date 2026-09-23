@@ -3,6 +3,8 @@ import { create } from "zustand";
 export type PreferenciaTema = "claro" | "oscuro" | "sistema";
 export type EfectoVentana = "mica" | "acrilico" | "ninguno";
 export type AlTerminar = "nada" | "descargar" | "abrir-carpeta";
+/** Con qué pantalla se abre NexusHub: la última que se estaba usando, o una sección fija. */
+export type SeccionInicial = "ultima" | "video" | "musica" | "documentos" | "calendario";
 
 export interface Ajustes {
   tema: PreferenciaTema;
@@ -18,6 +20,7 @@ export interface Ajustes {
   segundoPlano: boolean;
   /** Avisar con una notificación cada vez que empieza a sonar una canción nueva. */
   avisarCambioCancion: boolean;
+  seccionInicial: SeccionInicial;
 }
 
 export const ACENTO_PREDETERMINADO = "#0078D4";
@@ -44,6 +47,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   carpetaSalida: null,
   segundoPlano: false,
   avisarCambioCancion: false,
+  seccionInicial: "ultima",
 };
 
 export const CLAVE_AJUSTES = "nexushub-ajustes";
@@ -64,10 +68,16 @@ function leer(): Ajustes {
       carpetaSalida: typeof d.carpetaSalida === "string" ? d.carpetaSalida : null,
       segundoPlano: d.segundoPlano === true,
       avisarCambioCancion: d.avisarCambioCancion === true,
+      seccionInicial: d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "ultima",
     };
   } catch {
     return AJUSTES_PREDETERMINADOS; // almacenamiento bloqueado o JSON dañado: se usan los valores por defecto
   }
+}
+
+/** Lectura suelta del ajuste: la pantalla de arranque decide adónde ir antes de que el store se cargue. */
+export function leerSeccionInicial(): SeccionInicial {
+  return leer().seccionInicial;
 }
 
 function guardar(a: Ajustes) {

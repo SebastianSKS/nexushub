@@ -33,3 +33,23 @@ export async function openPdf(file: File): Promise<OpenedPdf> {
     throw new DocumentError(`«${file.name}» no se pudo abrir como PDF.`, "El archivo puede estar dañado. Prueba con otro.");
   }
 }
+
+export type ResultadoAbrirCifrado = { estado: "ok"; doc: OpenedPdf } | { estado: "hace-falta" } | { estado: "incorrecta" };
+
+/** Abre un PDF que puede estar cifrado, probando la contraseña dada (o ninguna). No lanza por contraseña: lo dice en el resultado. */
+export async function abrirPdfCifrado(file: File, password: string): Promise<ResultadoAbrirCifrado> {
+  const lib = await getPdfjs();
+  const data = new Uint8Array(await file.arrayBuffer());
+  const task = lib.getDocument(password ? { data, password } : { data });
+  try {
+    const doc = await task.promise;
+    return { estado: "ok", doc: { doc, destroy: () => task.destroy() } };
+  } catch (err) {
+    if (err instanceof Error && err.name === "PasswordException") {
+      const codigo = (err as Error & { code?: number }).code;
+      // 1 = PasswordResponses.NEED_PASSWORD, 2 = PasswordResponses.INCORRECT_PASSWORD.
+      return { estado: codigo === 2 ? "incorrecta" : "hace-falta" };
+    }
+    throw new DocumentError(`«${file.name}» no se pudo abrir como PDF.`, "El archivo puede estar dañado. Prueba con otro.");
+  }
+}

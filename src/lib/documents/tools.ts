@@ -103,6 +103,36 @@ export const TOOLS: readonly ToolDefinition[] = [
     maxFiles: 1,
     output: "PDF",
   },
+  {
+    id: "protect-pdf",
+    action: "Proteger PDF",
+    name: "Proteger con contraseña",
+    description: "Pide una contraseña para poder abrir el PDF, con cualquier lector.",
+    accepts: ["pdf"],
+    minFiles: 1,
+    maxFiles: MAX_FILES_PER_BATCH,
+    output: "PDF",
+  },
+  {
+    id: "unlock-pdf",
+    action: "Quitar contraseña",
+    name: "Quitar contraseña",
+    description: "Abre un PDF protegido y guarda una copia sin contraseña.",
+    accepts: ["pdf"],
+    minFiles: 1,
+    maxFiles: MAX_FILES_PER_BATCH,
+    output: "PDF",
+  },
+  {
+    id: "compare-pdf",
+    action: "Comparar",
+    name: "Comparar dos PDF",
+    description: "Resalta el texto que cambió entre dos versiones de un documento.",
+    accepts: ["pdf"],
+    minFiles: 2,
+    maxFiles: 2,
+    output: "HTML",
+  },
 ];
 
 export function getTool(id: ToolId): ToolDefinition {

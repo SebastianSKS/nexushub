@@ -42,6 +42,9 @@ export const SLUGS_HERRAMIENTA: Record<ToolId, string> = {
   "images-to-pdf": "imagenes-a-pdf",
   "pdf-to-images": "pdf-a-imagenes",
   rotate: "rotar-paginas",
+  "protect-pdf": "proteger-pdf",
+  "unlock-pdf": "quitar-contrasena",
+  "compare-pdf": "comparar-pdf",
 };
 
 export const SLUGS = Object.values(SLUGS_HERRAMIENTA);

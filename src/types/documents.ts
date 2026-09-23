@@ -8,7 +8,10 @@ export type ToolId =
   | "compress"
   | "images-to-pdf"
   | "pdf-to-images"
-  | "rotate";
+  | "rotate"
+  | "protect-pdf"
+  | "unlock-pdf"
+  | "compare-pdf";
 
 /** Familia de archivo (se confirma por el contenido real al procesar). */
 export type InputKind = "word" | "excel" | "powerpoint" | "pdf" | "image";
@@ -65,6 +68,14 @@ export interface PdfToImagesOptions {
   dpi: 100 | 150 | 200;
 }
 
+export interface ProtectOptions {
+  password: string;
+}
+
+export interface UnlockOptions {
+  password: string;
+}
+
 export interface ToolOptionsMap {
   "word-to-pdf": Record<string, never>;
   "pdf-to-word": PdfToWordOptions;
@@ -76,6 +87,9 @@ export interface ToolOptionsMap {
   "images-to-pdf": ImagesToPdfOptions;
   "pdf-to-images": PdfToImagesOptions;
   rotate: RotateOptions;
+  "protect-pdf": ProtectOptions;
+  "unlock-pdf": UnlockOptions;
+  "compare-pdf": Record<string, never>;
 }
 
 // --- Cliente ---------------------------------------------------------------

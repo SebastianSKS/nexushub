@@ -1,6 +1,7 @@
 import { getTool } from "@/lib/documents/tools";
-import type { CompressOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, QueuedFile, ResultItem, RotateOptions, SplitOptions, ToolId } from "@/types/documents";
+import type { CompressOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, ProtectOptions, QueuedFile, ResultItem, RotateOptions, SplitOptions, ToolId, UnlockOptions } from "@/types/documents";
 import { DocumentError } from "./errors";
+import { compararPdf } from "./motor/comparar-pdf";
 import { abortarSiCancelado, type Ctx, type Salida } from "./motor/comun";
 import { comprimirPdf } from "./motor/comprimir";
 import { excelAPdf } from "./motor/excel-a-pdf";
@@ -8,6 +9,8 @@ import { imagenesAPdf } from "./motor/imagenes-a-pdf";
 import { pdfAImagenes } from "./motor/pdf-a-imagenes";
 import { pdfAWord } from "./motor/pdf-a-word";
 import { dividirPdf, rotarPdf, unirPdf } from "./motor/pdf-basico";
+import { quitarContrasenaPdf } from "./motor/pdf-desprotegido";
+import { protegerPdf } from "./motor/pdf-protegido";
 import { powerpointAPdf } from "./motor/powerpoint-a-pdf";
 import { verificarContenido } from "./motor/verificar";
 import { docxToPdfInBrowser } from "./motor/word-a-pdf";
@@ -68,6 +71,15 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
       break;
     case "compress":
       salidas = await comprimirPdf(archivos, options as CompressOptions, contexto(2, 98));
+      break;
+    case "protect-pdf":
+      salidas = await protegerPdf(archivos, (options as ProtectOptions).password, contexto(2, 98));
+      break;
+    case "unlock-pdf":
+      salidas = await quitarContrasenaPdf(archivos, (options as UnlockOptions).password, contexto(2, 98));
+      break;
+    case "compare-pdf":
+      salidas = await compararPdf(archivos[0]!, archivos[1]!, contexto(2, 98));
       break;
     default: {
       // Herramientas que convierten un archivo tras otro.

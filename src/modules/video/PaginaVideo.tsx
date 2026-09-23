@@ -8,6 +8,7 @@ import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { useCanalesStore } from "@/store/canales-store";
 import { AgregarCanalDialog } from "./AgregarCanalDialog";
 import { BuscadorVideos } from "./BuscadorVideos";
+import { FavoritosVideo } from "./FavoritosVideo";
 import { MuroVideos } from "./MuroVideos";
 import { PanelCanales } from "./PanelCanales";
 
@@ -43,6 +44,7 @@ export function PaginaVideo() {
         principal={
           <>
             <BuscadorVideos />
+            <FavoritosVideo />
             <MuroVideos ids={canales.map((c) => c.id)} titulo="Novedades de tus canales" />
           </>
         }

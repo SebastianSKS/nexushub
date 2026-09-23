@@ -3,6 +3,7 @@ import {
   ArrowMinimizeVertical24Regular,
   ArrowRotateClockwise24Regular,
   ArrowSplit24Regular,
+  ArrowSwap24Regular,
   DocumentAdd24Regular,
   DocumentArrowRight24Regular,
   DocumentPdf24Regular,
@@ -10,6 +11,8 @@ import {
   FolderZip24Regular,
   Image24Regular,
   ImageMultiple24Regular,
+  LockClosed24Regular,
+  LockOpen24Regular,
   SlideText24Regular,
   Table24Regular,
 } from "@fluentui/react-icons";
@@ -26,6 +29,9 @@ export const TOOL_ICONS: Record<ToolId, ReactNode> = {
   "images-to-pdf": <Image24Regular />,
   "pdf-to-images": <ImageMultiple24Regular />,
   rotate: <ArrowRotateClockwise24Regular />,
+  "protect-pdf": <LockClosed24Regular />,
+  "unlock-pdf": <LockOpen24Regular />,
+  "compare-pdf": <ArrowSwap24Regular />,
 };
 
 export const KIND_ICONS: Record<InputKind, ReactNode> = {

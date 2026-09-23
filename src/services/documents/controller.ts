@@ -29,6 +29,10 @@ function optionsFor(toolId: ToolId): unknown {
       return o.split;
     case "rotate":
       return o.rotate;
+    case "protect-pdf":
+      return o.protectPdf;
+    case "unlock-pdf":
+      return o.unlockPdf;
     default:
       return {};
   }
@@ -46,6 +50,9 @@ export function getBlocker(toolId: ToolId, pageCount?: number): string | null {
     return parseRanges(options.split.ranges, pageCount).error ?? null;
   }
   if (toolId === "rotate" && Object.keys(options.rotate.rotations).length === 0) return "Gira alguna página para poder aplicar el cambio.";
+  if (toolId === "protect-pdf" && !options.protectPdf.password.trim()) return "Escribe una contraseña.";
+  if (toolId === "unlock-pdf" && !options.unlockPdf.password.trim()) return "Escribe la contraseña del PDF.";
+  if (toolId === "compare-pdf" && files.length !== 2) return "Añade exactamente 2 archivos para comparar.";
   return null;
 }
 

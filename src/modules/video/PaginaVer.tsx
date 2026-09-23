@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Next20Regular, Previous20Regular } from "@fluentui/react-icons";
 import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
+import { Glifo } from "@/components/fluent/Glifo";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { HuecoReproductor } from "@/components/reproductor/HuecoReproductor";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
@@ -15,6 +16,7 @@ import { abrirExterno } from "@/lib/entorno";
 import { fetchExterno } from "@/lib/red";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useCanalesStore } from "@/store/canales-store";
+import { useFavoritosStore } from "@/store/favoritos-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 import type { VideoCanal } from "@/types/canal";
 import { ColaVideos } from "./ColaVideos";
@@ -49,9 +51,11 @@ export function PaginaVer() {
   const video: VideoCanal | undefined = Object.values(feeds)
     .flatMap((f) => f.videos)
     .find((v) => v.videoId === id);
+  const favorito = useFavoritosStore((s) => valido && s.favoritos.some((f) => f.id === id && f.fuente === "youtube"));
 
   useEffect(() => {
     useCanalesStore.getState().iniciar();
+    useFavoritosStore.getState().cargar();
     setDev(new URLSearchParams(window.location.search).get("dev") === "1");
   }, []);
 
@@ -84,6 +88,7 @@ export function PaginaVer() {
   const canalCrumb = video ? [{ etiqueta: video.canalNombre, href: rutaCanal(video.canalId) }] : [];
   const descripcion = pista ? [pista.artista, video ? fechaRelativa(video.publicado) : ""].filter(Boolean).join(" · ") : "";
   const urlYouTube = `https://www.youtube.com/watch?v=${id}`;
+  const pistaFavorito: Pista | null = pista ?? (video ? pistaDeVideo(video, {}) : null);
 
   return (
     <>
@@ -93,9 +98,18 @@ export function PaginaVer() {
         descripcion={descripcion || "Reproductor de video"}
         accion={
           valido && (
-            <Button variant="accent" onClick={() => void abrirExterno(urlYouTube)}>
-              Abrir en YouTube
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                icon={<Glifo nombre={favorito ? "favoritoLleno" : "favorito"} />}
+                disabled={!pistaFavorito}
+                onClick={() => pistaFavorito && useFavoritosStore.getState().alternarFavorito(pistaFavorito)}
+              >
+                {favorito ? "En favoritos" : "Añadir a favoritos"}
+              </Button>
+              <Button variant="accent" onClick={() => void abrirExterno(urlYouTube)}>
+                Abrir en YouTube
+              </Button>
+            </div>
           )
         }
         principal={

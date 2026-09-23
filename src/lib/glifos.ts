@@ -55,6 +55,8 @@ export const GLIFOS = {
   energia: 0xe7e8,
   favorito: 0xe734,
   favoritoLleno: 0xe735,
+  ojo: 0xe890,
+  ojoTachado: 0xed1a,
   chevronAbajo: 0xe70d,
   chevronArriba: 0xe70e,
 } as const;

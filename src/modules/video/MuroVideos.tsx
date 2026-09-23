@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
@@ -9,6 +9,7 @@ import { pistaDeVideo } from "@/lib/canales/pistas";
 import { rutaVer } from "@/lib/rutas";
 import { normalize } from "@/lib/text";
 import { estaIncrustable, useCanalesStore } from "@/store/canales-store";
+import { useFavoritosStore } from "@/store/favoritos-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import type { VideoCanal } from "@/types/canal";
 import { EsqueletoVideo } from "./EsqueletoVideo";
@@ -44,7 +45,10 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
   const iniciado = useCanalesStore((s) => s.iniciado);
   const actualId = useReproductorStore((s) => (s.fuente === "youtube" ? s.pista?.id : undefined));
   const cola = useReproductorStore((s) => s.cola);
+  const favoritos = useFavoritosStore((s) => s.favoritos);
   const { cargarFeed, restaurarSugeridos } = useCanalesStore.getState();
+
+  useEffect(() => useFavoritosStore.getState().cargar(), []);
 
   const todos = useMemo(() => combinar(ids, feeds), [ids.join(","), feeds]); // eslint-disable-line react-hooks/exhaustive-deps
   const visibles = useMemo(() => filtrar(todos, busqueda), [todos, busqueda]);
@@ -58,6 +62,8 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
     router.push(rutaVer(video.videoId));
   };
   const encolar = (video: VideoCanal) => useReproductorStore.getState().encolar(pistaDeVideo(video, duraciones));
+  const esFavorito = (video: VideoCanal) => favoritos.some((f) => f.id === video.videoId && f.fuente === "youtube");
+  const alternarFavorito = (video: VideoCanal) => useFavoritosStore.getState().alternarFavorito(pistaDeVideo(video, duraciones));
 
   if (iniciado && canales.length === 0) {
     return (
@@ -132,9 +138,11 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
                 activo={actualId === video.videoId}
                 enCola={actualId === video.videoId || cola.some((p) => p.id === video.videoId)}
                 incrustable={inc.incrustable}
+                favorito={esFavorito(video)}
                 duracion={duraciones[video.videoId] ?? null}
                 onReproducir={() => reproducir(video)}
                 onEncolar={() => encolar(video)}
+                onAlternarFavorito={() => alternarFavorito(video)}
               />
             );
           })}

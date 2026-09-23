@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "@/components/fluent/Button";
+import { PistaCard } from "@/components/reproductor/PistaCard";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
-import { PistaCard } from "./PistaCard";
 
 const GRID = "grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4";
 
@@ -35,10 +35,14 @@ function Fila({ titulo, pistas, accion }: { titulo: string; pistas: Pista[]; acc
   );
 }
 
-/** Favoritos y reproducido recientemente: solo se muestran cuando hay algo que enseñar. */
+/** Favoritos y reproducido recientemente de Spotify: solo se muestran cuando hay algo que enseñar. */
 export function FavoritosRecientes() {
-  const favoritos = useFavoritosStore((s) => s.favoritos);
-  const recientes = useFavoritosStore((s) => s.recientes);
+  // El filtro NO va dentro del selector: .filter() devuelve un array nuevo en cada lectura y eso
+  // rompe useSyncExternalStore (bucle infinito). Se leen los arrays estables y se filtran aparte, memoizados.
+  const todosFavoritos = useFavoritosStore((s) => s.favoritos);
+  const todosRecientes = useFavoritosStore((s) => s.recientes);
+  const favoritos = useMemo(() => todosFavoritos.filter((p) => p.fuente === "spotify"), [todosFavoritos]);
+  const recientes = useMemo(() => todosRecientes.filter((p) => p.fuente === "spotify"), [todosRecientes]);
 
   useEffect(() => useFavoritosStore.getState().cargar(), []);
 

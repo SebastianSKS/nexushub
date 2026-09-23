@@ -7,11 +7,13 @@ import type {
   Notice,
   PdfToImagesOptions,
   PdfToWordOptions,
+  ProtectOptions,
   QueuedFile,
   ResultItem,
   RotateOptions,
   SplitOptions,
   ToolId,
+  UnlockOptions,
 } from "@/types/documents";
 
 export type RunStatus = "idle" | "running" | "done" | "error";
@@ -23,6 +25,8 @@ interface OptionsState {
   pdfToWord: PdfToWordOptions;
   split: SplitOptions;
   rotate: RotateOptions;
+  protectPdf: ProtectOptions;
+  unlockPdf: UnlockOptions;
 }
 
 const DEFAULT_OPTIONS: OptionsState = {
@@ -32,6 +36,8 @@ const DEFAULT_OPTIONS: OptionsState = {
   pdfToWord: { mode: "editable" },
   split: { ranges: "", mode: "single" },
   rotate: { rotations: {} },
+  protectPdf: { password: "" },
+  unlockPdf: { password: "" },
 };
 
 interface DocumentsState {

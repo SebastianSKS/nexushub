@@ -2,6 +2,8 @@
 
 import clsx from "clsx";
 import { Add20Regular, Checkmark20Regular, Open24Regular, Play24Filled } from "@fluentui/react-icons";
+import { Glifo } from "@/components/fluent/Glifo";
+import { IconButton } from "@/components/fluent/IconButton";
 import { abrirExterno } from "@/lib/entorno";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { formatDuration } from "@/lib/video/format";
@@ -13,17 +15,19 @@ interface TarjetaVideoProps {
   activo: boolean;
   enCola: boolean;
   incrustable: boolean;
+  favorito: boolean;
   /** Segundos, si ya se conocen (el feed no los trae). null = no se muestra el badge. */
   duracion: number | null;
   onReproducir: () => void;
   onEncolar: () => void;
+  onAlternarFavorito: () => void;
 }
 
 /**
  * Tarjeta de video. Un video que no se puede incrustar se ve atenuado, con el badge
  * «Solo en YouTube», y al pulsarlo abre YouTube en otra pestaña en vez de intentar reproducirlo.
  */
-export function TarjetaVideo({ video, activo, enCola, incrustable, duracion, onReproducir, onEncolar }: TarjetaVideoProps) {
+export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, duracion, onReproducir, onEncolar, onAlternarFavorito }: TarjetaVideoProps) {
   const meta = [video.canalNombre, fechaRelativa(video.publicado)].filter(Boolean).join(" · ");
   const urlYouTube = `https://www.youtube.com/watch?v=${video.videoId}`;
 
@@ -104,22 +108,34 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, duracion, onR
         </span>
       </button>
 
-      {incrustable && (
-        <button
-          type="button"
-          onClick={onEncolar}
-          disabled={enCola}
-          aria-label={enCola ? `${video.titulo} ya está en la cola` : `Añadir a la cola: ${video.titulo}`}
-          title={enCola ? "En la cola" : "Añadir a la cola"}
+      <div className="absolute right-3.5 top-3.5 flex gap-1">
+        <IconButton
+          label={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+          onClick={onAlternarFavorito}
           className={clsx(
-            "acrylic absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-control text-fg",
-            "transition-opacity duration-exit ease-fluent focus-visible:opacity-100 group-hover:opacity-100",
-            enCola ? "opacity-100" : "opacity-0",
+            "acrylic h-8 w-8 text-fg transition-opacity duration-exit ease-fluent focus-visible:opacity-100 group-hover:opacity-100",
+            favorito ? "text-accent-text opacity-100" : "opacity-0",
           )}
         >
-          {enCola ? <Checkmark20Regular /> : <Add20Regular />}
-        </button>
-      )}
+          <Glifo nombre={favorito ? "favoritoLleno" : "favorito"} tam={14} />
+        </IconButton>
+        {incrustable && (
+          <button
+            type="button"
+            onClick={onEncolar}
+            disabled={enCola}
+            aria-label={enCola ? `${video.titulo} ya está en la cola` : `Añadir a la cola: ${video.titulo}`}
+            title={enCola ? "En la cola" : "Añadir a la cola"}
+            className={clsx(
+              "acrylic flex h-8 w-8 items-center justify-center rounded-control text-fg",
+              "transition-opacity duration-exit ease-fluent focus-visible:opacity-100 group-hover:opacity-100",
+              enCola ? "opacity-100" : "opacity-0",
+            )}
+          >
+            {enCola ? <Checkmark20Regular /> : <Add20Regular />}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

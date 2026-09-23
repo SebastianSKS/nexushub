@@ -14,7 +14,7 @@ interface PistaCardProps {
   onAlternarFavorito: () => void;
 }
 
-/** Tarjeta de una pista guardada (favorito o reciente): carátula, título, artista y estrella. */
+/** Tarjeta de una pista guardada (favorito o reciente, de Música o de Video): carátula, título, autor y estrella. */
 export function PistaCard({ pista, active, favorito, onPlay, onAlternarFavorito }: PistaCardProps) {
   return (
     <div className={clsx("rounded-control reveal group relative border bg-layer p-3 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt", active ? "border-accent" : "border-stroke")}>
@@ -25,7 +25,7 @@ export function PistaCard({ pista, active, favorito, onPlay, onAlternarFavorito 
             <img src={pista.caratula} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover transition-transform duration-enter ease-fluent group-hover:scale-[1.03]" />
           ) : (
             <span className="flex h-full w-full items-center justify-center">
-              <Glifo nombre="musica" tam={28} className="text-fg-tertiary" />
+              <Glifo nombre={pista.fuente === "youtube" ? "video" : "musica"} tam={28} className="text-fg-tertiary" />
             </span>
           )}
           <span

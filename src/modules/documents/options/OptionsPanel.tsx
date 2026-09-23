@@ -6,8 +6,10 @@ import { CompressOptionsPanel } from "./CompressOptionsPanel";
 import { ImagesOptionsPanel } from "./ImagesOptionsPanel";
 import { PdfToImagesOptionsPanel } from "./PdfToImagesOptionsPanel";
 import { PdfToWordOptionsPanel } from "./PdfToWordOptionsPanel";
+import { ProtectOptionsPanel } from "./ProtectOptionsPanel";
 import { RotateOptionsPanel } from "./RotateOptionsPanel";
 import { SplitOptionsPanel } from "./SplitOptionsPanel";
+import { UnlockOptionsPanel } from "./UnlockOptionsPanel";
 
 /** Panel de opciones de la herramienta activa; las conversiones simples no tienen opciones. */
 export function OptionsPanel({ toolId }: { toolId: ToolId }) {
@@ -30,6 +32,12 @@ export function OptionsPanel({ toolId }: { toolId: ToolId }) {
       break;
     case "rotate":
       body = <RotateOptionsPanel />;
+      break;
+    case "protect-pdf":
+      body = <ProtectOptionsPanel />;
+      break;
+    case "unlock-pdf":
+      body = <UnlockOptionsPanel />;
       break;
     default:
       return null;

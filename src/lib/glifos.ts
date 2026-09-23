@@ -53,6 +53,8 @@ export const GLIFOS = {
   persona: 0xe77b,
   campana: 0xea8f,
   regalo: 0xe719,
+  reloj: 0xe823,
+  calculadora: 0xe8ef,
   tarea: 0xe73a,
   examen: 0xe7be,
   etiqueta: 0xe8ec,

@@ -9,3 +9,6 @@ next-env.d.ts
 .tmp
 .nexushub-cache
 .claude/*.lock
+
+# Archivos del OCR: se copian desde node_modules en cada dev/build (scripts/copiar-tesseract.mjs)
+public/tesseract

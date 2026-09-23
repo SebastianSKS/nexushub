@@ -15,6 +15,8 @@ export const SHORTCUTS: readonly ShortcutDefinition[] = [
   { keys: ["Ctrl", "2"], description: "Ir a Música" },
   { keys: ["Ctrl", "3"], description: "Ir a Documentos" },
   { keys: ["Ctrl", "4"], description: "Ir a Calendario" },
+  { keys: ["Ctrl", "5"], description: "Ir a Horario" },
+  { keys: ["Ctrl", "6"], description: "Ir a Calculadora" },
   { keys: ["Ctrl", "K"], description: "Abrir el buscador global" },
   { keys: ["Espacio"], description: "Reproducir o pausar (si el foco no está en un campo)" },
   { keys: ["?"], description: "Mostrar esta página de atajos" },

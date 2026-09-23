@@ -14,13 +14,16 @@ import { SECCIONES } from "@/lib/rutas";
 import { useCalendarioStore } from "@/store/calendario-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { ProximosEventos } from "../calendario/ProximosEventos";
+import { ClasesDeHoy } from "./ClasesDeHoy";
 
 /** Lo que hace cada sección, en una línea, para quien abre NexusHub por primera vez. */
 const DESCRIPCION: Record<string, string> = {
   video: "Los videos nuevos de los canales de YouTube que sigues, en un solo muro.",
   musica: "Tu música de Spotify, con favoritos, recientes y reproductor grande.",
   documentos: "Unir, dividir, comprimir, convertir y proteger PDF, sin subir nada a internet.",
-  calendario: "Cumpleaños y eventos, con avisos para que no se te pase ninguno.",
+  calendario: "Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase ninguno.",
+  horario: "Tus clases de la semana. Escanea la imagen del horario y se llena sola.",
+  calculadora: "Normal y científica, con historial.",
 };
 
 /** Frase sobre lo que pasa hoy en el calendario. */
@@ -54,7 +57,7 @@ export function PaginaInicio() {
       <PlantillaPagina
         migas={[{ etiqueta: "Inicio" }]}
         titulo="Inicio"
-        descripcion="Video, Música, Documentos y Calendario, a un clic."
+        descripcion="Video, Música, Documentos, Calendario, Horario y Calculadora, a un clic."
         principal={
           <>
             <section
@@ -74,6 +77,8 @@ export function PaginaInicio() {
                 </button>
               )}
             </section>
+
+            <ClasesDeHoy />
 
             <ul className="grid gap-3 min-[700px]:grid-cols-2" aria-label="Secciones">
               {secciones.map((s) => (

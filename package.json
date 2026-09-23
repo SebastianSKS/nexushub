@@ -12,7 +12,9 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "release:manifest": "node scripts/generar-latest-json.mjs"
+    "release:manifest": "node scripts/generar-latest-json.mjs",
+    "predev": "node scripts/copiar-tesseract.mjs",
+    "prebuild": "node scripts/copiar-tesseract.mjs"
   },
   "dependencies": {
     "@fluentui/react-icons": "^2.0.341",
@@ -25,6 +27,7 @@
     "@tauri-apps/plugin-shell": "^2.3.6",
     "@tauri-apps/plugin-updater": "^2.9.0",
     "@tauri-apps/plugin-window-state": "^2.4.1",
+    "@tesseract.js-data/spa": "^1.0.0",
     "clsx": "^2.1.1",
     "diff": "^7.0.0",
     "fast-xml-parser": "^5.11.1",
@@ -37,6 +40,7 @@
     "pdfjs-dist": "^6.3.289",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "tesseract.js": "^7.0.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

@@ -23,7 +23,7 @@ const PASOS: Paso[] = [
   {
     glifo: "informacion",
     titulo: "Bienvenido a NexusHub",
-    texto: "Video, Música, Documentos y Calendario, los cuatro en una sola ventana. Este recorrido dura medio minuto — «Omitir» lo salta en cualquier momento.",
+    texto: "Video, Música, Documentos, Calendario, Horario y Calculadora, todo en una sola ventana. Este recorrido dura medio minuto — «Omitir» lo salta en cualquier momento.",
   },
   {
     glifo: "video",

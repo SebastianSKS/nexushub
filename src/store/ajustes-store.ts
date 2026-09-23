@@ -20,6 +20,8 @@ export interface Ajustes {
   segundoPlano: boolean;
   /** Avisar con una notificación cada vez que empieza a sonar una canción nueva. */
   avisarCambioCancion: boolean;
+  /** Al terminar un video, pasar solo al siguiente de la cola. */
+  siguienteAutomatico: boolean;
   seccionInicial: SeccionInicial;
 }
 
@@ -47,6 +49,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   carpetaSalida: null,
   segundoPlano: false,
   avisarCambioCancion: false,
+  siguienteAutomatico: true,
   seccionInicial: "inicio",
 };
 
@@ -68,6 +71,7 @@ function leer(): Ajustes {
       carpetaSalida: typeof d.carpetaSalida === "string" ? d.carpetaSalida : null,
       segundoPlano: d.segundoPlano === true,
       avisarCambioCancion: d.avisarCambioCancion === true,
+      siguienteAutomatico: d.siguienteAutomatico !== false,
       seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",
     };
   } catch {

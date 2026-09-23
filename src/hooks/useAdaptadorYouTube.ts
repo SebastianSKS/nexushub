@@ -116,7 +116,7 @@ export function useAdaptadorYouTube(hostRef: RefObject<HTMLDivElement | null>) {
                   /* el reproductor ya no responde */
                 }
                 st.informar({ reproduciendo: false });
-                st.siguiente(true); // paso automático
+                if (useAjustesStore.getState().siguienteAutomatico) st.siguiente(true); // paso automático
               }
             },
             onError: (e) => {

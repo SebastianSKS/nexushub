@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Next20Regular, Previous20Regular } from "@fluentui/react-icons";
 import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
@@ -12,7 +12,7 @@ import { HuecoReproductor } from "@/components/reproductor/HuecoReproductor";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { pistaDeVideo } from "@/lib/canales/pistas";
-import { rutaCanal } from "@/lib/rutas";
+import { rutaCanal, rutaVer } from "@/lib/rutas";
 import { abrirExterno } from "@/lib/entorno";
 import { fetchExterno } from "@/lib/red";
 import { formatDuration } from "@/lib/video/format";
@@ -44,6 +44,7 @@ async function metadatosDe(id: string): Promise<{ titulo: string; artista: strin
 
 /** /video/ver?id= — el video, en el «hueco» de la página. El reproductor real vive en la raíz. */
 export function PaginaVer() {
+  const router = useRouter();
   const id = useSearchParams().get("id") ?? "";
   const valido = ID_VIDEO.test(id);
   const [dev, setDev] = useState(false);
@@ -93,6 +94,16 @@ export function PaginaVer() {
       cancelado = true;
     };
   }, [id, valido]);
+
+  // Si el video cambia solo (la cola avanza, o eliges otro de la lista), la dirección lo sigue: así el título,
+  // los favoritos y «Abrir en YouTube» siempre hablan del video que se está viendo.
+  useEffect(() => {
+    if (!valido) return;
+    return useReproductorStore.subscribe((s, previo) => {
+      if (s.fuente !== "youtube" || !s.pista || s.pista.id === previo.pista?.id) return;
+      if (s.pista.id !== new URLSearchParams(window.location.search).get("id")) router.replace(rutaVer(s.pista.id), { scroll: false });
+    });
+  }, [valido, router]);
 
   const titulo = pista?.titulo ?? (valido ? "Cargando video…" : "Video no válido");
   const canalCrumb = video ? [{ etiqueta: video.canalNombre, href: rutaCanal(video.canalId) }] : [];

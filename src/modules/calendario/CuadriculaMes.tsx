@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { Glifo } from "@/components/fluent/Glifo";
+import { CATEGORIAS, infoCategoria } from "@/lib/calendario/categorias";
 import { cumpleEn, DIAS_CORTOS, diasDelMes, eventoOcurreEn, fechaLarga, inicioDelDia, MESES, mayuscula } from "@/lib/calendario/fechas";
 import type { Amigo, Evento } from "@/store/calendario-store";
 
@@ -21,6 +22,8 @@ interface Props {
 interface Etiqueta {
   clave: string;
   nombre: string;
+  /** Tipo, para el texto de ayuda («Tarea: entregar informe»). */
+  tipo: string;
   color: string;
   onAbrir: () => void;
 }
@@ -80,8 +83,8 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
           const cumples = amigos.filter((a) => cumpleEn(a, fecha)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
           const eventosDia = eventos.filter((e) => eventoOcurreEn(e.fecha, e.repetir, fecha)).sort((a, b) => a.titulo.localeCompare(b.titulo, "es"));
           const etiquetas: Etiqueta[] = [
-            ...cumples.map((a): Etiqueta => ({ clave: `a-${a.id}`, nombre: a.nombre, color: a.color, onAbrir: () => onAmigo(a) })),
-            ...eventosDia.map((e): Etiqueta => ({ clave: `e-${e.id}`, nombre: e.titulo, color: e.color, onAbrir: () => onEvento(e) })),
+            ...cumples.map((a): Etiqueta => ({ clave: `a-${a.id}`, nombre: a.nombre, tipo: "Cumpleaños", color: a.color, onAbrir: () => onAmigo(a) })),
+            ...eventosDia.map((e): Etiqueta => ({ clave: `e-${e.id}`, nombre: e.titulo, tipo: e.categoria === "otro" ? "Evento" : infoCategoria(e.categoria).nombre, color: e.color, onAbrir: () => onEvento(e) })),
           ];
           const resumen = [cumples.length ? `cumple ${cumples.map((c) => c.nombre).join(", ")}` : "", eventosDia.length ? eventosDia.map((e) => e.titulo).join(", ") : ""]
             .filter(Boolean)
@@ -95,7 +98,7 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
               <button
                 type="button"
                 onClick={() => onDia(fecha)}
-                aria-label={`${fechaLarga(fecha)}${resumen ? `, ${resumen}` : ""}. Añadir cumpleaños`}
+                aria-label={`${fechaLarga(fecha)}${resumen ? `, ${resumen}` : ""}. Añadir`}
                 aria-current={esHoy ? "date" : undefined}
                 className="rounded-control absolute inset-0 transition-colors duration-exit ease-fluent hover:bg-layer-alt focus-visible:z-10"
               />
@@ -114,8 +117,8 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
                     <button
                       type="button"
                       onClick={e.onAbrir}
-                      title={e.nombre}
-                      aria-label={`Editar «${e.nombre}»`}
+                      title={`${e.tipo}: ${e.nombre}`}
+                      aria-label={`Editar ${e.tipo.toLowerCase()} «${e.nombre}»`}
                       className="block w-full truncate rounded-[4px] px-1.5 py-0.5 text-left text-caption font-semibold shadow-card transition-[filter] duration-exit hover:brightness-110"
                       style={{ backgroundColor: e.color, color: textoSobre(e.color) }}
                     >
@@ -135,6 +138,19 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
           );
         })}
       </div>
+
+      <ul aria-label="Leyenda de colores" className="flex flex-wrap gap-x-4 gap-y-1 border-t border-stroke px-4 py-2.5">
+        {CATEGORIAS.filter((c) => c.id !== "otro").map((c) => (
+          <li key={c.id} className="flex items-center gap-1.5 text-caption text-fg-secondary">
+            <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+            {c.nombre}
+          </li>
+        ))}
+        <li className="flex items-center gap-1.5 text-caption text-fg-secondary">
+          <span aria-hidden>🎂</span>
+          Cumpleaños (cada amigo con su color)
+        </li>
+      </ul>
     </section>
   );
 }

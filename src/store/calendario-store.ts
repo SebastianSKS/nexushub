@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { esCategoria, type CategoriaEvento } from "@/lib/calendario/categorias";
 import { diasEnMes } from "@/lib/calendario/fechas";
 
 export interface Amigo {
@@ -18,6 +19,8 @@ export interface Amigo {
 export interface Evento {
   id: string;
   titulo: string;
+  /** Tipo de evento (tarea, examen, cita…): lo marca en el calendario. */
+  categoria: CategoriaEvento;
   /** Fecha de la primera ocurrencia, en formato "AAAA-MM-DD". */
   fecha: string;
   /** Hora "HH:MM", o null si es de todo el día. */
@@ -106,6 +109,7 @@ function eventoValido(x: unknown): Evento | null {
   return {
     id: e.id,
     titulo: e.titulo.trim().slice(0, 60),
+    categoria: esCategoria(e.categoria) ? e.categoria : "otro", // los eventos guardados antes de las categorías quedan en «Otro»
     fecha: e.fecha,
     hora: typeof e.hora === "string" && PATRON_HORA.test(e.hora) ? e.hora : null,
     color: typeof e.color === "string" && /^#[0-9a-f]{6}$/i.test(e.color) ? e.color : COLORES_AMIGO[0]!.valor,

@@ -9,6 +9,7 @@ import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { Selector } from "@/components/fluent/Selector";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
+import { CATEGORIAS, infoCategoria, type CategoriaEvento } from "@/lib/calendario/categorias";
 import { claveFecha, diasEnMes, MESES, type Repeticion } from "@/lib/calendario/fechas";
 import { COLORES_AMIGO, useCalendarioStore, type Evento } from "@/store/calendario-store";
 
@@ -16,12 +17,18 @@ export type BorradorEvento = Partial<Evento> & { dia: number; mes: number; anio:
 
 const CAMPO = "h-8 w-full rounded-input border border-stroke bg-layer-alt px-2 text-body text-fg transition-colors duration-exit ease-fluent hover:bg-layer focus-visible:outline-none focus-visible:border-accent";
 
-/** Añadir o editar un evento general (cita, recordatorio…): una fecha concreta, con hora opcional. */
-export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean; inicial: BorradorEvento | null; onCerrar: () => void }) {
+/**
+ * Añadir o editar algo del calendario: primero se elige qué es (tarea, examen, cita, recordatorio, otro…)
+ * y eso lo marca con su nombre y color. «Cumpleaños» pasa a su propio formulario (`onCumple`).
+ */
+export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abierto: boolean; inicial: BorradorEvento | null; onCerrar: () => void; onCumple?: (dia: number, mes: number, nombre: string) => void }) {
   const idHora = useId();
   const idNota = useId();
   const campoTitulo = useRef<HTMLInputElement>(null);
   const [titulo, setTitulo] = useState("");
+  const [categoria, setCategoria] = useState<CategoriaEvento>("tarea");
+  /** Si el usuario ya eligió un color a mano, cambiar de categoría no se lo pisa. */
+  const [colorManual, setColorManual] = useState(false);
   const [dia, setDia] = useState(1);
   const [mes, setMes] = useState(1);
   const [anio, setAnio] = useState(new Date().getFullYear());
@@ -32,19 +39,20 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
   const [avisar, setAvisar] = useState(true);
   const [errorTitulo, setErrorTitulo] = useState<string>();
   const [confirmarBorrado, setConfirmarBorrado] = useState(false);
-  const eventos = useCalendarioStore((s) => s.eventos);
 
   const editando = !!inicial?.id;
 
   useEffect(() => {
     if (!abierto || !inicial) return;
     setTitulo(inicial.titulo ?? "");
+    setCategoria(inicial.categoria ?? "tarea");
+    setColorManual(!!inicial.id);
     setDia(inicial.dia);
     setMes(inicial.mes);
     setAnio(inicial.anio);
     setHora(inicial.hora ?? "");
     setRepetir(inicial.repetir ?? "no");
-    setColor(inicial.color ?? COLORES_AMIGO[eventos.length % COLORES_AMIGO.length]!.valor);
+    setColor(inicial.color ?? infoCategoria(inicial.categoria ?? "tarea").color);
     setNota(inicial.nota ?? "");
     setAvisar(inicial.avisar ?? true);
     setErrorTitulo(undefined);
@@ -66,8 +74,13 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
       return;
     }
     const fecha = claveFecha(new Date(anio, mes - 1, dia));
-    useCalendarioStore.getState().guardarEvento({ id: inicial?.id, titulo: titulo.trim(), fecha, hora: hora || null, color, nota: nota.trim(), avisar, repetir });
+    useCalendarioStore.getState().guardarEvento({ id: inicial?.id, titulo: titulo.trim(), categoria, fecha, hora: hora || null, color, nota: nota.trim(), avisar, repetir });
     onCerrar();
+  };
+
+  const elegirCategoria = (c: CategoriaEvento) => {
+    setCategoria(c);
+    if (!colorManual) setColor(infoCategoria(c).color);
   };
 
   const borrar = () => {
@@ -76,9 +89,44 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
   };
 
   return (
-    <Dialog open={abierto} onClose={onCerrar} title={editando ? "Editar evento" : "Añadir evento"} maxWidth={480}>
+    <Dialog open={abierto} onClose={onCerrar} title={editando ? "Editar" : "Añadir al calendario"} maxWidth={480}>
       <form onSubmit={guardar} className="flex flex-col gap-4">
-        <TextInput ref={campoTitulo} label="¿Qué es?" value={titulo} maxLength={60} autoComplete="off" placeholder="Por ejemplo, Cita con el dentista" error={errorTitulo} onChange={(e) => { setTitulo(e.target.value); setErrorTitulo(undefined); }} />
+        <fieldset>
+          <legend className="mb-1.5 text-caption text-fg-secondary">¿Qué es?</legend>
+          <div role="radiogroup" aria-label="Tipo" className="flex flex-wrap gap-2">
+            {CATEGORIAS.map((c) => {
+              const activa = categoria === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={activa}
+                  onClick={() => elegirCategoria(c.id)}
+                  className={clsx("rounded-control inline-flex h-8 items-center gap-2 border px-3 text-body transition-colors duration-exit ease-fluent", activa ? "border-accent bg-layer-alt text-fg" : "border-stroke bg-layer text-fg-secondary hover:bg-layer-alt")}
+                >
+                  <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+                  {c.nombre}
+                </button>
+              );
+            })}
+            {!editando && onCumple && (
+              <button
+                type="button"
+                onClick={() => {
+                  onCerrar();
+                  onCumple(dia, mes, titulo.trim());
+                }}
+                className="rounded-control inline-flex h-8 items-center gap-2 border border-stroke bg-layer px-3 text-body text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt"
+              >
+                <span aria-hidden>🎂</span>
+                Cumpleaños
+              </button>
+            )}
+          </div>
+        </fieldset>
+
+        <TextInput ref={campoTitulo} label="Título" value={titulo} maxLength={60} autoComplete="off" placeholder={`Por ejemplo, ${infoCategoria(categoria).ejemplo}`} error={errorTitulo} onChange={(e) => { setTitulo(e.target.value); setErrorTitulo(undefined); }} />
 
         <div className="grid grid-cols-[80px_1fr_90px] gap-3">
           <div>
@@ -129,7 +177,10 @@ export function DialogoEvento({ abierto, inicial, onCerrar }: { abierto: boolean
                 aria-checked={color === c.valor}
                 aria-label={c.nombre}
                 title={c.nombre}
-                onClick={() => setColor(c.valor)}
+                onClick={() => {
+                  setColor(c.valor);
+                  setColorManual(true);
+                }}
                 className={clsx("flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform duration-exit ease-fluent hover:scale-110", color === c.valor ? "border-fg" : "border-transparent")}
                 style={{ backgroundColor: c.valor }}
               >

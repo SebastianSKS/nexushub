@@ -17,7 +17,7 @@ export function ProximosCumples({ amigos, onAmigo }: { amigos: Amigo[]; onAmigo:
     <Card className="p-4">
       <h2 className="mb-3 text-body font-semibold text-fg">Próximos cumpleaños</h2>
       {lista.length === 0 ? (
-        <p className="text-body text-fg-secondary">Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» o toca un día del calendario.</p>
+        <p className="text-body text-fg-secondary">Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» arriba.</p>
       ) : (
         <ul className="flex flex-col gap-1">
           {lista.map(({ a, p }) => (

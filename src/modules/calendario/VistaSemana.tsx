@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { infoCategoria } from "@/lib/calendario/categorias";
 import { Glifo } from "@/components/fluent/Glifo";
 import { diasDeLaSemana, fechaLarga, inicioDelDia, mayuscula, MESES } from "@/lib/calendario/fechas";
 import { itemsDelDia } from "@/lib/calendario/items";
@@ -56,7 +57,7 @@ export function VistaSemana({ fechaBase, amigos, eventos, onSemana, onHoy, onDia
               </div>
               <div className="min-w-0 flex-1">
                 {items.length === 0 ? (
-                  <button type="button" onClick={() => onDia(fecha)} aria-label={`${fechaLarga(fecha)}, sin nada. Añadir cumpleaños`} className="rounded-control flex items-center gap-1.5 text-body text-fg-tertiary transition-colors duration-exit ease-fluent hover:text-accent-text">
+                  <button type="button" onClick={() => onDia(fecha)} aria-label={`${fechaLarga(fecha)}, sin nada. Añadir`} className="rounded-control flex items-center gap-1.5 text-body text-fg-tertiary transition-colors duration-exit ease-fluent hover:text-accent-text">
                     <Glifo nombre="agregar" tam={12} />
                     Sin nada por ahora
                   </button>
@@ -74,6 +75,11 @@ export function VistaSemana({ fechaBase, amigos, eventos, onSemana, onHoy, onDia
                           <span className="min-w-0 flex-1 truncate text-body text-fg">
                             {it.tipo === "amigo" ? `Cumpleaños de ${it.titulo}` : it.titulo}
                           </span>
+                          {it.tipo === "evento" && (it.ref as Evento).categoria !== "otro" && (
+                            <span className="shrink-0 rounded-full px-2 text-caption font-semibold" style={{ backgroundColor: it.color, color: "#fff" }}>
+                              {infoCategoria((it.ref as Evento).categoria).nombre}
+                            </span>
+                          )}
                           {it.hora && <span className="shrink-0 text-caption text-fg-secondary">{it.hora}</span>}
                         </button>
                       </li>

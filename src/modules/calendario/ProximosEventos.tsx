@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/fluent/Card";
+import { infoCategoria } from "@/lib/calendario/categorias";
 import { cuando, fechaLarga, mayuscula, proximaOcurrenciaEvento } from "@/lib/calendario/fechas";
 import type { Evento } from "@/store/calendario-store";
 
@@ -28,6 +29,7 @@ export function ProximosEventos({ eventos, onEvento }: { eventos: Evento[]; onEv
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-body font-semibold text-fg">{e.titulo}</span>
                 <span className="block truncate text-caption text-fg-secondary">
+                  {e.categoria !== "otro" && `${infoCategoria(e.categoria).nombre} · `}
                   {mayuscula(fechaLarga(p.fecha))}
                   {e.hora ? ` · ${e.hora}` : ""}
                   {e.repetir !== "no" && ` · se repite ${e.repetir === "semanal" ? "cada semana" : "cada mes"}`}

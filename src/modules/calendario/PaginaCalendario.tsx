@@ -95,12 +95,12 @@ export function PaginaCalendario() {
       <PlantillaPagina
         migas={[{ etiqueta: "Calendario" }]}
         titulo="Calendario"
-        descripcion="Los cumpleaños de tus amigos, cada uno con su color, y avisos para que no se te pase ninguno."
+        descripcion="Tareas, exámenes, citas y los cumpleaños de tus amigos, cada cosa marcada con su color, y avisos para que no se te pase ninguna."
         accion={
           <div className="flex gap-2">
-            <Button onClick={() => abrirEvento({ dia: hoy.getDate(), mes: hoy.getMonth() + 1, anio: hoy.getFullYear() })}>Añadir evento</Button>
-            <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => abrir({ dia: hoy.getDate(), mes: hoy.getMonth() + 1 })}>
-              Añadir cumpleaños
+            <Button onClick={() => abrir({ dia: hoy.getDate(), mes: hoy.getMonth() + 1 })}>Añadir cumpleaños</Button>
+            <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => abrirEvento({ dia: hoy.getDate(), mes: hoy.getMonth() + 1, anio: hoy.getFullYear() })}>
+              Añadir tarea o evento
             </Button>
           </div>
         }
@@ -145,7 +145,7 @@ export function PaginaCalendario() {
                 eventos={eventos}
                 onMes={mover}
                 onHoy={irAHoy}
-                onDia={(f) => abrir({ dia: f.getDate(), mes: f.getMonth() + 1 })}
+                onDia={(f) => abrirEvento({ dia: f.getDate(), mes: f.getMonth() + 1, anio: f.getFullYear() })}
                 onAmigo={(a) => abrir(a)}
                 onEvento={editarEvento}
               />
@@ -156,7 +156,7 @@ export function PaginaCalendario() {
                 eventos={eventos}
                 onSemana={moverSemana}
                 onHoy={irAHoySemana}
-                onDia={(f) => abrir({ dia: f.getDate(), mes: f.getMonth() + 1 })}
+                onDia={(f) => abrirEvento({ dia: f.getDate(), mes: f.getMonth() + 1, anio: f.getFullYear() })}
                 onAmigo={(a) => abrir(a)}
                 onEvento={editarEvento}
               />
@@ -174,7 +174,7 @@ export function PaginaCalendario() {
         }
       />
       <DialogoAmigo abierto={dialogo} inicial={borrador} onCerrar={() => setDialogo(false)} />
-      <DialogoEvento abierto={dialogoEvento} inicial={borradorEvento} onCerrar={() => setDialogoEvento(false)} />
+      <DialogoEvento abierto={dialogoEvento} inicial={borradorEvento} onCerrar={() => setDialogoEvento(false)} onCumple={(dia, mes, nombre) => abrir({ dia, mes, ...(nombre ? { nombre } : {}) })} />
       <DialogoPerfil abierto={perfil} onCerrar={() => setPerfil(false)} />
     </>
   );

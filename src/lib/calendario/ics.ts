@@ -6,6 +6,7 @@
  */
 import type { Amigo, Evento } from "@/store/calendario-store";
 import { COLORES_AMIGO } from "@/store/calendario-store";
+import { CATEGORIAS, esCategoria, type CategoriaEvento } from "./categorias";
 import { diasEnMes } from "./fechas";
 
 const CRLF = "\r\n";
@@ -58,6 +59,7 @@ export function generarIcs(amigos: Amigo[], eventos: Evento[]): string {
     if (e.repetir === "semanal") lineas.push("RRULE:FREQ=WEEKLY");
     else if (e.repetir === "mensual") lineas.push("RRULE:FREQ=MONTHLY");
     lineas.push(`SUMMARY:${escapar(e.titulo)}`);
+    if (e.categoria !== "otro") lineas.push(`CATEGORIES:${e.categoria.toUpperCase()}`);
     if (e.nota) lineas.push(`DESCRIPTION:${escapar(e.nota)}`);
     lineas.push("END:VEVENT");
   }
@@ -117,6 +119,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
   let fecha: ReturnType<typeof partirFecha> | null = null;
   let repeticion: "no" | "anual" | "semanal" | "mensual" = "no";
   let nota = "";
+  let categoria: CategoriaEvento = "otro";
 
   const cerrar = () => {
     if (!resumen || !fecha) {
@@ -138,9 +141,10 @@ export function parsearIcs(texto: string): ResultadoImportacion {
     } else {
       eventos.push({
         titulo: resumen.slice(0, 60),
+        categoria,
         fecha: `${fecha.anio}-${String(fecha.mes).padStart(2, "0")}-${String(fecha.dia).padStart(2, "0")}`,
         hora: fecha.hora,
-        color: colorAsignado,
+        color: categoria === "otro" ? colorAsignado : CATEGORIAS.find((c) => c.id === categoria)!.color,
         nota,
         avisar: true,
         repetir: repeticion === "semanal" || repeticion === "mensual" ? repeticion : "no",
@@ -155,6 +159,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
       fecha = null;
       repeticion = "no";
       nota = "";
+      categoria = "otro";
       continue;
     }
     if (linea === "END:VEVENT") {
@@ -167,7 +172,10 @@ export function parsearIcs(texto: string): ResultadoImportacion {
     if (!par) continue;
     if (par.nombre === "SUMMARY") resumen = desescapar(par.valor).trim();
     else if (par.nombre === "DESCRIPTION") nota = desescapar(par.valor).trim().slice(0, 200);
-    else if (par.nombre === "DTSTART") fecha = partirFecha(linea);
+    else if (par.nombre === "CATEGORIES") {
+      const c = par.valor.split(",")[0]!.trim().toLowerCase();
+      categoria = esCategoria(c) ? c : "otro";
+    } else if (par.nombre === "DTSTART") fecha = partirFecha(linea);
     else if (par.nombre === "RRULE") {
       if (/FREQ=YEARLY/i.test(par.valor)) repeticion = "anual";
       else if (/FREQ=WEEKLY/i.test(par.valor)) repeticion = "semanal";

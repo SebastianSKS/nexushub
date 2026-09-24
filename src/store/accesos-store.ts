@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { listarApps, type AppInstalada } from "@/services/apps";
+import { iconosDeApps, listarApps, type AppInstalada } from "@/services/apps";
 
 const CLAVE = "nexushub-accesos";
 
@@ -12,6 +12,8 @@ export interface Acceso {
   color: string;
   /** Programa instalado que se abre en vez de la página web (si falla, se usa la dirección). */
   app?: AppInstalada;
+  /** Icono real del programa (data URL PNG), sacado de Windows una vez y guardado. */
+  icono?: string;
   /** true = la persona eligió el navegador a propósito: la búsqueda automática de programas no lo cambia. */
   web?: boolean;
 }
@@ -59,6 +61,7 @@ function accesoValido(x: unknown): Acceso | null {
     url,
     color: typeof a.color === "string" && /^#[0-9a-f]{6}$/i.test(a.color) ? a.color : COLORES_ACCESO[0],
     ...(app ? { app } : {}),
+    ...(app && typeof a.icono === "string" && a.icono.startsWith("data:image/png;base64,") && a.icono.length < 200_000 ? { icono: a.icono } : {}),
     ...(a.web === true ? { web: true } : {}),
   };
 }
@@ -110,6 +113,8 @@ interface AccesosState {
   cargar: () => void;
   /** Busca los programas instalados y asigna el que corresponde a cada acceso que aún no tiene uno. */
   buscarApps: (forzar?: boolean) => Promise<void>;
+  /** Saca de Windows el icono real de los accesos que tienen programa y aún no lo tienen. */
+  cargarIconos: () => Promise<void>;
   guardar: (a: Omit<Acceso, "id"> & { id?: string }) => void;
   quitar: (id: string) => void;
   restaurar: () => void;
@@ -140,14 +145,30 @@ export const useAccesosStore = create<AccesosState>((set, get) => ({
     });
     set({ apps, buscandoApps: false, ...(cambio ? { accesos } : {}) });
     if (cambio) escribir(accesos);
+    await get().cargarIconos();
+  },
+
+  cargarIconos: async () => {
+    // Solo los que tienen programa y aún no tienen icono guardado: se piden juntos, una sola vez.
+    const faltan = get().accesos.filter((a) => a.app && !a.icono);
+    if (faltan.length === 0) return;
+    const iconos = await iconosDeApps([...new Set(faltan.map((a) => a.app!.id))]);
+    if (Object.keys(iconos).length === 0) return;
+    const accesos = get().accesos.map((a) => (a.app && !a.icono && iconos[a.app.id] ? { ...a, icono: iconos[a.app.id] } : a));
+    set({ accesos });
+    escribir(accesos);
   },
 
   guardar: (datos) => {
-    const acceso: Acceso = { ...datos, id: datos.id ?? crypto.randomUUID() };
+    const previo = datos.id ? get().accesos.find((a) => a.id === datos.id) : undefined;
+    // El icono es del programa: si cambia el programa (o se quita), se vuelve a pedir.
+    const { icono: _viejo, ...sinIcono } = datos;
+    const acceso: Acceso = { ...sinIcono, id: datos.id ?? crypto.randomUUID(), ...(datos.app && previo?.app?.id === datos.app.id && previo.icono ? { icono: previo.icono } : {}) };
     const existe = get().accesos.some((a) => a.id === acceso.id);
     const accesos = existe ? get().accesos.map((a) => (a.id === acceso.id ? acceso : a)) : [...get().accesos, acceso];
     set({ accesos });
     escribir(accesos);
+    void get().cargarIconos(); // si ahora tiene programa y aún no tiene icono, se pide
   },
 
   quitar: (id) => {

@@ -188,7 +188,8 @@ pub fn run() {
             carpetas::archivo_renombrar,
             carpetas::abrir_en_sistema,
             apps::apps_instaladas,
-            apps::abrir_app
+            apps::abrir_app,
+            apps::iconos_de_apps
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

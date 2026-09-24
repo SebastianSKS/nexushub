@@ -8,6 +8,7 @@ import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
 import { TextInput } from "@/components/fluent/TextInput";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
+import { logoDe } from "@/lib/logos";
 import { normalize } from "@/lib/text";
 import { abrirAcceso } from "@/services/accesos";
 import { type AppInstalada } from "@/services/apps";
@@ -22,14 +23,24 @@ const iniciales = (nombre: string) =>
     .map((p) => p.charAt(0).toUpperCase())
     .join("");
 
+/**
+ * El «logo» de un acceso: el icono real del programa instalado (el mismo que ves en el menú Inicio); si es un servicio
+ * web conocido (Drive, Gmail…), su logo oficial sobre el color de la marca; y si no, las iniciales.
+ */
 function Cuadro({ a, tam = 44 }: { a: Acceso; tam?: number }) {
+  if (a.icono) {
+    // eslint-disable-next-line @next/next/no-img-element -- icono local en data URL
+    return <img src={a.icono} alt="" aria-hidden draggable={false} className="shrink-0 select-none object-contain" style={{ width: tam, height: tam }} />;
+  }
+  const logo = logoDe(a.url);
   return (
-    <span aria-hidden className="relative flex shrink-0 items-center justify-center rounded-[10px] font-semibold text-white" style={{ backgroundColor: a.color, width: tam, height: tam, fontSize: tam * 0.4 }}>
-      {iniciales(a.nombre)}
-      {a.app && (
-        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-layer text-fg shadow-card" title="Abre el programa instalado">
-          <Glifo nombre="pantalla" tam={9} />
-        </span>
+    <span aria-hidden className="relative flex shrink-0 items-center justify-center rounded-[10px] font-semibold text-white" style={{ backgroundColor: logo?.color ?? a.color, width: tam, height: tam, fontSize: tam * 0.4 }}>
+      {logo ? (
+        <svg viewBox="0 0 24 24" width={tam * 0.58} height={tam * 0.58} fill="#fff">
+          <path d={logo.path} />
+        </svg>
+      ) : (
+        iniciales(a.nombre)
       )}
     </span>
   );

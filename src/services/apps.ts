@@ -28,3 +28,15 @@ export async function abrirApp(id: string): Promise<void> {
   const { invoke } = await import("@tauri-apps/api/core");
   await invoke("abrir_app", { id });
 }
+
+/** Los iconos reales de varios programas (data URL PNG), tal como Windows los muestra. Los que no se pudieron sacar no vienen. */
+export async function iconosDeApps(ids: string[]): Promise<Record<string, string>> {
+  if (ids.length === 0) return {};
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    const png = await invoke<Record<string, string>>("iconos_de_apps", { ids });
+    return Object.fromEntries(Object.entries(png).map(([id, b64]) => [id, `data:image/png;base64,${b64}`]));
+  } catch {
+    return {};
+  }
+}

@@ -104,3 +104,81 @@ pub fn abrir_app(id: String) -> Result<(), String> {
         Err("Esto solo funciona en Windows.".into())
     }
 }
+
+/// El script que pide a Windows el icono de cada programa (el mismo que muestra el menú Inicio) y lo devuelve como PNG en base64.
+#[cfg(target_os = "windows")]
+const SCRIPT_ICONOS: &str = r#"
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName PresentationCore,WindowsBase
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class NexusIcono {
+  [StructLayout(LayoutKind.Sequential)] public struct SIZE { public int cx; public int cy; }
+  [ComImport, Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+  public interface IShellItemImageFactory { [PreserveSig] int GetImage(SIZE size, int flags, out IntPtr phbm); }
+  [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+  static extern void SHCreateItemFromParsingName(string path, IntPtr pbc, [In] ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItemImageFactory ppv);
+  [DllImport("gdi32.dll")] static extern bool DeleteObject(IntPtr h);
+  public static IntPtr Obtener(string ruta, int lado) {
+    Guid iid = new Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b");
+    IShellItemImageFactory f;
+    SHCreateItemFromParsingName(ruta, IntPtr.Zero, ref iid, out f);
+    IntPtr hbm; SIZE s; s.cx = lado; s.cy = lado;
+    int hr = f.GetImage(s, 0, out hbm);
+    if (hr != 0) throw new Exception("HRESULT " + hr);
+    return hbm;
+  }
+  public static void Liberar(IntPtr h) { DeleteObject(h); }
+}
+'@
+$ids = $env:NEXUS_APP_IDS | ConvertFrom-Json
+$salida = @{}
+foreach ($id in $ids) {
+  try {
+    $h = [NexusIcono]::Obtener('shell:AppsFolder\' + $id, 128)
+    $src = [System.Windows.Interop.Imaging]::CreateBitmapSourceFromHBitmap($h, [IntPtr]::Zero, [System.Windows.Int32Rect]::Empty, [System.Windows.Media.Imaging.BitmapSizeOptions]::FromEmptyOptions())
+    $enc = New-Object System.Windows.Media.Imaging.PngBitmapEncoder
+    $enc.Frames.Add([System.Windows.Media.Imaging.BitmapFrame]::Create($src))
+    $ms = New-Object System.IO.MemoryStream
+    $enc.Save($ms)
+    [NexusIcono]::Liberar($h)
+    $salida[$id] = [Convert]::ToBase64String($ms.ToArray())
+  } catch { }
+}
+[Console]::Out.Write(($salida | ConvertTo-Json -Compress))
+"#;
+
+/// Los iconos reales (PNG en base64) de varios programas, pedidos a Windows. Solo de programas del menú Inicio.
+/// Los que no se pudieron sacar simplemente no vienen en el resultado.
+#[tauri::command]
+pub fn iconos_de_apps(ids: Vec<String>) -> Result<std::collections::HashMap<String, String>, String> {
+    #[cfg(target_os = "windows")]
+    {
+        if ids.is_empty() {
+            return Ok(Default::default());
+        }
+        if CONOCIDAS.lock().map(|c| c.is_empty()).unwrap_or(true) {
+            apps_instaladas()?;
+        }
+        let conocidas = CONOCIDAS.lock().map_err(|_| "Error interno.".to_string())?.clone();
+        let validos: Vec<&String> = ids.iter().filter(|i| conocidas.contains(i)).take(40).collect();
+        if validos.is_empty() {
+            return Ok(Default::default());
+        }
+        let json = serde_json::to_string(&validos).map_err(|e| e.to_string())?;
+        let mut orden = std::process::Command::new("powershell.exe");
+        orden.args(["-NoProfile", "-NonInteractive", "-Command", SCRIPT_ICONOS]).env("NEXUS_APP_IDS", json);
+        let salida = ejecutar_sin_ventana(orden).map_err(|e| format!("No se pudieron leer los iconos: {e}"))?;
+        let texto = String::from_utf8_lossy(&salida.stdout).trim().to_string();
+        if texto.is_empty() || texto == "null" {
+            return Ok(Default::default());
+        }
+        serde_json::from_str(&texto).map_err(|_| "No se entendieron los iconos.".to_string())
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = ids;
+        Ok(Default::default())
+    }
+}

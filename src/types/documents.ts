@@ -11,7 +11,11 @@ export type ToolId =
   | "rotate"
   | "protect-pdf"
   | "unlock-pdf"
-  | "compare-pdf";
+  | "compare-pdf"
+  | "organize"
+  | "watermark"
+  | "page-numbers"
+  | "ocr";
 
 /** Familia de archivo (se confirma por el contenido real al procesar). */
 export type InputKind = "word" | "excel" | "powerpoint" | "pdf" | "image";
@@ -76,6 +80,34 @@ export interface UnlockOptions {
   password: string;
 }
 
+export interface OrganizeOptions {
+  /** Páginas originales (base 1) en el orden en que quedarán; las que faltan se eliminan. Vacío = aún sin cargar. */
+  order: number[];
+}
+
+export interface WatermarkOptions {
+  text: string;
+  /** 10-100: qué tan visible queda el texto. */
+  opacity: number;
+  layout: "diagonal" | "horizontal";
+  size: "small" | "medium" | "large";
+  color: "gray" | "red" | "blue" | "black";
+}
+
+export type NumberPosition = "bottom-center" | "bottom-right" | "bottom-left" | "top-center" | "top-right" | "top-left";
+export interface PageNumbersOptions {
+  position: NumberPosition;
+  /** n: «3». of-total: «3 de 12». page: «Página 3». */
+  format: "n" | "of-total" | "page";
+  start: number;
+  skipFirst: boolean;
+}
+
+export interface OcrOptions {
+  /** pdf: copia del documento con texto seleccionable y buscable. text: solo el texto en un .txt. */
+  output: "pdf" | "text";
+}
+
 export interface ToolOptionsMap {
   "word-to-pdf": Record<string, never>;
   "pdf-to-word": PdfToWordOptions;
@@ -90,6 +122,10 @@ export interface ToolOptionsMap {
   "protect-pdf": ProtectOptions;
   "unlock-pdf": UnlockOptions;
   "compare-pdf": Record<string, never>;
+  organize: OrganizeOptions;
+  watermark: WatermarkOptions;
+  "page-numbers": PageNumbersOptions;
+  ocr: OcrOptions;
 }
 
 // --- Cliente ---------------------------------------------------------------

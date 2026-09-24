@@ -4,7 +4,7 @@ import { TOOLS } from "@/lib/documents/tools";
 import { useDocumentsStore } from "@/store/documents-store";
 import { ToolCard } from "./ToolCard";
 
-/** Cuadrícula con las 10 herramientas. Con archivos en cola, resalta las que los admiten. */
+/** Cuadrícula con todas las herramientas. Con archivos en cola, resalta las que los admiten. */
 export function ToolGrid() {
   const files = useDocumentsStore((s) => s.files);
   const hasFiles = files.length > 0;

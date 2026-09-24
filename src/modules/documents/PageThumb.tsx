@@ -11,11 +11,13 @@ interface PageThumbProps {
   selected: boolean;
   /** Giro acumulado a previsualizar (0, 90, 180, 270). */
   rotation: number;
+  /** Texto bajo la miniatura; por defecto, el número de página. */
+  etiqueta?: string;
   onToggle: (page: number, shift: boolean) => void;
 }
 
 /** Miniatura de una página. Se dibuja solo cuando entra en pantalla, para que 200 páginas no bloqueen la interfaz. */
-export function PageThumb({ doc, page, selected, rotation, onToggle }: PageThumbProps) {
+export function PageThumb({ doc, page, selected, rotation, etiqueta, onToggle }: PageThumbProps) {
   const boxRef = useRef<HTMLButtonElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visible, setVisible] = useState(false);
@@ -93,7 +95,7 @@ export function PageThumb({ doc, page, selected, rotation, onToggle }: PageThumb
           }}
         />
       </span>
-      <span className="tabular text-caption text-fg-secondary">{page}</span>
+      <span className="tabular text-caption text-fg-secondary">{etiqueta ?? page}</span>
       {selected && (
         <span
           aria-hidden

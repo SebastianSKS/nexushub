@@ -72,3 +72,14 @@ export async function rotarPdf(file: File, opts: RotateOptions, ctx: Ctx): Promi
   ctx.report(0.8, "Guardando el PDF");
   return [{ name: safeFileName(`${baseName(file.name)}_rotado.pdf`), blob: pdfBlob(await pdf.save()), mime: MIME_PDF }];
 }
+
+/** Deja las páginas en el orden indicado (base 1); las que no aparecen se eliminan. */
+export async function organizarPdf(file: File, orden: number[], ctx: Ctx): Promise<Salida[]> {
+  const origen = await cargarPdf(file);
+  const total = origen.getPageCount();
+  if (orden.length === 0) throw new DocumentError("No queda ninguna página.", "Deja al menos una página en el documento.");
+  if (orden.some((p) => !Number.isInteger(p) || p < 1 || p > total)) throw new DocumentError("El orden de las páginas no coincide con el documento.", "Vuelve a cargar el archivo.");
+  ctx.report(0.4, "Ordenando las páginas");
+  const bytes = await extraer(origen, orden);
+  return [{ name: safeFileName(`${baseName(file.name)}_organizado.pdf`), blob: pdfBlob(bytes), mime: MIME_PDF }];
+}

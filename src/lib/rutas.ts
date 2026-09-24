@@ -48,6 +48,10 @@ export const SLUGS_HERRAMIENTA: Record<ToolId, string> = {
   "protect-pdf": "proteger-pdf",
   "unlock-pdf": "quitar-contrasena",
   "compare-pdf": "comparar-pdf",
+  organize: "organizar-paginas",
+  watermark: "marca-de-agua",
+  "page-numbers": "numerar-paginas",
+  ocr: "ocr",
 };
 
 export const SLUGS = Object.values(SLUGS_HERRAMIENTA);

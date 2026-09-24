@@ -4,6 +4,10 @@ import { Card } from "@/components/fluent/Card";
 import type { ToolId } from "@/types/documents";
 import { CompressOptionsPanel } from "./CompressOptionsPanel";
 import { ImagesOptionsPanel } from "./ImagesOptionsPanel";
+import { OcrOptionsPanel } from "./OcrOptionsPanel";
+import { OrganizeOptionsPanel } from "./OrganizeOptionsPanel";
+import { PageNumbersOptionsPanel } from "./PageNumbersOptionsPanel";
+import { WatermarkOptionsPanel } from "./WatermarkOptionsPanel";
 import { PdfToImagesOptionsPanel } from "./PdfToImagesOptionsPanel";
 import { PdfToWordOptionsPanel } from "./PdfToWordOptionsPanel";
 import { ProtectOptionsPanel } from "./ProtectOptionsPanel";
@@ -38,6 +42,18 @@ export function OptionsPanel({ toolId }: { toolId: ToolId }) {
       break;
     case "unlock-pdf":
       body = <UnlockOptionsPanel />;
+      break;
+    case "organize":
+      body = <OrganizeOptionsPanel />;
+      break;
+    case "watermark":
+      body = <WatermarkOptionsPanel />;
+      break;
+    case "page-numbers":
+      body = <PageNumbersOptionsPanel />;
+      break;
+    case "ocr":
+      body = <OcrOptionsPanel />;
       break;
     default:
       return null;

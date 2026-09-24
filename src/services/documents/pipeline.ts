@@ -1,5 +1,5 @@
 import { getTool } from "@/lib/documents/tools";
-import type { CompressOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, ProtectOptions, QueuedFile, ResultItem, RotateOptions, SplitOptions, ToolId, UnlockOptions } from "@/types/documents";
+import type { CompressOptions, OcrOptions, OrganizeOptions, PageNumbersOptions, WatermarkOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, ProtectOptions, QueuedFile, ResultItem, RotateOptions, SplitOptions, ToolId, UnlockOptions } from "@/types/documents";
 import { DocumentError } from "./errors";
 import { compararPdf } from "./motor/comparar-pdf";
 import { abortarSiCancelado, type Ctx, type Salida } from "./motor/comun";
@@ -9,8 +9,10 @@ import { imagenesAPdf } from "./motor/imagenes-a-pdf";
 import { intentarConOffice } from "./motor/office";
 import { pdfAImagenes } from "./motor/pdf-a-imagenes";
 import { pdfAWord } from "./motor/pdf-a-word";
-import { dividirPdf, rotarPdf, unirPdf } from "./motor/pdf-basico";
+import { reconocerTexto } from "./motor/ocr";
+import { dividirPdf, organizarPdf, rotarPdf, unirPdf } from "./motor/pdf-basico";
 import { quitarContrasenaPdf } from "./motor/pdf-desprotegido";
+import { numerarPaginas, ponerMarcaDeAgua } from "./motor/pdf-marcas";
 import { protegerPdf } from "./motor/pdf-protegido";
 import { powerpointAPdf } from "./motor/powerpoint-a-pdf";
 import { verificarContenido } from "./motor/verificar";
@@ -78,6 +80,18 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
       break;
     case "unlock-pdf":
       salidas = await quitarContrasenaPdf(archivos, (options as UnlockOptions).password, contexto(2, 98));
+      break;
+    case "organize":
+      salidas = await organizarPdf(archivos[0]!, (options as OrganizeOptions).order, contexto(2, 98));
+      break;
+    case "watermark":
+      salidas = await ponerMarcaDeAgua(archivos, options as WatermarkOptions, contexto(2, 98));
+      break;
+    case "page-numbers":
+      salidas = await numerarPaginas(archivos, options as PageNumbersOptions, contexto(2, 98));
+      break;
+    case "ocr":
+      salidas = await reconocerTexto(archivos, options as OcrOptions, contexto(2, 98));
       break;
     case "compare-pdf":
       salidas = await compararPdf(archivos[0]!, archivos[1]!, contexto(2, 98));

@@ -5,6 +5,10 @@ import type {
   CompressOptions,
   ImagesToPdfOptions,
   Notice,
+  OcrOptions,
+  OrganizeOptions,
+  PageNumbersOptions,
+  WatermarkOptions,
   PdfToImagesOptions,
   PdfToWordOptions,
   ProtectOptions,
@@ -27,6 +31,10 @@ interface OptionsState {
   rotate: RotateOptions;
   protectPdf: ProtectOptions;
   unlockPdf: UnlockOptions;
+  organize: OrganizeOptions;
+  watermark: WatermarkOptions;
+  pageNumbers: PageNumbersOptions;
+  ocr: OcrOptions;
 }
 
 const DEFAULT_OPTIONS: OptionsState = {
@@ -38,7 +46,14 @@ const DEFAULT_OPTIONS: OptionsState = {
   rotate: { rotations: {} },
   protectPdf: { password: "" },
   unlockPdf: { password: "" },
+  organize: { order: [] },
+  watermark: { text: "CONFIDENCIAL", opacity: 25, layout: "diagonal", size: "medium", color: "gray" },
+  pageNumbers: { position: "bottom-center", format: "n", start: 1, skipFirst: false },
+  ocr: { output: "pdf" },
 };
+
+/** Lo que depende del archivo abierto y vuelve a su valor inicial al cambiar de archivo. */
+const OPCIONES_POR_ARCHIVO = { split: DEFAULT_OPTIONS.split, rotate: DEFAULT_OPTIONS.rotate, organize: DEFAULT_OPTIONS.organize };
 
 interface DocumentsState {
 
@@ -123,7 +138,7 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       set({
         files: [accepted[0]!],
         ...RESET_PER_FILE,
-        options: { ...get().options, split: DEFAULT_OPTIONS.split, rotate: DEFAULT_OPTIONS.rotate },
+        options: { ...get().options, ...OPCIONES_POR_ARCHIVO },
       });
       return;
     }
@@ -134,14 +149,14 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     set((s) => ({
       files: s.files.filter((f) => f.id !== id),
       ...RESET_PER_FILE,
-      options: { ...s.options, split: DEFAULT_OPTIONS.split, rotate: DEFAULT_OPTIONS.rotate },
+      options: { ...s.options, ...OPCIONES_POR_ARCHIVO },
     })),
   reorderFiles: (files) => set({ files }),
   clearFiles: () =>
     set((s) => ({
       files: [],
       ...RESET_PER_FILE,
-      options: { ...s.options, split: DEFAULT_OPTIONS.split, rotate: DEFAULT_OPTIONS.rotate },
+      options: { ...s.options, ...OPCIONES_POR_ARCHIVO },
     })),
 
   selectTool: (id) => {
@@ -173,7 +188,7 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       toolId: id,
       files: next,
       ...RESET_PER_FILE,
-      options: { ...s.options, split: DEFAULT_OPTIONS.split, rotate: DEFAULT_OPTIONS.rotate },
+      options: { ...s.options, ...OPCIONES_POR_ARCHIVO },
     }));
   },
 

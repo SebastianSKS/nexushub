@@ -33,6 +33,14 @@ function optionsFor(toolId: ToolId): unknown {
       return o.protectPdf;
     case "unlock-pdf":
       return o.unlockPdf;
+    case "organize":
+      return o.organize;
+    case "watermark":
+      return o.watermark;
+    case "page-numbers":
+      return o.pageNumbers;
+    case "ocr":
+      return o.ocr;
     default:
       return {};
   }
@@ -52,6 +60,11 @@ export function getBlocker(toolId: ToolId, pageCount?: number): string | null {
   if (toolId === "rotate" && Object.keys(options.rotate.rotations).length === 0) return "Gira alguna página para poder aplicar el cambio.";
   if (toolId === "protect-pdf" && !options.protectPdf.password.trim()) return "Escribe una contraseña.";
   if (toolId === "unlock-pdf" && !options.unlockPdf.password.trim()) return "Escribe la contraseña del PDF.";
+  if (toolId === "organize") {
+    if (pageCount === undefined || options.organize.order.length === 0) return "Cargando el documento…";
+    if (options.organize.order.length === pageCount && options.organize.order.every((p, i) => p === i + 1)) return "Cambia el orden o elimina alguna página para poder guardar.";
+  }
+  if (toolId === "watermark" && !options.watermark.text.trim()) return "Escribe el texto de la marca de agua.";
   if (toolId === "compare-pdf" && files.length !== 2) return "Añade exactamente 2 archivos para comparar.";
   return null;
 }

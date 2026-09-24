@@ -17,6 +17,7 @@ import { NoticeStack } from "./NoticeStack";
 import { OptionsPanel } from "./options/OptionsPanel";
 import { PagePicker } from "./PagePicker";
 import { ProgressPanel } from "./ProgressPanel";
+import { OrganizarPaginas } from "./OrganizarPaginas";
 import { ResultsPanel } from "./ResultsPanel";
 
 /** Texto del botón principal: «Unir 3 archivos», «Convertir a PDF»… */
@@ -46,7 +47,7 @@ export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
 
   const corriendo = status === "running";
   const single = tool.maxFiles === 1;
-  const conPaginas = toolId === "split" || toolId === "rotate";
+  const conPaginas = toolId === "split" || toolId === "rotate" || toolId === "organize";
   const reordenable = toolId === "merge" || toolId === "images-to-pdf";
   const accept = tool.accepts.flatMap((k) => KIND_EXTENSIONS[k]).join(",");
   const bloqueo = getBlocker(toolId, pageCount);
@@ -77,7 +78,9 @@ export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
           ) : null}
 
           {files.length > 0 &&
-            (conPaginas ? (
+            (toolId === "organize" ? (
+              <OrganizarPaginas key={files[0]!.id} file={files[0]!} />
+            ) : conPaginas ? (
               <PagePicker key={files[0]!.id} file={files[0]!} mode={toolId === "split" ? "split" : "rotate"} />
             ) : (
               <FileList

@@ -12,12 +12,14 @@ interface PageThumbnailsProps {
   file: File;
   selected: ReadonlySet<number>;
   rotations?: Record<string, number>;
+  /** Páginas originales en el orden en que se muestran (Organizar); sin él, todas en su orden. */
+  order?: readonly number[];
   onToggle: (page: number, shift: boolean) => void;
   onLoaded: (pageCount: number) => void;
 }
 
 /** Cuadrícula de miniaturas de todas las páginas de un PDF (renderizadas con pdf.js en el navegador). */
-export function PageThumbnails({ file, selected, rotations, onToggle, onLoaded }: PageThumbnailsProps) {
+export function PageThumbnails({ file, selected, rotations, order, onToggle, onLoaded }: PageThumbnailsProps) {
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [error, setError] = useState<{ message: string; hint?: string } | null>(null);
   const onLoadedRef = useRef(onLoaded);
@@ -71,13 +73,14 @@ export function PageThumbnails({ file, selected, rotations, onToggle, onLoaded }
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
-      {Array.from({ length: doc.numPages }, (_, i) => i + 1).map((page) => (
+      {(order ?? Array.from({ length: doc.numPages }, (_, i) => i + 1)).map((page, posicion) => (
         <PageThumb
           key={page}
           doc={doc}
           page={page}
           selected={selected.has(page)}
           rotation={rotations?.[page] ?? 0}
+          etiqueta={order ? (page === posicion + 1 ? `${page}` : `${posicion + 1} (era ${page})`) : undefined}
           onToggle={onToggle}
         />
       ))}

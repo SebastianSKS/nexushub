@@ -15,6 +15,10 @@ import {
   LockOpen24Regular,
   SlideText24Regular,
   Table24Regular,
+  TextNumberFormat24Regular,
+  TextGrammarWand24Regular,
+  DrawText24Regular,
+  ArrowSort24Regular,
 } from "@fluentui/react-icons";
 import type { InputKind, ToolId } from "@/types/documents";
 
@@ -32,6 +36,10 @@ export const TOOL_ICONS: Record<ToolId, ReactNode> = {
   "protect-pdf": <LockClosed24Regular />,
   "unlock-pdf": <LockOpen24Regular />,
   "compare-pdf": <ArrowSwap24Regular />,
+  organize: <ArrowSort24Regular />,
+  watermark: <DrawText24Regular />,
+  "page-numbers": <TextNumberFormat24Regular />,
+  ocr: <TextGrammarWand24Regular />,
 };
 
 export const KIND_ICONS: Record<InputKind, ReactNode> = {
@@ -44,6 +52,6 @@ export const KIND_ICONS: Record<InputKind, ReactNode> = {
 
 export function iconForMime(mime: string): ReactNode {
   if (mime === "application/zip") return <FolderZip24Regular />;
-  if (mime.includes("wordprocessingml")) return <DocumentText24Regular />;
+  if (mime.includes("wordprocessingml") || mime === "text/plain") return <DocumentText24Regular />;
   return <DocumentPdf24Regular />;
 }

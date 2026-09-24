@@ -262,3 +262,47 @@ pub fn abrir_en_sistema(app: AppHandle, carpeta: Option<String>, archivo: Option
     let mut orden = std::process::Command::new("xdg-open");
     orden.arg(&ruta).spawn().map(|_| ()).map_err(|e| e.to_string())
 }
+
+/// Guarda el resultado de una herramienta de Documentos en la carpeta Descargas y devuelve la ruta completa, para poder
+/// avisar dónde quedó. Nunca sobrescribe: si ya hay un archivo igual, este se guarda como «nombre (2)».
+/// Cabecera `x-nombre` (codificada con %); el cuerpo son los bytes.
+#[tauri::command]
+pub fn descarga_guardar(app: AppHandle, request: Request<'_>) -> Result<String, String> {
+    let nombre = request.headers().get("x-nombre").and_then(|v| v.to_str().ok()).map(descodificar).ok_or_else(|| "Falta el nombre.".to_string())?;
+    let nombre = archivo_seguro(&nombre)?;
+    let InvokeBody::Raw(bytes) = request.body() else { return Err("No llegó el archivo.".into()) };
+    if bytes.len() > MAX_BYTES {
+        return Err("El archivo pesa demasiado (máximo 200 MB).".into());
+    }
+    let carpeta = app.path().download_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&carpeta).map_err(|e| e.to_string())?;
+    let final_ = nombre_libre(&carpeta, &nombre);
+    let ruta = carpeta.join(&final_);
+    std::fs::write(&ruta, bytes).map_err(|e| format!("No se pudo guardar en Descargas: {e}"))?;
+    Ok(ruta.to_string_lossy().to_string())
+}
+
+/// Muestra en el Explorador un archivo guardado con `descarga_guardar` (solo si está directamente en Descargas).
+#[tauri::command]
+pub fn descarga_mostrar(app: AppHandle, ruta: String) -> Result<(), String> {
+    let ruta = PathBuf::from(ruta);
+    let descargas = app.path().download_dir().map_err(|e| e.to_string())?;
+    let dentro = ruta.canonicalize().ok().and_then(|r| r.parent().map(|p| p.to_path_buf())).zip(descargas.canonicalize().ok()).map(|(p, d)| p == d).unwrap_or(false);
+    if !dentro || !ruta.is_file() {
+        return Err("Ese archivo ya no está en Descargas.".into());
+    }
+    #[cfg(target_os = "windows")]
+    {
+        // «/select,» resalta el archivo dentro de su carpeta.
+        std::process::Command::new("explorer").arg(format!("/select,{}", ruta.to_string_lossy())).spawn().map(|_| ()).map_err(|e| e.to_string())
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let carpeta = ruta.parent().unwrap_or(&descargas).to_path_buf();
+        #[cfg(target_os = "macos")]
+        let mut orden = std::process::Command::new("open");
+        #[cfg(not(target_os = "macos"))]
+        let mut orden = std::process::Command::new("xdg-open");
+        orden.arg(carpeta).spawn().map(|_| ()).map_err(|e| e.to_string())
+    }
+}

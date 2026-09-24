@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownload20Regular, CheckmarkCircle20Filled } from "@fluentui/react-icons";
+import { ArrowDownload20Regular, CheckmarkCircle16Filled, CheckmarkCircle20Filled, ErrorCircle16Filled } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { formatBytes } from "@/lib/documents/format";
-import { saveBlob, zipResults } from "@/services/documents/download";
+import { descargar, mostrarDescarga, zipResults, type Descargado } from "@/services/documents/download";
 import { useDocumentsStore } from "@/store/documents-store";
 import { iconForMime } from "./toolIcons";
 
@@ -16,6 +16,16 @@ export function ResultsPanel() {
   const warnings = useDocumentsStore((s) => s.warnings);
   const clearFiles = useDocumentsStore((s) => s.clearFiles);
   const [zipping, setZipping] = useState(false);
+  // Qué se descargó ya y dónde quedó (o por qué falló): sin esto, el clic en «Descargar» no parece hacer nada.
+  const [hechos, setHechos] = useState<Record<string, Descargado | { error: string }>>({});
+  const guardar = async (clave: string, blob: Blob, nombre: string) => {
+    try {
+      const d = await descargar(blob, nombre);
+      setHechos((h) => ({ ...h, [clave]: d }));
+    } catch (e) {
+      setHechos((h) => ({ ...h, [clave]: { error: e instanceof Error ? e.message : "No se pudo guardar el archivo." } }));
+    }
+  };
   const ref = useRef<HTMLDivElement>(null);
 
   // Al terminar, el resultado se trae a la vista aunque el layout sea de una columna.
@@ -26,7 +36,7 @@ export function ResultsPanel() {
   const downloadAll = async () => {
     setZipping(true);
     try {
-      saveBlob(await zipResults(results), "nexushub-resultados.zip");
+      await guardar("zip", await zipResults(results), "nexushub-resultados.zip");
     } finally {
       setZipping(false);
     }
@@ -43,7 +53,8 @@ export function ResultsPanel() {
 
       <ul className="flex flex-col gap-2">
         {results.map((r) => (
-          <li key={r.id} className="rounded-control flex items-center gap-3 border border-stroke bg-layer px-3 py-2">
+          <li key={r.id} className="rounded-control flex flex-col gap-2 border border-stroke bg-layer px-3 py-2">
+            <div className="flex items-center gap-3">
             <span className="flex shrink-0 text-accent-text" aria-hidden>
               {iconForMime(r.mime)}
             </span>
@@ -66,14 +77,16 @@ export function ResultsPanel() {
               </p>
             </div>
             <Button
-              variant={results.length === 1 ? "accent" : "standard"}
+              variant={hechos[r.id] && !("error" in hechos[r.id]!) ? "standard" : results.length === 1 ? "accent" : "standard"}
               icon={<ArrowDownload20Regular />}
-              onClick={() => saveBlob(r.blob, r.name)}
+              onClick={() => void guardar(r.id, r.blob, r.name)}
               aria-label={`Descargar ${r.name}`}
               className="h-8 shrink-0"
             >
               Descargar
             </Button>
+            </div>
+            <Confirmacion estado={hechos[r.id]} />
           </li>
         ))}
       </ul>
@@ -87,6 +100,7 @@ export function ResultsPanel() {
       )}
 
       <div className="mt-3 flex flex-col gap-2">
+        {results.length > 1 && hechos.zip && <Confirmacion estado={hechos.zip} />}
         {results.length > 1 && (
           <Button onClick={downloadAll} disabled={zipping} icon={<ArrowDownload20Regular />} className="w-full">
             {zipping ? "Preparando el ZIP…" : "Descargar todo (ZIP)"}
@@ -97,5 +111,31 @@ export function ResultsPanel() {
         </Button>
       </div>
     </Card>
+  );
+}
+
+/** «✓ Guardado en Descargas como …» con acceso a la carpeta; o el motivo si no se pudo. */
+function Confirmacion({ estado }: { estado: Descargado | { error: string } | undefined }) {
+  if (!estado) return null;
+  if ("error" in estado) {
+    return (
+      <p role="alert" className="flex items-start gap-1.5 text-caption text-danger-fg">
+        <ErrorCircle16Filled className="mt-0.5 shrink-0" aria-hidden />
+        {estado.error}
+      </p>
+    );
+  }
+  return (
+    <p role="status" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-success-fg">
+      <span className="flex items-center gap-1.5 font-semibold">
+        <CheckmarkCircle16Filled className="shrink-0" aria-hidden />
+        {estado.ruta ? `Guardado en Descargas como «${estado.nombre}»` : "Descarga iniciada: búscala en las descargas de tu navegador"}
+      </span>
+      {estado.ruta && (
+        <button type="button" onClick={() => void mostrarDescarga(estado.ruta!).catch(() => {})} className="text-accent-text underline hover:no-underline">
+          Mostrar en la carpeta
+        </button>
+      )}
+    </p>
   );
 }

@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { esEscritorio } from "@/lib/entorno";
 import type { ResultItem } from "@/types/documents";
 
 /** Guarda un Blob con el diálogo de descarga del navegador. */
@@ -28,4 +29,35 @@ export async function zipResults(results: ResultItem[]): Promise<Blob> {
     zip.file(name, r.blob, { compression: "STORE" });
   }
   return zip.generateAsync({ type: "blob", compression: "STORE" });
+}
+
+export interface Descargado {
+  /** Ruta completa del archivo guardado (solo en la aplicación de escritorio, donde se guarda en Descargas). */
+  ruta?: string;
+  /** Nombre con el que quedó (puede llevar «(2)» si ya había uno igual). */
+  nombre: string;
+}
+
+/**
+ * Descarga un resultado y dice dónde quedó. En la aplicación de escritorio lo guarda directamente en la carpeta
+ * Descargas (y se puede mostrar en el Explorador); en el navegador usa la descarga normal.
+ */
+export async function descargar(blob: Blob, name: string): Promise<Descargado> {
+  if (esEscritorio()) {
+    const { invoke } = await import("@tauri-apps/api/core");
+    try {
+      const ruta = await invoke<string>("descarga_guardar", new Uint8Array(await blob.arrayBuffer()), { headers: { "x-nombre": encodeURIComponent(name) } });
+      return { ruta, nombre: ruta.split(/[\\/]/).pop() ?? name };
+    } catch (e) {
+      throw new Error(typeof e === "string" ? e : "No se pudo guardar el archivo.");
+    }
+  }
+  saveBlob(blob, name);
+  return { nombre: name };
+}
+
+/** Muestra en el Explorador un archivo guardado con `descargar`. */
+export async function mostrarDescarga(ruta: string): Promise<void> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("descarga_mostrar", { ruta });
 }

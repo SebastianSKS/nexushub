@@ -189,6 +189,8 @@ pub fn run() {
             carpetas::archivo_borrar,
             carpetas::archivo_renombrar,
             carpetas::abrir_en_sistema,
+            carpetas::descarga_guardar,
+            carpetas::descarga_mostrar,
             apps::apps_instaladas,
             apps::abrir_app,
             apps::iconos_de_apps,

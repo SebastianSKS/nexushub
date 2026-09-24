@@ -19,6 +19,12 @@ interface MusicState {
 
   connection: SpotifyConnection;
   playlists: SpotifyPlaylist[];
+  /** El id de usuario de la cuenta conectada (para saber qué playlists son suyas). */
+  usuarioId: string | null;
+  /** Canciones que ya te gustan en Spotify (id «track:…» → sí/no), de las que se ha preguntado. */
+  meGusta: Record<string, boolean>;
+  /** «faltan»: la sesión es anterior a los permisos de biblioteca; hay que reconectar. */
+  permisosBiblioteca: "ok" | "faltan" | null;
 
   load: (query?: string) => Promise<void>;
   setConnection: (c: SpotifyConnection) => void;
@@ -39,6 +45,9 @@ export const useMusicStore = create<MusicState>((set, get) => ({
 
   connection: { status: "guest" },
   playlists: [],
+  usuarioId: null,
+  meGusta: {},
+  permisosBiblioteca: null,
 
   load: async (query = "") => {
     const seq = ++requestSeq;

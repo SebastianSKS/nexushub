@@ -1,4 +1,5 @@
 import type { SpotifyPlaylist } from "@/types/music";
+import { useMusicStore } from "@/store/music-store";
 import { obtenerAccessToken } from "./oauth";
 
 export { MusicApiError } from "./errores";
@@ -22,13 +23,14 @@ export async function spotifyApi<T>(path: string, init: RequestInit = {}): Promi
 }
 
 interface PlaylistsResponse {
-  items: ({ id: string; name: string; images?: { url: string }[] | null; tracks?: { total: number } | null; items?: { total: number } | null } | null)[];
+  items: ({ id: string; name: string; collaborative?: boolean; owner?: { id?: string } | null; images?: { url: string }[] | null; tracks?: { total: number } | null; items?: { total: number } | null } | null)[];
 }
 
 export async function fetchMyPlaylists(): Promise<SpotifyPlaylist[]> {
+  const usuarioId = useMusicStore.getState().usuarioId;
   const { status, data } = await spotifyApi<PlaylistsResponse>("/me/playlists?limit=50");
   if (status !== 200 || !data) return [];
   return data.items
     .filter((p): p is NonNullable<typeof p> => p !== null)
-    .map((p) => ({ id: p.id, name: p.name, image: p.images?.[p.images.length - 1]?.url, tracks: p.items?.total ?? p.tracks?.total }));
+    .map((p) => ({ id: p.id, name: p.name, image: p.images?.[p.images.length - 1]?.url, tracks: p.items?.total ?? p.tracks?.total, editable: p.collaborative === true || (!!usuarioId && p.owner?.id === usuarioId) }));
 }

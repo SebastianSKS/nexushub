@@ -4,6 +4,7 @@ import { Play24Filled } from "@fluentui/react-icons";
 import clsx from "clsx";
 import { Glifo } from "@/components/fluent/Glifo";
 import { IconButton } from "@/components/fluent/IconButton";
+import { abrirMenuPista } from "@/store/menu-pista-store";
 import type { Pista } from "@/store/reproductor-store";
 
 interface PistaCardProps {
@@ -17,7 +18,7 @@ interface PistaCardProps {
 /** Tarjeta de una pista guardada (favorito o reciente, de Música o de Video): carátula, título, autor y estrella. */
 export function PistaCard({ pista, active, favorito, onPlay, onAlternarFavorito }: PistaCardProps) {
   return (
-    <div className={clsx("rounded-control reveal group relative border bg-layer p-3 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt", active ? "border-accent" : "border-stroke")}>
+    <div onContextMenu={pista.fuente === "spotify" ? (e) => abrirMenuPista(e, pista) : undefined} className={clsx("rounded-control reveal group relative border bg-layer p-3 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt", active ? "border-accent" : "border-stroke")}>
       <button type="button" onClick={onPlay} aria-label={`Reproducir ${pista.titulo}, ${pista.artista}`} aria-current={active ? "true" : undefined} className="block w-full text-left">
         <span className="relative block aspect-square w-full overflow-hidden rounded-input bg-layer-alt shadow-card">
           {pista.caratula ? (

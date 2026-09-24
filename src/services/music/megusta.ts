@@ -1,0 +1,39 @@
+import { useCalendarioStore } from "@/store/calendario-store";
+import { useFavoritosStore } from "@/store/favoritos-store";
+import { useMusicStore } from "@/store/music-store";
+import type { Pista } from "@/store/reproductor-store";
+import { guardarMeGusta } from "./biblioteca";
+
+/** Un aviso breve dentro de la aplicación (se cierra solo). */
+export function avisoBreve(titulo: string, texto = "") {
+  useCalendarioStore.getState().mostrarAviso({ titulo, texto, destino: null, autocerrar: 3500 });
+}
+
+/** ¿Este corazón se dibuja lleno? (favorito en NexusHub, o «Me gusta» en Spotify) */
+export function esMeGusta(pista: Pick<Pista, "id" | "fuente">, favoritos: readonly Pista[], meGusta: Record<string, boolean>): boolean {
+  return favoritos.some((f) => f.id === pista.id && f.fuente === pista.fuente) || (pista.fuente === "spotify" && meGusta[pista.id] === true);
+}
+
+/**
+ * El corazón: guarda o quita la canción de tus favoritos de NexusHub y, con Spotify conectado, también de «Canciones
+ * que te gustan» de tu cuenta. Si la sesión es anterior a los permisos de biblioteca, el favorito local se guarda igual y
+ * se avisa de que hay que reconectar.
+ */
+export async function alternarMeGusta(pista: Pista): Promise<void> {
+  const fav = useFavoritosStore.getState();
+  const ms = useMusicStore.getState();
+  const local = fav.esFavorito(pista);
+  const quiere = !(local || (pista.fuente === "spotify" && ms.meGusta[pista.id] === true));
+  if (quiere !== local) fav.alternarFavorito(pista);
+
+  const conectado = ms.connection.status === "connected";
+  if (pista.fuente !== "spotify" || !pista.id.startsWith("track:") || !conectado) return;
+  if (ms.permisosBiblioteca === "faltan") {
+    avisoBreve("Guardada en tus favoritos de NexusHub", "Para que también quede en «Canciones que te gustan» de Spotify, vuelve a conectar tu cuenta en Música.");
+    return;
+  }
+  const r = await guardarMeGusta(pista.id, quiere);
+  if (r === "ok") avisoBreve(quiere ? "Guardada en «Canciones que te gustan»" : "Quitada de «Canciones que te gustan»", pista.titulo);
+  else if (r === "permisos") avisoBreve("Falta un permiso de Spotify", "Vuelve a conectar tu cuenta en Música para guardar en «Canciones que te gustan».");
+  else avisoBreve("No se pudo actualizar «Canciones que te gustan»", "Inténtalo de nuevo en un momento.");
+}

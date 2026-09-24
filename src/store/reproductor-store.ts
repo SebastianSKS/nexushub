@@ -28,12 +28,13 @@ const SIN_CAPACIDADES: Capacidades = { buscar: false, saltar: false, volumen: fa
 
 /**
  * Lo que cada fuente PUEDE hacer. YouTube: todo (la cola, el aleatorio y el repetir los maneja NexusHub).
- * Spotify en Modo Invitado (embed oficial): solo reproducir/pausar y mover la barra; el embed no expone
- * volumen ni siguiente. El Modo Conectado (SDK) lo amplía al conectarse.
+ * Spotify en Modo Invitado (embed oficial): reproducir/pausar y mover la barra; el embed no expone volumen,
+ * pero la cola (siguiente, aleatorio, repetir) la maneja NexusHub. El Modo Conectado (SDK) lo amplía al conectarse.
  */
 const CAPACIDADES_POR_FUENTE: Record<"youtube" | "spotify", Capacidades> = {
   youtube: { buscar: true, saltar: true, volumen: true, aleatorio: true, repetir: true },
-  spotify: { buscar: true, saltar: false, volumen: false, aleatorio: false, repetir: false },
+  // En Invitado la cola la maneja NexusHub (el embed solo toca una canción): aleatorio y repetir sí se pueden.
+  spotify: { buscar: true, saltar: false, volumen: false, aleatorio: true, repetir: true },
 };
 
 /**
@@ -52,6 +53,8 @@ interface ReproductorState {
   repetir: ModoRepetir;
   cola: Pista[];
   indiceActual: number;
+  /** Pistas añadidas con «Añadir a la cola» que aún no suenan (claves fuente:id), en el orden en que sonarán. */
+  usuarioEnCola: string[];
 
   capacidades: Capacidades;
   error: string | null;
@@ -65,6 +68,11 @@ interface ReproductorState {
 
   reproducir: (pista: Pista, cola?: Pista[], indice?: number, opciones?: { reproducir?: boolean }) => void;
   encolar: (pista: Pista) => void;
+  /** «Añadir a la cola» de la música: suena justo después de la actual (y de lo que ya se añadió antes). */
+  encolarSiguiente: (pista: Pista) => void;
+  /** Añade pistas al final de la cola (continuación automática). */
+  extenderCola: (pistas: Pista[]) => void;
+  vaciarProximas: () => void;
   quitarDeCola: (indice: number) => void;
   reordenarCola: (cola: Pista[]) => void;
   irAIndice: (indice: number) => void;
@@ -94,6 +102,7 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
   repetir: "no",
   cola: [],
   indiceActual: -1,
+  usuarioEnCola: [],
 
   capacidades: SIN_CAPACIDADES,
   error: null,
@@ -112,6 +121,7 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
       pista,
       cola: lista,
       indiceActual: i,
+      usuarioEnCola: [],
       reproduciendo: false,
       progreso: 0,
       progresoMarca: Date.now(),
@@ -134,11 +144,40 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
     set({ cola: [...s.cola, pista] });
   },
 
+  encolarSiguiente: (pista) => {
+    const s = get();
+    if (!s.pista) {
+      get().reproducir(pista);
+      return;
+    }
+    const cola = [...s.cola];
+    cola.splice(s.indiceActual + 1 + s.usuarioEnCola.length, 0, pista);
+    set({ cola, usuarioEnCola: [...s.usuarioEnCola, claveDe(pista)] });
+  },
+
+  extenderCola: (pistas) => {
+    const s = get();
+    if (pistas.length === 0) return;
+    set({ cola: [...s.cola, ...pistas] });
+  },
+
+  vaciarProximas: () => {
+    const s = get();
+    if (s.indiceActual < 0 || s.cola.length <= s.indiceActual + 1) return;
+    set({ cola: s.cola.slice(0, s.indiceActual + 1), usuarioEnCola: [] });
+  },
+
   quitarDeCola: (indice) => {
     const s = get();
     if (indice === s.indiceActual || indice < 0 || indice >= s.cola.length) return; // la que suena no se quita
     const cola = s.cola.filter((_, i) => i !== indice);
-    set({ cola, indiceActual: indice < s.indiceActual ? s.indiceActual - 1 : s.indiceActual });
+    const quitada = claveDe(s.cola[indice]!);
+    const pendiente = s.usuarioEnCola.indexOf(quitada);
+    set({
+      cola,
+      indiceActual: indice < s.indiceActual ? s.indiceActual - 1 : s.indiceActual,
+      usuarioEnCola: pendiente >= 0 ? s.usuarioEnCola.filter((_, i) => i !== pendiente) : s.usuarioEnCola,
+    });
   },
 
   reordenarCola: (cola) => {
@@ -175,8 +214,9 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
     const s = get();
     if (!s.pista) return;
     const c = controlador(s.fuente);
-    // Spotify (SDK) maneja su propia cola: se le delega.
-    if (!automatico && c?.siguiente && s.fuente === "spotify" && s.capacidades.saltar && s.cola.length <= 1) {
+    // Un álbum, playlist o artista dado como «contexto» lo recorre Spotify mismo: se le delega. Las canciones sueltas y las
+    // colas (lo normal) las maneja NexusHub, igual en Invitado que en Conectado.
+    if (!automatico && c?.siguiente && s.fuente === "spotify" && s.capacidades.saltar && !s.pista.id.startsWith("track:")) {
       c.siguiente();
       return;
     }
@@ -206,6 +246,11 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
   anterior: () => {
     const s = get();
     if (!s.pista) return;
+    const c = controlador(s.fuente);
+    if (c?.anterior && s.fuente === "spotify" && s.capacidades.saltar && !s.pista.id.startsWith("track:")) {
+      c.anterior();
+      return;
+    }
     const transcurrido = s.progreso + (s.reproduciendo ? (Date.now() - s.progresoMarca) / 1000 : 0);
     if (transcurrido > 3 || s.indiceActual <= 0) {
       if (controlador(s.fuente)?.buscar) get().buscar(0);
@@ -268,6 +313,8 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
       return siguiente;
     }),
 }));
+
+const claveDe = (p: Pick<Pista, "id" | "fuente">) => `${p.fuente}:${p.id}`;
 
 /** Segundos actuales, interpolando desde la última actualización mientras suena. */
 export function progresoActual(s: Pick<ReproductorState, "progreso" | "progresoMarca" | "reproduciendo" | "pista">): number {

@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { Button } from "@/components/fluent/Button";
 import { PistaCard } from "@/components/reproductor/PistaCard";
+import { alternarMeGusta } from "@/services/music/megusta";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 
@@ -27,7 +28,7 @@ function Fila({ titulo, pistas, accion }: { titulo: string; pistas: Pista[]; acc
             active={currentId === p.id}
             favorito={esFavorito(p)}
             onPlay={() => useReproductorStore.getState().reproducir(p, pistas)}
-            onAlternarFavorito={() => useFavoritosStore.getState().alternarFavorito(p)}
+            onAlternarFavorito={() => void alternarMeGusta(p)}
           />
         ))}
       </div>

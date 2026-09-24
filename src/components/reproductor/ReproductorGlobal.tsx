@@ -6,7 +6,9 @@ import { useAdaptadorYouTube } from "@/hooks/useAdaptadorYouTube";
 import { useMediaSession } from "@/hooks/useMediaSession";
 import { registrarAlternar } from "@/lib/playback";
 import { obtenerReproductor } from "@/services/canales/youtube-iframe";
+import { comprobarMeGusta } from "@/services/music/biblioteca";
 import { useAppStore } from "@/store/app-store";
+import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { ContenedorVideo } from "./ContenedorVideo";
 
@@ -48,6 +50,14 @@ export function ReproductorGlobal() {
   const pista = useReproductorStore((s) => s.pista);
   const fuente = useReproductorStore((s) => s.fuente);
   const reproduciendo = useReproductorStore((s) => s.reproduciendo);
+
+  // Con Spotify conectado, se pregunta si la canción que suena ya te gusta (para dibujar el corazón lleno).
+  const conectado = useMusicStore((s) => s.connection.status === "connected");
+  useEffect(() => {
+    if (!conectado || fuente !== "spotify" || !pista?.id.startsWith("track:")) return;
+    if (useMusicStore.getState().permisosBiblioteca === "faltan") return;
+    void comprobarMeGusta([pista.id]);
+  }, [conectado, fuente, pista?.id]);
   useEffect(() => {
     useAppStore.getState().setNowPlaying(pista && reproduciendo && fuente ? { kind: fuente === "youtube" ? "video" : "music", title: pista.titulo, subtitle: pista.artista } : null);
   }, [pista, fuente, reproduciendo]);

@@ -31,6 +31,9 @@ declare namespace Spotify {
     name: string;
     artists: { name: string }[];
     album: { name: string; images: Image[] };
+    duration_ms: number;
+    /** Si Spotify sustituye la pista pedida por otra equivalente de tu país, aquí viene la pedida. */
+    linked_from?: { uri: string | null; id: string | null };
   }
   interface PlaybackState {
     paused: boolean;

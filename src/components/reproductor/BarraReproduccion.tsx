@@ -10,6 +10,8 @@ import { formatDuration } from "@/lib/video/format";
 import { useProgreso } from "@/hooks/useProgreso";
 import { useAppStore } from "@/store/app-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
+import { alternarMeGusta, esMeGusta } from "@/services/music/megusta";
+import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { Marquesina } from "./Marquesina";
 
@@ -58,8 +60,11 @@ function Contenido() {
   const repetir = useReproductorStore((s) => s.repetir);
   const volumen = useReproductorStore((s) => s.volumen);
   const error = useReproductorStore((s) => s.error);
+  const colaAbierta = useAppStore((s) => s.colaMusicaAbierta);
   const progreso = useProgreso();
-  const favorito = useFavoritosStore((s) => (pista ? s.esFavorito(pista) : false));
+  const todosFavoritos = useFavoritosStore((s) => s.favoritos);
+  const meGusta = useMusicStore((s) => s.meGusta);
+  const favorito = pista ? esMeGusta(pista, todosFavoritos, meGusta) : false;
   const st = useReproductorStore.getState;
 
   if (!pista) return null;
@@ -68,7 +73,7 @@ function Contenido() {
   const duracion = pista.duracion;
 
   return (
-    <div className="grid h-full grid-cols-[280px_minmax(0,1fr)_200px] items-center gap-4 px-4">
+    <div className="grid h-full grid-cols-[280px_minmax(0,1fr)_240px] items-center gap-4 px-4">
       {/* Izquierda: carátula, título y artista — abre la vista grande "Reproduciendo ahora" */}
       <button
         type="button"
@@ -132,6 +137,7 @@ function Contenido() {
             onClick={() => st().setRepetir(repetir === "no" ? "todas" : repetir === "todas" ? "una" : "no")}
           />
         )}
+        <Boton nombre="lista" etiqueta="Cola de reproducción" activo={colaAbierta} onClick={() => useAppStore.getState().setColaMusicaAbierta(!colaAbierta)} />
         {capacidades.volumen && (
           <div className="flex w-[84px] items-center">
             <Slider label="Volumen" value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
@@ -139,9 +145,9 @@ function Contenido() {
         )}
         <Boton
           nombre={favorito ? "favoritoLleno" : "favorito"}
-          etiqueta={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+          etiqueta={favorito ? "Quitar de Me gusta" : "Me gusta"}
           activo={favorito}
-          onClick={() => useFavoritosStore.getState().alternarFavorito(pista)}
+          onClick={() => void alternarMeGusta(pista)}
         />
         <Boton nombre="expandir" etiqueta="Abrir Música" onClick={() => router.push("/musica")} />
       </div>

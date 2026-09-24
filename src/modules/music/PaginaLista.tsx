@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
-import { Play20Filled } from "@fluentui/react-icons";
+import { ArrowShuffle20Regular, MoreHorizontal20Regular, Play20Filled } from "@fluentui/react-icons";
+import { IconButton } from "@/components/fluent/IconButton";
+import { abrirMenuPista } from "@/store/menu-pista-store";
 import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
@@ -45,11 +47,22 @@ export function PaginaLista() {
 
   const titulo = lista?.titulo ?? (valido ? "Cargando…" : "Lista no válida");
   const pistaContexto: Pista = { id: `${tipo}:${id}`, titulo: lista?.titulo ?? ETIQUETA_TIPO[tipo], artista: lista?.subtitulo ?? "Spotify", caratula: lista?.caratula ?? "", duracion: 0, fuente: "spotify" };
-  const reproducirTodo = () => useReproductorStore.getState().reproducir(pistaContexto);
+  const pistaDeCancion = (c: ListaSpotify["canciones"][number]): Pista => ({ id: c.id, titulo: c.titulo, artista: c.artista, caratula: lista?.caratula ?? "", duracion: c.duracion, fuente: "spotify" });
   const reproducirCancion = (i: number) => {
     if (!lista) return;
     const pistas: Pista[] = lista.canciones.map((c) => ({ id: c.id, titulo: c.titulo, artista: c.artista, caratula: lista.caratula, duracion: c.duracion, fuente: "spotify" }));
     useReproductorStore.getState().reproducir(pistas[i]!, pistas, i);
+  };
+  // Con las canciones a la vista, la lista entera pasa a la cola de NexusHub (siguiente, aleatorio, repetir…); si aún no
+  // cargaron, se le da a Spotify el álbum o la playlist como contexto.
+  const primera = lista ? lista.canciones.findIndex((c) => c.reproducible) : -1;
+  const reproducirTodo = () => (primera >= 0 ? reproducirCancion(primera) : useReproductorStore.getState().reproducir(pistaContexto));
+  const reproducirAleatorio = () => {
+    if (!lista) return;
+    const buenas = lista.canciones.map((c, i) => (c.reproducible ? i : -1)).filter((i) => i >= 0);
+    if (buenas.length === 0) return;
+    useReproductorStore.getState().setAleatorio(true);
+    reproducirCancion(buenas[Math.floor(Math.random() * buenas.length)]!);
   };
 
   return (
@@ -59,9 +72,16 @@ export function PaginaLista() {
       descripcion={lista ? [ETIQUETA_TIPO[tipo], lista.subtitulo, lista.canciones.length > 0 ? `${lista.canciones.length} canciones` : ""].filter(Boolean).join(" · ") : ETIQUETA_TIPO[tipo]}
       accion={
         valido && (
-          <Button variant="accent" icon={<Play20Filled />} onClick={reproducirTodo}>
-            Reproducir
-          </Button>
+          <div className="flex gap-2">
+            {primera >= 0 && (
+              <Button icon={<ArrowShuffle20Regular />} onClick={reproducirAleatorio}>
+                Aleatorio
+              </Button>
+            )}
+            <Button variant="accent" icon={<Play20Filled />} onClick={reproducirTodo}>
+              Reproducir
+            </Button>
+          </div>
         )
       }
       principal={
@@ -81,14 +101,14 @@ export function PaginaLista() {
               <Card className="overflow-hidden p-0">
                 <ol aria-label="Canciones">
                   {lista.canciones.map((c, i) => (
-                    <li key={`${c.id}-${i}`}>
+                    <li key={`${c.id}-${i}`} className="group relative" onContextMenu={(e) => abrirMenuPista(e, pistaDeCancion(c))}>
                       <button
                         type="button"
                         onClick={() => reproducirCancion(i)}
                         disabled={!c.reproducible}
                         aria-current={sonando === c.id ? "true" : undefined}
                         className={clsx(
-                          "reveal grid h-12 w-full grid-cols-[32px_minmax(0,1fr)_56px] items-center gap-3 px-4 text-left transition-colors duration-exit ease-fluent hover:bg-layer-alt disabled:opacity-40",
+                          "reveal grid h-12 w-full grid-cols-[32px_minmax(0,1fr)_56px] items-center gap-3 pl-4 pr-12 text-left transition-colors duration-exit ease-fluent hover:bg-layer-alt disabled:opacity-40",
                           sonando === c.id && "bg-layer-alt",
                         )}
                       >
@@ -99,6 +119,9 @@ export function PaginaLista() {
                         </span>
                         <span className="tabular text-right text-caption text-fg-secondary">{formatDuration(c.duracion)}</span>
                       </button>
+                      <IconButton label={`Más opciones de ${c.titulo}`} onClick={(e) => abrirMenuPista(e, pistaDeCancion(c))} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
+                        <MoreHorizontal20Regular />
+                      </IconButton>
                     </li>
                   ))}
                 </ol>

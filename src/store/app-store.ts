@@ -10,6 +10,8 @@ interface AppState {
   searchOpen: boolean;
   /** Vista grande "reproduciendo ahora", a pantalla completa sobre el contenido. */
   reproductorGrandeAbierto: boolean;
+  /** Panel «Cola de reproducción» de la música. */
+  colaMusicaAbierta: boolean;
   /** Recorrido de bienvenida (la primera vez que se abre, o "Ver de nuevo" desde Configuración). */
   tourAbierto: boolean;
 
@@ -21,6 +23,7 @@ interface AppState {
   setSidebarCollapsed: (v: boolean) => void;
   setSearchOpen: (open: boolean) => void;
   setReproductorGrandeAbierto: (v: boolean) => void;
+  setColaMusicaAbierta: (v: boolean) => void;
   setTourAbierto: (v: boolean) => void;
 
   setOperation: (op: StatusOperation | null) => void;
@@ -32,6 +35,7 @@ export const useAppStore = create<AppState>((set) => ({
   sidebarCollapsed: false,
   searchOpen: false,
   reproductorGrandeAbierto: false,
+  colaMusicaAbierta: false,
   tourAbierto: false,
 
   operation: null,
@@ -42,6 +46,7 @@ export const useAppStore = create<AppState>((set) => ({
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   setSearchOpen: (searchOpen) => set({ searchOpen }),
   setReproductorGrandeAbierto: (reproductorGrandeAbierto) => set({ reproductorGrandeAbierto }),
+  setColaMusicaAbierta: (colaMusicaAbierta) => set({ colaMusicaAbierta }),
   setTourAbierto: (tourAbierto) => set({ tourAbierto }),
 
   setOperation: (operation) => set({ operation }),

@@ -53,7 +53,7 @@ export function MusicSearchBar() {
           type="search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={searchAvailable ? "Busca canciones, artistas o álbumes" : "Filtrar sugeridos o pegar un enlace de Spotify"}
+          placeholder={searchAvailable ? "Busca canciones, artistas, álbumes o playlists" : "Filtrar sugeridos o pegar un enlace de Spotify"}
           aria-label="Buscar música o pegar un enlace de Spotify"
           autoComplete="off"
           spellCheck={false}

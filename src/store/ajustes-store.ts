@@ -20,6 +20,8 @@ export interface Ajustes {
   segundoPlano: boolean;
   /** Avisar con una notificación cada vez que empieza a sonar una canción nueva. */
   avisarCambioCancion: boolean;
+  /** Con Spotify conectado: al acabarse la cola, seguir con más canciones del mismo artista en vez de parar. */
+  seguirConSimilares: boolean;
   /** Al terminar un video, pasar solo al siguiente de la cola. */
   siguienteAutomatico: boolean;
   /** Minutos antes de cada clase para avisar (0 = no avisar). */
@@ -59,6 +61,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   carpetaSalida: null,
   segundoPlano: false,
   avisarCambioCancion: false,
+  seguirConSimilares: true,
   siguienteAutomatico: true,
   avisoClaseMin: 10,
   usarOffice: true,
@@ -86,6 +89,7 @@ function leer(): Ajustes {
       carpetaSalida: typeof d.carpetaSalida === "string" ? d.carpetaSalida : null,
       segundoPlano: d.segundoPlano === true,
       avisarCambioCancion: d.avisarCambioCancion === true,
+      seguirConSimilares: d.seguirConSimilares !== false,
       siguienteAutomatico: d.siguienteAutomatico !== false,
       avisoClaseMin: typeof d.avisoClaseMin === "number" && [0, 5, 10, 15, 30].includes(d.avisoClaseMin) ? d.avisoClaseMin : 10,
       resumenDia: d.resumenDia !== false,

@@ -10,6 +10,8 @@ import { formatDuration } from "@/lib/video/format";
 import { useProgreso } from "@/hooks/useProgreso";
 import { useAppStore } from "@/store/app-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
+import { alternarMeGusta, esMeGusta } from "@/services/music/megusta";
+import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { EcualizadorVisual } from "./EcualizadorVisual";
 
@@ -22,7 +24,9 @@ export function ReproductorGrande() {
   const capacidades = useReproductorStore((s) => s.capacidades);
   const cola = useReproductorStore((s) => s.cola);
   const volumen = useReproductorStore((s) => s.volumen);
-  const favorito = useFavoritosStore((s) => (pista ? s.esFavorito(pista) : false));
+  const todosFavoritos = useFavoritosStore((s) => s.favoritos);
+  const meGusta = useMusicStore((s) => s.meGusta);
+  const favorito = pista ? esMeGusta(pista, todosFavoritos, meGusta) : false;
   const progreso = useProgreso();
   const st = useReproductorStore.getState;
 
@@ -93,7 +97,7 @@ export function ReproductorGrande() {
               <EcualizadorVisual activo={reproduciendo} />
               <IconButton
                 label={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
-                onClick={() => useFavoritosStore.getState().alternarFavorito(pista)}
+                onClick={() => void (pista.fuente === "spotify" ? alternarMeGusta(pista) : useFavoritosStore.getState().alternarFavorito(pista))}
                 className={favorito ? "text-accent-text hover:bg-white/10" : "text-white hover:bg-white/10"}
               >
                 <Glifo nombre={favorito ? "favoritoLleno" : "favorito"} tam={16} />

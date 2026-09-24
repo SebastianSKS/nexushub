@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowSync20Regular } from "@fluentui/react-icons";
+import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
@@ -18,7 +19,7 @@ export function PaginaMusica() {
   const estado = useMusicStore((s) => s.connection.status);
   const connectAvailable = clienteIdConfigurado();
   const cargando = useMusicStore((s) => s.status === "loading");
-  const faltanPermisos = useMusicStore((s) => s.permisosExtra === false && s.query === "");
+  const faltanPermisos = useMusicStore((s) => (s.permisosExtra === false && s.query === "") || s.permisosBiblioteca === "faltan");
   const [guia, setGuia] = useState(false);
 
   // Abre con contenido y detecta qué modos ofrece este equipo.
@@ -82,8 +83,13 @@ export function PaginaMusica() {
                 title="Vuelve a conectar Spotify para ver más"
                 action={<Button onClick={conectarSpotify}>Reconectar</Button>}
               >
-                Con un permiso más te mostramos lo que escuchaste hace poco y lo que más suena en tu cuenta.
+                Con un permiso más podrás guardar canciones en «Me gusta», añadirlas a tus playlists, y te mostramos lo que escuchaste hace poco y lo que más suena en tu cuenta.
               </InfoBar>
+            )}
+            {conectado && (
+              <div className="flex flex-wrap gap-2">
+                <BotonEnlace href="/musica/me-gusta">Canciones que te gustan</BotonEnlace>
+              </div>
             )}
             <FavoritosRecientes />
             <MusicGrid />

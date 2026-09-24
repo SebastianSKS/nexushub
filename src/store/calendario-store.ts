@@ -124,8 +124,10 @@ export interface AvisoPantalla {
   id: string;
   titulo: string;
   texto: string;
-  /** A dónde lleva el aviso al pulsarlo; por defecto, el Calendario. */
-  destino?: { ruta: string; etiqueta: string; glifo: "calendario" | "reloj" | "inicio" };
+  /** A dónde lleva el aviso al pulsarlo; por defecto, el Calendario. `null` = sin enlace (un aviso breve). */
+  destino?: { ruta: string; etiqueta: string; glifo: "calendario" | "reloj" | "inicio" | "musica" } | null;
+  /** Milisegundos tras los que se cierra solo; sin él, se queda hasta que se cierre. */
+  autocerrar?: number;
 }
 
 interface CalendarioState {
@@ -235,6 +237,10 @@ export const useCalendarioStore = create<CalendarioState>((set, get) => ({
   },
   yaAvisado: (clave) => get().avisados.includes(clave),
 
-  mostrarAviso: (a) => set((s) => ({ pendientes: [...s.pendientes, { ...a, id: crypto.randomUUID() }].slice(-5) })),
+  mostrarAviso: (a) => {
+    const id = crypto.randomUUID();
+    set((s) => ({ pendientes: [...s.pendientes, { ...a, id }].slice(-5) }));
+    if (a.autocerrar) setTimeout(() => get().cerrarAviso(id), a.autocerrar);
+  },
   cerrarAviso: (id) => set((s) => ({ pendientes: s.pendientes.filter((x) => x.id !== id) })),
 }));

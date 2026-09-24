@@ -5,19 +5,25 @@ import { registrarControlador } from "@/services/reproductor/controladores";
 import { fetchMyPlaylists, spotifyApi } from "@/services/music/api";
 import { obtenerAccessToken } from "@/services/music/oauth";
 import { loadSpotifyEmbedApi, loadSpotifySdk } from "@/services/music/loaders";
+import { similaresA } from "@/services/music/similares";
+import { useAjustesStore } from "@/store/ajustes-store";
 import { useMusicStore } from "@/store/music-store";
-import { useReproductorStore, type Capacidades } from "@/store/reproductor-store";
+import { progresoActual, useReproductorStore, type Capacidades, type Pista } from "@/store/reproductor-store";
 
 interface Me {
+  id?: string;
   display_name?: string | null;
   product?: string;
 }
 
 const uriDe = (id: string) => `spotify:${id}`;
 
-/** Cuerpo de PUT /me/player/play: una canción suelta, o un contexto (álbum, playlist, artista). */
-function cuerpoPlay(id: string) {
-  return id.startsWith("track:") ? { uris: [uriDe(id)] } : { context_uri: uriDe(id) };
+/**
+ * Cuerpo de PUT /me/player/play. Las canciones se piden de una en una: la cola (siguiente, aleatorio, repetir, «añadir a la
+ * cola») es de NexusHub y NO toca la cola de tu Spotify. Álbumes, playlists y artistas se dan como contexto.
+ */
+function cuerpoPlay(pista: Pista) {
+  return pista.id.startsWith("track:") ? { uris: [uriDe(pista.id)] } : { context_uri: uriDe(pista.id) };
 }
 
 const CAPACIDADES_SDK: Capacidades = { buscar: true, saltar: true, volumen: true, aleatorio: true, repetir: true };
@@ -75,8 +81,9 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
             const s = useReproductorStore.getState();
             if (s.fuente !== "spotify" || useMusicStore.getState().connection.status === "connected") return;
             s.informar({ reproduciendo: !isPaused && !isBuffering, progreso: position / 1000, duracion: Math.round(duration / 1000) });
-            // Pasa a la siguiente de la cola cuando una canción termina sola.
-            if (duration > 0 && isPaused && position >= duration - 300 && !terminadaRef.current && s.cola.length > 1 && s.pista?.id.startsWith("track:")) {
+            // Pasa a la siguiente de la cola (o repite) cuando una canción termina sola. El embed a veces deja de avisar justo al
+            // final, así que basta con estar a menos de medio segundo, suene o esté ya en pausa.
+            if (duration > 0 && position >= duration - 500 && !terminadaRef.current && s.pista?.id.startsWith("track:") && (s.cola.length > 1 || s.repetir !== "no")) {
               terminadaRef.current = true;
               s.siguiente(true);
             }
@@ -92,6 +99,40 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
   // ───────────────────────────── Conectado: Web Playback SDK ─────────────────────────────
   const playerRef = useRef<Spotify.Player | null>(null);
   const dispositivoRef = useRef<string | null>(null);
+  /** Último estado conocido de Spotify, para reconocer cuándo una canción terminó sola. */
+  const ultimoRef = useRef<{ id: string | null; playing: boolean } | null>(null);
+  /** Para no pasar dos veces a la siguiente por la misma petición de reproducir. */
+  const finRef = useRef<string | null>(null);
+  /** Las canciones parecidas que ya se pidieron (una sola vez por pista) y su resultado pendiente. */
+  const similaresRef = useRef<{ id: string; espera: Promise<void> } | null>(null);
+
+  /** Última canción de la cola (sin repetir): se buscan más del mismo artista y se añaden al final. */
+  const pedirSimilares = (pista: Pista) => {
+    const s = useReproductorStore.getState();
+    if (s.indiceActual < s.cola.length - 1 || s.repetir !== "no" || !useAjustesStore.getState().seguirConSimilares) return;
+    if (similaresRef.current?.id === pista.id) return;
+    const excluir = new Set(s.cola.map((c) => c.id));
+    similaresRef.current = {
+      id: pista.id,
+      espera: similaresA(pista, excluir, 10)
+        .then((mas) => {
+          if (useReproductorStore.getState().pista?.id === pista.id) useReproductorStore.getState().extenderCola(mas);
+        })
+        .catch(() => undefined),
+    };
+  };
+
+  /** Terminó una canción: sigue la cola; si era la última, espera un momento las parecidas antes de rendirse. */
+  const alTerminarCancion = async () => {
+    let s = useReproductorStore.getState();
+    const eraLaUltima = s.indiceActual >= s.cola.length - 1 && s.repetir !== "una";
+    if (eraLaUltima && s.pista) {
+      pedirSimilares(s.pista);
+      await Promise.race([similaresRef.current?.espera, new Promise((r) => setTimeout(r, 4000))]);
+      s = useReproductorStore.getState();
+    }
+    s.siguiente(true);
+  };
 
   // 1) Al entrar: interpreta el resultado del inicio de sesión y detecta una sesión existente.
   useEffect(() => {
@@ -127,6 +168,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         return;
       }
       const nombre = me.data.display_name || "tu cuenta";
+      useMusicStore.setState({ usuarioId: me.data.id ?? null });
       if (me.data.product !== "premium") {
         store.setConnection({ status: "not-premium", name: nombre });
         return;
@@ -163,18 +205,37 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         }
         const t = s.track_window.current_track;
         const pista = rep.pista;
-        // Terminó sola (el SDK la deja en pausa, en 0, con la pista en «previous_tracks»): sigue la cola.
-        const terminada = s.paused && s.position === 0 && !!pista && pista.id.startsWith("track:") && s.track_window.previous_tracks.some((p) => p.id === t.id || `track:${p.id}` === pista.id);
-        if (terminada && rep.cola.length > 1) {
-          rep.siguiente(true);
+        const previo = ultimoRef.current;
+        ultimoRef.current = { id: t.id, playing: !s.paused };
+
+        // Una canción SUELTA (lo normal: la cola es de NexusHub) termina así: Spotify la deja en pausa, al principio o al final,
+        // habiendo estado sonando. Entonces NexusHub pasa a la siguiente de la cola.
+        const terminada =
+          !!pista?.id.startsWith("track:") &&
+          !!previo?.playing &&
+          previo.id === t.id &&
+          s.paused &&
+          s.duration > 0 &&
+          (s.position === 0 || s.position >= s.duration - 400) &&
+          progresoActual(rep) >= s.duration / 1000 - 8;
+        if (terminada && finRef.current !== `${rep.solicitud}`) {
+          finRef.current = `${rep.solicitud}`;
+          void alTerminarCancion();
           return;
         }
+
         rep.informar({
           reproduciendo: !s.paused,
           progreso: s.position / 1000,
-          ...(pista ? { pista: { ...pista, titulo: t.name, artista: t.artists.map((a) => a.name).join(", "), caratula: t.album.images[0]?.url ?? pista.caratula, duracion: Math.round(s.duration / 1000) } } : {}),
+          ...(pista?.id.startsWith("track:")
+            ? { duracion: Math.round(s.duration / 1000) }
+            : pista
+              ? { pista: { ...pista, titulo: t.name, artista: t.artists.map((a) => a.name).join(", "), caratula: t.album.images[0]?.url ?? pista.caratula, duracion: Math.round(s.duration / 1000) } }
+              : {}),
         });
-        useReproductorStore.setState({ aleatorio: s.shuffle, repetir: s.repeat_mode === 2 ? "una" : s.repeat_mode === 1 ? "todas" : "no" });
+
+        // Última canción de la cola: se piden más del mismo artista para que la música no pare.
+        if (pista?.id.startsWith("track:") && !s.paused) void pedirSimilares(pista);
       });
       player.addListener("account_error", () => useMusicStore.getState().setConnection({ status: "not-premium", name: nombre }));
       player.addListener("authentication_error", () =>
@@ -204,9 +265,12 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
     const st = useReproductorStore.getState();
     if (!conectado || st.fuente !== "spotify" || !st.pista || !dispositivoRef.current || !st.autoplay) return;
-    const id = st.pista.id;
+    const pista = st.pista;
+    const cuerpo = cuerpoPlay(pista);
+    finRef.current = null;
+    ultimoRef.current = null;
     void playerRef.current?.activateElement();
-    void spotifyApi(`/me/player/play?device_id=${dispositivoRef.current}`, { method: "PUT", body: JSON.stringify(cuerpoPlay(id)) }).then(({ status }) => {
+    void spotifyApi(`/me/player/play?device_id=${dispositivoRef.current}`, { method: "PUT", body: JSON.stringify(cuerpo) }).then(({ status }) => {
       if (status === 0) useReproductorStore.getState().informar({ reproduciendo: false, error: "No se pudo contactar con Spotify. Comprueba tu internet; si usas Brave o un bloqueador de anuncios, desactívalo para esta página." });
       else if (status === 403) useMusicStore.getState().setConnection({ status: "not-premium" });
       else if (status >= 400) useReproductorStore.getState().informar({ reproduciendo: false, error: "Spotify no pudo reproducir esto. Inténtalo con otra canción." });
@@ -239,8 +303,6 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         siguiente: () => void playerRef.current?.nextTrack(),
         anterior: () => void playerRef.current?.previousTrack(),
         volumen: (v) => void playerRef.current?.setVolume(v / 100),
-        aleatorio: (on) => void spotifyApi(`/me/player/shuffle?state=${on}${deviceQuery()}`, { method: "PUT" }),
-        repetir: (m) => void spotifyApi(`/me/player/repeat?state=${m === "una" ? "track" : m === "todas" ? "context" : "off"}${deviceQuery()}`, { method: "PUT" }),
       });
     } else {
       registrarControlador("spotify", {

@@ -28,8 +28,8 @@ interface Imagen {
 interface PistaApi {
   id: string;
   name: string;
-  artists: { name: string }[];
-  album: { name: string; images: Imagen[] };
+  artists: { id?: string; name: string }[];
+  album: { id?: string; name: string; images: Imagen[] };
 }
 interface AlbumApi {
   id: string;
@@ -42,10 +42,17 @@ interface ArtistaApi {
   name: string;
   images?: Imagen[];
 }
+interface ListaApi {
+  id: string;
+  name: string;
+  owner?: { display_name?: string | null } | null;
+  images?: Imagen[] | null;
+}
 interface RespuestaBusqueda {
   tracks?: { items: (PistaApi | null)[] };
   albums?: { items: (AlbumApi | null)[] };
   artists?: { items: (ArtistaApi | null)[] };
+  playlists?: { items: (ListaApi | null)[] };
 }
 
 /** La carátula mediana (o la que haya). */
@@ -54,8 +61,9 @@ const cover = (imgs: Imagen[] | undefined) => {
   return (orden[1] ?? orden[0])?.url ?? "";
 };
 
-const dePista = (t: PistaApi): MusicItem => ({ kind: "track", id: t.id, title: t.name, subtitle: `${t.artists.map((a) => a.name).join(", ")} · ${t.album.name}`, cover: cover(t.album.images) });
+const dePista = (t: PistaApi): MusicItem => ({ kind: "track", id: t.id, title: t.name, subtitle: `${t.artists.map((a) => a.name).join(", ")} · ${t.album.name}`, cover: cover(t.album.images), artistId: t.artists[0]?.id, albumId: t.album.id });
 const deAlbum = (a: AlbumApi): MusicItem => ({ kind: "album", id: a.id, title: a.name, subtitle: `Álbum · ${a.artists.map((x) => x.name).join(", ")}`, cover: cover(a.images) });
+const deLista = (l: ListaApi): MusicItem => ({ kind: "playlist", id: l.id, title: l.name, subtitle: `Playlist${l.owner?.display_name ? ` · ${l.owner.display_name}` : ""}`, cover: cover(l.images ?? []) });
 const deArtista = (a: ArtistaApi): MusicItem => ({ kind: "artist", id: a.id, title: a.name, subtitle: "Artista", cover: cover(a.images) });
 function sinNulos<T>(lista: (T | null)[] | undefined): T[] {
   return (lista ?? []).filter((x): x is T => x !== null && x !== undefined);
@@ -77,7 +85,7 @@ function sinRepetir(items: MusicItem[], vistas = new Set<string>()): MusicItem[]
  */
 async function buscarConectado(query: string): Promise<SeccionMusica[]> {
   const q = (offset: number, tipos: string) => `/search?${new URLSearchParams({ q: query, type: tipos, limit: "10", offset: String(offset) })}`;
-  const [a, b] = await Promise.all([spotifyApi<RespuestaBusqueda>(q(0, "track,album,artist")), spotifyApi<RespuestaBusqueda>(q(10, "track"))]);
+  const [a, b] = await Promise.all([spotifyApi<RespuestaBusqueda>(q(0, "track,album,artist,playlist")), spotifyApi<RespuestaBusqueda>(q(10, "track"))]);
   if (a.status !== 200 || !a.data) throw errorDeEstado(a.status);
 
   const canciones = sinRepetir([...sinNulos(a.data.tracks?.items), ...(b.status === 200 ? sinNulos(b.data?.tracks?.items) : [])].map(dePista));
@@ -85,6 +93,7 @@ async function buscarConectado(query: string): Promise<SeccionMusica[]> {
     { titulo: "Canciones", items: canciones },
     { titulo: "Artistas", items: sinNulos(a.data.artists?.items).slice(0, 6).map(deArtista) },
     { titulo: "Álbumes", items: sinNulos(a.data.albums?.items).map(deAlbum) },
+    { titulo: "Playlists", items: sinNulos(a.data.playlists?.items).map(deLista) },
   ];
   return secciones.filter((s) => s.items.length > 0);
 }
@@ -117,7 +126,7 @@ const GENEROS: readonly { tag: string; nombre: string }[] = [
   { tag: "anime", nombre: "Música de anime" },
 ];
 
-async function buscarCanciones(q: string, offset = 0): Promise<MusicItem[]> {
+export async function buscarCanciones(q: string, offset = 0): Promise<MusicItem[]> {
   const { status, data } = await spotifyApi<RespuestaBusqueda>(`/search?${new URLSearchParams({ q, type: "track", limit: "10", offset: String(offset) })}`);
   return status === 200 ? sinNulos(data?.tracks?.items).map(dePista) : [];
 }

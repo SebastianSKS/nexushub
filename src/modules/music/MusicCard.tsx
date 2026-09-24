@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import clsx from "clsx";
-import { Play24Filled } from "@fluentui/react-icons";
+import { MoreHorizontal20Regular, Play24Filled } from "@fluentui/react-icons";
+import { IconButton } from "@/components/fluent/IconButton";
+import { pistaDeItem } from "@/services/music/lista";
+import { abrirMenuPista } from "@/store/menu-pista-store";
 import { rutaLista } from "@/lib/rutas";
 import type { MusicItem } from "@/types/music";
 
@@ -60,10 +63,21 @@ function Interior({ item, active }: { item: MusicItem; active: boolean }) {
 /** Tarjeta de música: carátula cuadrada, título y artista. */
 export function MusicCard({ item, active, onPlay }: MusicCardProps) {
   if (item.kind === "track") {
+    const pista = pistaDeItem(item);
+    const ids = { artistId: item.artistId, albumId: item.albumId };
     return (
-      <button type="button" onClick={onPlay} aria-label={`Reproducir ${item.title}, ${item.subtitle}`} aria-current={active ? "true" : undefined} className={clases(active)}>
-        <Interior item={item} active={active} />
-      </button>
+      <div className="group relative" onContextMenu={(e) => abrirMenuPista(e, pista, ids)}>
+        <button type="button" onClick={onPlay} aria-label={`Reproducir ${item.title}, ${item.subtitle}`} aria-current={active ? "true" : undefined} className={clsx(clases(active), "w-full")}>
+          <Interior item={item} active={active} />
+        </button>
+        <IconButton
+          label={`Más opciones de ${item.title}`}
+          onClick={(e) => abrirMenuPista(e, pista, ids)}
+          className="absolute right-4 top-4 bg-layer/80 opacity-0 backdrop-blur-sm focus-visible:opacity-100 group-hover:opacity-100"
+        >
+          <MoreHorizontal20Regular />
+        </IconButton>
+      </div>
     );
   }
   return (

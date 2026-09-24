@@ -20,6 +20,8 @@ import { useAppStore } from "@/store/app-store";
 import { BarraReproduccion } from "@/components/reproductor/BarraReproduccion";
 import { ReproductorGlobal } from "@/components/reproductor/ReproductorGlobal";
 import { ReproductorGrande } from "@/components/reproductor/ReproductorGrande";
+import { ColaMusica } from "@/modules/music/ColaMusica";
+import { MenuPista } from "@/modules/music/MenuPista";
 import { AvisosCumple } from "./AvisosCumple";
 import { BarraTitulo } from "./BarraTitulo";
 import { MemoriaSesion } from "./MemoriaSesion";
@@ -100,6 +102,8 @@ export function Ventana({ children }: { children: ReactNode }) {
       {/* Fuera del marco (.mica usa backdrop-filter y crearía un contexto que rompería position:fixed). */}
       <ReproductorGlobal />
       <ReproductorGrande />
+      <ColaMusica />
+      <MenuPista />
       <AvisosCumple />
       <MemoriaSesion />
       <TourBienvenida />

@@ -9,6 +9,9 @@ export interface MusicItem {
   /** Artista (canciones), o el tipo de contenido. */
   subtitle: string;
   cover: string;
+  /** Solo canciones, cuando se conocen: para «Ir al artista» e «Ir al álbum». */
+  artistId?: string;
+  albumId?: string;
 }
 
 export interface MusicItemsResponse {
@@ -37,6 +40,8 @@ export interface SpotifyPlaylist {
   name: string;
   image?: string;
   tracks?: number;
+  /** Se le pueden añadir canciones: es tuya o colaborativa. */
+  editable?: boolean;
 }
 
 /** Estado unificado del reproductor (embed o SDK). Tiempos en milisegundos. */

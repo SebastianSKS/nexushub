@@ -191,6 +191,11 @@ export function PaginaConfiguracion() {
             )}
 
             <Seccion titulo="Documentos">
+              {escritorio && (
+                <TarjetaAjuste glifo="documentos" titulo="Convertir con Microsoft Office" descripcion="Si tienes Word, Excel o PowerPoint instalados, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace Office: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de NexusHub.">
+                  <Switch checked={a.usarOffice} onChange={(v) => a.cambiar({ usarOffice: v })} label="Convertir con Microsoft Office" />
+                </TarjetaAjuste>
+              )}
               <TarjetaAjuste glifo="descargar" titulo="Al terminar una conversión" descripcion="Qué hacer con el resultado cuando está listo.">
                 <SegmentedControl<Extract<AlTerminar, "nada" | "descargar">>
                   label="Al terminar una conversión"

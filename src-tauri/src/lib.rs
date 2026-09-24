@@ -5,6 +5,7 @@ use tauri::{Emitter, Manager};
 mod captura_spotify;
 mod apps;
 mod carpetas;
+mod office;
 
 /// Lo que el comando `actualizar_bandeja` necesita tocar cada vez que cambia la reproducción:
 /// el texto de «Reproducir/Pausar», si «Siguiente» tiene sentido, y el tooltip del icono.
@@ -190,7 +191,9 @@ pub fn run() {
             carpetas::abrir_en_sistema,
             apps::apps_instaladas,
             apps::abrir_app,
-            apps::iconos_de_apps
+            apps::iconos_de_apps,
+            office::office_disponible,
+            office::office_convertir
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

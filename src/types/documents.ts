@@ -60,8 +60,8 @@ export interface RotateOptions {
 }
 
 export interface PdfToWordOptions {
-  /** editable: texto y párrafos editables, con las imágenes del PDF. fiel: cada página como imagen, idéntica al original. */
-  mode: "editable" | "fiel";
+  /** editable: texto y párrafos editables, con las imágenes del PDF. fiel: cada página como imagen, idéntica al original. word: lo convierte Microsoft Word instalado en el equipo (mejor formato, más lento). */
+  mode: "editable" | "fiel" | "word";
 }
 
 export interface PdfToImagesOptions {

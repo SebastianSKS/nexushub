@@ -12,6 +12,7 @@ import { useDocumentsStore } from "@/store/documents-store";
 import type { ToolId } from "@/types/documents";
 import { DropZone } from "./DropZone";
 import { FileList } from "./FileList";
+import { MotorOffice } from "./MotorOffice";
 import { NoticeStack } from "./NoticeStack";
 import { OptionsPanel } from "./options/OptionsPanel";
 import { PagePicker } from "./PagePicker";
@@ -96,6 +97,7 @@ export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
       }
       lateral={
         <>
+          <MotorOffice toolId={toolId} />
           <OptionsPanel toolId={toolId} />
           {status === "running" && <ProgressPanel toolName={tool.name} />}
           {status === "done" && <ResultsPanel />}

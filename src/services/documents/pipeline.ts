@@ -6,6 +6,7 @@ import { abortarSiCancelado, type Ctx, type Salida } from "./motor/comun";
 import { comprimirPdf } from "./motor/comprimir";
 import { excelAPdf } from "./motor/excel-a-pdf";
 import { imagenesAPdf } from "./motor/imagenes-a-pdf";
+import { intentarConOffice } from "./motor/office";
 import { pdfAImagenes } from "./motor/pdf-a-imagenes";
 import { pdfAWord } from "./motor/pdf-a-word";
 import { dividirPdf, rotarPdf, unirPdf } from "./motor/pdf-basico";
@@ -29,8 +30,8 @@ export interface RunOutcome {
 const nuevoId = () => crypto.randomUUID();
 
 /**
- * Ejecuta una herramienta. TODO ocurre dentro de la aplicación, sin programas externos ni servidor:
- * los archivos nunca salen de tu equipo.
+ * Ejecuta una herramienta. TODO ocurre en tu equipo, sin servidor: los archivos nunca salen de él. Las conversiones
+ * de Office usan Microsoft Office si está instalado (ver motor/office.ts) y, si no, el motor propio de NexusHub.
  */
 export async function runTool(toolId: ToolId, files: QueuedFile[], options: unknown, hooks: RunHooks): Promise<RunOutcome> {
   const tool = getTool(toolId);
@@ -91,6 +92,13 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
         const etiqueta = (m: string) => (n > 1 ? `${m} · ${file.name} (${i + 1} de ${n})` : m);
         const rep = ctx.report;
         ctx.report = (f, m) => rep(f, etiqueta(m));
+
+        // Word, Excel, PowerPoint y PDF a Word: con Microsoft Office si está instalado (calidad de Office); si no, el motor de NexusHub.
+        const conOffice = await intentarConOffice(toolId, file, options, ctx);
+        if (conOffice) {
+          salidas.push(...conOffice);
+          continue;
+        }
 
         if (toolId === "word-to-pdf") {
           const r = await docxToPdfInBrowser(file, ctx.report, signal);

@@ -159,7 +159,7 @@ export function PaginaConfiguracion() {
                 </div>
               </TarjetaAjuste>
               <TarjetaAjuste glifo="informacion" titulo="Probar una notificación" descripcion="Para comprobar que Windows te las muestra. Avisan mientras NexusHub esté abierto, aunque sea en la bandeja.">
-                <Button onClick={() => void notificarSistema("NexusHub", "Así se verán tus avisos de clases y tareas.", "prueba")}>Enviar aviso de prueba</Button>
+                <Button onClick={() => void notificarSistema("NexusHub", "Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración.", "prueba", "/configuracion")}>Enviar aviso de prueba</Button>
               </TarjetaAjuste>
             </Seccion>
 

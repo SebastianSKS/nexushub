@@ -43,7 +43,7 @@ export function useAvisosCumples() {
         if (st.yaAvisado(clave)) continue;
         st.marcarAvisado(clave);
         const { titulo, texto } = textoAviso(amigo.nombre, p.dias, p.edad, p.fecha);
-        notificarSistema(titulo, texto, clave);
+        notificarSistema(titulo, texto, clave, "/calendario");
         st.mostrarAviso({ titulo, texto });
       }
 
@@ -56,7 +56,7 @@ export function useAvisosCumples() {
         if (st.yaAvisado(clave)) continue;
         st.marcarAvisado(clave);
         const { titulo, texto } = textoAvisoEvento(evento.titulo, p.dias, p.fecha);
-        notificarSistema(titulo, texto, clave);
+        notificarSistema(titulo, texto, clave, "/calendario");
         st.mostrarAviso({ titulo, texto });
       }
     };

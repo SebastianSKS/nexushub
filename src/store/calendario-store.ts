@@ -124,6 +124,8 @@ export interface AvisoPantalla {
   id: string;
   titulo: string;
   texto: string;
+  /** A dónde lleva el aviso al pulsarlo; por defecto, el Calendario. */
+  destino?: { ruta: string; etiqueta: string; glifo: "calendario" | "reloj" | "inicio" };
 }
 
 interface CalendarioState {

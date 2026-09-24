@@ -37,8 +37,16 @@ export async function pedirPermisoNotificaciones(): Promise<PermisoNotificacione
 }
 
 /** Envía una notificación del sistema, si hay permiso. Devuelve true si se envió. */
-export async function notificarSistema(titulo: string, cuerpo: string, etiqueta?: string): Promise<boolean> {
+export async function notificarSistema(titulo: string, cuerpo: string, etiqueta?: string, ruta?: string): Promise<boolean> {
   if (esEscritorio()) {
+    // Con una ruta, el aviso lo muestra el programa para poder llevar a esa sección al hacer clic (ver avisos.rs).
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      await invoke("notificar", { titulo, cuerpo, ruta: ruta ?? null });
+      return true;
+    } catch {
+      /* sin esa vía (otro sistema): se usa el plugin de notificaciones */
+    }
     try {
       const { isPermissionGranted, requestPermission, sendNotification } = await import("@tauri-apps/plugin-notification");
       if (!(await isPermissionGranted()) && (await requestPermission()) !== "granted") return false;

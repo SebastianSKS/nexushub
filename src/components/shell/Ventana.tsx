@@ -5,6 +5,7 @@ import { MotionConfig } from "framer-motion";
 import { useAvisoCancion } from "@/hooks/useAvisoCancion";
 import { useAvisosCumples } from "@/hooks/useAvisosCumples";
 import { useAvisosClases } from "@/hooks/useAvisosClases";
+import { useNavegarDesdeAviso } from "@/hooks/useNavegarDesdeAviso";
 import { useRespaldoLocal } from "@/hooks/useRespaldoLocal";
 import { useBandeja } from "@/hooks/useBandeja";
 import { useCerrarABandeja } from "@/hooks/useCerrarABandeja";
@@ -42,6 +43,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useAvisosCumples();
   useAvisosClases();
   useAvisoCancion();
+  useNavegarDesdeAviso();
   useRecientesMusica();
   useEfectoVentana();
   useRespaldoLocal();

@@ -6,7 +6,7 @@ import { itemsDelDia } from "@/lib/calendario/items";
 import { aMinutos, clasesDelDia, diaDeSemana } from "@/lib/horario/horario";
 import { notificarSistema } from "@/lib/notificar";
 import { useAjustesStore } from "@/store/ajustes-store";
-import { useCalendarioStore } from "@/store/calendario-store";
+import { useCalendarioStore, type AvisoPantalla } from "@/store/calendario-store";
 import { useHorarioStore } from "@/store/horario-store";
 import { usePerfilStore } from "@/store/perfil-store";
 
@@ -26,12 +26,13 @@ export function useAvisosClases() {
     useCalendarioStore.getState().cargar();
     usePerfilStore.getState().cargar();
 
-    const avisar = (clave: string, titulo: string, texto: string) => {
+    // Cada aviso lleva a lo que anuncia: una clase, al Horario; el resumen del día, al Inicio (donde está «Lo que sigue hoy»).
+    const avisar = (clave: string, titulo: string, texto: string, destino: NonNullable<AvisoPantalla["destino"]>) => {
       const cal = useCalendarioStore.getState();
       if (cal.yaAvisado(clave)) return;
       cal.marcarAvisado(clave);
-      void notificarSistema(titulo, texto, clave);
-      cal.mostrarAviso({ titulo, texto });
+      void notificarSistema(titulo, texto, clave, destino.ruta);
+      cal.mostrarAviso({ titulo, texto, destino });
     };
 
     const revisar = () => {
@@ -47,7 +48,7 @@ export function useAvisosClases() {
           const faltan = aMinutos(c.inicio) - minutos;
           if (faltan <= 0 || faltan > aj.avisoClaseMin) continue; // aún falta mucho, o ya empezó
           const donde = [c.aula ? `Aula ${c.aula}` : "", c.docente].filter(Boolean).join(" · ");
-          avisar(`clase:${c.id}|${hoy}`, `${c.materia} empieza en ${faltan} min`, `${c.inicio}–${c.fin}${donde ? ` · ${donde}` : ""}`);
+          avisar(`clase:${c.id}|${hoy}`, `${c.materia} empieza en ${faltan} min`, `${c.inicio}–${c.fin}${donde ? ` · ${donde}` : ""}`, { ruta: "/horario", etiqueta: "Abrir el horario", glifo: "reloj" });
         }
       }
 
@@ -72,7 +73,7 @@ export function useAvisosClases() {
         if (eventos.length > 0) partes.push(`Hoy: ${eventos.slice(0, 3).join(", ")}${eventos.length > 3 ? "…" : ""}.`);
         if (cumples.length > 0) partes.push(`Cumpleaños: ${cumples.join(", ")}.`);
         const titulo = `${nombre ? `${nombre}, hoy` : "Hoy"} tienes ${clases.length} ${clases.length === 1 ? "clase" : "clases"}${eventos.length > 0 ? ` y ${eventos.length} ${eventos.length === 1 ? "pendiente" : "pendientes"}` : ""}`;
-        avisar(clave, titulo, partes.join(" "));
+        avisar(clave, titulo, partes.join(" "), { ruta: "/inicio", etiqueta: "Ver mi día", glifo: "inicio" });
       }
     };
 

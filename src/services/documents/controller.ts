@@ -1,4 +1,5 @@
 import { notificarSistema } from "@/lib/notificar";
+import { rutaHerramienta } from "@/lib/rutas";
 import { getTool } from "@/lib/documents/tools";
 import { parseRanges } from "@/lib/documents/ranges";
 import { useAjustesStore } from "@/store/ajustes-store";
@@ -107,7 +108,7 @@ export async function startRun(): Promise<void> {
     const mensaje =
       outcome.results.length === 1 ? "Tu archivo está listo para descargar." : `Tus ${outcome.results.length} archivos están listos para descargar.`;
     store.pushNotice({ severity: "success", title: `${tool.name}: listo.`, message: mensaje });
-    if (outcome.results.length > 0) notificarSistema(`${tool.name}: listo`, mensaje, "conversion-lista");
+    if (outcome.results.length > 0) notificarSistema(`${tool.name}: listo`, mensaje, "conversion-lista", rutaHerramienta(tool.id));
     // Las advertencias (modo básico, ya optimizado…) se muestran junto al resultado, no como avisos flotantes.
   } catch (err) {
     const store = useDocumentsStore.getState();

@@ -26,13 +26,13 @@ export function AvisosCumple() {
             className="acrylic pointer-events-auto flex items-start gap-3 rounded-[8px] p-3 shadow-flyout"
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white" style={{ backgroundImage: "linear-gradient(135deg, #0f6cbd, #3fb6f5)" }} aria-hidden>
-              <Glifo nombre="calendario" tam={16} />
+              <Glifo nombre={a.destino?.glifo ?? "calendario"} tam={16} />
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-body font-semibold text-fg">{a.titulo}</p>
               <p className="text-caption text-fg-secondary">{a.texto}</p>
-              <Link href="/calendario" onClick={() => cerrar(a.id)} className="mt-1 inline-block text-caption font-semibold text-accent-text hover:underline">
-                Abrir el calendario
+              <Link href={a.destino?.ruta ?? "/calendario"} onClick={() => cerrar(a.id)} className="mt-1 inline-block text-caption font-semibold text-accent-text hover:underline">
+                {a.destino?.etiqueta ?? "Abrir el calendario"}
               </Link>
             </div>
             <IconButton label="Cerrar aviso" onClick={() => cerrar(a.id)} className="h-7 w-7">

@@ -19,7 +19,7 @@ export function useAvisoCancion() {
       if (avisadas.has(clave)) return;
       avisadas.add(clave);
       if (!useAjustesStore.getState().avisarCambioCancion) return;
-      notificarSistema(s.pista.titulo, s.pista.artista || "NexusHub", `cancion:${clave}`);
+      notificarSistema(s.pista.titulo, s.pista.artista || "NexusHub", `cancion:${clave}`, "/musica");
     });
   }, []);
 }

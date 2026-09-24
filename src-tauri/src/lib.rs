@@ -4,6 +4,7 @@ use tauri::{Emitter, Manager};
 
 mod captura_spotify;
 mod apps;
+mod avisos;
 mod carpetas;
 mod office;
 
@@ -140,7 +141,7 @@ fn leer_historial_respaldo(app: tauri::AppHandle) -> Result<Vec<String>, String>
 }
 
 /// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar NexusHub» del menú).
-fn mostrar_ventana(app: &tauri::AppHandle) {
+pub(crate) fn mostrar_ventana(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.show();
         let _ = w.unminimize();
@@ -194,6 +195,7 @@ pub fn run() {
             apps::apps_instaladas,
             apps::abrir_app,
             apps::iconos_de_apps,
+            avisos::notificar,
             office::office_disponible,
             office::office_convertir
         ])

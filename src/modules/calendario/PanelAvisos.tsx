@@ -35,7 +35,7 @@ export function PanelAvisos() {
   const pedirPermiso = async () => setPermiso(await pedirPermisoNotificaciones());
 
   const probar = async () => {
-    const ok = await notificarSistema("NexusHub", "Así se verán tus avisos de cumpleaños.", "prueba");
+    const ok = await notificarSistema("NexusHub", "Así se verán tus avisos de cumpleaños.", "prueba", "/calendario");
     setPrueba(ok ? "Enviamos una notificación de prueba: debería aparecer en la esquina de tu pantalla." : "No se pudo enviar la notificación de prueba.");
   };
 

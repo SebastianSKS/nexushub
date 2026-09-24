@@ -40,3 +40,6 @@ tiny_http = "0.12"
 # "thin" da casi el mismo tamaño/velocidad que "fat" pero compila muchísimo más rápido.
 lto = "thin"
 strip = true
+
+[target.'cfg(windows)'.dependencies]
+tauri-winrt-notification = "0.7"

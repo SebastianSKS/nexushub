@@ -29,9 +29,14 @@ function lienzo(w: number, h: number): HTMLCanvasElement {
 }
 
 /** Las páginas de un archivo, como imágenes listas para leer. */
-async function* paginasDe(archivo: File, ctx: Ctx): AsyncGenerator<{ lienzo: HTMLCanvasElement; n: number; total: number }> {
+async function* paginasDe(archivo: File, ctx: Ctx): AsyncGenerator<{ lienzo: HTMLCanvasElement; n: number; total: number; ancho: number; alto: number }> {
   if (archivo.type.startsWith("image/") || /\.(png|jpe?g)$/i.test(archivo.name)) {
     const bmp = await createImageBitmap(archivo);
+    // Una foto no tiene tamaño de papel: se ajusta a una hoja A4 (vertical u horizontal según la foto).
+    const vertical = bmp.height >= bmp.width;
+    const kHoja = Math.min((vertical ? 841.89 : 595.28) / bmp.width, (vertical ? 595.28 : 841.89) / bmp.height);
+    const anchoHoja = bmp.width * kHoja;
+    const altoHoja = bmp.height * kHoja;
     const k = Math.min(1, LADO_MAXIMO / Math.max(bmp.width, bmp.height));
     const c = lienzo(Math.max(1, Math.round(bmp.width * k)), Math.max(1, Math.round(bmp.height * k)));
     const g = c.getContext("2d")!;
@@ -39,7 +44,7 @@ async function* paginasDe(archivo: File, ctx: Ctx): AsyncGenerator<{ lienzo: HTM
     g.fillRect(0, 0, c.width, c.height);
     g.drawImage(bmp, 0, 0, c.width, c.height);
     bmp.close();
-    yield { lienzo: c, n: 1, total: 1 };
+    yield { lienzo: c, n: 1, total: 1, ancho: anchoHoja, alto: altoHoja };
     return;
   }
   const abierto = await openPdf(archivo);
@@ -55,7 +60,7 @@ async function* paginasDe(archivo: File, ctx: Ctx): AsyncGenerator<{ lienzo: HTM
       const c = lienzo(Math.ceil(vista.width), Math.ceil(vista.height));
       await pagina.render({ canvas: c, viewport: vista, background: "#ffffff" }).promise;
       pagina.cleanup();
-      yield { lienzo: c, n, total };
+      yield { lienzo: c, n, total, ancho: base.width, alto: base.height };
     }
   } finally {
     await abierto.destroy();
@@ -74,7 +79,7 @@ export async function reconocerTexto(archivos: File[], opts: OcrOptions, ctx: Ct
   try {
     for (let i = 0; i < archivos.length; i++) {
       const archivo = archivos[i]!;
-      const partes: Uint8Array[] = [];
+      const partes: { bytes: Uint8Array; ancho: number }[] = [];
       const textos: string[] = [];
       for await (const p of paginasDe(archivo, ctx)) {
         abortarSiCancelado(ctx.signal);
@@ -83,7 +88,7 @@ export async function reconocerTexto(archivos: File[], opts: OcrOptions, ctx: Ct
         ctx.report(desde + ((p.n - 1) / p.total) * (hasta - desde), `Leyendo ${archivo.name}${p.total > 1 ? ` · página ${p.n} de ${p.total}` : ""}`);
         const r = await t.recognize(p.lienzo, { pdfTitle: baseName(archivo.name) }, { text: true, pdf: opts.output === "pdf" });
         textos.push(r.data.text.trim());
-        if (opts.output === "pdf" && r.data.pdf) partes.push(new Uint8Array(r.data.pdf));
+        if (opts.output === "pdf" && r.data.pdf) partes.push({ bytes: new Uint8Array(r.data.pdf), ancho: p.ancho });
       }
       const base = safeFileName(baseName(archivo.name));
       if (textos.every((x) => !x)) ctx.warn(`No se encontró texto en «${archivo.name}». Comprueba que la imagen esté nítida, derecha y con buena luz.`);
@@ -92,9 +97,14 @@ export async function reconocerTexto(archivos: File[], opts: OcrOptions, ctx: Ct
         salidas.push({ name: `${base}.txt`, blob: new Blob([cuerpo + "\n"], { type: "text/plain;charset=utf-8" }), mime: "text/plain" });
       } else {
         const unido = await PDFDocument.create();
-        for (const bytes of partes) {
+        for (const { bytes, ancho } of partes) {
           const doc = await PDFDocument.load(bytes);
-          (await unido.copyPages(doc, doc.getPageIndices())).forEach((pg) => unido.addPage(pg));
+          for (const pg of await unido.copyPages(doc, doc.getPageIndices())) {
+            // Tesseract deja la página del tamaño de la imagen en píxeles (cientos de puntos de más): se devuelve al tamaño real.
+            const k = ancho / pg.getWidth();
+            pg.scale(k, k);
+            unido.addPage(pg);
+          }
         }
         salidas.push({ name: `${base}_texto.pdf`, blob: pdfBlob(await unido.save()), mime: MIME_PDF });
       }

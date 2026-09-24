@@ -308,7 +308,36 @@ async function leerPagina(page: PDFPageProxy, lib: Awaited<ReturnType<typeof get
   for (const l of agruparLineas(frags)) elementos.push({ tipo: "linea", y: l.y, l });
   elementos.sort((a, b) => b.y - a.y);
 
-  return { elementos, ancho: vista.width, alto: vista.height, rutas, imagenes };
+  // PDF escaneado con texto reconocido (OCR): la foto de la página completa va debajo del texto invisible. En Word estorba
+  // (ocuparía una página entera antes del texto), así que se quita cuando la página ya tiene texto.
+  if (elementos.some((e) => e.tipo === "linea")) {
+    for (let i = elementos.length - 1; i >= 0; i--) {
+      const e = elementos[i]!;
+      if (e.tipo === "imagen" && e.img.ancho * e.img.alto > vista.width * vista.height * 0.8) {
+        elementos.splice(i, 1);
+        imagenes--;
+      }
+    }
+  }
+  // Hay PDF (escaneados, de otros programas) con páginas enormes, en píxeles: Word no admite hojas de más de 22 pulgadas
+  // y el texto saldría gigante. Se reduce todo a un tamaño de hoja normal.
+  const k = Math.max(vista.width, vista.height) > 1200 ? 842 / Math.max(vista.width, vista.height) : 1;
+  if (k !== 1) {
+    for (const e of elementos) {
+      e.y *= k;
+      if (e.tipo === "linea") {
+        e.l.x *= k;
+        e.l.y *= k;
+        e.l.size *= k;
+        e.l.ancho *= k;
+      } else {
+        e.img.y *= k;
+        e.img.ancho *= k;
+        e.img.alto *= k;
+      }
+    }
+  }
+  return { elementos, ancho: vista.width * k, alto: vista.height * k, rutas, imagenes };
 }
 
 const CT_MEDIA = { png: "image/png", jpg: "image/jpeg" } as const;
@@ -337,7 +366,8 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
         await page.render({ canvas: lienzo, viewport: vista, background: "#ffffff" }).promise;
         const r = await lienzoABytes(lienzo, 0.9);
         if (!r) throw new DocumentError(`No se pudo dibujar la página ${n}.`, "Prueba con el modo «Texto editable».");
-        fielImgs.push({ img: { y: 0, ancho: vista0.width, alto: vista0.height, bytes: r.bytes, ext: r.ext }, ancho: vista0.width, alto: vista0.height });
+        const k = Math.max(vista0.width, vista0.height) > 1200 ? 842 / Math.max(vista0.width, vista0.height) : 1; // Word no admite hojas gigantes
+        fielImgs.push({ img: { y: 0, ancho: vista0.width * k, alto: vista0.height * k, bytes: r.bytes, ext: r.ext }, ancho: vista0.width * k, alto: vista0.height * k });
       } else {
         ctx.report(0.05 + (n / total) * 0.6, `Leyendo la página ${n} de ${total}`);
         paginas.push(await leerPagina(page, lib, cuenta));

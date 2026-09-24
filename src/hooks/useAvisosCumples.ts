@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { notificarSistema } from "@/lib/notificar";
 import { claveFecha, fechaLarga, inicioDelDia, proximaOcurrenciaEvento, proximoCumple } from "@/lib/calendario/fechas";
 import { useCalendarioStore } from "@/store/calendario-store";
 
@@ -17,22 +18,11 @@ export function textoAvisoEvento(titulo: string, dias: number, fecha: Date): { t
   return { titulo: `En ${dias} días: ${titulo}`, texto: `Será el ${fechaLarga(fecha)}.` };
 }
 
-/** Envía una notificación del sistema, si el usuario dio permiso. Devuelve true si se envió. */
-export function notificarSistema(titulo: string, cuerpo: string, etiqueta?: string): boolean {
-  if (typeof Notification === "undefined" || Notification.permission !== "granted") return false;
-  try {
-    new Notification(titulo, { body: cuerpo, tag: etiqueta, silent: false });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 /**
  * Revisa los cumpleaños Y los eventos generales al abrir la aplicación y cada minuto. Cuando llega la hora
  * elegida, avisa una sola vez por cada uno y anticipación (el mismo día, un día antes, una semana antes): con
  * una notificación del sistema si hay permiso, y siempre con un aviso dentro de la aplicación. Los avisos
- * funcionan mientras NexusHub esté abierto: una página web no puede avisar estando cerrada.
+ * funcionan mientras NexusHub esté abierto (aunque sea en la bandeja): un programa cerrado no puede avisar.
  */
 export function useAvisosCumples() {
   useEffect(() => {

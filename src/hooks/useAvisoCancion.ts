@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import { notificarSistema } from "@/lib/notificar";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useReproductorStore } from "@/store/reproductor-store";
-import { notificarSistema } from "./useAvisosCumples";
+
 
 /**
  * Con el ajuste «avisarCambioCancion» activo, avisa con una notificación del sistema cada vez que

@@ -7,12 +7,10 @@ import { Glifo } from "@/components/fluent/Glifo";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { Selector } from "@/components/fluent/Selector";
 import { Switch } from "@/components/fluent/Switch";
-import { notificarSistema } from "@/hooks/useAvisosCumples";
+import { notificarSistema, pedirPermisoNotificaciones, permisoNotificaciones, type PermisoNotificaciones } from "@/lib/notificar";
 import { useCalendarioStore } from "@/store/calendario-store";
 
-type Permiso = NotificationPermission | "no-soportado";
-
-const leerPermiso = (): Permiso => (typeof Notification === "undefined" ? "no-soportado" : Notification.permission);
+type Permiso = PermisoNotificaciones;
 
 function Fila({ etiqueta, valor, onChange }: { etiqueta: string; valor: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -30,18 +28,14 @@ export function PanelAvisos() {
   const [permiso, setPermiso] = useState<Permiso>("default");
   const [prueba, setPrueba] = useState<string | null>(null);
 
-  useEffect(() => setPermiso(leerPermiso()), []);
+  useEffect(() => {
+    void permisoNotificaciones().then(setPermiso);
+  }, []);
 
-  const pedirPermiso = async () => {
-    try {
-      setPermiso(await Notification.requestPermission());
-    } catch {
-      setPermiso(leerPermiso());
-    }
-  };
+  const pedirPermiso = async () => setPermiso(await pedirPermisoNotificaciones());
 
-  const probar = () => {
-    const ok = notificarSistema("NexusHub", "Así se verán tus avisos de cumpleaños.", "prueba");
+  const probar = async () => {
+    const ok = await notificarSistema("NexusHub", "Así se verán tus avisos de cumpleaños.", "prueba");
     setPrueba(ok ? "Enviamos una notificación de prueba: debería aparecer en la esquina de tu pantalla." : "No se pudo enviar la notificación de prueba.");
   };
 
@@ -73,7 +67,7 @@ export function PanelAvisos() {
         {permiso === "granted" && (
           <>
             <p className="text-caption text-fg-secondary">Las notificaciones del sistema están activadas.</p>
-            <Button onClick={probar} className="self-start">Enviar aviso de prueba</Button>
+            <Button onClick={() => void probar()} className="self-start">Enviar aviso de prueba</Button>
             {prueba && <p className="text-caption text-fg-secondary" role="status">{prueba}</p>}
           </>
         )}
@@ -93,7 +87,7 @@ export function PanelAvisos() {
             Verás los avisos dentro de la aplicación.
           </InfoBar>
         )}
-        <p className="text-caption text-fg-tertiary">Los avisos funcionan mientras NexusHub esté abierto.</p>
+        <p className="text-caption text-fg-tertiary">Los avisos funcionan mientras NexusHub esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Aplicación).</p>
       </div>
     </Card>
   );

@@ -4,6 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
 import { useAvisoCancion } from "@/hooks/useAvisoCancion";
 import { useAvisosCumples } from "@/hooks/useAvisosCumples";
+import { useAvisosClases } from "@/hooks/useAvisosClases";
 import { useRespaldoLocal } from "@/hooks/useRespaldoLocal";
 import { useBandeja } from "@/hooks/useBandeja";
 import { useCerrarABandeja } from "@/hooks/useCerrarABandeja";
@@ -39,6 +40,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useGlobalShortcuts();
   useRevealHighlight();
   useAvisosCumples();
+  useAvisosClases();
   useAvisoCancion();
   useRecientesMusica();
   useEfectoVentana();

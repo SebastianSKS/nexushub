@@ -22,6 +22,12 @@ export interface Ajustes {
   avisarCambioCancion: boolean;
   /** Al terminar un video, pasar solo al siguiente de la cola. */
   siguienteAutomatico: boolean;
+  /** Minutos antes de cada clase para avisar (0 = no avisar). */
+  avisoClaseMin: number;
+  /** Un resumen de lo que tienes hoy, a la hora elegida. */
+  resumenDia: boolean;
+  /** Hora (0-23) del resumen del día. */
+  resumenHora: number;
   seccionInicial: SeccionInicial;
 }
 
@@ -50,6 +56,9 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   segundoPlano: false,
   avisarCambioCancion: false,
   siguienteAutomatico: true,
+  avisoClaseMin: 10,
+  resumenDia: true,
+  resumenHora: 6,
   seccionInicial: "inicio",
 };
 
@@ -72,6 +81,9 @@ function leer(): Ajustes {
       segundoPlano: d.segundoPlano === true,
       avisarCambioCancion: d.avisarCambioCancion === true,
       siguienteAutomatico: d.siguienteAutomatico !== false,
+      avisoClaseMin: typeof d.avisoClaseMin === "number" && [0, 5, 10, 15, 30].includes(d.avisoClaseMin) ? d.avisoClaseMin : 10,
+      resumenDia: d.resumenDia !== false,
+      resumenHora: typeof d.resumenHora === "number" && Number.isInteger(d.resumenHora) && d.resumenHora >= 0 && d.resumenHora <= 13 ? d.resumenHora : 6,
       seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",
     };
   } catch {

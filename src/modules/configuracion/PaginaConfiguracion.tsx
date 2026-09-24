@@ -8,6 +8,7 @@ import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { Selector } from "@/components/fluent/Selector";
+import { notificarSistema } from "@/lib/notificar";
 import { Slider } from "@/components/fluent/Slider";
 import { Switch } from "@/components/fluent/Switch";
 import { ExpansorAjuste, FilaAjuste, TarjetaAjuste } from "@/components/fluent/TarjetaAjuste";
@@ -126,6 +127,39 @@ export function PaginaConfiguracion() {
               </TarjetaAjuste>
               <TarjetaAjuste glifo="campana" titulo="Avisar qué canción suena" descripcion="Una notificación del sistema cada vez que empieza una canción nueva.">
                 <Switch checked={a.avisarCambioCancion} onChange={(v) => a.cambiar({ avisarCambioCancion: v })} label="Avisar qué canción suena" />
+              </TarjetaAjuste>
+            </Seccion>
+
+            <Seccion titulo="Avisos">
+              <TarjetaAjuste glifo="campana" titulo="Avisar antes de cada clase" descripcion="Una notificación de Windows unos minutos antes, con el aula y el docente. Usa tu horario.">
+                <Selector<number>
+                  label="Avisar antes de cada clase"
+                  value={a.avisoClaseMin}
+                  options={[
+                    { value: 0, label: "No avisar" },
+                    { value: 5, label: "5 minutos antes" },
+                    { value: 10, label: "10 minutos antes" },
+                    { value: 15, label: "15 minutos antes" },
+                    { value: 30, label: "30 minutos antes" },
+                  ]}
+                  onChange={(avisoClaseMin) => a.cambiar({ avisoClaseMin })}
+                />
+              </TarjetaAjuste>
+              <TarjetaAjuste glifo="calendario" titulo="Resumen del día" descripcion="Al empezar el día, una notificación con tus clases, tareas y cumpleaños de hoy.">
+                <div className="flex items-center gap-3">
+                  {a.resumenDia && (
+                    <Selector<number>
+                      label="Hora del resumen"
+                      value={a.resumenHora}
+                      options={Array.from({ length: 14 }, (_, h) => ({ value: h, label: `${String(h).padStart(2, "0")}:00` }))}
+                      onChange={(resumenHora) => a.cambiar({ resumenHora })}
+                    />
+                  )}
+                  <Switch checked={a.resumenDia} onChange={(v) => a.cambiar({ resumenDia: v })} label="Resumen del día" />
+                </div>
+              </TarjetaAjuste>
+              <TarjetaAjuste glifo="informacion" titulo="Probar una notificación" descripcion="Para comprobar que Windows te las muestra. Avisan mientras NexusHub esté abierto, aunque sea en la bandeja.">
+                <Button onClick={() => void notificarSistema("NexusHub", "Así se verán tus avisos de clases y tareas.", "prueba")}>Enviar aviso de prueba</Button>
               </TarjetaAjuste>
             </Seccion>
 

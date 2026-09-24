@@ -1,4 +1,4 @@
-import { notificarSistema } from "@/hooks/useAvisosCumples";
+import { notificarSistema } from "@/lib/notificar";
 import { getTool } from "@/lib/documents/tools";
 import { parseRanges } from "@/lib/documents/ranges";
 import { useAjustesStore } from "@/store/ajustes-store";

@@ -26,6 +26,8 @@ export interface Ajustes {
   avisoClaseMin: number;
   /** Convertir Word, Excel, PowerPoint y PDF→Word con Microsoft Office si está instalado (mejor calidad). */
   usarOffice: boolean;
+  /** Al descargar un resultado de Documentos, abrir «Guardar como» (empieza en la carpeta de las materias) en vez de guardar directo en Descargas. */
+  preguntarDondeGuardar: boolean;
   /** Un resumen de lo que tienes hoy, a la hora elegida. */
   resumenDia: boolean;
   /** Hora (0-23) del resumen del día. */
@@ -60,6 +62,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   siguienteAutomatico: true,
   avisoClaseMin: 10,
   usarOffice: true,
+  preguntarDondeGuardar: true,
   resumenDia: true,
   resumenHora: 6,
   seccionInicial: "inicio",
@@ -87,6 +90,7 @@ function leer(): Ajustes {
       avisoClaseMin: typeof d.avisoClaseMin === "number" && [0, 5, 10, 15, 30].includes(d.avisoClaseMin) ? d.avisoClaseMin : 10,
       resumenDia: d.resumenDia !== false,
       usarOffice: d.usarOffice !== false,
+      preguntarDondeGuardar: d.preguntarDondeGuardar !== false,
       resumenHora: typeof d.resumenHora === "number" && Number.isInteger(d.resumenHora) && d.resumenHora >= 0 && d.resumenHora <= 13 ? d.resumenHora : 6,
       seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",
     };

@@ -21,6 +21,7 @@ export function ResultsPanel() {
   const guardar = async (clave: string, blob: Blob, nombre: string) => {
     try {
       const d = await descargar(blob, nombre);
+      if (d.cancelado) return; // cerró «Guardar como» sin guardar: no hay nada que avisar
       setHechos((h) => ({ ...h, [clave]: d }));
     } catch (e) {
       setHechos((h) => ({ ...h, [clave]: { error: e instanceof Error ? e.message : "No se pudo guardar el archivo." } }));
@@ -129,7 +130,7 @@ function Confirmacion({ estado }: { estado: Descargado | { error: string } | und
     <p role="status" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-success-fg">
       <span className="flex items-center gap-1.5 font-semibold">
         <CheckmarkCircle16Filled className="shrink-0" aria-hidden />
-        {estado.ruta ? `Guardado en Descargas como «${estado.nombre}»` : "Descarga iniciada: búscala en las descargas de tu navegador"}
+        {estado.ruta ? `Guardado en «${carpetaDe(estado.ruta)}» como «${estado.nombre}»` : "Descarga iniciada: búscala en las descargas de tu navegador"}
       </span>
       {estado.ruta && (
         <button type="button" onClick={() => void mostrarDescarga(estado.ruta!).catch(() => {})} className="text-accent-text underline hover:no-underline">
@@ -138,4 +139,11 @@ function Confirmacion({ estado }: { estado: Descargado | { error: string } | und
       )}
     </p>
   );
+}
+
+/** Nombre de la carpeta donde quedó un archivo («Descargas», «Redes»…). */
+function carpetaDe(ruta: string): string {
+  const partes = ruta.split(/[\\/]/);
+  const carpeta = partes[partes.length - 2] ?? "";
+  return carpeta === "Downloads" ? "Descargas" : carpeta;
 }

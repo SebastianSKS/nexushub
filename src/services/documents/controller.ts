@@ -6,7 +6,7 @@ import { useAppStore } from "@/store/app-store";
 import { useDocumentsStore } from "@/store/documents-store";
 import type { ToolId } from "@/types/documents";
 import { describeError, isAbort } from "./errors";
-import { saveBlob, zipResults } from "./download";
+import { descargar, zipResults } from "./download";
 import { runTool } from "./pipeline";
 
 let current: AbortController | null = null;
@@ -96,8 +96,12 @@ export async function startRun(): Promise<void> {
     store.finishRun(outcome.results, outcome.warnings);
     // Ajuste «Al terminar una conversión → Descargar solo»: un archivo se guarda tal cual; varios, en un ZIP.
     if (useAjustesStore.getState().alTerminar === "descargar" && outcome.results.length > 0) {
-      if (outcome.results.length === 1) saveBlob(outcome.results[0]!.blob, outcome.results[0]!.name);
-      else saveBlob(await zipResults(outcome.results), `${tool.name}.zip`);
+      try {
+        if (outcome.results.length === 1) await descargar(outcome.results[0]!.blob, outcome.results[0]!.name);
+        else await descargar(await zipResults(outcome.results), `${tool.name}.zip`);
+      } catch (e) {
+        store.pushNotice({ severity: "error", title: "No se pudo guardar el resultado.", message: e instanceof Error ? e.message : "Descárgalo desde el panel de resultados." });
+      }
     }
     app.addFilesProcessed(files.length);
     const mensaje =

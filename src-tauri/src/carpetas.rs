@@ -263,33 +263,58 @@ pub fn abrir_en_sistema(app: AppHandle, carpeta: Option<String>, archivo: Option
     orden.arg(&ruta).spawn().map(|_| ()).map_err(|e| e.to_string())
 }
 
-/// Guarda el resultado de una herramienta de Documentos en la carpeta Descargas y devuelve la ruta completa, para poder
-/// avisar dónde quedó. Nunca sobrescribe: si ya hay un archivo igual, este se guarda como «nombre (2)».
+/// Guarda el resultado de una herramienta de Documentos y devuelve la ruta completa, para poder avisar dónde quedó.
+/// - Con `x-preguntar: 1` se abre el cuadro «Guardar como» de Windows, que arranca en la carpeta de las materias
+///   (`Documentos\NexusHub\Tareas`); quien lo usa elige carpeta y nombre (el propio cuadro pregunta si va a reemplazar
+///   algo). Si se cierra sin guardar, se devuelve `None`.
+/// - Sin él, se guarda directo en Descargas, sin sobrescribir nunca («nombre (2)» si ya hay uno igual).
 /// Cabecera `x-nombre` (codificada con %); el cuerpo son los bytes.
 #[tauri::command]
-pub fn descarga_guardar(app: AppHandle, request: Request<'_>) -> Result<String, String> {
+pub async fn descarga_guardar(app: AppHandle, request: Request<'_>) -> Result<Option<String>, String> {
     let nombre = request.headers().get("x-nombre").and_then(|v| v.to_str().ok()).map(descodificar).ok_or_else(|| "Falta el nombre.".to_string())?;
     let nombre = archivo_seguro(&nombre)?;
+    let preguntar = request.headers().get("x-preguntar").and_then(|v| v.to_str().ok()) == Some("1");
     let InvokeBody::Raw(bytes) = request.body() else { return Err("No llegó el archivo.".into()) };
     if bytes.len() > MAX_BYTES {
         return Err("El archivo pesa demasiado (máximo 200 MB).".into());
     }
-    let carpeta = app.path().download_dir().map_err(|e| e.to_string())?;
-    std::fs::create_dir_all(&carpeta).map_err(|e| e.to_string())?;
-    let final_ = nombre_libre(&carpeta, &nombre);
-    let ruta = carpeta.join(&final_);
-    std::fs::write(&ruta, bytes).map_err(|e| format!("No se pudo guardar en Descargas: {e}"))?;
-    Ok(ruta.to_string_lossy().to_string())
+    let bytes = bytes.clone();
+
+    let ruta = if preguntar {
+        use tauri_plugin_dialog::DialogExt;
+        let inicio = base(&app)?;
+        let ext = Path::new(&nombre).extension().and_then(|e| e.to_str()).unwrap_or("").to_string();
+        let app2 = app.clone();
+        let nombre2 = nombre.clone();
+        let elegido = tauri::async_runtime::spawn_blocking(move || {
+            let mut cuadro = app2.dialog().file().set_title("Guardar").set_directory(inicio).set_file_name(nombre2);
+            if !ext.is_empty() {
+                cuadro = cuadro.add_filter(ext.to_uppercase(), &[ext.as_str()]);
+            }
+            cuadro.blocking_save_file()
+        })
+        .await
+        .map_err(|e| e.to_string())?;
+        match elegido {
+            None => return Ok(None),
+            Some(f) => f.into_path().map_err(|e| e.to_string())?,
+        }
+    } else {
+        let carpeta = app.path().download_dir().map_err(|e| e.to_string())?;
+        std::fs::create_dir_all(&carpeta).map_err(|e| e.to_string())?;
+        let final_ = nombre_libre(&carpeta, &nombre);
+        carpeta.join(final_)
+    };
+    std::fs::write(&ruta, bytes).map_err(|e| format!("No se pudo guardar el archivo: {e}"))?;
+    Ok(Some(ruta.to_string_lossy().to_string()))
 }
 
-/// Muestra en el Explorador un archivo guardado con `descarga_guardar` (solo si está directamente en Descargas).
+/// Muestra en el Explorador un archivo guardado con `descarga_guardar` (solo resalta el archivo; no lo abre ni lo ejecuta).
 #[tauri::command]
-pub fn descarga_mostrar(app: AppHandle, ruta: String) -> Result<(), String> {
+pub fn descarga_mostrar(ruta: String) -> Result<(), String> {
     let ruta = PathBuf::from(ruta);
-    let descargas = app.path().download_dir().map_err(|e| e.to_string())?;
-    let dentro = ruta.canonicalize().ok().and_then(|r| r.parent().map(|p| p.to_path_buf())).zip(descargas.canonicalize().ok()).map(|(p, d)| p == d).unwrap_or(false);
-    if !dentro || !ruta.is_file() {
-        return Err("Ese archivo ya no está en Descargas.".into());
+    if !ruta.is_file() {
+        return Err("Ese archivo ya no está ahí.".into());
     }
     #[cfg(target_os = "windows")]
     {
@@ -298,7 +323,7 @@ pub fn descarga_mostrar(app: AppHandle, ruta: String) -> Result<(), String> {
     }
     #[cfg(not(target_os = "windows"))]
     {
-        let carpeta = ruta.parent().unwrap_or(&descargas).to_path_buf();
+        let carpeta = ruta.parent().map(|p| p.to_path_buf()).unwrap_or_default();
         #[cfg(target_os = "macos")]
         let mut orden = std::process::Command::new("open");
         #[cfg(not(target_os = "macos"))]

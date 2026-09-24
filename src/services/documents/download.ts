@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import { esEscritorio } from "@/lib/entorno";
+import { useAjustesStore } from "@/store/ajustes-store";
 import type { ResultItem } from "@/types/documents";
 
 /** Guarda un Blob con el diálogo de descarga del navegador. */
@@ -32,21 +33,28 @@ export async function zipResults(results: ResultItem[]): Promise<Blob> {
 }
 
 export interface Descargado {
-  /** Ruta completa del archivo guardado (solo en la aplicación de escritorio, donde se guarda en Descargas). */
+  /** Ruta completa del archivo guardado (solo en la aplicación de escritorio). */
   ruta?: string;
+  /** Se cerró el cuadro «Guardar como» sin guardar: no hay nada que avisar. */
+  cancelado?: boolean;
   /** Nombre con el que quedó (puede llevar «(2)» si ya había uno igual). */
   nombre: string;
 }
 
 /**
- * Descarga un resultado y dice dónde quedó. En la aplicación de escritorio lo guarda directamente en la carpeta
- * Descargas (y se puede mostrar en el Explorador); en el navegador usa la descarga normal.
+ * Descarga un resultado y dice dónde quedó. En la aplicación de escritorio, según el ajuste «Elegir dónde guardar», abre
+ * el cuadro «Guardar como» (que empieza en la carpeta de las materias) o lo guarda directo en Descargas; en el navegador
+ * usa la descarga normal.
  */
 export async function descargar(blob: Blob, name: string): Promise<Descargado> {
   if (esEscritorio()) {
     const { invoke } = await import("@tauri-apps/api/core");
     try {
-      const ruta = await invoke<string>("descarga_guardar", new Uint8Array(await blob.arrayBuffer()), { headers: { "x-nombre": encodeURIComponent(name) } });
+      const preguntar = useAjustesStore.getState().preguntarDondeGuardar;
+      const ruta = await invoke<string | null>("descarga_guardar", new Uint8Array(await blob.arrayBuffer()), {
+        headers: { "x-nombre": encodeURIComponent(name), "x-preguntar": preguntar ? "1" : "0" },
+      });
+      if (ruta === null) return { nombre: name, cancelado: true };
       return { ruta, nombre: ruta.split(/[\\/]/).pop() ?? name };
     } catch (e) {
       throw new Error(typeof e === "string" ? e : "No se pudo guardar el archivo.");

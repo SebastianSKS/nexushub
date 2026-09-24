@@ -196,6 +196,11 @@ export function PaginaConfiguracion() {
                   <Switch checked={a.usarOffice} onChange={(v) => a.cambiar({ usarOffice: v })} label="Convertir con Microsoft Office" />
                 </TarjetaAjuste>
               )}
+              {escritorio && (
+                <TarjetaAjuste glifo="carpeta" titulo="Elegir dónde guardar" descripcion="Al descargar un resultado se abre «Guardar como», empezando en la carpeta de tus materias (Documentos/NexusHub/Tareas). Si lo apagas, se guarda directo en Descargas.">
+                  <Switch checked={a.preguntarDondeGuardar} onChange={(v) => a.cambiar({ preguntarDondeGuardar: v })} label="Elegir dónde guardar" />
+                </TarjetaAjuste>
+              )}
               <TarjetaAjuste glifo="descargar" titulo="Al terminar una conversión" descripcion="Qué hacer con el resultado cuando está listo.">
                 <SegmentedControl<Extract<AlTerminar, "nada" | "descargar">>
                   label="Al terminar una conversión"

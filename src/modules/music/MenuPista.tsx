@@ -13,7 +13,7 @@ import { avisoBreve } from "@/services/music/megusta";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useMenuPistaStore } from "@/store/menu-pista-store";
 import { useMusicStore } from "@/store/music-store";
-import { useReproductorStore, type Pista } from "@/store/reproductor-store";
+import type { Pista } from "@/store/reproductor-store";
 
 const ID_SPOTIFY = /^[A-Za-z0-9]{22}$/;
 
@@ -33,13 +33,6 @@ export function MenuPista() {
     const { pista, artistId, albumId } = menu;
     const esCancion = pista.fuente === "spotify" && pista.id.startsWith("track:");
     const pura = pista.id.replace(/^track:/, "");
-    items.push({
-      etiqueta: "Añadir a la cola",
-      onSelect: () => {
-        useReproductorStore.getState().encolarSiguiente(pista);
-        avisoBreve("Añadida a la cola", "Sonará justo después de la actual.");
-      },
-    });
     if (esCancion && conectado) {
       const gusta = meGusta[pista.id] === true || favoritos.some((f) => f.id === pista.id && f.fuente === "spotify");
       items.push({

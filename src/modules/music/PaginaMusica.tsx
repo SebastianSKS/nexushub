@@ -69,7 +69,7 @@ export function PaginaMusica() {
       <PlantillaPagina
         migas={[{ etiqueta: "Música" }]}
         titulo="Música"
-        descripcion="Escucha Spotify como invitado o conecta tu cuenta Premium."
+        descripcion="Elige una canción y la música sigue sola. Escucha como invitado o conecta tu cuenta Premium."
         accion={accion}
         principal={
           <>

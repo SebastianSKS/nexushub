@@ -33,7 +33,6 @@ export const GLIFOS = {
   arriba: 0xe70e,
   abajo: 0xe70d,
   mas: 0xe712,
-  lista: 0xe8fd,
   agregar: 0xe710,
   actualizar: 0xe72c,
   descargar: 0xe896,

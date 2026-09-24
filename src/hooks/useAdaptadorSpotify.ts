@@ -5,7 +5,7 @@ import { registrarControlador } from "@/services/reproductor/controladores";
 import { fetchMyPlaylists, spotifyApi } from "@/services/music/api";
 import { obtenerAccessToken } from "@/services/music/oauth";
 import { loadSpotifyEmbedApi, loadSpotifySdk } from "@/services/music/loaders";
-import { similaresA } from "@/services/music/similares";
+import { radioDe } from "@/services/music/radio";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useMusicStore } from "@/store/music-store";
 import { progresoActual, useReproductorStore, type Capacidades, type Pista } from "@/store/reproductor-store";
@@ -103,32 +103,36 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
   const ultimoRef = useRef<{ id: string | null; playing: boolean } | null>(null);
   /** Para no pasar dos veces a la siguiente por la misma petición de reproducir. */
   const finRef = useRef<string | null>(null);
-  /** Las canciones parecidas que ya se pidieron (una sola vez por pista) y su resultado pendiente. */
-  const similaresRef = useRef<{ id: string; espera: Promise<void> } | null>(null);
+  /** La radio: para qué canción se pidieron ya canciones parecidas (una sola vez por canción) y su resultado pendiente. */
+  const radioRef = useRef<{ id: string; espera: Promise<void> } | null>(null);
 
-  /** Última canción de la cola (sin repetir): se buscan más del mismo artista y se añaden al final. */
-  const pedirSimilares = (pista: Pista) => {
+  /**
+   * Como en Spotify, la música sigue sola: cuando quedan menos de 3 canciones por sonar, se piden más parecidas a la que
+   * suena y se añaden al final. Así, elegir una canción es suficiente; nadie tiene que armar una cola.
+   */
+  const rellenarRadio = (pista: Pista) => {
     const s = useReproductorStore.getState();
-    if (s.indiceActual < s.cola.length - 1 || s.repetir !== "no" || !useAjustesStore.getState().seguirConSimilares) return;
-    if (similaresRef.current?.id === pista.id) return;
-    const excluir = new Set(s.cola.map((c) => c.id));
-    similaresRef.current = {
+    if (s.repetir !== "no" || !useAjustesStore.getState().seguirConSimilares) return;
+    if (s.cola.length - s.indiceActual - 1 >= 3) return;
+    if (radioRef.current?.id === pista.id) return;
+    radioRef.current = {
       id: pista.id,
-      espera: similaresA(pista, excluir, 10)
+      espera: radioDe(pista, s.cola, 12)
         .then((mas) => {
-          if (useReproductorStore.getState().pista?.id === pista.id) useReproductorStore.getState().extenderCola(mas);
+          const vivo = useReproductorStore.getState();
+          if (mas.length > 0 && vivo.fuente === "spotify") vivo.extenderCola(mas);
         })
         .catch(() => undefined),
     };
   };
 
-  /** Terminó una canción: sigue la cola; si era la última, espera un momento las parecidas antes de rendirse. */
+  /** Terminó una canción: pasa a la siguiente; si no había más, espera un momento a que llegue la radio antes de rendirse. */
   const alTerminarCancion = async () => {
     let s = useReproductorStore.getState();
     const eraLaUltima = s.indiceActual >= s.cola.length - 1 && s.repetir !== "una";
     if (eraLaUltima && s.pista) {
-      pedirSimilares(s.pista);
-      await Promise.race([similaresRef.current?.espera, new Promise((r) => setTimeout(r, 4000))]);
+      rellenarRadio(s.pista);
+      await Promise.race([radioRef.current?.espera, new Promise((r) => setTimeout(r, 6000))]);
       s = useReproductorStore.getState();
     }
     s.siguiente(true);
@@ -234,8 +238,9 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
               : {}),
         });
 
-        // Última canción de la cola: se piden más del mismo artista para que la música no pare.
-        if (pista?.id.startsWith("track:") && !s.paused) void pedirSimilares(pista);
+        // Si la pista vino sin carátula (las de la radio), se toma la que trae Spotify.
+        if (pista?.id.startsWith("track:") && !pista.caratula && t.album.images[0]) rep.informar({ pista: { ...pista, caratula: t.album.images[0].url } });
+        if (pista?.id.startsWith("track:") && !s.paused) rellenarRadio(pista);
       });
       player.addListener("account_error", () => useMusicStore.getState().setConnection({ status: "not-premium", name: nombre }));
       player.addListener("authentication_error", () =>

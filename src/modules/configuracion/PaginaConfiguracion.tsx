@@ -125,8 +125,8 @@ export function PaginaConfiguracion() {
               <TarjetaAjuste glifo="reproducir" titulo="Reproducción automática" descripcion="Al abrir un enlace directo a un video, empieza a reproducirse solo.">
                 <Switch checked={a.reproduccionAutomatica} onChange={(v) => a.cambiar({ reproduccionAutomatica: v })} label="Reproducción automática" />
               </TarjetaAjuste>
-              <TarjetaAjuste glifo="musica" titulo="Seguir con canciones parecidas" descripcion="Con Spotify conectado, cuando se acaba la cola sigue con más música del mismo artista en vez de detenerse.">
-                <Switch checked={a.seguirConSimilares} onChange={(v) => a.cambiar({ seguirConSimilares: v })} label="Seguir con canciones parecidas" />
+              <TarjetaAjuste glifo="musica" titulo="Música sin parar (como Spotify)" descripcion="Con Spotify conectado, al elegir una canción la música sigue sola con canciones parecidas, sin tener que armar una lista. Apágalo si prefieres que se detenga al terminar.">
+                <Switch checked={a.seguirConSimilares} onChange={(v) => a.cambiar({ seguirConSimilares: v })} label="Música sin parar" />
               </TarjetaAjuste>
               <TarjetaAjuste glifo="campana" titulo="Avisar qué canción suena" descripcion="Una notificación del sistema cada vez que empieza una canción nueva.">
                 <Switch checked={a.avisarCambioCancion} onChange={(v) => a.cambiar({ avisarCambioCancion: v })} label="Avisar qué canción suena" />

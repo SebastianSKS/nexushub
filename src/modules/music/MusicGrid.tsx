@@ -20,11 +20,8 @@ export function MusicGrid() {
   const { load } = useMusicStore.getState();
 
   const reproducir = (renglon: number, i: number) => {
-    // Las canciones del mismo renglón forman la cola: «siguiente» pasa a la canción de al lado.
-    const items = secciones[renglon]!.items;
-    const canciones = items.filter((x) => x.kind === "track").map(pistaDeItem);
-    const pista = pistaDeItem(items[i]!);
-    useReproductorStore.getState().reproducir(pista, canciones.length > 0 ? canciones : [pista]);
+    // Como en Spotify: se reproduce la canción elegida y la música sigue sola con canciones parecidas (la radio).
+    useReproductorStore.getState().reproducir(pistaDeItem(secciones[renglon]!.items[i]!));
   };
 
   if (status === "idle" || (status === "loading" && secciones.length === 0)) {

@@ -53,8 +53,6 @@ interface ReproductorState {
   repetir: ModoRepetir;
   cola: Pista[];
   indiceActual: number;
-  /** Pistas añadidas con «Añadir a la cola» que aún no suenan (claves fuente:id), en el orden en que sonarán. */
-  usuarioEnCola: string[];
 
   capacidades: Capacidades;
   error: string | null;
@@ -68,11 +66,8 @@ interface ReproductorState {
 
   reproducir: (pista: Pista, cola?: Pista[], indice?: number, opciones?: { reproducir?: boolean }) => void;
   encolar: (pista: Pista) => void;
-  /** «Añadir a la cola» de la música: suena justo después de la actual (y de lo que ya se añadió antes). */
-  encolarSiguiente: (pista: Pista) => void;
   /** Añade pistas al final de la cola (continuación automática). */
   extenderCola: (pistas: Pista[]) => void;
-  vaciarProximas: () => void;
   quitarDeCola: (indice: number) => void;
   reordenarCola: (cola: Pista[]) => void;
   irAIndice: (indice: number) => void;
@@ -102,7 +97,6 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
   repetir: "no",
   cola: [],
   indiceActual: -1,
-  usuarioEnCola: [],
 
   capacidades: SIN_CAPACIDADES,
   error: null,
@@ -121,7 +115,6 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
       pista,
       cola: lista,
       indiceActual: i,
-      usuarioEnCola: [],
       reproduciendo: false,
       progreso: 0,
       progresoMarca: Date.now(),
@@ -144,40 +137,17 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
     set({ cola: [...s.cola, pista] });
   },
 
-  encolarSiguiente: (pista) => {
-    const s = get();
-    if (!s.pista) {
-      get().reproducir(pista);
-      return;
-    }
-    const cola = [...s.cola];
-    cola.splice(s.indiceActual + 1 + s.usuarioEnCola.length, 0, pista);
-    set({ cola, usuarioEnCola: [...s.usuarioEnCola, claveDe(pista)] });
-  },
-
   extenderCola: (pistas) => {
     const s = get();
     if (pistas.length === 0) return;
     set({ cola: [...s.cola, ...pistas] });
   },
 
-  vaciarProximas: () => {
-    const s = get();
-    if (s.indiceActual < 0 || s.cola.length <= s.indiceActual + 1) return;
-    set({ cola: s.cola.slice(0, s.indiceActual + 1), usuarioEnCola: [] });
-  },
-
   quitarDeCola: (indice) => {
     const s = get();
     if (indice === s.indiceActual || indice < 0 || indice >= s.cola.length) return; // la que suena no se quita
     const cola = s.cola.filter((_, i) => i !== indice);
-    const quitada = claveDe(s.cola[indice]!);
-    const pendiente = s.usuarioEnCola.indexOf(quitada);
-    set({
-      cola,
-      indiceActual: indice < s.indiceActual ? s.indiceActual - 1 : s.indiceActual,
-      usuarioEnCola: pendiente >= 0 ? s.usuarioEnCola.filter((_, i) => i !== pendiente) : s.usuarioEnCola,
-    });
+    set({ cola, indiceActual: indice < s.indiceActual ? s.indiceActual - 1 : s.indiceActual });
   },
 
   reordenarCola: (cola) => {
@@ -313,8 +283,6 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
       return siguiente;
     }),
 }));
-
-const claveDe = (p: Pick<Pista, "id" | "fuente">) => `${p.fuente}:${p.id}`;
 
 /** Segundos actuales, interpolando desde la última actualización mientras suena. */
 export function progresoActual(s: Pick<ReproductorState, "progreso" | "progresoMarca" | "reproduciendo" | "pista">): number {

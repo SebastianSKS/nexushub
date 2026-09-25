@@ -29,6 +29,7 @@ import {
   type Carpeta,
 } from "@/services/carpetas";
 import { DialogoCarpetasHorario } from "./DialogoCarpetasHorario";
+import { DialogoNuevoArchivo } from "./DialogoNuevoArchivo";
 
 /** Un cuadro para escribir un nombre (nueva carpeta, renombrar…). Los errores del sistema se muestran ahí mismo. */
 function DialogoNombre({ titulo, etiqueta, inicial, accion, onGuardar, onCerrar }: { titulo: string; etiqueta: string; inicial: string; accion: string; onGuardar: (nombre: string) => Promise<void>; onCerrar: () => void }) {
@@ -71,7 +72,7 @@ function BotonIcono({ glifo, etiqueta, onClick, peligro }: { glifo: "editar" | "
 
 const fecha = (seg: number) => new Date(seg * 1000).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" });
 
-type Dialogo = { tipo: "nueva" } | { tipo: "renombrar-carpeta"; nombre: string } | { tipo: "renombrar-archivo"; nombre: string } | { tipo: "borrar-carpeta"; nombre: string } | { tipo: "borrar-archivo"; nombre: string } | null;
+type Dialogo = { tipo: "nueva" } | { tipo: "nuevo-archivo" } | { tipo: "renombrar-carpeta"; nombre: string } | { tipo: "renombrar-archivo"; nombre: string } | { tipo: "borrar-carpeta"; nombre: string } | { tipo: "borrar-archivo"; nombre: string } | null;
 
 /** /documentos/carpetas — «Mis tareas»: una carpeta por materia, con archivos de verdad en Documentos/Nexo/Tareas. */
 export function PaginaCarpetas() {
@@ -167,6 +168,7 @@ export function PaginaCarpetas() {
               {abierta ? (
                 <>
                   <Button onClick={() => void intentar(() => abrirEnSistema(abierta))} icon={<Glifo nombre="carpeta" />}>Abrir en el Explorador</Button>
+                  <Button icon={<Glifo nombre="agregar" />} onClick={() => setDialogo({ tipo: "nuevo-archivo" })}>Nuevo archivo</Button>
                   <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => entrada.current?.click()}>Añadir archivos</Button>
                 </>
               ) : (
@@ -272,6 +274,17 @@ export function PaginaCarpetas() {
 
       {dialogo?.tipo === "nueva" && (
         <DialogoNombre titulo="Nueva carpeta" etiqueta="Nombre de la materia" inicial="" accion="Crear" onCerrar={cerrarDialogo} onGuardar={async (n) => { await crearCarpeta(n); await recargar(); }} />
+      )}
+      {dialogo?.tipo === "nuevo-archivo" && abierta && (
+        <DialogoNuevoArchivo
+          carpeta={abierta}
+          ruta={ruta}
+          onCerrar={cerrarDialogo}
+          onCreado={async () => {
+            await cargarArchivos(abierta);
+            await recargar();
+          }}
+        />
       )}
       {dialogo?.tipo === "renombrar-carpeta" && (
         <DialogoNombre

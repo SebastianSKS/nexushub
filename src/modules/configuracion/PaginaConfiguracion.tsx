@@ -16,8 +16,8 @@ import { Avatar } from "@/components/shell/Avatar";
 import { DialogoPerfil } from "@/components/shell/DialogoPerfil";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { esEscritorio } from "@/lib/entorno";
+import { useGuiasStore } from "@/store/guias-store";
 import { ACENTOS, useAjustesStore, type AlTerminar, type EfectoVentana, type PreferenciaTema, type SeccionInicial } from "@/store/ajustes-store";
-import { useAppStore } from "@/store/app-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { AjusteActualizaciones } from "./AjusteActualizaciones";
 import { AjusteCanales } from "./AjusteCanales";
@@ -233,8 +233,8 @@ export function PaginaConfiguracion() {
             </Seccion>
 
             <Seccion titulo="Acerca de">
-              <TarjetaAjuste glifo="informacion" titulo="Recorrido de bienvenida" descripcion="Las 5 pantallas que explican qué hace cada sección.">
-                <Button onClick={() => useAppStore.getState().setTourAbierto(true)}>Ver de nuevo</Button>
+              <TarjetaAjuste glifo="informacion" titulo="Bienvenida y guías" descripcion="Vuelve a ver la bienvenida. Cada sección tiene además su propia guía: pulsa el signo de interrogación (?) de la barra de arriba.">
+                <Button onClick={() => useGuiasStore.getState().abrir("bienvenida")}>Ver de nuevo</Button>
               </TarjetaAjuste>
               <AjusteActualizaciones />
               <ExpansorAjuste

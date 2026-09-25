@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { QuestionCircle16Regular } from "@fluentui/react-icons";
 import clsx from "clsx";
 import { Glifo } from "@/components/fluent/Glifo";
 import { useHistorial } from "@/hooks/useHistorial";
 import { esEscritorio } from "@/lib/entorno";
+import { GUIAS, guiaDeRuta } from "@/lib/guias";
+import { useGuiasStore } from "@/store/guias-store";
 import type { NombreGlifo } from "@/lib/glifos";
 import { GlobalSearch } from "./GlobalSearch";
 import { NexusMark } from "./NexusMark";
@@ -37,6 +40,28 @@ function BotonVentana({ etiqueta, glifo, peligro, onClick }: BotonVentanaProps) 
       )}
     >
       <Glifo nombre={glifo} tam={10} />
+    </button>
+  );
+}
+
+/**
+ * El signo de interrogación de la barra de arriba: vuelve a mostrar la guía de la sección en la que se está
+ * (en Inicio, la bienvenida). Así, si a alguien se le olvida algo, lo repasa cuando quiera.
+ */
+function BotonAyuda() {
+  const ruta = usePathname();
+  const id = guiaDeRuta(ruta);
+  if (!id) return null;
+  const nombre = id === "bienvenida" ? "la bienvenida" : `«${GUIAS[id].nombre}»`;
+  return (
+    <button
+      type="button"
+      onClick={() => useGuiasStore.getState().abrir(id)}
+      aria-label={`Ayuda: cómo funciona ${nombre}`}
+      title={`Ayuda: cómo funciona ${nombre}`}
+      className="flex h-8 w-10 items-center justify-center text-fg transition-colors duration-exit ease-fluent hover:bg-[rgba(128,128,128,0.06)]"
+    >
+      <QuestionCircle16Regular />
     </button>
   );
 }
@@ -91,6 +116,7 @@ export function BarraTitulo() {
       <GlobalSearch />
 
       <div data-tauri-drag-region className="flex justify-end">
+        <BotonAyuda />
         {escritorio && (
           <>
             <BotonVentana etiqueta="Minimizar" glifo="minimizar" onClick={() => void ventana().then((w) => w.minimize())} />

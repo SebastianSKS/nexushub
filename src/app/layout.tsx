@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { RespaldoPrimero } from "@/components/shell/RespaldoPrimero";
 import { Ventana } from "@/components/shell/Ventana";
 import "@/styles/tokens.css";
 import "@/styles/fluent.css";
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_AJUSTES }} />
       </head>
       <body>
-        <Ventana>{children}</Ventana>
+        <RespaldoPrimero>
+          <Ventana>{children}</Ventana>
+        </RespaldoPrimero>
       </body>
     </html>
   );

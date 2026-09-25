@@ -194,6 +194,27 @@ function soloCanciones(secciones: SeccionMusica[]): MusicItem[] {
 }
 
 /**
+ * Lo que mejor coincide con lo escrito, para la lista que se abre bajo el buscador: unas pocas canciones, artistas,
+ * álbumes y playlists (conectado), o los sugeridos que coinciden (invitado). Enlaces de Spotify: no hay sugerencias.
+ */
+export async function sugerirBusqueda(query: string, conectado: boolean): Promise<MusicItem[]> {
+  const q = query.trim();
+  if (!q || parseSpotifyLink(q)) return [];
+  if (!conectado) {
+    const terminos = normalize(q).split(/\s+/).filter(Boolean);
+    return DEMO_MUSIC.filter((m) => terminos.every((t) => normalize(`${m.title} ${m.subtitle}`).includes(t))).slice(0, 6);
+  }
+  const { status, data } = await spotifyApi<RespuestaBusqueda>(`/search?${new URLSearchParams({ q, type: "track,artist,album,playlist", limit: "5" })}`);
+  if (status !== 200 || !data) throw errorDeEstado(status);
+  return [
+    ...sinNulos(data.tracks?.items).slice(0, 4).map(dePista),
+    ...sinNulos(data.artists?.items).slice(0, 2).map(deArtista),
+    ...sinNulos(data.albums?.items).slice(0, 2).map(deAlbum),
+    ...sinNulos(data.playlists?.items).slice(0, 2).map(deLista),
+  ];
+}
+
+/**
  * Contenido del módulo Música:
  * - sin texto: renglones de sugeridos, distintos cada vez (conectado: lo que escuchas, novedades y descubrimientos);
  * - un enlace o URI de Spotify: se resuelve a su canción/álbum/playlist (sin credenciales);

@@ -19,6 +19,8 @@ export function PaginaMusica() {
   const estado = useMusicStore((s) => s.connection.status);
   const connectAvailable = clienteIdConfigurado();
   const cargando = useMusicStore((s) => s.status === "loading");
+  // Con una búsqueda hecha, los resultados van primero: nada de favoritos ni recientes por delante.
+  const buscando = useMusicStore((s) => s.query.trim() !== "");
   const faltanPermisos = useMusicStore((s) => (s.permisosExtra === false && s.query === "") || s.permisosBiblioteca === "faltan");
   const [guia, setGuia] = useState(false);
 
@@ -86,12 +88,12 @@ export function PaginaMusica() {
                 Con un permiso más podrás guardar canciones en «Me gusta», añadirlas a tus playlists, y te mostramos lo que escuchaste hace poco y lo que más suena en tu cuenta.
               </InfoBar>
             )}
-            {conectado && (
+            {conectado && !buscando && (
               <div className="flex flex-wrap gap-2">
                 <BotonEnlace href="/musica/me-gusta">Canciones que te gustan</BotonEnlace>
               </div>
             )}
-            <FavoritosRecientes />
+            {!buscando && <FavoritosRecientes />}
             <MusicGrid />
           </>
         }

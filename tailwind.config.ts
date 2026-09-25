@@ -10,6 +10,9 @@ const config: Config = {
     colors: {
       transparent: "transparent",
       current: "currentColor",
+      // Blanco y negro puros: hacen falta sobre fondos de color (carátulas, degradados) que no cambian con el tema.
+      white: "#ffffff",
+      black: "#000000",
       mica: "var(--mica-base)",
       layer: "var(--layer)",
       "layer-alt": "var(--layer-alt)",

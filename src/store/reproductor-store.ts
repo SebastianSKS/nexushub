@@ -13,6 +13,8 @@ export interface Pista {
   /** Segundos; 0 = aún no se conoce. */
   duracion: number;
   fuente: Fuente;
+  /** Spotify: el artista principal, si se conoce (para «Ir al artista»). */
+  artistId?: string;
 }
 
 /** Qué controles puede cumplir la fuente activa. La barra oculta los demás en vez de fingirlos. */
@@ -53,6 +55,8 @@ interface ReproductorState {
   repetir: ModoRepetir;
   cola: Pista[];
   indiceActual: number;
+  /** Temporizador para dormir: pausa en un momento dado, o al terminar la canción que suena. */
+  dormir: { modo: "tiempo"; hasta: number } | { modo: "cancion" } | null;
 
   capacidades: Capacidades;
   error: string | null;
@@ -68,6 +72,11 @@ interface ReproductorState {
   encolar: (pista: Pista) => void;
   /** Añade pistas al final de la cola (continuación automática). */
   extenderCola: (pistas: Pista[]) => void;
+  /** Lo llama el adaptador cuando Spotify pasa solo a otra canción (la que se le dejó lista): la interfaz la sigue sin volver a pedir nada. */
+  avanzarA: (pista: Pista, indice: number) => void;
+  /** Pone una canción justo después de la que suena (la que Spotify ya tiene lista como siguiente). */
+  insertarDespues: (pista: Pista) => void;
+  programarDormir: (d: ReproductorState["dormir"]) => void;
   quitarDeCola: (indice: number) => void;
   reordenarCola: (cola: Pista[]) => void;
   irAIndice: (indice: number) => void;
@@ -97,6 +106,7 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
   repetir: "no",
   cola: [],
   indiceActual: -1,
+  dormir: null,
 
   capacidades: SIN_CAPACIDADES,
   error: null,
@@ -135,6 +145,20 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
     }
     if (s.cola.some((p) => p.id === pista.id && p.fuente === pista.fuente)) return;
     set({ cola: [...s.cola, pista] });
+  },
+
+  programarDormir: (dormir) => set({ dormir }),
+
+  avanzarA: (pista, indice) => {
+    const s = get();
+    set({ pista, indiceActual: indice, cola: s.cola.map((c, i) => (i === indice ? pista : c)), progreso: 0, progresoMarca: Date.now(), error: null });
+  },
+
+  insertarDespues: (pista) => {
+    const s = get();
+    const cola = [...s.cola];
+    cola.splice(s.indiceActual + 1, 0, pista);
+    set({ cola });
   },
 
   extenderCola: (pistas) => {
@@ -190,6 +214,8 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
       c.siguiente();
       return;
     }
+    // Si Spotify ya tiene lista la siguiente canción, se pasa a ella al instante (sin la espera de cargarla de cero).
+    if (!automatico && c?.avanzarPrecargada?.()) return;
     if (automatico && s.repetir === "una") {
       get().reproducir(s.pista, s.cola, s.indiceActual);
       return;

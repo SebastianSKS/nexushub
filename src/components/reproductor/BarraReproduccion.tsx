@@ -14,6 +14,7 @@ import { alternarMeGusta, esMeGusta } from "@/services/music/megusta";
 import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { Marquesina } from "./Marquesina";
+import { TemporizadorDormir } from "./TemporizadorDormir";
 
 export const ALTO_BARRA_MUSICA = 72;
 
@@ -72,7 +73,7 @@ function Contenido() {
   const duracion = pista.duracion;
 
   return (
-    <div className="grid h-full grid-cols-[280px_minmax(0,1fr)_200px] items-center gap-4 px-4">
+    <div className="grid h-full grid-cols-[260px_minmax(0,1fr)_300px] items-center gap-4 px-4">
       {/* Izquierda: carátula, título y artista — abre la vista grande "Reproduciendo ahora" */}
       <button
         type="button"
@@ -136,6 +137,19 @@ function Contenido() {
             onClick={() => st().setRepetir(repetir === "no" ? "todas" : repetir === "todas" ? "una" : "no")}
           />
         )}
+        <button
+          type="button"
+          onClick={() => {
+            useAppStore.getState().setMostrarLetra(true);
+            useAppStore.getState().setReproductorGrandeAbierto(true);
+          }}
+          aria-label="Ver la letra"
+          title="Ver la letra"
+          className="rounded-control h-8 shrink-0 px-2 text-caption font-semibold text-fg transition-colors duration-exit ease-fluent hover:bg-layer-alt"
+        >
+          Letra
+        </button>
+        <TemporizadorDormir />
         {capacidades.volumen && (
           <div className="flex w-[84px] items-center">
             <Slider label="Volumen" value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />

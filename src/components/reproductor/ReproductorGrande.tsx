@@ -1,19 +1,24 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { Glifo } from "@/components/fluent/Glifo";
 import { IconButton } from "@/components/fluent/IconButton";
 import { Slider } from "@/components/fluent/Slider";
 import { ENTER, EXIT } from "@/lib/motion";
 import { formatDuration } from "@/lib/video/format";
+import { useColorCaratula } from "@/hooks/useColorCaratula";
 import { useProgreso } from "@/hooks/useProgreso";
+import { rutaArtista } from "@/lib/rutas";
 import { useAppStore } from "@/store/app-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { alternarMeGusta, esMeGusta } from "@/services/music/megusta";
 import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { EcualizadorVisual } from "./EcualizadorVisual";
+import { PanelLetra } from "./PanelLetra";
 
 /** Vista grande "Reproduciendo ahora": carátula grande, controles y favorito, a pantalla completa. */
 export function ReproductorGrande() {
@@ -29,6 +34,10 @@ export function ReproductorGrande() {
   const favorito = pista ? esMeGusta(pista, todosFavoritos, meGusta) : false;
   const progreso = useProgreso();
   const st = useReproductorStore.getState;
+  const router = useRouter();
+  const mostrarLetra = useAppStore((s) => s.mostrarLetra);
+  const color = useColorCaratula(pista?.caratula ?? "");
+  const conLetra = mostrarLetra && pista?.fuente === "spotify";
 
   // Se cierra sola si la pista termina (cerrar/cambiar de fuente) para no quedar mostrando nada.
   useEffect(() => {
@@ -65,6 +74,11 @@ export function ReproductorGrande() {
               // eslint-disable-next-line @next/next/no-img-element -- fondo decorativo, difuminado
               <img src={pista.caratula} alt="" className="h-full w-full scale-110 object-cover opacity-40 blur-[80px]" />
             )}
+            {/* El color de la carátula tiñe el fondo, como en Spotify. */}
+            <div
+              className="absolute inset-0 transition-colors duration-[900ms]"
+              style={{ backgroundImage: color ? `linear-gradient(160deg, rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.75) 0%, rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.25) 45%, #0b0b0c 100%)` : undefined }}
+            />
           </div>
 
           <IconButton label="Cerrar" onClick={cerrar} className="absolute right-4 top-4 h-9 w-9 text-white hover:bg-white/10">
@@ -75,8 +89,9 @@ export function ReproductorGrande() {
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: ENTER }}
             exit={{ opacity: 0, y: 8, transition: EXIT }}
-            className="flex w-full max-w-[420px] flex-col items-center gap-6"
+            className={clsx("flex w-full items-center justify-center gap-10", conLetra ? "max-w-[1040px] flex-col md:flex-row" : "max-w-[420px]")}
           >
+            <div className="flex w-full max-w-[420px] shrink-0 flex-col items-center gap-6">
             {pista.caratula ? (
               // eslint-disable-next-line @next/next/no-img-element -- carátula grande
               <img src={pista.caratula} alt="" className="aspect-square w-full max-w-[320px] rounded-[12px] object-cover shadow-dialog" draggable={false} />
@@ -147,6 +162,38 @@ export function ReproductorGrande() {
                 <div className="min-w-0 flex-1">
                   <Slider label="Volumen" value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
                 </div>
+              </div>
+            )}
+
+            {pista.fuente === "spotify" && (
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => useAppStore.getState().setMostrarLetra(!mostrarLetra)}
+                  aria-pressed={mostrarLetra}
+                  className={clsx("rounded-control h-8 px-3 text-body transition-colors duration-exit ease-fluent", mostrarLetra ? "bg-white text-black" : "bg-white/10 text-white hover:bg-white/20")}
+                >
+                  Letra
+                </button>
+                {pista.artistId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      useAppStore.getState().setReproductorGrandeAbierto(false);
+                      router.push(rutaArtista(pista.artistId!));
+                    }}
+                    className="rounded-control h-8 bg-white/10 px-3 text-body text-white transition-colors duration-exit ease-fluent hover:bg-white/20"
+                  >
+                    Ver artista
+                  </button>
+                )}
+              </div>
+            )}
+            </div>
+
+            {conLetra && (
+              <div className="h-[min(70vh,640px)] w-full min-w-0 flex-1 md:max-w-[560px]">
+                <PanelLetra pista={pista} />
               </div>
             )}
           </motion.div>

@@ -16,6 +16,8 @@ export interface Controlador {
   volumen?: (v: number) => void;
   aleatorio?: (activo: boolean) => void;
   repetir?: (modo: "no" | "una" | "todas") => void;
+  /** Pasa a la siguiente canción si ya está lista dentro de la fuente (sin espera). Devuelve true si lo hizo. */
+  avanzarPrecargada?: () => boolean;
 }
 
 const registro = new Map<Fuente, Controlador>();

@@ -3,9 +3,9 @@ import type { Pista } from "./reproductor-store";
 
 /** Qué canción tiene abierto el menú «…» (uno solo para toda la aplicación) y el diálogo «Añadir a una playlist». */
 interface MenuPistaState {
-  menu: { x: number; y: number; pista: Pista; artistId?: string; albumId?: string } | null;
+  menu: { x: number; y: number; pista: Pista; artistId?: string; albumId?: string; playlistId?: string } | null;
   playlistDe: Pista | null;
-  abrir: (x: number, y: number, pista: Pista, ids?: { artistId?: string; albumId?: string }) => void;
+  abrir: (x: number, y: number, pista: Pista, ids?: { artistId?: string; albumId?: string; playlistId?: string }) => void;
   cerrar: () => void;
   abrirPlaylists: (pista: Pista) => void;
   cerrarPlaylists: () => void;
@@ -21,7 +21,7 @@ export const useMenuPistaStore = create<MenuPistaState>((set) => ({
 }));
 
 /** Abre el menú de una canción junto al puntero (clic derecho) o junto al botón «…» que se pulsó. */
-export function abrirMenuPista(e: { clientX: number; clientY: number; currentTarget: EventTarget; preventDefault: () => void; type: string }, pista: Pista, ids?: { artistId?: string; albumId?: string }) {
+export function abrirMenuPista(e: { clientX: number; clientY: number; currentTarget: EventTarget; preventDefault: () => void; type: string }, pista: Pista, ids?: { artistId?: string; albumId?: string; playlistId?: string }) {
   e.preventDefault();
   let x = e.clientX;
   let y = e.clientY;

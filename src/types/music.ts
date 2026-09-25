@@ -39,6 +39,8 @@ export interface SpotifyPlaylist {
   id: string;
   name: string;
   image?: string;
+  /** La carátula grande (para tarjetas). */
+  cover?: string;
   tracks?: number;
   /** Se le pueden añadir canciones: es tuya o colaborativa. */
   editable?: boolean;

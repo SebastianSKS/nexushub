@@ -89,5 +89,5 @@ export async function cargarLista(tipo: TipoLista, id: string): Promise<ListaSpo
 
 /** Un elemento del catálogo → la pista que entiende el reproductor global. */
 export function pistaDeItem(item: MusicItem): Pista {
-  return { id: `${item.kind}:${item.id}`, titulo: item.title, artista: item.subtitle, caratula: item.cover, duracion: 0, fuente: "spotify" };
+  return { id: `${item.kind}:${item.id}`, titulo: item.title, artista: item.subtitle, caratula: item.cover, duracion: 0, fuente: "spotify", artistId: item.artistId };
 }

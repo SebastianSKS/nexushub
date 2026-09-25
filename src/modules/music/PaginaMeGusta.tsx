@@ -15,6 +15,7 @@ import { abrirMenuPista } from "@/store/menu-pista-store";
 import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 import { conectarSpotify } from "./ConnectionPanel";
+import { AvisoPermisos } from "./PermisosSpotify";
 
 /** /musica/me-gusta — «Canciones que te gustan» de tu cuenta de Spotify. */
 export function PaginaMeGusta() {
@@ -79,9 +80,7 @@ export function PaginaMeGusta() {
             Necesitas Spotify Premium conectado en la sección Música.
           </InfoBar>
         ) : fallo === "permisos" || permisos === "faltan" ? (
-          <InfoBar severity="warning" title="Vuelve a conectar Spotify para ver tus canciones guardadas" action={<Button onClick={conectarSpotify}>Reconectar</Button>}>
-            Tu sesión es anterior al permiso de biblioteca. Al reconectar, Spotify te lo pide una vez y ya funcionan «Me gusta» y añadir a playlists.
-          </InfoBar>
+          <AvisoPermisos texto="Para ver tus canciones guardadas, Spotify te pide tu permiso una sola vez. Regresas justo aquí." />
         ) : fallo === "error" ? (
           <InfoBar severity="warning" title="No se pudieron cargar tus canciones." action={<Button className="h-7" onClick={() => void cargarMas(0)}>Reintentar</Button>}>
             Comprueba tu conexión e inténtalo de nuevo.

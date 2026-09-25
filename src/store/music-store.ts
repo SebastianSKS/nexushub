@@ -27,6 +27,12 @@ interface MusicState {
   permisosBiblioteca: "ok" | "faltan" | null;
 
   load: (query?: string) => Promise<void>;
+  /** El botón «Otras sugerencias»: vacía los renglones (se ve que trabaja), trae otros y pide a «Tus mixes» que también cambien. */
+  otrasSugerencias: () => Promise<void>;
+  /** Cuántas veces se pidieron otras sugerencias (los mixes lo miran para volver a elegir). */
+  refrescos: number;
+  /** Si no es null, se muestra la ventana «Falta un permiso de Spotify» (el texto dice para qué: «guardar en Me gusta»). */
+  dialogoPermisos: string | null;
   setConnection: (c: SpotifyConnection) => void;
   setPlaylists: (p: SpotifyPlaylist[]) => void;
 }
@@ -45,6 +51,8 @@ export const useMusicStore = create<MusicState>((set, get) => ({
 
   connection: { status: "guest" },
   playlists: [],
+  refrescos: 0,
+  dialogoPermisos: null,
   usuarioId: null,
   meGusta: {},
   permisosBiblioteca: null,
@@ -61,6 +69,11 @@ export const useMusicStore = create<MusicState>((set, get) => ({
       const e = err instanceof MusicApiError ? err : new MusicApiError("No se pudo cargar la música.", "Inténtalo de nuevo.");
       set({ status: "error", error: { message: e.message, hint: e.hint, code: e.code } });
     }
+  },
+
+  otrasSugerencias: async () => {
+    set({ refrescos: get().refrescos + 1, secciones: [], items: [], status: "loading" });
+    await get().load("");
   },
 
   setConnection: (connection) => set({ connection }),

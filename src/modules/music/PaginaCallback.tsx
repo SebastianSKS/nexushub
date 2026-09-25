@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
-import { procesarCallback } from "@/services/music/oauth";
+import { procesarCallback, tomarDestinoDeRegreso } from "@/services/music/oauth";
 import { useMusicStore } from "@/store/music-store";
 
 /**
@@ -30,7 +30,7 @@ export function PaginaCallback() {
       } else if (resultado === "error") {
         store.setConnection({ status: "error", message: "No se pudo completar la conexión con Spotify.", hint: "Revisa que la URI de redirección de tu app de Spotify coincida exactamente e inténtalo de nuevo." });
       }
-      router.replace("/musica/");
+      router.replace(tomarDestinoDeRegreso() ?? "/musica/");
     })();
   }, [params, router]);
 

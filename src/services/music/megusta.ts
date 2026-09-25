@@ -3,6 +3,7 @@ import { useFavoritosStore } from "@/store/favoritos-store";
 import { useMusicStore } from "@/store/music-store";
 import type { Pista } from "@/store/reproductor-store";
 import { guardarMeGusta } from "./biblioteca";
+import { pedirPermisoSpotify } from "./permisos";
 
 /** Un aviso breve dentro de la aplicación (se cierra solo). */
 export function avisoBreve(titulo: string, texto = "") {
@@ -29,11 +30,12 @@ export async function alternarMeGusta(pista: Pista): Promise<void> {
   const conectado = ms.connection.status === "connected";
   if (pista.fuente !== "spotify" || !pista.id.startsWith("track:") || !conectado) return;
   if (ms.permisosBiblioteca === "faltan") {
-    avisoBreve("Guardada en tus favoritos de NexusHub", "Para que también quede en «Canciones que te gustan» de Spotify, vuelve a conectar tu cuenta en Música.");
+    avisoBreve("Guardada en tus favoritos de NexusHub");
+    pedirPermisoSpotify("guardar también en «Canciones que te gustan» de Spotify");
     return;
   }
   const r = await guardarMeGusta(pista.id, quiere);
   if (r === "ok") avisoBreve(quiere ? "Guardada en «Canciones que te gustan»" : "Quitada de «Canciones que te gustan»", pista.titulo);
-  else if (r === "permisos") avisoBreve("Falta un permiso de Spotify", "Vuelve a conectar tu cuenta en Música para guardar en «Canciones que te gustan».");
+  else if (r === "permisos") pedirPermisoSpotify("guardar en «Canciones que te gustan»");
   else avisoBreve("No se pudo actualizar «Canciones que te gustan»", "Inténtalo de nuevo en un momento.");
 }

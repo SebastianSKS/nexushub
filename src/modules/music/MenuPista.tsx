@@ -7,13 +7,14 @@ import { Dialog } from "@/components/fluent/Dialog";
 import { MenuFlyout, type MenuItem } from "@/components/fluent/MenuFlyout";
 import { TextInput } from "@/components/fluent/TextInput";
 import { rutaLista } from "@/lib/rutas";
-import { agregarAPlaylist, crearPlaylist, guardarMeGusta } from "@/services/music/biblioteca";
+import { agregarAPlaylist, crearPlaylist, guardarMeGusta, quitarDePlaylist } from "@/services/music/biblioteca";
 import { fetchMyPlaylists } from "@/services/music/api";
 import { avisoBreve } from "@/services/music/megusta";
+import { pedirPermisoSpotify } from "@/services/music/permisos";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useMenuPistaStore } from "@/store/menu-pista-store";
 import { useMusicStore } from "@/store/music-store";
-import type { Pista } from "@/store/reproductor-store";
+import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 
 const ID_SPOTIFY = /^[A-Za-z0-9]{22}$/;
 
@@ -30,21 +31,22 @@ export function MenuPista() {
 
   const items: MenuItem[] = [];
   if (menu) {
-    const { pista, artistId, albumId } = menu;
+    const { pista, artistId, albumId, playlistId } = menu;
     const esCancion = pista.fuente === "spotify" && pista.id.startsWith("track:");
     const pura = pista.id.replace(/^track:/, "");
     if (esCancion && conectado) {
+      items.push({ etiqueta: "Iniciar radio de esta canción", onSelect: () => useReproductorStore.getState().reproducir(pista) });
       const gusta = meGusta[pista.id] === true || favoritos.some((f) => f.id === pista.id && f.fuente === "spotify");
       items.push({
         etiqueta: gusta ? "Quitar de Me gusta" : "Guardar en Me gusta",
         onSelect: () => {
           if (permisos === "faltan") {
-            avisoBreve("Falta un permiso de Spotify", "Vuelve a conectar tu cuenta en Música para usar «Me gusta».");
+            pedirPermisoSpotify("guardar canciones en «Me gusta»");
             return;
           }
           void guardarMeGusta(pista.id, !gusta).then((r) => {
             if (r === "ok") avisoBreve(gusta ? "Quitada de «Canciones que te gustan»" : "Guardada en «Canciones que te gustan»", pista.titulo);
-            else if (r === "permisos") avisoBreve("Falta un permiso de Spotify", "Vuelve a conectar tu cuenta en Música para usar «Me gusta».");
+            else if (r === "permisos") pedirPermisoSpotify("guardar canciones en «Me gusta»");
             else avisoBreve("No se pudo actualizar «Me gusta»", "Inténtalo de nuevo en un momento.");
           });
           if (gusta) useFavoritosStore.getState().quitarFavorito(pista);
@@ -52,6 +54,19 @@ export function MenuPista() {
       });
       items.push({ etiqueta: "Añadir a una playlist…", onSelect: () => useMenuPistaStore.getState().abrirPlaylists(pista) });
     }
+    if (playlistId && esCancion && conectado)
+      items.push({
+        etiqueta: "Quitar de esta playlist",
+        onSelect: () => {
+          void quitarDePlaylist(playlistId, pista.id).then((r) => {
+            if (r === "ok") {
+              avisoBreve("Quitada de la playlist", pista.titulo);
+              window.dispatchEvent(new CustomEvent("nexushub:playlist-cambiada", { detail: playlistId }));
+            } else if (r === "permisos") pedirPermisoSpotify("editar tus playlists");
+            else avisoBreve("No se pudo quitar de la playlist", "Inténtalo de nuevo en un momento.");
+          });
+        },
+      });
     if (artistId && ID_SPOTIFY.test(artistId)) items.push({ etiqueta: "Ir al artista", onSelect: () => router.push(rutaLista(artistId, "artist")) });
     if (albumId && ID_SPOTIFY.test(albumId)) items.push({ etiqueta: "Ir al álbum", onSelect: () => router.push(rutaLista(albumId, "album")) });
     if (esCancion)
@@ -83,7 +98,7 @@ function DialogoPlaylists({ pista }: { pista: Pista | null }) {
 
   const terminar = (r: "ok" | "permisos" | "error", nombre: string) => {
     if (r === "ok") avisoBreve(`Añadida a «${nombre}»`, pista?.titulo);
-    else if (r === "permisos") avisoBreve("Falta un permiso de Spotify", "Vuelve a conectar tu cuenta en Música para editar tus playlists.");
+    else if (r === "permisos") pedirPermisoSpotify("añadir canciones a tus playlists");
     else avisoBreve("No se pudo añadir a la playlist", "Inténtalo de nuevo en un momento.");
     setNueva("");
     cerrar();

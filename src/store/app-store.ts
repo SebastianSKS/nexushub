@@ -12,6 +12,8 @@ interface AppState {
   reproductorGrandeAbierto: boolean;
   /** Recorrido de bienvenida (la primera vez que se abre, o "Ver de nuevo" desde Configuración). */
   tourAbierto: boolean;
+  /** «Reproduciendo ahora» muestra la letra de la canción junto a la carátula. */
+  mostrarLetra: boolean;
 
   operation: StatusOperation | null;
   nowPlaying: NowPlaying | null;
@@ -22,6 +24,7 @@ interface AppState {
   setSearchOpen: (open: boolean) => void;
   setReproductorGrandeAbierto: (v: boolean) => void;
   setTourAbierto: (v: boolean) => void;
+  setMostrarLetra: (v: boolean) => void;
 
   setOperation: (op: StatusOperation | null) => void;
   setNowPlaying: (np: NowPlaying | null) => void;
@@ -33,6 +36,7 @@ export const useAppStore = create<AppState>((set) => ({
   searchOpen: false,
   reproductorGrandeAbierto: false,
   tourAbierto: false,
+  mostrarLetra: false,
 
   operation: null,
   nowPlaying: null,
@@ -43,6 +47,7 @@ export const useAppStore = create<AppState>((set) => ({
   setSearchOpen: (searchOpen) => set({ searchOpen }),
   setReproductorGrandeAbierto: (reproductorGrandeAbierto) => set({ reproductorGrandeAbierto }),
   setTourAbierto: (tourAbierto) => set({ tourAbierto }),
+  setMostrarLetra: (mostrarLetra) => set({ mostrarLetra }),
 
   setOperation: (operation) => set({ operation }),
   setNowPlaying: (nowPlaying) => set({ nowPlaying }),

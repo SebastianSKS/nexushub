@@ -32,5 +32,5 @@ export async function fetchMyPlaylists(): Promise<SpotifyPlaylist[]> {
   if (status !== 200 || !data) return [];
   return data.items
     .filter((p): p is NonNullable<typeof p> => p !== null)
-    .map((p) => ({ id: p.id, name: p.name, image: p.images?.[p.images.length - 1]?.url, tracks: p.items?.total ?? p.tracks?.total, editable: p.collaborative === true || (!!usuarioId && p.owner?.id === usuarioId) }));
+    .map((p) => ({ id: p.id, name: p.name, image: p.images?.[p.images.length - 1]?.url, cover: p.images?.[0]?.url, tracks: p.items?.total ?? p.tracks?.total, editable: p.collaborative === true || (!!usuarioId && p.owner?.id === usuarioId) }));
 }

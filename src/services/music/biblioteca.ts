@@ -79,3 +79,28 @@ export async function agregarAPlaylist(playlistId: string, pistaId: string): Pro
   const { status } = await spotifyApi(`/playlists/${encodeURIComponent(playlistId)}/items`, { method: "POST", body: JSON.stringify({ uris: [uriDe(pistaId)] }) });
   return resultado(status);
 }
+
+// --- Editar una playlist tuya -------------------------------------------------------------------------------------
+
+export async function infoPlaylist(id: string): Promise<{ nombre: string; editable: boolean } | null> {
+  const usuarioId = useMusicStore.getState().usuarioId;
+  const { status, data } = await spotifyApi<{ name: string; collaborative?: boolean; owner?: { id?: string } | null }>(`/playlists/${encodeURIComponent(id)}?fields=name,collaborative,owner(id)`);
+  if (status !== 200 || !data) return null;
+  return { nombre: data.name, editable: data.collaborative === true || (!!usuarioId && data.owner?.id === usuarioId) };
+}
+
+export async function renombrarPlaylist(id: string, nombre: string): Promise<ResultadoBiblioteca> {
+  const { status } = await spotifyApi(`/playlists/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify({ name: nombre.trim().slice(0, 100) }) });
+  return resultado(status);
+}
+
+/** «Eliminar» una playlist en Spotify es dejar de seguirla: desaparece de tu biblioteca. */
+export async function eliminarPlaylist(id: string): Promise<ResultadoBiblioteca> {
+  const { status } = await spotifyApi(`/playlists/${encodeURIComponent(id)}/followers`, { method: "DELETE" });
+  return resultado(status);
+}
+
+export async function quitarDePlaylist(id: string, pistaId: string): Promise<ResultadoBiblioteca> {
+  const { status } = await spotifyApi(`/playlists/${encodeURIComponent(id)}/items`, { method: "DELETE", body: JSON.stringify({ items: [{ uri: uriDe(pistaId) }] }) });
+  return resultado(status);
+}

@@ -9,9 +9,15 @@ import { crearChallenge, crearEstado, crearVerificador } from "@/lib/music/pkce"
 
 const CLAVE_PKCE = "nexushub-spotify-pkce";
 const CLAVE_TOKENS = "nexushub-spotify-tokens";
-const SCOPES = ["streaming", "user-read-email", "user-read-private", "user-read-playback-state", "user-modify-playback-state", "playlist-read-private", "playlist-read-collaborative", "user-top-read", "user-read-recently-played", "user-library-read", "user-library-modify", "playlist-modify-public", "playlist-modify-private"].join(" ");
+const CLAVE_VOLVER = "nexushub-spotify-volver";
+
+/** Lo que se añadió después de la primera versión: Me gusta, playlists propias y seguir artistas. */
+export const PERMISOS_NUEVOS = ["user-library-read", "user-library-modify", "playlist-modify-public", "playlist-modify-private", "user-follow-read", "user-follow-modify"];
+const SCOPES = ["streaming", "user-read-email", "user-read-private", "user-read-playback-state", "user-modify-playback-state", "playlist-read-private", "playlist-read-collaborative", "user-top-read", "user-read-recently-played", "user-library-read", "user-library-modify", "playlist-modify-public", "playlist-modify-private", "user-follow-read", "user-follow-modify"].join(" ");
 
 interface Tokens {
+  /** Los permisos que Spotify concedió (texto separado por espacios), para saber si falta alguno de los nuevos. */
+  scope?: string;
   access_token: string;
   /** Milisegundos desde época. */
   expires_at: number;
@@ -54,7 +60,7 @@ export function haySesionSpotify(): boolean {
 }
 
 /** Redirige a Spotify a iniciar sesión. Guarda el verificador PKCE para el regreso. */
-export async function iniciarConexionSpotify(): Promise<void> {
+export async function iniciarConexionSpotify(volverA?: string): Promise<void> {
   const clientId = obtenerClientId();
   if (!clientId) return;
 
@@ -62,6 +68,8 @@ export async function iniciarConexionSpotify(): Promise<void> {
   const estado = crearEstado();
   try {
     window.sessionStorage.setItem(CLAVE_PKCE, JSON.stringify({ v: verificador, s: estado }));
+    // Para volver a la pantalla donde estaba la persona cuando Spotify termine (p. ej. la página de un artista).
+    if (volverA && volverA.startsWith("/")) window.sessionStorage.setItem(CLAVE_VOLVER, volverA);
   } catch {
     /* sin almacenamiento: el regreso de Spotify fallará con un mensaje claro (estado no coincide) */
   }
@@ -80,6 +88,7 @@ export async function iniciarConexionSpotify(): Promise<void> {
 }
 
 interface RespuestaToken {
+  scope?: string;
   access_token: string;
   expires_in: number;
   refresh_token?: string;
@@ -134,7 +143,7 @@ export async function procesarCallback(params: URLSearchParams): Promise<Resulta
   const tokens = await pedirTokens({ grant_type: "authorization_code", code, redirect_uri: redirectUri(), code_verifier: pkce.v });
   if (!tokens || tokens === "rechazado") return "error";
 
-  guardarTokens({ access_token: tokens.access_token, expires_at: Date.now() + tokens.expires_in * 1000, refresh_token: tokens.refresh_token });
+  guardarTokens({ access_token: tokens.access_token, scope: tokens.scope, expires_at: Date.now() + tokens.expires_in * 1000, refresh_token: tokens.refresh_token });
   return "connected";
 }
 
@@ -157,7 +166,7 @@ export async function obtenerAccessToken(): Promise<string | null> {
     return null;
   }
   if (!tokens) return null; // sin conexión o Spotify no contestó: no se toca la sesión
-  const nuevos: Tokens = { access_token: tokens.access_token, expires_at: Date.now() + tokens.expires_in * 1000, refresh_token: tokens.refresh_token ?? actuales.refresh_token };
+  const nuevos: Tokens = { access_token: tokens.access_token, scope: tokens.scope ?? actuales.scope, expires_at: Date.now() + tokens.expires_in * 1000, refresh_token: tokens.refresh_token ?? actuales.refresh_token };
   guardarTokens(nuevos);
   return nuevos.access_token;
 }
@@ -170,4 +179,33 @@ export function cerrarSesionSpotify(): void {
   } catch {
     /* sin almacenamiento */
   }
+}
+
+/** A dónde volver tras el inicio de sesión (y se olvida). null = a Música. */
+export function tomarDestinoDeRegreso(): string | null {
+  try {
+    const v = window.sessionStorage.getItem(CLAVE_VOLVER);
+    window.sessionStorage.removeItem(CLAVE_VOLVER);
+    return v && v.startsWith("/") ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Qué permisos nuevos le faltan a esta sesión (lista vacía = tiene todos). null = no se pudo saber. Las sesiones
+ * anteriores no guardaron sus permisos: se renueva el acceso una vez y Spotify dice cuáles tiene.
+ */
+export async function permisosFaltantes(): Promise<string[] | null> {
+  let t = leerTokens();
+  if (!t) return null;
+  if (t.scope === undefined && t.refresh_token) {
+    const nuevos = await pedirTokens({ grant_type: "refresh_token", refresh_token: t.refresh_token });
+    if (!nuevos || nuevos === "rechazado") return null;
+    t = { access_token: nuevos.access_token, scope: nuevos.scope, expires_at: Date.now() + nuevos.expires_in * 1000, refresh_token: nuevos.refresh_token ?? t.refresh_token };
+    guardarTokens(t);
+  }
+  if (t.scope === undefined) return null;
+  const tiene = new Set(t.scope.split(" "));
+  return PERMISOS_NUEVOS.filter((p) => !tiene.has(p));
 }

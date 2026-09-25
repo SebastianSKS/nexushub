@@ -13,7 +13,10 @@ import { InfoBar } from "@/components/fluent/InfoBar";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { formatDuration } from "@/lib/video/format";
 import { cargarLista, ErrorLista, ID_SPOTIFY, TIPOS_LISTA, type ListaSpotify, type TipoLista } from "@/services/music/lista";
+import { infoPlaylist } from "@/services/music/biblioteca";
+import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
+import { AccionesPlaylist } from "./AccionesPlaylist";
 
 const ETIQUETA_TIPO: Record<TipoLista, string> = { playlist: "Playlist", album: "Álbum", artist: "Artista", track: "Canción" };
 
@@ -30,6 +33,26 @@ export function PaginaLista() {
   const [cargando, setCargando] = useState(valido);
   const [intento, setIntento] = useState(0);
   const sonando = useReproductorStore((s) => (s.fuente === "spotify" ? s.pista?.id : undefined));
+  const conectado = useMusicStore((s) => s.connection.status === "connected");
+  // Si la playlist es tuya (o colaborativa), se puede renombrar, eliminar y quitarle canciones.
+  const [propia, setPropia] = useState<{ nombre: string } | null>(null);
+
+  useEffect(() => {
+    setPropia(null);
+    if (!valido || tipo !== "playlist" || !conectado) return;
+    let cancelado = false;
+    void infoPlaylist(id).then((i) => !cancelado && i?.editable && setPropia({ nombre: i.nombre }));
+    return () => {
+      cancelado = true;
+    };
+  }, [id, tipo, valido, conectado]);
+
+  // Al quitar una canción desde su menú, la lista se vuelve a leer.
+  useEffect(() => {
+    const alCambiar = (e: Event) => (e as CustomEvent<string>).detail === id && setIntento((n) => n + 1);
+    window.addEventListener("nexushub:playlist-cambiada", alCambiar);
+    return () => window.removeEventListener("nexushub:playlist-cambiada", alCambiar);
+  }, [id]);
 
   useEffect(() => {
     if (!valido) return;
@@ -47,10 +70,12 @@ export function PaginaLista() {
 
   const titulo = lista?.titulo ?? (valido ? "Cargando…" : "Lista no válida");
   const pistaContexto: Pista = { id: `${tipo}:${id}`, titulo: lista?.titulo ?? ETIQUETA_TIPO[tipo], artista: lista?.subtitulo ?? "Spotify", caratula: lista?.caratula ?? "", duracion: 0, fuente: "spotify" };
-  const pistaDeCancion = (c: ListaSpotify["canciones"][number]): Pista => ({ id: c.id, titulo: c.titulo, artista: c.artista, caratula: lista?.caratula ?? "", duracion: c.duracion, fuente: "spotify" });
+  // Con Spotify conectado, cada canción muestra SU carátula (la que trae Spotify al sonar), no la de la lista.
+  const caratulaDe = () => (conectado ? "" : (lista?.caratula ?? ""));
+  const pistaDeCancion = (c: ListaSpotify["canciones"][number]): Pista => ({ id: c.id, titulo: c.titulo, artista: c.artista, caratula: caratulaDe(), duracion: c.duracion, fuente: "spotify" });
   const reproducirCancion = (i: number) => {
     if (!lista) return;
-    const pistas: Pista[] = lista.canciones.map((c) => ({ id: c.id, titulo: c.titulo, artista: c.artista, caratula: lista.caratula, duracion: c.duracion, fuente: "spotify" }));
+    const pistas: Pista[] = lista.canciones.map(pistaDeCancion);
     useReproductorStore.getState().reproducir(pistas[i]!, pistas, i);
   };
   // Con las canciones a la vista, la lista entera pasa a la cola de NexusHub (siguiente, aleatorio, repetir…); si aún no
@@ -72,7 +97,8 @@ export function PaginaLista() {
       descripcion={lista ? [ETIQUETA_TIPO[tipo], lista.subtitulo, lista.canciones.length > 0 ? `${lista.canciones.length} canciones` : ""].filter(Boolean).join(" · ") : ETIQUETA_TIPO[tipo]}
       accion={
         valido && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
+            {propia && <AccionesPlaylist id={id} nombre={propia.nombre} onRenombrada={(n) => setLista((l) => (l ? { ...l, titulo: n } : l))} />}
             {primera >= 0 && (
               <Button icon={<ArrowShuffle20Regular />} onClick={reproducirAleatorio}>
                 Aleatorio
@@ -101,7 +127,7 @@ export function PaginaLista() {
               <Card className="overflow-hidden p-0">
                 <ol aria-label="Canciones">
                   {lista.canciones.map((c, i) => (
-                    <li key={`${c.id}-${i}`} className="group relative" onContextMenu={(e) => abrirMenuPista(e, pistaDeCancion(c))}>
+                    <li key={`${c.id}-${i}`} className="group relative" onContextMenu={(e) => abrirMenuPista(e, pistaDeCancion(c), propia ? { playlistId: id } : undefined)}>
                       <button
                         type="button"
                         onClick={() => reproducirCancion(i)}
@@ -119,7 +145,7 @@ export function PaginaLista() {
                         </span>
                         <span className="tabular text-right text-caption text-fg-secondary">{formatDuration(c.duracion)}</span>
                       </button>
-                      <IconButton label={`Más opciones de ${c.titulo}`} onClick={(e) => abrirMenuPista(e, pistaDeCancion(c))} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
+                      <IconButton label={`Más opciones de ${c.titulo}`} onClick={(e) => abrirMenuPista(e, pistaDeCancion(c), propia ? { playlistId: id } : undefined)} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
                         <MoreHorizontal20Regular />
                       </IconButton>
                     </li>

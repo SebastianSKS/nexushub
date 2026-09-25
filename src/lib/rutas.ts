@@ -64,7 +64,8 @@ export function toolIdDeSlug(slug: string): ToolId | null {
 export const rutaHerramienta = (id: ToolId) => `/documentos/${SLUGS_HERRAMIENTA[id]}`;
 export const rutaCanal = (id: string) => `/video/canal?id=${encodeURIComponent(id)}`;
 export const rutaVer = (videoId: string) => `/video/ver?id=${encodeURIComponent(videoId)}`;
-export const rutaLista = (id: string, tipo: string = "playlist") => `/musica/lista?id=${encodeURIComponent(id)}&tipo=${tipo}`;
+export const rutaArtista = (id: string) => `/musica/artista?id=${encodeURIComponent(id)}`;
+export const rutaLista = (id: string, tipo: string = "playlist") => (tipo === "artist" ? rutaArtista(id) : `/musica/lista?id=${encodeURIComponent(id)}&tipo=${tipo}`);
 
 /** Quita la barra final ("/video/" → "/video"), que añade trailingSlash. */
 export function normalizarRuta(pathname: string): string {

@@ -3,8 +3,9 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { registrarControlador } from "@/services/reproductor/controladores";
 import { fetchMyPlaylists, spotifyApi } from "@/services/music/api";
-import { obtenerAccessToken } from "@/services/music/oauth";
+import { obtenerAccessToken, permisosFaltantes } from "@/services/music/oauth";
 import { loadSpotifyEmbedApi, loadSpotifySdk } from "@/services/music/loaders";
+import { avisoBreve } from "@/services/music/megusta";
 import { radioDe } from "@/services/music/radio";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useMusicStore } from "@/store/music-store";
@@ -25,6 +26,12 @@ const uriDe = (id: string) => `spotify:${id}`;
 function cuerpoPlay(pista: Pista) {
   return pista.id.startsWith("track:") ? { uris: [uriDe(pista.id)] } : { context_uri: uriDe(pista.id) };
 }
+
+/**
+ * Segundos antes del final en que se pide la siguiente canción. Spotify tarda ~1,3 s en empezarla desde que se le pide, así que se
+ * adelanta ese tiempo: la nueva suena casi al terminar la anterior (se pierde solo la cola final, casi siempre silencio o fade).
+ */
+const ANTICIPO_S = 1.3;
 
 const CAPACIDADES_SDK: Capacidades = { buscar: true, saltar: true, volumen: true, aleatorio: true, repetir: true };
 
@@ -103,6 +110,13 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
   const ultimoRef = useRef<{ id: string | null; playing: boolean } | null>(null);
   /** Para no pasar dos veces a la siguiente por la misma petición de reproducir. */
   const finRef = useRef<string | null>(null);
+  /**
+   * La canción que se le dejó lista a Spotify como siguiente (en SU cola), para que pase de una a otra sin silencio. `para` es la
+   * canción que sonaba cuando se hizo; `pista` null = se intentó y no se pudo (se usa el paso normal, con una pequeña pausa).
+   */
+  const precargadaRef = useRef<{ para: string; pista: Pista | null } | null>(null);
+  /** Lo que se le pidió a Spotify y aún no empezó a sonar: mientras tanto se ignora lo que llegue de la canción anterior. */
+  const pendienteRef = useRef<{ id: string; hasta: number } | null>(null);
   /** La radio: para qué canción se pidieron ya canciones parecidas (una sola vez por canción) y su resultado pendiente. */
   const radioRef = useRef<{ id: string; espera: Promise<void> } | null>(null);
 
@@ -129,6 +143,13 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
   /** Terminó una canción: pasa a la siguiente; si no había más, espera un momento a que llegue la radio antes de rendirse. */
   const alTerminarCancion = async () => {
     let s = useReproductorStore.getState();
+    // Temporizador «al terminar la canción»: se detiene aquí.
+    if (s.dormir?.modo === "cancion") {
+      useReproductorStore.setState({ dormir: null, reproduciendo: false });
+      void playerRef.current?.pause();
+      avisoBreve("Temporizador: música detenida", "Buenas noches.");
+      return;
+    }
     const eraLaUltima = s.indiceActual >= s.cola.length - 1 && s.repetir !== "una";
     if (eraLaUltima && s.pista) {
       rellenarRadio(s.pista);
@@ -137,6 +158,38 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
     }
     s.siguiente(true);
   };
+
+  // Sin silencio entre canciones: unos 12 s antes del final, la siguiente se le deja lista a Spotify (en su cola) y él mismo pasa
+  // a ella al terminar, sin cargarla de cero. Solo en orden normal (con aleatorio o repetir se usa el paso de siempre). Si por
+  // lo que sea no se pudo, unos instantes antes del final se pide la siguiente (un poco de pausa) y, si tampoco, el final normal.
+  useEffect(() => {
+    if (!conectado) return;
+    const id = setInterval(() => {
+      const s = useReproductorStore.getState();
+      if (s.fuente !== "spotify" || !s.reproduciendo || !s.pista?.id.startsWith("track:") || s.pista.duracion < 20) return;
+      const restante = s.pista.duracion - progresoActual(s);
+      const lista = precargadaRef.current?.para === s.pista.id ? precargadaRef.current.pista : null;
+
+      if (restante <= 12 && restante > 2 && !precargadaRef.current?.para && s.repetir === "no" && !s.aleatorio && s.dormir?.modo !== "cancion") {
+        const sig = s.cola[s.indiceActual + 1];
+        if (sig?.id.startsWith("track:")) {
+          precargadaRef.current = { para: s.pista.id, pista: null };
+          const marca = s.pista.id;
+          void spotifyApi(`/me/player/queue?uri=${encodeURIComponent(uriDe(sig.id))}${dispositivoRef.current ? `&device_id=${dispositivoRef.current}` : ""}`, { method: "POST" }).then(({ status }) => {
+            if (status >= 200 && status < 300 && precargadaRef.current?.para === marca) precargadaRef.current = { para: marca, pista: sig };
+          });
+        }
+      }
+
+      if (lista) return; // Spotify pasa solo a la que se le dejó lista
+      if (finRef.current === `${s.solicitud}`) return;
+      if (restante > ANTICIPO_S) return;
+      finRef.current = `${s.solicitud}`;
+      void alTerminarCancion();
+    }, 200);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conectado]);
 
   // 1) Al entrar: interpreta el resultado del inicio de sesión y detecta una sesión existente.
   useEffect(() => {
@@ -195,6 +248,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       player.addListener("ready", ({ device_id }) => {
         dispositivoRef.current = device_id;
         useMusicStore.getState().setConnection({ status: "connected", name: nombre });
+        void permisosFaltantes().then((f) => f && f.length > 0 && useMusicStore.setState({ permisosBiblioteca: "faltan" }));
         void fetchMyPlaylists().then((p) => useMusicStore.getState().setPlaylists(p));
       });
       player.addListener("not_ready", () => {
@@ -208,7 +262,37 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
           return;
         }
         const t = s.track_window.current_track;
-        const pista = rep.pista;
+        let pista = rep.pista;
+        const idSdk = `track:${t.linked_from?.id ?? t.id}`;
+        const idSdkReal = `track:${t.id}`;
+
+        // Se le pidió a Spotify otra canción y aún no empieza: lo que llega es de la anterior, se ignora.
+        const pendiente = pendienteRef.current;
+        if (pendiente && Date.now() < pendiente.hasta) {
+          if (pendiente.id !== idSdk && pendiente.id !== idSdkReal) return;
+          pendienteRef.current = null;
+        }
+
+        // Spotify pasó solo a la canción que se le dejó lista: la interfaz la sigue, sin pedir nada.
+        if (pista?.id.startsWith("track:") && pista.id !== idSdk && pista.id !== idSdkReal) {
+          const cola = rep.cola;
+          const buscar = (desde: number, hasta: number) => cola.findIndex((c, i) => i >= desde && i < hasta && (c.id === idSdk || c.id === idSdkReal));
+          let i = buscar(rep.indiceActual + 1, cola.length);
+          if (i < 0) i = buscar(0, rep.indiceActual);
+          const propia: Pista = { id: idSdk, titulo: t.name, artista: t.artists.map((a) => a.name).join(", "), caratula: t.album.images[0]?.url ?? "", duracion: Math.round(t.duration_ms / 1000), fuente: "spotify" };
+          const nueva = i >= 0 ? { ...cola[i]!, duracion: Math.round(s.duration / 1000) || cola[i]!.duracion } : propia;
+          rep.avanzarA(nueva, i >= 0 ? i : rep.indiceActual);
+          pista = nueva;
+          precargadaRef.current = null;
+          ultimoRef.current = { id: t.id, playing: !s.paused };
+          // Temporizador «al terminar la canción»: la que Spotify dejó lista no debe sonar.
+          if (useReproductorStore.getState().dormir?.modo === "cancion") {
+            useReproductorStore.setState({ dormir: null, reproduciendo: false });
+            void playerRef.current?.pause();
+            avisoBreve("Temporizador: música detenida", "Buenas noches.");
+            return;
+          }
+        }
         const previo = ultimoRef.current;
         ultimoRef.current = { id: t.id, playing: !s.paused };
 
@@ -224,6 +308,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
           progresoActual(rep) >= s.duration / 1000 - 8;
         if (terminada && finRef.current !== `${rep.solicitud}`) {
           finRef.current = `${rep.solicitud}`;
+          precargadaRef.current = null; // si la que estaba lista no arrancó, se pide de nuevo de la forma normal
           void alTerminarCancion();
           return;
         }
@@ -238,8 +323,9 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
               : {}),
         });
 
-        // Si la pista vino sin carátula (las de la radio), se toma la que trae Spotify.
-        if (pista?.id.startsWith("track:") && !pista.caratula && t.album.images[0]) rep.informar({ pista: { ...pista, caratula: t.album.images[0].url } });
+        // Si la pista vino sin carátula o sin artista conocido (las de la radio), se toma lo que trae Spotify.
+        const artistId = t.artists[0]?.uri?.split(":")[2];
+        if (pista?.id.startsWith("track:") && ((!pista.caratula && t.album.images[0]) || (!pista.artistId && artistId))) rep.informar({ pista: { ...pista, caratula: pista.caratula || t.album.images[0]?.url || "", artistId: pista.artistId ?? artistId } });
         if (pista?.id.startsWith("track:") && !s.paused) rellenarRadio(pista);
       });
       player.addListener("account_error", () => useMusicStore.getState().setConnection({ status: "not-premium", name: nombre }));
@@ -274,6 +360,20 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
     const cuerpo = cuerpoPlay(pista);
     finRef.current = null;
     ultimoRef.current = null;
+    // Si la canción pedida es justo la que Spotify tenía lista como siguiente, se pasa a ella con «siguiente» (así se consume esa
+    // cola y no suena dos veces). Si era otra, la que quedó lista sigue ahí: pasa a ser la siguiente de esta en la interfaz.
+    const lista = precargadaRef.current?.pista;
+    if (lista && lista.id === pista.id && precargadaRef.current?.para !== pista.id) {
+      precargadaRef.current = null;
+      pendienteRef.current = { id: pista.id, hasta: Date.now() + 6000 };
+      void playerRef.current?.nextTrack();
+      return;
+    }
+    if (lista) {
+      if (useReproductorStore.getState().cola[st.indiceActual + 1]?.id !== lista.id) useReproductorStore.getState().insertarDespues(lista);
+      precargadaRef.current = { para: pista.id, pista: lista };
+    } else precargadaRef.current = null;
+    pendienteRef.current = { id: pista.id, hasta: Date.now() + 6000 };
     void playerRef.current?.activateElement();
     void spotifyApi(`/me/player/play?device_id=${dispositivoRef.current}`, { method: "PUT", body: JSON.stringify(cuerpo) }).then(({ status }) => {
       if (status === 0) useReproductorStore.getState().informar({ reproduciendo: false, error: "No se pudo contactar con Spotify. Comprueba tu internet; si usas Brave o un bloqueador de anuncios, desactívalo para esta página." });
@@ -307,6 +407,13 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         buscar: (s) => void playerRef.current?.seek(s * 1000),
         siguiente: () => void playerRef.current?.nextTrack(),
         anterior: () => void playerRef.current?.previousTrack(),
+        avanzarPrecargada: () => {
+          const s = useReproductorStore.getState();
+          const lista = precargadaRef.current;
+          if (!lista?.pista || lista.para !== s.pista?.id || s.cola[s.indiceActual + 1]?.id !== lista.pista.id) return false;
+          void playerRef.current?.nextTrack();
+          return true;
+        },
         volumen: (v) => void playerRef.current?.setVolume(v / 100),
       });
     } else {

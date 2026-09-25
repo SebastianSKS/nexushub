@@ -29,7 +29,7 @@ declare namespace Spotify {
     uri: string;
     id: string | null;
     name: string;
-    artists: { name: string }[];
+    artists: { name: string; uri?: string }[];
     album: { name: string; images: Image[] };
     duration_ms: number;
     /** Si Spotify sustituye la pista pedida por otra equivalente de tu país, aquí viene la pedida. */

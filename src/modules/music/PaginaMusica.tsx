@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowSync20Regular } from "@fluentui/react-icons";
-import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { clienteIdConfigurado } from "@/services/music/oauth";
 import { useMusicStore } from "@/store/music-store";
 import { conectarSpotify, PanelConexion } from "./ConnectionPanel";
+import { ConsejosMusica } from "./ConsejosMusica";
 import { FavoritosRecientes } from "./FavoritosRecientes";
+import { AvisoPermisos } from "./PermisosSpotify";
+import { InicioMusica } from "./InicioMusica";
 import { MusicGrid } from "./MusicGrid";
 import { MusicSearchBar } from "./MusicSearchBar";
 import { SpotifySetupDialog } from "./SpotifySetupDialog";
@@ -43,14 +45,14 @@ export function PaginaMusica() {
     estabaConectado.current = conectado;
   }, [conectado]);
   const actualizar = (
-    <Button icon={<ArrowSync20Regular />} disabled={cargando} onClick={() => void useMusicStore.getState().load("")}>
-      Otras sugerencias
+    <Button icon={<ArrowSync20Regular className={cargando ? "animate-spin" : undefined} />} disabled={cargando} onClick={() => void useMusicStore.getState().otrasSugerencias()}>
+      {cargando ? "Actualizando…" : "Otras sugerencias"}
     </Button>
   );
   const accion =
     conectado ? (
-      <Button variant="accent" icon={<ArrowSync20Regular />} disabled={cargando} onClick={() => void useMusicStore.getState().load("")}>
-        Otras sugerencias
+      <Button variant="accent" icon={<ArrowSync20Regular className={cargando ? "animate-spin" : undefined} />} disabled={cargando} onClick={() => void useMusicStore.getState().otrasSugerencias()}>
+        {cargando ? "Actualizando…" : "Otras sugerencias"}
       </Button>
     ) : estado === "connecting" ? (
       <Button variant="accent" disabled>
@@ -80,19 +82,10 @@ export function PaginaMusica() {
               {!conectado && actualizar}
             </div>
             {conectado && faltanPermisos && (
-              <InfoBar
-                severity="info"
-                title="Vuelve a conectar Spotify para ver más"
-                action={<Button onClick={conectarSpotify}>Reconectar</Button>}
-              >
-                Con un permiso más podrás guardar canciones en «Me gusta», añadirlas a tus playlists, y te mostramos lo que escuchaste hace poco y lo que más suena en tu cuenta.
-              </InfoBar>
+              <AvisoPermisos />
             )}
-            {conectado && !buscando && (
-              <div className="flex flex-wrap gap-2">
-                <BotonEnlace href="/musica/me-gusta">Canciones que te gustan</BotonEnlace>
-              </div>
-            )}
+            {conectado && !buscando && <ConsejosMusica />}
+            {conectado && !buscando && <InicioMusica />}
             {!buscando && <FavoritosRecientes />}
             <MusicGrid />
           </>

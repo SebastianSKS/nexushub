@@ -21,6 +21,7 @@ import { BarraReproduccion } from "@/components/reproductor/BarraReproduccion";
 import { ReproductorGlobal } from "@/components/reproductor/ReproductorGlobal";
 import { ReproductorGrande } from "@/components/reproductor/ReproductorGrande";
 import { MenuPista } from "@/modules/music/MenuPista";
+import { DialogoPermisos } from "@/modules/music/PermisosSpotify";
 import { AvisosCumple } from "./AvisosCumple";
 import { BarraTitulo } from "./BarraTitulo";
 import { MemoriaSesion } from "./MemoriaSesion";
@@ -102,6 +103,7 @@ export function Ventana({ children }: { children: ReactNode }) {
       <ReproductorGlobal />
       <ReproductorGrande />
       <MenuPista />
+      <DialogoPermisos />
       <AvisosCumple />
       <MemoriaSesion />
       <TourBienvenida />

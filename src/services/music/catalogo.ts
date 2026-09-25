@@ -131,7 +131,7 @@ export async function buscarCanciones(q: string, offset = 0): Promise<MusicItem[
   return status === 200 ? sinNulos(data?.tracks?.items).map(dePista) : [];
 }
 
-/** Los artistas que más suenan en tu cuenta de NexusHub (favoritos y reproducidos), para sugerirte «Más de…». */
+/** Los artistas que más suenan en tu cuenta de Nexo (favoritos y reproducidos), para sugerirte «Más de…». */
 function artistasLocales(): string[] {
   const s = useFavoritosStore.getState();
   s.cargar();
@@ -220,7 +220,7 @@ export async function sugerirBusqueda(query: string, conectado: boolean): Promis
  * - un enlace o URI de Spotify: se resuelve a su canción/álbum/playlist (sin credenciales);
  * - texto, conectado: búsqueda en todo Spotify con el token de tu propia cuenta;
  * - texto, invitado: filtra los sugeridos (buscar todo el catálogo sin conectarse necesitaría un
- *   secreto de aplicación, que nunca debe viajar dentro de NexusHub).
+ *   secreto de aplicación, que nunca debe viajar dentro de Nexo).
  */
 export async function cargarCatalogo(query: string, conectado: boolean): Promise<ResultadoCatalogo> {
   const q = query.trim();

@@ -1,9 +1,9 @@
 @echo off
 rem ============================================================
-rem  NexusHub - lanzador para Windows (doble clic)
+rem  Nexo - lanzador para Windows (doble clic)
 rem  Instala lo necesario la primera vez y abre la aplicacion.
 rem ============================================================
-title NexusHub
+title Nexo
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -31,7 +31,7 @@ if not exist node_modules (
 )
 
 echo.
-echo  Iniciando NexusHub...
+echo  Iniciando Nexo...
 echo  Se abrira en tu navegador en unos segundos: http://127.0.0.1:3000
 echo  Para cerrar la aplicacion, cierra esta ventana o pulsa Ctrl+C.
 echo.

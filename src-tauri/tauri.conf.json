@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "NexusHub",
-  "mainBinaryName": "NexusHub",
+  "productName": "Nexo",
+  "mainBinaryName": "Nexo",
   "version": "0.1.0",
   "identifier": "com.nexushub.app",
   "build": {
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "NexusHub",
+        "title": "Nexo",
         "width": 1280,
         "height": 800,
         "minWidth": 900,
@@ -45,15 +45,18 @@
       "icons/icon.ico"
     ],
     "publisher": "Sebastián",
-    "copyright": "© 2026 NexusHub",
+    "copyright": "© 2026 Nexo",
     "shortDescription": "Video, música, documentos y calendario en una sola ventana.",
-    "longDescription": "NexusHub reúne YouTube, Spotify, conversión de documentos y un calendario de cumpleaños en una sola aplicación con el lenguaje de diseño Fluent de Windows 11.",
+    "longDescription": "Nexo reúne YouTube, Spotify, conversión de documentos y un calendario de cumpleaños en una sola aplicación con el lenguaje de diseño Fluent de Windows 11.",
     "windows": {
       "webviewInstallMode": { "type": "downloadBootstrapper" },
       "nsis": {
         "languages": ["Spanish"],
         "displayLanguageSelector": false,
-        "installMode": "currentUser"
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "sidebarImage": "instalador/barra-lateral.bmp",
+        "headerImage": "instalador/encabezado.bmp"
       }
     }
   },

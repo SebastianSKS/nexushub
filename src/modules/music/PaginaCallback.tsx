@@ -9,7 +9,7 @@ import { useMusicStore } from "@/store/music-store";
 /**
  * /api/spotify/callback — Spotify vuelve aquí tras el inicio de sesión. Es la MISMA dirección que ya
  * tienes registrada en tu app de Spotify (no hace falta cambiarla), solo que ahora es una página
- * normal de NexusHub en vez de una ruta de servidor: el intercambio del código ocurre en el navegador.
+ * normal de Nexo en vez de una ruta de servidor: el intercambio del código ocurre en el navegador.
  */
 export function PaginaCallback() {
   const router = useRouter();

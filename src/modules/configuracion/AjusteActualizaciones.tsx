@@ -8,7 +8,7 @@ import { esEscritorio } from "@/lib/entorno";
 type Estado = "inactivo" | "buscando" | "sin-novedades" | "descargando" | "lista" | "error";
 
 const TEXTOS: Record<Estado, string> = {
-  inactivo: "Comprueba si hay una versión más nueva de NexusHub.",
+  inactivo: "Comprueba si hay una versión más nueva de Nexo.",
   buscando: "Buscando actualizaciones…",
   "sin-novedades": "Ya tienes la última versión.",
   descargando: "Descargando la actualización…",

@@ -21,6 +21,7 @@ import { useAppStore } from "@/store/app-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { AjusteActualizaciones } from "./AjusteActualizaciones";
 import { AjusteCanales } from "./AjusteCanales";
+import { AjusteIndicePdfs } from "./AjusteIndicePdfs";
 import { AjusteInicioAutomatico } from "./AjusteInicioAutomatico";
 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
@@ -49,7 +50,7 @@ export function PaginaConfiguracion() {
       <PlantillaPagina
         migas={[{ etiqueta: "Configuración" }]}
         titulo="Configuración"
-        descripcion="Personaliza NexusHub. Los cambios se guardan solos, en este equipo."
+        descripcion="Personaliza Nexo. Los cambios se guardan solos, en este equipo."
         accion={
           <Button variant="accent" onClick={() => setRestablecer(true)}>
             Restablecer valores
@@ -58,7 +59,7 @@ export function PaginaConfiguracion() {
         principal={
           <div className="flex max-w-[900px] flex-col gap-1">
             <Seccion titulo="Perfil">
-              <TarjetaAjuste titulo={nombre ?? "Sin perfil"} descripcion={nombre ? "Tu nombre y tu foto se guardan solo en este equipo." : "Opcional: un nombre y una foto para que NexusHub te salude."}>
+              <TarjetaAjuste titulo={nombre ?? "Sin perfil"} descripcion={nombre ? "Tu nombre y tu foto se guardan solo en este equipo." : "Opcional: un nombre y una foto para que Nexo te salude."}>
                 <Avatar nombre={nombre} foto={foto} tam={40} />
                 <Button onClick={() => setPerfil(true)}>{nombre ? "Editar perfil" : "Iniciar sesión"}</Button>
               </TarjetaAjuste>
@@ -116,7 +117,7 @@ export function PaginaConfiguracion() {
             </Seccion>
 
             <Seccion titulo="Reproducción">
-              <TarjetaAjuste glifo="volumen" titulo="Volumen predeterminado" descripcion="Con el que empieza a sonar todo al abrir NexusHub.">
+              <TarjetaAjuste glifo="volumen" titulo="Volumen predeterminado" descripcion="Con el que empieza a sonar todo al abrir Nexo.">
                 <div className="flex w-[260px] items-center gap-3">
                   <Slider label="Volumen predeterminado" value={a.volumenPorDefecto} max={100} valueText={`${a.volumenPorDefecto} %`} onCommit={(v) => a.cambiar({ volumenPorDefecto: v })} onChange={(v) => a.cambiar({ volumenPorDefecto: v })} />
                   <span className="tabular w-10 text-right text-caption text-fg-secondary">{a.volumenPorDefecto} %</span>
@@ -161,13 +162,13 @@ export function PaginaConfiguracion() {
                   <Switch checked={a.resumenDia} onChange={(v) => a.cambiar({ resumenDia: v })} label="Resumen del día" />
                 </div>
               </TarjetaAjuste>
-              <TarjetaAjuste glifo="informacion" titulo="Probar una notificación" descripcion="Para comprobar que Windows te las muestra. Avisan mientras NexusHub esté abierto, aunque sea en la bandeja.">
-                <Button onClick={() => void notificarSistema("NexusHub", "Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración.", "prueba", "/configuracion")}>Enviar aviso de prueba</Button>
+              <TarjetaAjuste glifo="informacion" titulo="Probar una notificación" descripcion="Para comprobar que Windows te las muestra. Avisan mientras Nexo esté abierto, aunque sea en la bandeja.">
+                <Button onClick={() => void notificarSistema("Nexo", "Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración.", "prueba", "/configuracion")}>Enviar aviso de prueba</Button>
               </TarjetaAjuste>
             </Seccion>
 
             <Seccion titulo="Inicio">
-              <TarjetaAjuste glifo="pantalla" titulo="Al abrir NexusHub, mostrar" descripcion="La pantalla con la que arranca. «La última que usaste» retoma donde lo dejaste (sin volver a Configuración).">
+              <TarjetaAjuste glifo="pantalla" titulo="Al abrir Nexo, mostrar" descripcion="La pantalla con la que arranca. «La última que usaste» retoma donde lo dejaste (sin volver a Configuración).">
                 <Selector<SeccionInicial>
                   label="Pantalla de inicio"
                   value={a.seccionInicial}
@@ -187,7 +188,7 @@ export function PaginaConfiguracion() {
             {escritorio && (
               <Seccion titulo="Aplicación">
                 <AjusteInicioAutomatico />
-                <TarjetaAjuste glifo="pantalla" titulo="Seguir sonando en la bandeja" descripcion="Al cerrar la ventana, NexusHub se oculta a la bandeja del sistema en vez de cerrarse. «Salir» en su menú lo cierra de verdad.">
+                <TarjetaAjuste glifo="pantalla" titulo="Seguir sonando en la bandeja" descripcion="Al cerrar la ventana, Nexo se oculta a la bandeja del sistema en vez de cerrarse. «Salir» en su menú lo cierra de verdad.">
                   <Switch checked={a.segundoPlano} onChange={(v) => a.cambiar({ segundoPlano: v })} label="Seguir sonando en la bandeja" />
                 </TarjetaAjuste>
               </Seccion>
@@ -195,12 +196,13 @@ export function PaginaConfiguracion() {
 
             <Seccion titulo="Documentos">
               {escritorio && (
-                <TarjetaAjuste glifo="documentos" titulo="Convertir con Microsoft Office" descripcion="Si tienes Word, Excel o PowerPoint instalados, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace Office: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de NexusHub.">
+                <TarjetaAjuste glifo="documentos" titulo="Convertir con Microsoft Office" descripcion="Si tienes Word, Excel o PowerPoint instalados, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace Office: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.">
                   <Switch checked={a.usarOffice} onChange={(v) => a.cambiar({ usarOffice: v })} label="Convertir con Microsoft Office" />
                 </TarjetaAjuste>
               )}
+              {escritorio && <AjusteIndicePdfs />}
               {escritorio && (
-                <TarjetaAjuste glifo="carpeta" titulo="Elegir dónde guardar" descripcion="Al descargar un resultado se abre «Guardar como», empezando en la carpeta de tus materias (Documentos/NexusHub/Tareas). Si lo apagas, se guarda directo en Descargas.">
+                <TarjetaAjuste glifo="carpeta" titulo="Elegir dónde guardar" descripcion="Al descargar un resultado se abre «Guardar como», empezando en la carpeta de tus materias (Documentos/Nexo/Tareas). Si lo apagas, se guarda directo en Descargas.">
                   <Switch checked={a.preguntarDondeGuardar} onChange={(v) => a.cambiar({ preguntarDondeGuardar: v })} label="Elegir dónde guardar" />
                 </TarjetaAjuste>
               )}
@@ -237,7 +239,7 @@ export function PaginaConfiguracion() {
               <AjusteActualizaciones />
               <ExpansorAjuste
                 glifo="informacion"
-                titulo="NexusHub"
+                titulo="Nexo"
                 descripcion="Video, música, documentos y calendario en una sola ventana. Versión 0.1.0."
                 filas={
                   <>

@@ -73,7 +73,7 @@ const fecha = (seg: number) => new Date(seg * 1000).toLocaleDateString("es", { d
 
 type Dialogo = { tipo: "nueva" } | { tipo: "renombrar-carpeta"; nombre: string } | { tipo: "renombrar-archivo"; nombre: string } | { tipo: "borrar-carpeta"; nombre: string } | { tipo: "borrar-archivo"; nombre: string } | null;
 
-/** /documentos/carpetas — «Mis tareas»: una carpeta por materia, con archivos de verdad en Documentos/NexusHub/Tareas. */
+/** /documentos/carpetas — «Mis tareas»: una carpeta por materia, con archivos de verdad en Documentos/Nexo/Tareas. */
 export function PaginaCarpetas() {
   const escritorio = useEsEscritorio();
   const disponible = escritorio === true;
@@ -160,7 +160,7 @@ export function PaginaCarpetas() {
       <PlantillaPagina
         migas={abierta ? [{ etiqueta: "Documentos", href: "/documentos" }, { etiqueta: "Mis tareas", href: "/documentos/carpetas" }, { etiqueta: abierta }] : [{ etiqueta: "Documentos", href: "/documentos" }, { etiqueta: "Mis tareas" }]}
         titulo={abierta ?? "Mis tareas"}
-        descripcion={abierta ? "Los archivos de esta materia. Están en tu computadora, en una carpeta de verdad." : "Una carpeta por materia para guardar tus tareas y trabajos. Están en tu computadora, en Documentos › NexusHub › Tareas."}
+        descripcion={abierta ? "Los archivos de esta materia. Están en tu computadora, en una carpeta de verdad." : "Una carpeta por materia para guardar tus tareas y trabajos. Están en tu computadora, en Documentos › Nexo › Tareas."}
         accion={
           disponible && (
             <div className="flex flex-wrap justify-end gap-2">
@@ -180,7 +180,7 @@ export function PaginaCarpetas() {
         }
         principal={
           escritorio === null ? null : !disponible ? (
-            <InfoBar severity="info" title="Esto funciona en la aplicación de escritorio">Las carpetas de tareas son carpetas de tu computadora, así que solo están en la versión instalada de NexusHub.</InfoBar>
+            <InfoBar severity="info" title="Esto funciona en la aplicación de escritorio">Las carpetas de tareas son carpetas de tu computadora, así que solo están en la versión instalada de Nexo.</InfoBar>
           ) : (
             <>
               {aviso && <InfoBar severity={aviso.tipo} title={aviso.texto} onClose={() => setAviso(null)} />}
@@ -202,7 +202,7 @@ export function PaginaCarpetas() {
                   <Card className="flex flex-col items-center gap-3 px-6 py-12 text-center">
                     <Glifo nombre="carpeta" tam={36} className="text-accent-text" />
                     <p className="text-subtitle text-fg">Aún no tienes carpetas</p>
-                    <p className="max-w-[420px] text-body text-fg-secondary">Crea una por materia (o deja que NexusHub las cree desde tu horario) y guarda ahí tus tareas.</p>
+                    <p className="max-w-[420px] text-body text-fg-secondary">Crea una por materia (o deja que Nexo las cree desde tu horario) y guarda ahí tus tareas.</p>
                     <Button variant="accent" onClick={() => setDialogo({ tipo: "nueva" })}>Nueva carpeta</Button>
                   </Card>
                 ) : (

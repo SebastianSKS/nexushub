@@ -5,7 +5,7 @@ import { buscarCanciones } from "./catalogo";
 import { cargarLista, pistaDeItem, type CancionLista } from "./lista";
 
 /**
- * La «radio» de NexusHub: al elegir una canción, la música sigue sola con canciones parecidas, como en Spotify.
+ * La «radio» de Nexo: al elegir una canción, la música sigue sola con canciones parecidas, como en Spotify.
  *
  * Spotify ya no da recomendaciones ni artistas relacionados a las aplicaciones nuevas, así que se parecen por
  * coincidencia: se buscan playlists de personas que tienen esa canción o a ese artista, se leen sus canciones y

@@ -100,7 +100,7 @@ interface RespuestaToken {
  *  - "rechazado" si Spotify contestó que el código o el refresh token ya no valen (HTTP 400/401): la sesión
  *    de verdad se acabó y hay que volver a iniciar sesión;
  *  - null si no se pudo saber (sin internet, tiempo agotado, Spotify caído…): la sesión guardada sigue
- *    siendo buena y se reintenta luego. Antes, cualquier fallo borraba la sesión: bastaba abrir NexusHub
+ *    siendo buena y se reintenta luego. Antes, cualquier fallo borraba la sesión: bastaba abrir Nexo
  *    un momento sin conexión para tener que iniciar sesión otra vez.
  */
 async function pedirTokens(cuerpo: Record<string, string>): Promise<RespuestaToken | "rechazado" | null> {

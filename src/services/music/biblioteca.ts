@@ -3,7 +3,7 @@ import { useMusicStore } from "@/store/music-store";
 import { spotifyApi } from "./api";
 
 /**
- * Tu biblioteca de Spotify: «Me gusta» y playlists. Pide permisos que las primeras versiones de NexusHub no pedían
+ * Tu biblioteca de Spotify: «Me gusta» y playlists. Pide permisos que las primeras versiones de Nexo no pedían
  * (biblioteca y edición de playlists): mientras la cuenta no se vuelva a conectar, Spotify responde 403 y aquí se
  * marca «faltan permisos» para que la interfaz ofrezca reconectar, sin romper nada más.
  */
@@ -70,7 +70,7 @@ export async function cancionesQueTeGustan(offset = 0): Promise<PaginaMeGusta> {
 
 /** Crea una playlist privada vacía. Devuelve su id, o el motivo del fallo. */
 export async function crearPlaylist(nombre: string): Promise<{ id: string } | ResultadoBiblioteca> {
-  const { status, data } = await spotifyApi<{ id: string }>("/me/playlists", { method: "POST", body: JSON.stringify({ name: nombre.trim().slice(0, 100), public: false, description: "Creada desde NexusHub" }) });
+  const { status, data } = await spotifyApi<{ id: string }>("/me/playlists", { method: "POST", body: JSON.stringify({ name: nombre.trim().slice(0, 100), public: false, description: "Creada desde Nexo" }) });
   const r = resultado(status);
   return r === "ok" && data ? { id: data.id } : r === "ok" ? "error" : r;
 }

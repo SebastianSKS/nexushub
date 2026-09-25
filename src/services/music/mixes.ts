@@ -32,7 +32,7 @@ export async function cargarMixes(cuantos = 5, alAzar = false): Promise<Mix[]> {
   if (alAzar) artistas = [...artistas].sort(() => Math.random() - 0.5);
 
   if (artistas.length < 3) {
-    // Sin «lo más escuchado» de la cuenta: los artistas de lo que se ha reproducido y guardado en NexusHub.
+    // Sin «lo más escuchado» de la cuenta: los artistas de lo que se ha reproducido y guardado en Nexo.
     const f = useFavoritosStore.getState();
     f.cargar();
     const nombres = [...new Set([...f.favoritos, ...f.recientes].filter((p) => p.fuente === "spotify").map((p) => p.artista.split(/[,·]/)[0]!.trim()).filter((n) => n.length > 1))];

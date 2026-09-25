@@ -17,7 +17,7 @@ const HORA_LIMITE_RESUMEN = 14;
  * Avisos del horario, con notificaciones de Windows y también dentro de la aplicación:
  *  - unos minutos antes de cada clase (5, 10, 15 o 30, a elección), con el aula y el docente;
  *  - un resumen del día a la hora elegida: clases, tareas y eventos, cumpleaños.
- * Cada aviso sale una sola vez por día (se recuerda aunque cierres y abras NexusHub). Funcionan mientras la
+ * Cada aviso sale una sola vez por día (se recuerda aunque cierres y abras Nexo). Funcionan mientras la
  * aplicación esté abierta, aunque sea en la bandeja: un programa cerrado no puede avisar.
  */
 export function useAvisosClases() {

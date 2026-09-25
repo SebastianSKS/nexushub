@@ -31,5 +31,9 @@ export interface Command {
   icon?: NombreGlifo;
   /** Color con el que se marca el ícono (el de la clase, el evento…). */
   color?: string;
+  /** Un texto más largo bajo el título (hasta dos líneas), como el fragmento de un PDF donde apareció lo buscado. */
+  detalle?: string;
+  /** Palabras (ya sin acentos ni mayúsculas) que se resaltan dentro de `detalle`. */
+  resaltar?: string[];
   run: () => void;
 }

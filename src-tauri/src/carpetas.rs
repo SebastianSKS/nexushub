@@ -1,4 +1,4 @@
-//! «Mis tareas»: una carpeta por materia dentro de `Documentos/NexusHub/Tareas`, con archivos de verdad
+//! «Mis tareas»: una carpeta por materia dentro de `Documentos/Nexo/Tareas`, con archivos de verdad
 //! (se ven en el Explorador de Windows, se pueden respaldar, abrir con Word, etc.).
 //!
 //! Todo lo que toca el disco está aquí, con las mismas reglas de seguridad:
@@ -9,11 +9,13 @@
 
 use serde::Serialize;
 use std::path::{Path, PathBuf};
-use tauri::{ipc::InvokeBody, ipc::Request, AppHandle, Manager};
+use tauri::{ipc::InvokeBody, ipc::Request, ipc::Response, AppHandle, Manager};
 
 const MAX_NOMBRE: usize = 60;
 const MAX_ARCHIVO: usize = 120;
 const MAX_BYTES: usize = 200 * 1024 * 1024;
+/// Los PDF más grandes que esto no se leen para el buscador (tardarían y ocuparían demasiado).
+const MAX_BYTES_INDICE: u64 = 80 * 1024 * 1024;
 
 #[derive(Serialize)]
 pub struct Carpeta {
@@ -32,7 +34,16 @@ pub struct Archivo {
 
 fn base(app: &AppHandle) -> Result<PathBuf, String> {
     let docs = app.path().document_dir().map_err(|e| e.to_string())?;
-    let ruta = docs.join("NexusHub").join("Tareas");
+    // La carpeta se llamaba «NexusHub» antes de que la aplicación se llamara Nexo: si existe la de antes y aún no la nueva, se
+    // le cambia el nombre (con las carpetas de materias adentro). Si no se pudo (un archivo abierto, por ejemplo), se sigue
+    // usando la de antes y se reintenta la próxima vez: nunca se pierde ni se duplica nada.
+    let nueva = docs.join("Nexo");
+    let vieja = docs.join("NexusHub");
+    if !nueva.exists() && vieja.exists() {
+        let _ = std::fs::rename(&vieja, &nueva);
+    }
+    let raiz = if !nueva.exists() && vieja.exists() { vieja } else { nueva };
+    let ruta = raiz.join("Tareas");
     std::fs::create_dir_all(&ruta).map_err(|e| format!("No se pudo crear la carpeta de tareas: {e}"))?;
     Ok(ruta)
 }
@@ -83,7 +94,7 @@ fn segs(t: std::time::SystemTime) -> u64 {
     t.duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0)
 }
 
-/// La ruta de la carpeta base, para mostrarla («Documentos\NexusHub\Tareas»).
+/// La ruta de la carpeta base, para mostrarla («Documentos\Nexo\Tareas»).
 #[tauri::command]
 pub fn carpetas_ruta(app: AppHandle) -> Result<String, String> {
     Ok(base(&app)?.to_string_lossy().to_string())
@@ -236,14 +247,110 @@ pub fn archivo_renombrar(app: AppHandle, carpeta: String, actual: String, nuevo:
     Ok(limpio)
 }
 
+/// El nombre de algo que YA existe en disco (no lo cambia como `archivo_seguro`, que recorta y limpia los nombres
+/// nuevos): solo se rechaza lo que podría salir de la carpeta.
+fn nombre_existente(crudo: &str) -> Result<&str, String> {
+    if crudo.is_empty() || crudo == "." || crudo == ".." || crudo.contains(['/', '\u{5c}', '\0']) {
+        return Err("Ese nombre no es válido.".into());
+    }
+    Ok(crudo)
+}
+
+fn es_pdf(nombre: &str) -> bool {
+    Path::new(nombre).extension().and_then(|e| e.to_str()).is_some_and(|e| e.eq_ignore_ascii_case("pdf"))
+}
+
+#[derive(Serialize)]
+pub struct PdfListado {
+    carpeta: String,
+    nombre: String,
+    bytes: u64,
+    modificado: u64,
+}
+
+/// Todos los PDF que hay en las carpetas de las materias (para que el buscador sepa qué leer).
+#[tauri::command]
+pub async fn pdfs_listar(app: AppHandle) -> Result<Vec<PdfListado>, String> {
+    let raiz = base(&app)?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let mut lista = Vec::new();
+        for c in std::fs::read_dir(&raiz).map_err(|e| e.to_string())?.flatten() {
+            if !c.path().is_dir() {
+                continue;
+            }
+            let carpeta = c.file_name().to_string_lossy().to_string();
+            if let Ok(rd) = std::fs::read_dir(c.path()) {
+                for f in rd.flatten() {
+                    let nombre = f.file_name().to_string_lossy().to_string();
+                    if let (true, true, Ok(m)) = (f.path().is_file(), es_pdf(&nombre), f.metadata()) {
+                        lista.push(PdfListado { carpeta: carpeta.clone(), nombre, bytes: m.len(), modificado: m.modified().map(segs).unwrap_or(0) });
+                    }
+                }
+            }
+        }
+        Ok(lista)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+/// Los bytes de un PDF de una carpeta de materia, para leerle el texto. Solo PDF y solo dentro de la carpeta base.
+#[tauri::command]
+pub async fn archivo_leer(app: AppHandle, carpeta: String, nombre: String) -> Result<Response, String> {
+    let ruta = base(&app)?.join(nombre_existente(&carpeta)?).join(nombre_existente(&nombre)?);
+    if !es_pdf(&nombre) {
+        return Err("Solo se pueden leer PDF.".into());
+    }
+    tauri::async_runtime::spawn_blocking(move || {
+        let meta = std::fs::metadata(&ruta).map_err(|_| "Ese archivo ya no existe.".to_string())?;
+        if !meta.is_file() {
+            return Err("Ese archivo ya no existe.".to_string());
+        }
+        if meta.len() > MAX_BYTES_INDICE {
+            return Err("El archivo pesa demasiado para leerlo.".to_string());
+        }
+        std::fs::read(&ruta).map(Response::new).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+/// `file:///C:/…/archivo.pdf#page=N`, con lo que no sea seguro en una dirección escrito como %XX.
+#[cfg(target_os = "windows")]
+fn direccion_con_pagina(ruta: &Path, pagina: u32) -> String {
+    let texto = ruta.to_string_lossy().replace('\u{5c}', "/");
+    let texto = texto.trim_start_matches("//?/");
+    let mut url = String::from("file:///");
+    for b in texto.bytes() {
+        match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' | b'/' | b':' => url.push(b as char),
+            _ => url.push_str(&format!("%{b:02X}")),
+        }
+    }
+    format!("{url}#page={pagina}")
+}
+
+/// Abre un PDF en una página concreta con Microsoft Edge (que viene con Windows 11 y entiende «#page=N»).
+/// `false` si Edge no está: quien llama abre el archivo con el programa de siempre.
+#[cfg(target_os = "windows")]
+fn abrir_pdf_en_pagina(ruta: &Path, pagina: u32) -> bool {
+    let candidatos = ["ProgramFiles(x86)", "ProgramFiles"].iter().filter_map(|v| std::env::var_os(v)).map(|p| PathBuf::from(p).join("Microsoft").join("Edge").join("Application").join("msedge.exe"));
+    for edge in candidatos {
+        if edge.is_file() && std::process::Command::new(edge).arg(direccion_con_pagina(ruta, pagina)).spawn().is_ok() {
+            return true;
+        }
+    }
+    false
+}
+
 /// Abre en el sistema una carpeta (en el Explorador) o un archivo (con su programa). Sin `carpeta`, la carpeta base.
 #[tauri::command]
-pub fn abrir_en_sistema(app: AppHandle, carpeta: Option<String>, archivo: Option<String>) -> Result<(), String> {
+pub fn abrir_en_sistema(app: AppHandle, carpeta: Option<String>, archivo: Option<String>, pagina: Option<u32>) -> Result<(), String> {
     let mut ruta = base(&app)?;
     if let Some(c) = carpeta {
-        ruta = ruta.join(nombre_seguro(&c)?);
+        ruta = ruta.join(nombre_existente(&c)?);
         if let Some(a) = archivo {
-            ruta = ruta.join(archivo_seguro(&a)?);
+            ruta = ruta.join(nombre_existente(&a)?);
         }
     }
     if !ruta.exists() {
@@ -254,6 +361,17 @@ pub fn abrir_en_sistema(app: AppHandle, carpeta: Option<String>, archivo: Option
     if !dentro {
         return Err("Ruta no permitida.".into());
     }
+    // Un PDF con página (viene del buscador): se abre justo ahí. Si no se puede, se abre con el programa de siempre.
+    #[cfg(target_os = "windows")]
+    {
+        if let (Some(n), true) = (pagina, ruta.is_file() && es_pdf(&ruta.to_string_lossy())) {
+            if abrir_pdf_en_pagina(&ruta, n.max(1)) {
+                return Ok(());
+            }
+        }
+    }
+    #[cfg(not(target_os = "windows"))]
+    let _ = pagina;
     #[cfg(target_os = "windows")]
     let mut orden = std::process::Command::new("explorer");
     #[cfg(target_os = "macos")]
@@ -265,7 +383,7 @@ pub fn abrir_en_sistema(app: AppHandle, carpeta: Option<String>, archivo: Option
 
 /// Guarda el resultado de una herramienta de Documentos y devuelve la ruta completa, para poder avisar dónde quedó.
 /// - Con `x-preguntar: 1` se abre el cuadro «Guardar como» de Windows, que arranca en la carpeta de las materias
-///   (`Documentos\NexusHub\Tareas`); quien lo usa elige carpeta y nombre (el propio cuadro pregunta si va a reemplazar
+///   (`Documentos\Nexo\Tareas`); quien lo usa elige carpeta y nombre (el propio cuadro pregunta si va a reemplazar
 ///   algo). Si se cierra sin guardar, se devuelve `None`.
 /// - Sin él, se guarda directo en Descargas, sin sobrescribir nunca («nombre (2)» si ya hay uno igual).
 /// Cabecera `x-nombre` (codificada con %); el cuerpo son los bytes.

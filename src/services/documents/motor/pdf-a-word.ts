@@ -395,7 +395,7 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
       if (lineasTotales.length === 0 && !hayImagenes) {
         throw new DocumentError(
           `«${file.name}» no contiene texto ni imágenes que se puedan pasar como contenido editable.`,
-          "Parece un documento de páginas dibujadas o escaneadas. Elige el modo «Fiel al diseño» para conservarlas como imágenes. NexusHub no incluye reconocimiento de texto (OCR).",
+          "Parece un documento de páginas dibujadas o escaneadas. Elige el modo «Fiel al diseño» para conservarlas como imágenes. Nexo no incluye reconocimiento de texto (OCR).",
         );
       }
       const peso = new Map<number, number>();
@@ -458,7 +458,7 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
       if (conGraficos > 0 || (lineasTotales.length < 40 && paginas.some((p) => p.rutas > 30))) {
         advertencias.push("Este PDF contiene gráficos dibujados (formas, líneas, diagramas o fondos) que no se pueden pasar a Word como objetos. Si son importantes, vuelve a convertirlo con «Fiel al diseño».");
       }
-      if (lineasTotales.length === 0) advertencias.push("El PDF no tiene texto seleccionable, solo imágenes: se incluyeron las imágenes. NexusHub no incluye reconocimiento de texto (OCR).");
+      if (lineasTotales.length === 0) advertencias.push("El PDF no tiene texto seleccionable, solo imágenes: se incluyeron las imágenes. Nexo no incluye reconocimiento de texto (OCR).");
       advertencias.push("Se recuperan el texto (con negrita, cursiva y tamaño), los títulos, los párrafos y las imágenes. No se reconstruyen tablas, columnas ni encabezados y pies de página, y los colores del texto no se conservan: revisa el resultado antes de usarlo.");
     }
 

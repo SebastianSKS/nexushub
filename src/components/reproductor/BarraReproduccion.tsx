@@ -68,7 +68,7 @@ function Contenido() {
   const st = useReproductorStore.getState;
 
   if (!pista) return null;
-  // Con una cola de varias pistas, NexusHub mismo puede saltar entre ellas aunque la fuente no lo haga.
+  // Con una cola de varias pistas, Nexo mismo puede saltar entre ellas aunque la fuente no lo haga.
   const puedeSaltar = capacidades.saltar || cola.length > 1;
   const duracion = pista.duracion;
 

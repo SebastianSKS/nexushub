@@ -16,7 +16,7 @@ if (!coincide) {
 }
 const [, owner, repo] = coincide;
 
-const instalador = `NexusHub_${version}_x64-setup.exe`;
+const instalador = `Nexo_${version}_x64-setup.exe`;
 const carpeta = path.join(RAIZ, "src-tauri", "target", "release", "bundle", "nsis");
 const rutaFirma = path.join(carpeta, `${instalador}.sig`);
 
@@ -30,7 +30,7 @@ try {
 
 const latest = {
   version,
-  notes: process.argv[2] ?? `NexusHub ${version}`,
+  notes: process.argv[2] ?? `Nexo ${version}`,
   pub_date: new Date().toISOString(),
   platforms: {
     "windows-x86_64": {

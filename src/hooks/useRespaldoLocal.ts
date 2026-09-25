@@ -18,7 +18,7 @@ const MARCA_DE_BAJA: Record<string, string> = {
 
 type Copia = { version?: number; datos?: Record<string, unknown> };
 
-/** Foto instantánea de todo lo que NexusHub guarda (perfil, ajustes, canales, favoritos, calendario, notas…). */
+/** Foto instantánea de todo lo que Nexo guarda (perfil, ajustes, canales, favoritos, calendario, notas…). */
 function instantanea(): Record<string, string> {
   const datos: Record<string, string> = {};
   for (let i = 0; i < window.localStorage.length; i++) {

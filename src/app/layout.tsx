@@ -7,7 +7,7 @@ import "@/styles/fluent.css";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "NexusHub",
+  title: "Nexo",
   description: "Video, música y documentos en una sola ventana, con el lenguaje de diseño Fluent de Windows 11.",
 };
 

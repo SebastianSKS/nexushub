@@ -1,4 +1,4 @@
-/** Tipos mínimos de la IFrame Player API de YouTube (solo lo que usa NexusHub). */
+/** Tipos mínimos de la IFrame Player API de YouTube (solo lo que usa Nexo). */
 declare namespace YT {
   const PlayerState: {
     UNSTARTED: -1;

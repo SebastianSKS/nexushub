@@ -2,7 +2,7 @@ import type { NombreGlifo } from "@/lib/glifos";
 import type { ToolId } from "@/types/documents";
 
 /**
- * Tabla de rutas de NexusHub. La URL es la única fuente de verdad de "dónde estoy".
+ * Tabla de rutas de Nexo. La URL es la única fuente de verdad de "dónde estoy".
  * Los ID que no se pueden enumerar de antemano (canal, video, lista) viajan como parámetros
  * de consulta (?id=), porque la exportación estática no admite segmentos dinámicos abiertos.
  */

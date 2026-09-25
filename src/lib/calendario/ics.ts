@@ -28,7 +28,7 @@ function marcaAhora(): string {
 
 /** Arma el .ics completo a partir de los cumpleaños y los eventos. */
 export function generarIcs(amigos: Amigo[], eventos: Evento[]): string {
-  const lineas: string[] = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//NexusHub//Calendario//ES", "CALSCALE:GREGORIAN"];
+  const lineas: string[] = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Nexo//Calendario//ES", "CALSCALE:GREGORIAN"];
   const marca = marcaAhora();
 
   for (const a of amigos) {

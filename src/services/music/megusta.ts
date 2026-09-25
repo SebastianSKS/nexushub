@@ -10,13 +10,13 @@ export function avisoBreve(titulo: string, texto = "") {
   useCalendarioStore.getState().mostrarAviso({ titulo, texto, destino: null, autocerrar: 3500 });
 }
 
-/** ¿Este corazón se dibuja lleno? (favorito en NexusHub, o «Me gusta» en Spotify) */
+/** ¿Este corazón se dibuja lleno? (favorito en Nexo, o «Me gusta» en Spotify) */
 export function esMeGusta(pista: Pick<Pista, "id" | "fuente">, favoritos: readonly Pista[], meGusta: Record<string, boolean>): boolean {
   return favoritos.some((f) => f.id === pista.id && f.fuente === pista.fuente) || (pista.fuente === "spotify" && meGusta[pista.id] === true);
 }
 
 /**
- * El corazón: guarda o quita la canción de tus favoritos de NexusHub y, con Spotify conectado, también de «Canciones
+ * El corazón: guarda o quita la canción de tus favoritos de Nexo y, con Spotify conectado, también de «Canciones
  * que te gustan» de tu cuenta. Si la sesión es anterior a los permisos de biblioteca, el favorito local se guarda igual y
  * se avisa de que hay que reconectar.
  */
@@ -30,7 +30,7 @@ export async function alternarMeGusta(pista: Pista): Promise<void> {
   const conectado = ms.connection.status === "connected";
   if (pista.fuente !== "spotify" || !pista.id.startsWith("track:") || !conectado) return;
   if (ms.permisosBiblioteca === "faltan") {
-    avisoBreve("Guardada en tus favoritos de NexusHub");
+    avisoBreve("Guardada en tus favoritos de Nexo");
     pedirPermisoSpotify("guardar también en «Canciones que te gustan» de Spotify");
     return;
   }

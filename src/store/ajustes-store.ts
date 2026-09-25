@@ -3,7 +3,7 @@ import { create } from "zustand";
 export type PreferenciaTema = "claro" | "oscuro" | "sistema";
 export type EfectoVentana = "mica" | "acrilico" | "ninguno";
 export type AlTerminar = "nada" | "descargar" | "abrir-carpeta";
-/** Con qué pantalla se abre NexusHub: la última que se estaba usando, o una sección fija. */
+/** Con qué pantalla se abre Nexo: la última que se estaba usando, o una sección fija. */
 export type SeccionInicial = "inicio" | "ultima" | "video" | "musica" | "documentos" | "calendario";
 
 export interface Ajustes {
@@ -35,6 +35,8 @@ export interface Ajustes {
   /** Hora (0-23) del resumen del día. */
   resumenHora: number;
   seccionInicial: SeccionInicial;
+  /** Leer el texto de los PDF de tus carpetas de materias (en este equipo) para poder buscar dentro de ellos con Ctrl+K. */
+  buscarEnPdfs: boolean;
 }
 
 export const ACENTO_PREDETERMINADO = "#0078D4";
@@ -69,6 +71,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   resumenDia: true,
   resumenHora: 6,
   seccionInicial: "inicio",
+  buscarEnPdfs: true,
 };
 
 export const CLAVE_AJUSTES = "nexushub-ajustes";
@@ -94,6 +97,7 @@ function leer(): Ajustes {
       avisoClaseMin: typeof d.avisoClaseMin === "number" && [0, 5, 10, 15, 30].includes(d.avisoClaseMin) ? d.avisoClaseMin : 10,
       resumenDia: d.resumenDia !== false,
       usarOffice: d.usarOffice !== false,
+      buscarEnPdfs: d.buscarEnPdfs !== false,
       preguntarDondeGuardar: d.preguntarDondeGuardar !== false,
       resumenHora: typeof d.resumenHora === "number" && Number.isInteger(d.resumenHora) && d.resumenHora >= 0 && d.resumenHora <= 13 ? d.resumenHora : 6,
       seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",

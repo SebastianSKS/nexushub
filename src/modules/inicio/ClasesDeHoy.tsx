@@ -25,7 +25,7 @@ export function ClasesDeHoy() {
   if (clases.length === 0) {
     return (
       <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
-        <p className="text-body text-fg-secondary">¿Tienes tu horario de clases en una imagen? NexusHub lo lee y te dice qué clase sigue.</p>
+        <p className="text-body text-fg-secondary">¿Tienes tu horario de clases en una imagen? Nexo lo lee y te dice qué clase sigue.</p>
         <Link href="/horario" className="rounded-control inline-flex h-8 items-center border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer">
           Escanear mi horario
         </Link>

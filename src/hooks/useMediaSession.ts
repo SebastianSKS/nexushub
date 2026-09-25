@@ -27,7 +27,7 @@ export function useMediaSession() {
     ms.metadata = new MediaMetadata({
       title: pista.titulo,
       artist: pista.artista,
-      album: "NexusHub",
+      album: "Nexo",
       artwork: pista.caratula ? [{ src: pista.caratula, sizes: "480x360" }] : [],
     });
   }, [pista]);

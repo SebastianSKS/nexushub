@@ -22,7 +22,7 @@ export function textoAvisoEvento(titulo: string, dias: number, fecha: Date): { t
  * Revisa los cumpleaños Y los eventos generales al abrir la aplicación y cada minuto. Cuando llega la hora
  * elegida, avisa una sola vez por cada uno y anticipación (el mismo día, un día antes, una semana antes): con
  * una notificación del sistema si hay permiso, y siempre con un aviso dentro de la aplicación. Los avisos
- * funcionan mientras NexusHub esté abierto (aunque sea en la bandeja): un programa cerrado no puede avisar.
+ * funcionan mientras Nexo esté abierto (aunque sea en la bandeja): un programa cerrado no puede avisar.
  */
 export function useAvisosCumples() {
   useEffect(() => {

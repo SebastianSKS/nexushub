@@ -69,7 +69,7 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
         <div className="flex flex-col gap-4">
           {creadas > 0 && (
             <InfoBar severity="success" title={`${creadas} ${creadas === 1 ? "carpeta creada" : "carpetas creadas"}`}>
-              Quedan en Documentos › NexusHub › Tareas. Ahí guardas los trabajos de cada materia.
+              Quedan en Documentos › Nexo › Tareas. Ahí guardas los trabajos de cada materia.
             </InfoBar>
           )}
           {error && <InfoBar severity="warning" title="Algo no salió">{error}</InfoBar>}

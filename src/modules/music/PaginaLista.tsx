@@ -78,7 +78,7 @@ export function PaginaLista() {
     const pistas: Pista[] = lista.canciones.map(pistaDeCancion);
     useReproductorStore.getState().reproducir(pistas[i]!, pistas, i);
   };
-  // Con las canciones a la vista, la lista entera pasa a la cola de NexusHub (siguiente, aleatorio, repetir…); si aún no
+  // Con las canciones a la vista, la lista entera pasa a la cola de Nexo (siguiente, aleatorio, repetir…); si aún no
   // cargaron, se le da a Spotify el álbum o la playlist como contexto.
   const primera = lista ? lista.canciones.findIndex((c) => c.reproducible) : -1;
   const reproducirTodo = () => (primera >= 0 ? reproducirCancion(primera) : useReproductorStore.getState().reproducir(pistaContexto));

@@ -1,6 +1,6 @@
-# Publicar una actualización de NexusHub
+# Publicar una actualización de Nexo
 
-NexusHub revisa, al pulsar «Buscar actualizaciones» en Configuración, un archivo `latest.json`
+Nexo revisa, al pulsar «Buscar actualizaciones» en Configuración, un archivo `latest.json`
 público en un repositorio de GitHub (`plugins.updater.endpoints` en `src-tauri/tauri.conf.json`).
 Cada nueva versión se publica ahí a mano, en tres pasos.
 
@@ -35,12 +35,17 @@ Cada nueva versión se publica ahí a mano, en tres pasos.
 4. En GitHub → tu repositorio → **Releases** → **Draft a new release**:
    - Tag: `v` seguido de la versión, p. ej. `v0.1.1`.
    - Adjunta los **tres** archivos que están en
-     `src-tauri/target/release/bundle/nsis/`: el instalador `NexusHub_X.Y.Z_x64-setup.exe`,
-     el `NexusHub_X.Y.Z_x64-setup.exe.sig` y el `latest.json`.
-   - Publica el release (no lo marques como «pre-release»: NexusHub solo mira el más reciente
+     `src-tauri/target/release/bundle/nsis/`: el instalador `Nexo_X.Y.Z_x64-setup.exe`,
+     el `Nexo_X.Y.Z_x64-setup.exe.sig` y el `latest.json`.
+   - Publica el release (no lo marques como «pre-release»: Nexo solo mira el más reciente
      que no lo sea).
-5. Quien ya tenga NexusHub abierto verá la actualización al pulsar «Buscar actualizaciones» en
+5. Quien ya tenga Nexo abierto verá la actualización al pulsar «Buscar actualizaciones» en
    Configuración → Acerca de.
 
 Si algún día quieres que esto se haga solo al hacer `git push` (sin repetir los pasos 2-4 a mano),
 se puede montar con GitHub Actions (`tauri-apps/tauri-action`); avísame cuando quieras montarlo.
+
+
+## Nota sobre el cambio de nombre (NexusHub → Nexo)
+
+Lo que se ve cambió de nombre, pero por dentro se conserva el identificador `com.nexushub.app`, el repositorio `SebastianSKS/nexushub` (de ahí lee las actualizaciones) y la carpeta de respaldo `AppData/Roaming/NexusHub`. Así nadie pierde sus datos. El instalador nuevo se llama `Nexo_X.Y.Z_x64-setup.exe`; quien tenga instalado el programa con el nombre anterior debe desinstalarlo desde Configuración de Windows (los datos se conservan).

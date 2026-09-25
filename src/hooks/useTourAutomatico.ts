@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { CLAVE_TOUR_VISTO } from "@/components/shell/TourBienvenida";
 import { useAppStore } from "@/store/app-store";
 
-/** La primera vez que se abre NexusHub (nunca se vio el recorrido en este equipo), lo muestra solo. */
+/** La primera vez que se abre Nexo (nunca se vio el recorrido en este equipo), lo muestra solo. */
 export function useTourAutomatico() {
   useEffect(() => {
     let visto = true;

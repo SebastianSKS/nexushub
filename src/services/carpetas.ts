@@ -1,7 +1,7 @@
 import { esEscritorio } from "@/lib/entorno";
 
 /**
- * «Mis tareas»: carpetas de verdad (una por materia) en Documentos/NexusHub/Tareas. Todo el trabajo con el disco
+ * «Mis tareas»: carpetas de verdad (una por materia) en Documentos/Nexo/Tareas. Todo el trabajo con el disco
  * lo hace la aplicación de escritorio (carpetas.rs); aquí solo se piden las cosas y se traducen los errores.
  */
 
@@ -41,7 +41,8 @@ export const borrarCarpeta = (nombre: string) => pedir<void>("carpeta_borrar", {
 export const listarArchivos = (carpeta: string) => pedir<ArchivoCarpeta[]>("archivos_listar", { carpeta });
 export const borrarArchivo = (carpeta: string, nombre: string) => pedir<void>("archivo_borrar", { carpeta, nombre });
 export const renombrarArchivo = (carpeta: string, actual: string, nuevo: string) => pedir<string>("archivo_renombrar", { carpeta, actual, nuevo });
-export const abrirEnSistema = (carpeta?: string, archivo?: string) => pedir<void>("abrir_en_sistema", { carpeta: carpeta ?? null, archivo: archivo ?? null });
+/** Con `pagina`, un PDF se abre justo en esa página. */
+export const abrirEnSistema = (carpeta?: string, archivo?: string, pagina?: number) => pedir<void>("abrir_en_sistema", { carpeta: carpeta ?? null, archivo: archivo ?? null, pagina: pagina ?? null });
 
 /** Guarda un archivo en una carpeta (nunca pisa otro con el mismo nombre). Devuelve el nombre con el que quedó. */
 export async function guardarArchivo(carpeta: string, archivo: File): Promise<string> {

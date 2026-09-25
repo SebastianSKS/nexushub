@@ -13,7 +13,7 @@ interface FeedParseado {
   videos: VideoCanal[];
 }
 
-/** Caché en memoria de esta pestaña: dura mientras NexusHub esté abierto. */
+/** Caché en memoria de esta pestaña: dura mientras Nexo esté abierto. */
 const cache = new Map<string, { at: number; value: FeedParseado }>();
 
 const parser = new XMLParser({

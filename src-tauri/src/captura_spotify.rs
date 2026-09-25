@@ -3,7 +3,7 @@
 //! compilada no tiene ningún servidor real escuchando en ese puerto (el contenido vive en
 //! `http://tauri.localhost`), este único servidor HTTP, minúsculo y de un solo propósito, se limita
 //! a esperar esa vuelta y reenviar al navegador (con un 302) a la página de retorno real de
-//! NexusHub, con el `code`/`state` intactos. Debe escuchar en el MISMO puerto que ya está
+//! Nexo, con el `code`/`state` intactos. Debe escuchar en el MISMO puerto que ya está
 //! registrado en el panel de Spotify del usuario (127.0.0.1:3000 por defecto).
 //!
 //! En `tauri dev`, el propio servidor de Next ya sirve esa ruta de verdad en el mismo puerto:

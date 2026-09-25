@@ -7,7 +7,7 @@ import { abortarSiCancelado, MIME_DOCX, MIME_PDF, type Ctx, type Salida } from "
 /**
  * Conversión con Microsoft Office instalado en el equipo (Word, Excel y PowerPoint exportan con su propio motor):
  * la mejor fidelidad posible, igual que guardar el archivo como PDF desde Office. Solo en la aplicación de escritorio
- * de Windows y si Office está instalado; si no, o si falla, se usa el motor básico de NexusHub (el resto del pipeline).
+ * de Windows y si Office está instalado; si no, o si falla, se usa el motor básico de Nexo (el resto del pipeline).
  */
 
 type Programa = "word" | "excel" | "powerpoint";
@@ -33,7 +33,7 @@ export function officeDisponible(): Promise<Record<Programa, boolean>> {
   return disponible;
 }
 
-/** ¿Esta herramienta se hará con Office? (para avisarlo en pantalla antes de convertir). null = con el motor de NexusHub. */
+/** ¿Esta herramienta se hará con Office? (para avisarlo en pantalla antes de convertir). null = con el motor de Nexo. */
 export async function programaOfficePara(toolId: ToolId, opciones?: unknown): Promise<string | null> {
   const m = MOTOR[toolId];
   if (!m || !esEscritorio() || !useAjustesStore.getState().usarOffice) return null;
@@ -49,7 +49,7 @@ async function convertir(motor: MotorOffice, archivo: File): Promise<ArrayBuffer
 
 /**
  * Intenta convertir con Office. Devuelve el resultado, o null si no corresponde (o falló) y hay que usar el motor de
- * NexusHub; en ese caso deja un aviso junto al resultado explicando por qué la calidad puede ser menor.
+ * Nexo; en ese caso deja un aviso junto al resultado explicando por qué la calidad puede ser menor.
  */
 export async function intentarConOffice(toolId: ToolId, archivo: File, opciones: unknown, ctx: Ctx): Promise<Salida[] | null> {
   const m = MOTOR[toolId];
@@ -59,7 +59,7 @@ export async function intentarConOffice(toolId: ToolId, archivo: File, opciones:
 
   const nombre = NOMBRE_PROGRAMA[m.programa];
   if (!(await officeDisponible())[m.programa]) {
-    ctx.warn(`Microsoft ${nombre} no está instalado en este equipo: se usó el motor básico de NexusHub. Con ${nombre} instalado, el resultado sale igual que guardándolo desde ${nombre}.`);
+    ctx.warn(`Microsoft ${nombre} no está instalado en este equipo: se usó el motor básico de Nexo. Con ${nombre} instalado, el resultado sale igual que guardándolo desde ${nombre}.`);
     return null;
   }
   abortarSiCancelado(ctx.signal);
@@ -73,7 +73,7 @@ export async function intentarConOffice(toolId: ToolId, archivo: File, opciones:
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") throw e;
     const motivo = typeof e === "string" ? e : "no se pudo abrir el archivo";
-    ctx.warn(`No se pudo usar Microsoft ${nombre} (${motivo.replace(/^Office no pudo convertir el archivo:?\s*/i, "").trim() || "no se pudo abrir el archivo"}). Se usó el motor básico de NexusHub: revisa el resultado.`);
+    ctx.warn(`No se pudo usar Microsoft ${nombre} (${motivo.replace(/^Office no pudo convertir el archivo:?\s*/i, "").trim() || "no se pudo abrir el archivo"}). Se usó el motor básico de Nexo: revisa el resultado.`);
     return null;
   }
 }

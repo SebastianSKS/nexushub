@@ -26,7 +26,7 @@ interface RespuestaLrclib {
   instrumental?: boolean;
 }
 
-const AGENTE = { "User-Agent": "NexusHub (https://github.com/SebastianSKS/nexushub)" };
+const AGENTE = { "User-Agent": "Nexo (https://github.com/SebastianSKS/nexushub)" };
 
 /** «Canción - Remastered 2011», «Canción (feat. X)», «Canción - En vivo»: lo que estorba para encontrar la letra. */
 function limpiarTitulo(t: string): string {

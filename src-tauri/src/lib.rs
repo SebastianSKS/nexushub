@@ -34,8 +34,8 @@ fn actualizar_bandeja(
     estado.reproducir.set_enabled(hay_pista).map_err(|e| e.to_string())?;
     estado.siguiente.set_enabled(siguiente_activo).map_err(|e| e.to_string())?;
     let tooltip = match titulo {
-        Some(t) => format!("NexusHub — {t}"),
-        None => "NexusHub".to_string(),
+        Some(t) => format!("Nexo — {t}"),
+        None => "Nexo".to_string(),
     };
     estado.tray.set_tooltip(Some(tooltip.as_str())).map_err(|e| e.to_string())?;
     Ok(())
@@ -140,7 +140,7 @@ fn leer_historial_respaldo(app: tauri::AppHandle) -> Result<Vec<String>, String>
     Ok(copias.into_iter().filter_map(|(_, p)| std::fs::read_to_string(p).ok()).collect())
 }
 
-/// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar NexusHub» del menú).
+/// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar Nexo» del menú).
 pub(crate) fn mostrar_ventana(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.show();
@@ -153,7 +153,7 @@ pub(crate) fn mostrar_ventana(app: &tauri::AppHandle) {
 pub fn run() {
     let mut builder = tauri::Builder::default();
 
-    // Una sola instancia: si el usuario abre NexusHub de nuevo, se enfoca la ventana que ya está
+    // Una sola instancia: si el usuario abre Nexo de nuevo, se enfoca la ventana que ya está
     // abierta en vez de arrancar una segunda. Debe registrarse antes que cualquier otro plugin.
     #[cfg(desktop)]
     {
@@ -190,6 +190,8 @@ pub fn run() {
             carpetas::archivo_borrar,
             carpetas::archivo_renombrar,
             carpetas::abrir_en_sistema,
+            carpetas::pdfs_listar,
+            carpetas::archivo_leer,
             carpetas::descarga_guardar,
             carpetas::descarga_mostrar,
             apps::apps_instaladas,
@@ -215,14 +217,14 @@ pub fn run() {
             // Bandeja del sistema: reproducir/pausar y siguiente sin tener que abrir la ventana.
             let reproducir = MenuItem::with_id(app, "reproducir", "Reproducir", false, None::<&str>)?;
             let siguiente = MenuItem::with_id(app, "siguiente", "Siguiente", false, None::<&str>)?;
-            let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar NexusHub", true, None::<&str>)?;
+            let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar Nexo", true, None::<&str>)?;
             let salir = MenuItem::with_id(app, "salir", "Salir", true, None::<&str>)?;
             let separador = PredefinedMenuItem::separator(app)?;
             let menu = Menu::with_items(app, &[&reproducir, &siguiente, &separador, &mostrar, &salir])?;
 
             let tray = TrayIconBuilder::with_id("bandeja")
                 .icon(app.default_window_icon().cloned().expect("falta el icono de la app"))
-                .tooltip("NexusHub")
+                .tooltip("Nexo")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id().as_ref() {

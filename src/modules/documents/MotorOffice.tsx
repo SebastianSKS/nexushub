@@ -12,7 +12,7 @@ const PROGRAMA: Partial<Record<ToolId, string>> = { "word-to-pdf": "Word", "pdf-
 
 /**
  * Dice, antes de convertir, con qué motor se hará: con Microsoft Office si está instalado (misma calidad que guardarlo desde
- * Office) o con el motor básico de NexusHub. Solo aparece en las conversiones de Office, en la aplicación de escritorio.
+ * Office) o con el motor básico de Nexo. Solo aparece en las conversiones de Office, en la aplicación de escritorio.
  */
 export function MotorOffice({ toolId }: { toolId: ToolId }) {
   const escritorio = useEsEscritorio();
@@ -34,9 +34,9 @@ export function MotorOffice({ toolId }: { toolId: ToolId }) {
   const [texto, bien] = usa
     ? [`Se convertirá con Microsoft ${usa}: el resultado sale igual que guardarlo desde ${usa}.`, true]
     : !usarOffice
-        ? ["Estás usando el motor básico de NexusHub. Puedes activar Office en Configuración › Documentos."]
+        ? ["Estás usando el motor básico de Nexo. Puedes activar Office en Configuración › Documentos."]
         : hay === false
-          ? [`Microsoft ${programa} no está instalado: se usa el motor básico de NexusHub. La calidad puede ser menor con documentos complejos.`]
+          ? [`Microsoft ${programa} no está instalado: se usa el motor básico de Nexo. La calidad puede ser menor con documentos complejos.`]
           : [];
   if (!texto) return null;
 

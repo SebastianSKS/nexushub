@@ -27,7 +27,7 @@ export function AjusteInicioAutomatico() {
   if (!disponible) return null;
 
   return (
-    <TarjetaAjuste glifo="energia" titulo="Iniciar con Windows" descripcion={error ? "No se pudo comprobar. Puede que Windows lo bloquee con una política del sistema." : "Abre NexusHub, minimizado en la bandeja, al encender el equipo."}>
+    <TarjetaAjuste glifo="energia" titulo="Iniciar con Windows" descripcion={error ? "No se pudo comprobar. Puede que Windows lo bloquee con una política del sistema." : "Abre Nexo, minimizado en la bandeja, al encender el equipo."}>
       <Switch
         checked={activo}
         label="Iniciar con Windows"

@@ -29,7 +29,7 @@ export function ProtectOptionsPanel() {
         <Glifo nombre={visible ? "ojoTachado" : "ojo"} tam={12} />
         {visible ? "Ocultar contraseña" : "Mostrar contraseña"}
       </button>
-      <p className="text-caption text-fg-tertiary">Todos los archivos de la lista quedan con esta misma contraseña. Guárdala: si la olvidas, nadie —ni NexusHub— puede recuperarla.</p>
+      <p className="text-caption text-fg-tertiary">Todos los archivos de la lista quedan con esta misma contraseña. Guárdala: si la olvidas, nadie —ni Nexo— puede recuperarla.</p>
     </div>
   );
 }

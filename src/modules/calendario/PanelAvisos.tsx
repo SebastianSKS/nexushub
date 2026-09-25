@@ -35,7 +35,7 @@ export function PanelAvisos() {
   const pedirPermiso = async () => setPermiso(await pedirPermisoNotificaciones());
 
   const probar = async () => {
-    const ok = await notificarSistema("NexusHub", "Así se verán tus avisos de cumpleaños.", "prueba", "/calendario");
+    const ok = await notificarSistema("Nexo", "Así se verán tus avisos de cumpleaños.", "prueba", "/calendario");
     setPrueba(ok ? "Enviamos una notificación de prueba: debería aparecer en la esquina de tu pantalla." : "No se pudo enviar la notificación de prueba.");
   };
 
@@ -87,7 +87,7 @@ export function PanelAvisos() {
             Verás los avisos dentro de la aplicación.
           </InfoBar>
         )}
-        <p className="text-caption text-fg-tertiary">Los avisos funcionan mientras NexusHub esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Aplicación).</p>
+        <p className="text-caption text-fg-tertiary">Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Aplicación).</p>
       </div>
     </Card>
   );

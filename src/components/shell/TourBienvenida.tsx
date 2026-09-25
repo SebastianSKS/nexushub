@@ -22,7 +22,7 @@ interface Paso {
 const PASOS: Paso[] = [
   {
     glifo: "informacion",
-    titulo: "Bienvenido a NexusHub",
+    titulo: "Bienvenido a Nexo",
     texto: "Video, Música, Documentos, Calendario, Horario y Calculadora, todo en una sola ventana. Este recorrido dura medio minuto — «Omitir» lo salta en cualquier momento.",
   },
   {
@@ -33,7 +33,7 @@ const PASOS: Paso[] = [
   {
     glifo: "musica",
     titulo: "Música",
-    texto: "Escucha Spotify sin salir de NexusHub: como invitado, o conectando tu cuenta. Guarda tus canciones favoritas y retoma lo que sonó hace rato.",
+    texto: "Escucha Spotify sin salir de Nexo: como invitado, o conectando tu cuenta. Guarda tus canciones favoritas y retoma lo que sonó hace rato.",
   },
   {
     glifo: "documentos",

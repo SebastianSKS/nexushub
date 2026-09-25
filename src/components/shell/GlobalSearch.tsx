@@ -9,6 +9,8 @@ import { Glifo } from "@/components/fluent/Glifo";
 import { prepararBusqueda, buscarContenido } from "@/lib/busqueda";
 import { buildCommands, filterCommands } from "@/lib/commands";
 import { ENTER, EXIT } from "@/lib/motion";
+import { plegar } from "@/lib/text";
+import { sincronizarIndice, useIndicePdfs } from "@/services/indice-pdfs";
 import { useAppStore } from "@/store/app-store";
 import { useCanalesStore } from "@/store/canales-store";
 import { useCalendarioStore } from "@/store/calendario-store";
@@ -18,7 +20,7 @@ import { useNotasStore } from "@/store/notas-store";
 import type { Command } from "@/types";
 
 /**
- * Buscador global (Ctrl+K o clic en la barra). Busca en TODO NexusHub —tareas y eventos, clases del horario,
+ * Buscador global (Ctrl+K o clic en la barra). Busca en TODO Nexo —tareas y eventos, clases del horario,
  * cumpleaños, apuntes, canales y sus videos, favoritos y herramientas de Documentos— y además ofrece los
  * comandos de siempre (ir a una sección, abrir Configuración…). Si escribes una cuenta, la resuelve.
  */
@@ -31,7 +33,33 @@ function useDatosBuscables(): string {
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const canales = useCanalesStore((s) => s.canales);
   const feeds = useCanalesStore((s) => s.feeds);
-  return [eventos.length, amigos.length, notas.length, clases.length, favoritos.length, canales.length, Object.keys(feeds).length, Object.values(feeds).reduce((n, f) => n + f.videos.length, 0)].join("-");
+  const indicePdfs = useIndicePdfs((s) => s.version);
+  return [indicePdfs, eventos.length, amigos.length, notas.length, clases.length, favoritos.length, canales.length, Object.keys(feeds).length, Object.values(feeds).reduce((n, f) => n + f.videos.length, 0)].join("-");
+}
+
+/** El fragmento de un PDF, con las palabras buscadas resaltadas (funciona igual con o sin acentos: el texto plegado mide lo mismo). */
+function Resaltado({ texto, palabras }: { texto: string; palabras?: string[] }) {
+  const partes = useMemo(() => {
+    const ps = (palabras ?? []).map(plegar).filter(Boolean);
+    if (ps.length === 0) return [{ t: texto, marca: false }];
+    const plano = plegar(texto);
+    const marcas = new Array<boolean>(texto.length).fill(false);
+    for (const p of ps) for (let i = plano.indexOf(p); i !== -1; i = plano.indexOf(p, i + p.length)) marcas.fill(true, i, i + p.length);
+    const salida: { t: string; marca: boolean }[] = [];
+    let ini = 0;
+    for (let i = 1; i <= texto.length; i++) {
+      if (i === texto.length || marcas[i] !== marcas[ini]) {
+        salida.push({ t: texto.slice(ini, i), marca: marcas[ini] });
+        ini = i;
+      }
+    }
+    return salida;
+  }, [texto, palabras]);
+  return (
+    <span className="mt-0.5 line-clamp-2 text-caption text-fg-secondary">
+      {partes.map((p, i) => (p.marca ? <mark key={i} className="rounded-[2px] px-px text-fg" style={{ background: "color-mix(in srgb, var(--accent) 30%, transparent)" }}>{p.t}</mark> : <span key={i}>{p.t}</span>))}
+    </span>
+  );
 }
 
 export function GlobalSearch() {
@@ -43,6 +71,9 @@ export function GlobalSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
+  const leyendo = useIndicePdfs((s) => s.fase === "leyendo");
+  const hechos = useIndicePdfs((s) => s.hechos);
+  const total = useIndicePdfs((s) => s.total);
 
   // Cambia cuando los datos que se buscan cambian (una tarea nueva, una nota…): así los resultados están al día.
   const version = useDatosBuscables();
@@ -57,6 +88,7 @@ export function GlobalSearch() {
     if (!open) return;
     if (document.activeElement !== inputRef.current) inputRef.current?.focus();
     prepararBusqueda();
+    void sincronizarIndice(30_000); // PDF nuevos que hayas guardado desde la última vez
     useCanalesStore.getState().iniciar(); // los videos de tus canales (usa el caché de 15 min si ya se cargaron)
   }, [open]);
 
@@ -140,7 +172,7 @@ export function GlobalSearch() {
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={open && results[activeIndex] ? optionId(activeIndex) : undefined}
-          placeholder="Buscar en NexusHub"
+          placeholder="Buscar en Nexo"
           value={query}
           onFocus={() => setOpen(true)}
           onChange={(e) => {
@@ -164,7 +196,7 @@ export function GlobalSearch() {
             <div id={listId} role="listbox" aria-label="Resultados">
               {groups.length === 0 && (
                 <p className="px-3 py-6 text-center text-body text-fg-secondary">
-                  No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal o «documentos».
+                  No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus PDF.
                 </p>
               )}
               {groups.map(([group, items]) => (
@@ -196,12 +228,18 @@ export function GlobalSearch() {
                         {cmd.hint && (
                           <span className="block truncate text-caption text-fg-tertiary">{cmd.hint}</span>
                         )}
+                        {cmd.detalle && <Resaltado texto={cmd.detalle} palabras={cmd.resaltar} />}
                       </span>
                     </div>
                   ))}
                 </div>
               ))}
             </div>
+            {leyendo && (
+              <p className="px-3 pb-1.5 pt-2 text-caption text-fg-tertiary" role="status">
+                Leyendo tus PDF para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.
+              </p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

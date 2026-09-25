@@ -9,7 +9,7 @@ export function esEscritorio(): boolean {
 
 /**
  * Abre un enlace externo (YouTube, Spotify…) con el programa del sistema. En la aplicación de
- * escritorio, un enlace normal se quedaría atrapado dentro de la ventana de NexusHub: hay que
+ * escritorio, un enlace normal se quedaría atrapado dentro de la ventana de Nexo: hay que
  * pedírselo a Tauri explícitamente. En el navegador, una pestaña nueva de toda la vida.
  */
 export async function abrirExterno(url: string): Promise<void> {

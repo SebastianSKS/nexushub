@@ -199,7 +199,7 @@ fn convertir(motor: &str, ext: &str, bytes: Vec<u8>) -> Result<Vec<u8>, String> 
 
     // Carpeta temporal propia, siempre borrada al terminar.
     let unica = format!("{}-{}", std::process::id(), std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0));
-    let carpeta: PathBuf = std::env::temp_dir().join("NexusHub").join(unica);
+    let carpeta: PathBuf = std::env::temp_dir().join("Nexo").join(unica);
     std::fs::create_dir_all(&carpeta).map_err(|e| e.to_string())?;
     let resultado = (|| {
         let entrada = carpeta.join(format!("entrada.{ext}"));

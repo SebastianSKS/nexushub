@@ -40,7 +40,7 @@ export function DialogoPermisos() {
         <li>Crear y editar tus playlists</li>
         <li>Ver los álbumes que guardaste</li>
       </ul>
-      <p className="mt-3 text-caption text-fg-tertiary">Se abrirá Spotify para que confirmes y NexusHub te trae de vuelta a esta misma pantalla. No pedimos nada más: no podemos ver tu contraseña.</p>
+      <p className="mt-3 text-caption text-fg-tertiary">Se abrirá Spotify para que confirmes y Nexo te trae de vuelta a esta misma pantalla. No pedimos nada más: no podemos ver tu contraseña.</p>
       <div className="mt-4 flex justify-end gap-2">
         <Button onClick={cerrar}>Ahora no</Button>
         <Button

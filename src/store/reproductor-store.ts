@@ -29,13 +29,13 @@ export interface Capacidades {
 const SIN_CAPACIDADES: Capacidades = { buscar: false, saltar: false, volumen: false, aleatorio: false, repetir: false };
 
 /**
- * Lo que cada fuente PUEDE hacer. YouTube: todo (la cola, el aleatorio y el repetir los maneja NexusHub).
+ * Lo que cada fuente PUEDE hacer. YouTube: todo (la cola, el aleatorio y el repetir los maneja Nexo).
  * Spotify en Modo Invitado (embed oficial): reproducir/pausar y mover la barra; el embed no expone volumen,
- * pero la cola (siguiente, aleatorio, repetir) la maneja NexusHub. El Modo Conectado (SDK) lo amplía al conectarse.
+ * pero la cola (siguiente, aleatorio, repetir) la maneja Nexo. El Modo Conectado (SDK) lo amplía al conectarse.
  */
 const CAPACIDADES_POR_FUENTE: Record<"youtube" | "spotify", Capacidades> = {
   youtube: { buscar: true, saltar: true, volumen: true, aleatorio: true, repetir: true },
-  // En Invitado la cola la maneja NexusHub (el embed solo toca una canción): aleatorio y repetir sí se pueden.
+  // En Invitado la cola la maneja Nexo (el embed solo toca una canción): aleatorio y repetir sí se pueden.
   spotify: { buscar: true, saltar: false, volumen: false, aleatorio: true, repetir: true },
 };
 
@@ -209,7 +209,7 @@ export const useReproductorStore = create<ReproductorState>((set, get) => ({
     if (!s.pista) return;
     const c = controlador(s.fuente);
     // Un álbum, playlist o artista dado como «contexto» lo recorre Spotify mismo: se le delega. Las canciones sueltas y las
-    // colas (lo normal) las maneja NexusHub, igual en Invitado que en Conectado.
+    // colas (lo normal) las maneja Nexo, igual en Invitado que en Conectado.
     if (!automatico && c?.siguiente && s.fuente === "spotify" && s.capacidades.saltar && !s.pista.id.startsWith("track:")) {
       c.siguiente();
       return;

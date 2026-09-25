@@ -6,7 +6,7 @@ import { useAjustesStore } from "@/store/ajustes-store";
 
 /**
  * Con el ajuste «segundoPlano» activo, cerrar la ventana (la «x» o Alt+F4) la oculta a la bandeja
- * del sistema en vez de cerrar NexusHub, para que la música siga sonando. Para salir de verdad está
+ * del sistema en vez de cerrar Nexo, para que la música siga sonando. Para salir de verdad está
  * «Salir» en el menú de la bandeja. Se lee el ajuste en el momento del cierre, no al montar el hook,
  * así que cambiarlo en Configuración se aplica sin tener que reabrir la aplicación.
  */

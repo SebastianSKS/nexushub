@@ -103,7 +103,7 @@ export function PaginaHorario() {
               <Glifo nombre="camara" tam={36} className="text-accent-text" />
               <div>
                 <p className="text-subtitle text-fg">Aún no tienes horario</p>
-                <p className="mx-auto mt-1 max-w-[440px] text-body text-fg-secondary">Sube la imagen del horario que te dieron (una captura o una foto) y NexusHub saca las materias, los días y las horas. Después puedes corregir lo que haga falta.</p>
+                <p className="mx-auto mt-1 max-w-[440px] text-body text-fg-secondary">Sube la imagen del horario que te dieron (una captura o una foto) y Nexo saca las materias, los días y las horas. Después puedes corregir lo que haga falta.</p>
               </div>
               <div className="flex gap-2">
                 <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>Escanear imagen</Button>

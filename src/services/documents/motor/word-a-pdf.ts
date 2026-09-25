@@ -217,7 +217,7 @@ export async function docxToPdfInBrowser(
 ): Promise<DocxConversion> {
   if (extensionOf(file.name) !== ".docx") {
     throw new DocumentError(
-      `«${file.name}» es un .doc antiguo y NexusHub solo lee el formato .docx.`,
+      `«${file.name}» es un .doc antiguo y Nexo solo lee el formato .docx.`,
       "Ábrelo en Word y guárdalo como .docx (Archivo → Guardar como), o pídele a quien te lo dio el .docx.",
     );
   }
@@ -352,7 +352,7 @@ export async function docxToPdfInBrowser(
   const bytes = await doc.save();
 
   const warnings = [
-    "El PDF se genera dentro de NexusHub a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar.",
+    "El PDF se genera dentro de Nexo a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar.",
   ];
   if (skippedImages > 0) warnings.push(`Se omitieron ${skippedImages} imagen(es) en un formato que no se puede incrustar (solo PNG y JPEG).`);
   if (replaced > 0) warnings.push("Algunos caracteres fuera del alfabeto latino (por ejemplo, emojis o escrituras no latinas) se sustituyeron por «?».");

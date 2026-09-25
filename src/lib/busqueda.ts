@@ -12,9 +12,11 @@ import { useCalendarioStore } from "@/store/calendario-store";
 import { useCanalesStore } from "@/store/canales-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useHorarioStore } from "@/store/horario-store";
+import { useAjustesStore } from "@/store/ajustes-store";
 import { useNotasStore } from "@/store/notas-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { abrirAcceso } from "@/services/accesos";
+import { abrirPdfEnPagina, buscarEnPdfs } from "@/services/indice-pdfs";
 import type { Command } from "@/types";
 
 /** Cuántos resultados se muestran como máximo de cada tipo (el resto se afina escribiendo más). */
@@ -43,7 +45,7 @@ export function prepararBusqueda() {
 }
 
 /**
- * Lo que se encuentra en NexusHub con lo que escribiste: tareas y eventos, clases del horario, cumpleaños,
+ * Lo que se encuentra en Nexo con lo que escribiste: tareas y eventos, clases del horario, cumpleaños,
  * apuntes, canales y sus videos, favoritos, herramientas de Documentos… y si es una cuenta, su resultado.
  * Cada resultado lleva a donde vive (a veces abriendo directamente esa cosa).
  */
@@ -140,6 +142,25 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .forEach((n) =>
       salida.push({ id: `nota-${n.id}`, group: "Apuntes", label: n.texto, hint: n.hecha ? "Hecho" : "Pendiente", keywords: [], icon: "tarea", run: () => ir("/calendario") }),
     );
+
+  // Dentro de tus PDF (el texto ya leído de las carpetas de materias): el archivo, la página y el trozo donde aparece.
+  if (useAjustesStore.getState().buscarEnPdfs && q.length >= 3) {
+    buscarEnPdfs(terminos)
+      .slice(0, POR_GRUPO)
+      .forEach((c) =>
+        salida.push({
+          id: `pdf-${c.carpeta}/${c.nombre}`,
+          group: "En tus PDF",
+          label: c.nombre,
+          hint: c.fragmento ? `${c.carpeta} · página ${c.pagina}${c.paginasConCoincidencia > 1 ? ` (y en ${c.paginasConCoincidencia - 1} más)` : ""}` : `${c.carpeta} · PDF`,
+          detalle: c.fragmento || undefined,
+          resaltar: terminos,
+          keywords: [],
+          icon: "documentos",
+          run: () => void abrirPdfEnPagina({ carpeta: c.carpeta, nombre: c.nombre, pagina: c.fragmento ? c.pagina : undefined }),
+        }),
+      );
+  }
 
   // Canales y sus videos.
   const canales = useCanalesStore.getState().canales;

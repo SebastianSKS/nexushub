@@ -21,7 +21,7 @@ const uriDe = (id: string) => `spotify:${id}`;
 
 /**
  * Cuerpo de PUT /me/player/play. Las canciones se piden de una en una: la cola (siguiente, aleatorio, repetir, «añadir a la
- * cola») es de NexusHub y NO toca la cola de tu Spotify. Álbumes, playlists y artistas se dan como contexto.
+ * cola») es de Nexo y NO toca la cola de tu Spotify. Álbumes, playlists y artistas se dan como contexto.
  */
 function cuerpoPlay(pista: Pista) {
   return pista.id.startsWith("track:") ? { uris: [uriDe(pista.id)] } : { context_uri: uriDe(pista.id) };
@@ -221,7 +221,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       const me = await spotifyApi<Me>("/me");
       if (cancelado) return;
       if (me.status !== 200 || !me.data) {
-        store.setConnection({ status: "error", message: "Spotify no respondió con tu perfil.", hint: me.status === 0 ? "No se pudo contactar con Spotify: comprueba tu internet o desactiva el bloqueador (en Brave, el escudo) para esta página." : "Cierra la sesión de Spotify en NexusHub y conéctate de nuevo." });
+        store.setConnection({ status: "error", message: "Spotify no respondió con tu perfil.", hint: me.status === 0 ? "No se pudo contactar con Spotify: comprueba tu internet o desactiva el bloqueador (en Brave, el escudo) para esta página." : "Cierra la sesión de Spotify en Nexo y conéctate de nuevo." });
         return;
       }
       const nombre = me.data.display_name || "tu cuenta";
@@ -239,7 +239,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       if (cancelado || !window.Spotify) return;
 
       const player = new window.Spotify.Player({
-        name: "NexusHub",
+        name: "Nexo",
         volume: useReproductorStore.getState().volumen / 100,
         getOAuthToken: (cb) => void obtenerAccessToken().then((t) => t && cb(t)),
       });
@@ -296,8 +296,8 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         const previo = ultimoRef.current;
         ultimoRef.current = { id: t.id, playing: !s.paused };
 
-        // Una canción SUELTA (lo normal: la cola es de NexusHub) termina así: Spotify la deja en pausa, al principio o al final,
-        // habiendo estado sonando. Entonces NexusHub pasa a la siguiente de la cola.
+        // Una canción SUELTA (lo normal: la cola es de Nexo) termina así: Spotify la deja en pausa, al principio o al final,
+        // habiendo estado sonando. Entonces Nexo pasa a la siguiente de la cola.
         const terminada =
           !!pista?.id.startsWith("track:") &&
           !!previo?.playing &&
@@ -330,13 +330,13 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       });
       player.addListener("account_error", () => useMusicStore.getState().setConnection({ status: "not-premium", name: nombre }));
       player.addListener("authentication_error", () =>
-        useMusicStore.getState().setConnection({ status: "error", message: "Spotify rechazó la sesión.", hint: "Cierra la sesión de Spotify en NexusHub y conéctate de nuevo." }),
+        useMusicStore.getState().setConnection({ status: "error", message: "Spotify rechazó la sesión.", hint: "Cierra la sesión de Spotify en Nexo y conéctate de nuevo." }),
       );
       player.addListener("initialization_error", () =>
         useMusicStore.getState().setConnection({
           status: "error",
           message: "Este navegador no puede reproducir música de Spotify.",
-          hint: "Spotify exige protección de contenido (DRM). Abre NexusHub en Microsoft Edge, Chrome o Firefox. Los navegadores integrados en otras aplicaciones no la incluyen.",
+          hint: "Spotify exige protección de contenido (DRM). Abre Nexo en Microsoft Edge, Chrome o Firefox. Los navegadores integrados en otras aplicaciones no la incluyen.",
         }),
       );
       player.addListener("playback_error", (e) => useReproductorStore.getState().informar({ reproduciendo: false, error: `Spotify no pudo reproducir esta pista: ${e.message}` }));

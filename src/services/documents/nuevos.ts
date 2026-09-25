@@ -17,16 +17,13 @@ export interface InfoNuevo {
   extension: string;
   /** Nombre que se propone al crearlo. */
   nombre: string;
-  /** Color del programa, para el cuadro con su inicial. */
-  color: string;
-  inicial: string;
 }
 
 export const NUEVOS: readonly InfoNuevo[] = [
-  { tipo: "word", titulo: "Documento de Word", corto: "Word", descripcion: "Para escribir trabajos, informes y ensayos.", extension: ".docx", nombre: "Documento nuevo", color: "#2B579A", inicial: "W" },
-  { tipo: "excel", titulo: "Hoja de Excel", corto: "Excel", descripcion: "Para tablas, cuentas y gráficos.", extension: ".xlsx", nombre: "Hoja de cálculo nueva", color: "#217346", inicial: "X" },
-  { tipo: "powerpoint", titulo: "Presentación de PowerPoint", corto: "PowerPoint", descripcion: "Para exponer con diapositivas.", extension: ".pptx", nombre: "Presentación nueva", color: "#B7472A", inicial: "P" },
-  { tipo: "texto", titulo: "Archivo de texto", corto: "Texto", descripcion: "Notas rápidas, sin formato (.txt).", extension: ".txt", nombre: "Notas nuevas", color: "#5D6870", inicial: "T" },
+  { tipo: "word", titulo: "Documento de Word", corto: "Word", descripcion: "Para escribir trabajos, informes y ensayos.", extension: ".docx", nombre: "Documento nuevo" },
+  { tipo: "excel", titulo: "Hoja de Excel", corto: "Excel", descripcion: "Para tablas, cuentas y gráficos.", extension: ".xlsx", nombre: "Hoja de cálculo nueva" },
+  { tipo: "powerpoint", titulo: "Presentación de PowerPoint", corto: "PowerPoint", descripcion: "Para exponer con diapositivas.", extension: ".pptx", nombre: "Presentación nueva" },
+  { tipo: "texto", titulo: "Archivo de texto", corto: "Texto", descripcion: "Notas rápidas, sin formato (.txt).", extension: ".txt", nombre: "Notas nuevas" },
 ];
 
 const XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';

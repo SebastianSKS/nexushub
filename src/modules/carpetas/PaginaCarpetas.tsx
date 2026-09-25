@@ -6,10 +6,12 @@ import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
 import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
+import { LogoPrograma } from "@/components/fluent/LogoPrograma";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { TextInput } from "@/components/fluent/TextInput";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
+import { cargarIconosProgramas, programaDeExtension } from "@/services/iconos-programas";
 import { useHorarioStore } from "@/store/horario-store";
 import {
   abrirEnSistema,
@@ -90,6 +92,11 @@ export function PaginaCarpetas() {
   const entrada = useRef<HTMLInputElement>(null);
 
   useEffect(() => useHorarioStore.getState().cargar(), []);
+
+  // Los logos de Word, Excel… tardan un momento en llegar desde Windows: se piden al entrar, para que ya estén al abrirlos.
+  useEffect(() => {
+    if (disponible) void cargarIconosProgramas(["word", "excel", "powerpoint", "texto"]);
+  }, [disponible]);
 
   const recargar = useCallback(async () => {
     try {
@@ -251,7 +258,7 @@ export function PaginaCarpetas() {
                       {archivos.map((a) => (
                         <li key={a.nombre} className="rounded-control flex items-center gap-2 border border-stroke bg-layer p-2 pl-3">
                           <button type="button" onClick={() => void intentar(() => abrirEnSistema(abierta, a.nombre))} className="flex min-w-0 flex-1 items-center gap-3 py-1 text-left" title="Abrir con su programa" aria-label={`Abrir ${a.nombre}`}>
-                            <Glifo nombre="documentos" tam={18} className="text-fg-secondary" />
+                            {programaDeExtension(a.nombre) ? <LogoPrograma programa={programaDeExtension(a.nombre)!} tam={22} /> : <Glifo nombre="documentos" tam={18} className="text-fg-secondary" />}
                             <span className="min-w-0">
                               <span className="block truncate text-body text-fg">{a.nombre}</span>
                               <span className="block truncate text-caption text-fg-secondary">{tamano(a.bytes)} · {fecha(a.modificado)}</span>

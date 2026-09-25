@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
 import { Dialog } from "@/components/fluent/Dialog";
+import { LogoPrograma } from "@/components/fluent/LogoPrograma";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
 import { abrirEnSistema, ErrorCarpetas, guardarArchivo } from "@/services/carpetas";
@@ -51,9 +52,7 @@ export function DialogoNuevoArchivo({ carpeta, ruta, onCerrar, onCreado }: { car
               onClick={() => setTipo(n.tipo)}
               className={clsx("rounded-control reveal flex items-center gap-3 border px-3 py-2.5 text-left transition-colors duration-exit ease-fluent", n.tipo === tipo ? "border-accent bg-layer-alt" : "border-stroke bg-layer hover:bg-layer-alt")}
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] text-body font-semibold" style={{ backgroundColor: n.color, color: "#fff" }} aria-hidden>
-                <span>{n.inicial}</span>
-              </span>
+              <LogoPrograma programa={n.tipo} tam={36} />
               <span className="min-w-0">
                 <span className="block truncate text-body font-semibold text-fg">{n.corto}</span>
                 <span className="block text-caption text-fg-secondary">{n.extension}</span>

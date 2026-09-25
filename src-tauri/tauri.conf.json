@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Nexo",
   "mainBinaryName": "Nexo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "identifier": "com.nexushub.app",
   "build": {
     "frontendDist": "../out",

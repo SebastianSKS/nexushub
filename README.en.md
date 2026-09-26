@@ -23,6 +23,9 @@
 | **Calendar** | Tasks, exams, appointments and birthdays, with reminders. Exports to `.ics`. |
 | **Schedule** | Your weekly classes. Scan the picture you were sent and it fills itself in. Warns you before each class. |
 | **Calculator** | Standard and scientific, with history and keyboard support. |
+| **Notifications your way** | Nexo notifications (with its name and icon) before each class, a timed exam and a birthday; with five sounds of its own or Windows', and an hour-based “Do not disturb”. |
+| **Make it yours** | Light or dark theme, any accent color, interface size, 12- or 24-hour times, a week that starts on Monday or Sunday, fewer animations and sections you can hide. |
+| **Backup** | Save all your data in a file and move it to another computer. It doesn't include your Spotify session. |
 | **Guides and what's new** | Each section explains itself the first time (and with “How does it work?” whenever you want). After an update, a dialog tells you what changed. |
 | **Spanish and English** | Fully translated; change it in *Settings › Appearance › Language* (or follow Windows). |
 | **Updates** | Nexo checks on its own when it opens and offers an “Update now” button. Your data is kept. |
@@ -32,9 +35,9 @@
 ## Install
 
 1. Download `Nexo_…_x64-setup.exe` from the [latest release](https://github.com/SebastianSKS/nexushub/releases/latest).
-2. Run it. After that Nexo updates itself.
+2. Run it. If Windows shows “Windows protected your PC”, click *More info › Run anyway* (it's normal for new programs). After that Nexo updates itself.
 
-Designed for Windows 11.
+Designed for Windows 11. Questions or something not working? See the [help](HELP.md) or [report a problem](https://github.com/SebastianSKS/nexushub/issues/new/choose).
 
 ## Privacy
 

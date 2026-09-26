@@ -16,8 +16,12 @@ const texto = (estado: EstadoActualizacion, version: string | null, progreso: nu
       return traducir("Hay una versión nueva: Nexo {version}.", { version: version ?? "" });
     case "descargando":
       return progreso !== null ? traducir("Descargando la actualización… {n} %", { n: progreso }) : traducir("Descargando la actualización…");
+    case "instalando":
+      return traducir("Instalando… Nexo se cerrará un momento y se abrirá solo.");
     case "lista":
       return traducir("Instalada. Reinicia para terminar.");
+    case "fallo":
+      return traducir("No se pudo instalar la actualización. Revisa tu conexión e inténtalo de nuevo.");
     case "error":
       return traducir("No se pudo comprobar. Revisa tu conexión a internet.");
     default:
@@ -46,8 +50,12 @@ export function AjusteActualizaciones() {
         <Button variant="accent" onClick={() => void instalar()}>
           {t("Actualizar ahora")}
         </Button>
+      ) : estado === "fallo" ? (
+        <Button variant="accent" onClick={() => void instalar()}>
+          {t("Reintentar")}
+        </Button>
       ) : (
-        <Button onClick={() => void buscar()} disabled={estado === "buscando" || estado === "descargando"}>
+        <Button onClick={() => void buscar()} disabled={estado === "buscando" || estado === "descargando" || estado === "instalando"}>
           {t("Buscar actualizaciones")}
         </Button>
       )}

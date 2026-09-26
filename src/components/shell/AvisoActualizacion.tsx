@@ -19,7 +19,8 @@ export function AvisoActualizacion() {
   const instalar = useActualizacionesStore((s) => s.instalar);
   const reiniciar = useActualizacionesStore((s) => s.reiniciar);
   const posponer = useActualizacionesStore((s) => s.posponer);
-  const visible = (estado === "disponible" && !pospuesta) || estado === "descargando" || estado === "lista";
+  const descartarFallo = useActualizacionesStore((s) => s.descartarFallo);
+  const visible = (estado === "disponible" && !pospuesta) || estado === "descargando" || estado === "instalando" || estado === "lista" || estado === "fallo";
 
   return (
     <AnimatePresence>
@@ -37,13 +38,23 @@ export function AvisoActualizacion() {
               <Glifo nombre="actualizar" tam={14} />
             </span>
             <div className="min-w-0">
-              <p className="text-body font-semibold text-fg">{estado === "lista" ? t("Actualización lista") : estado === "descargando" ? t("Descargando la actualización…") : t("Nexo {version} está disponible", { version: version ?? "" })}</p>
+              <p className="text-body font-semibold text-fg">{estado === "lista" ? t("Actualización lista") : estado === "instalando" ? t("Instalando la actualización…") : estado === "fallo" ? t("La actualización no se pudo instalar") : estado === "descargando" ? t("Descargando la actualización…") : t("Nexo {version} está disponible", { version: version ?? "" })}</p>
               <p className="text-caption text-fg-secondary">
-                {estado === "lista" ? t("Reinicia Nexo para terminar. Tus datos se conservan.") : estado === "descargando" ? t("Puedes seguir usando Nexo mientras baja.") : t("Trae cosas nuevas y mejoras. Se instala en un momento y tus datos se conservan.")}
+                {estado === "lista" ? t("Reinicia Nexo para terminar. Tus datos se conservan.") : estado === "instalando" ? t("Nexo se cierra un momento y se abre solo. Tus datos se conservan.") : estado === "fallo" ? t("Revisa tu conexión a internet e inténtalo de nuevo. Tus datos están a salvo.") : estado === "descargando" ? t("Puedes seguir usando Nexo mientras baja.") : t("Trae cosas nuevas y mejoras. Se instala en un momento y tus datos se conservan.")}
               </p>
             </div>
           </div>
-          {estado === "descargando" && <ProgressBar value={progreso ?? 8} label={t("Progreso de la descarga")} />}
+          {(estado === "descargando" || estado === "instalando") && <ProgressBar value={progreso ?? 8} label={t("Progreso de la descarga")} />}
+          {estado === "fallo" && (
+            <div className="flex justify-end gap-2">
+              <Button variant="subtle" onClick={descartarFallo}>
+                {t("Cerrar")}
+              </Button>
+              <Button variant="accent" onClick={() => void instalar()}>
+                {t("Reintentar")}
+              </Button>
+            </div>
+          )}
           {estado === "disponible" && (
             <div className="flex justify-end gap-2">
               <Button variant="subtle" onClick={posponer}>

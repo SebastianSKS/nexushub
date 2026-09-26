@@ -121,5 +121,10 @@
   "Salir": "Quit",
   "{carpeta} · hoja «{hoja}»": "{carpeta} · sheet “{hoja}”",
   "{carpeta} · diapositiva {n}": "{carpeta} · slide {n}",
-  "No se pudo abrir el archivo": "The file couldn't be opened"
+  "No se pudo abrir el archivo": "The file couldn't be opened",
+  "Instalando la actualización…": "Installing the update…",
+  "La actualización no se pudo instalar": "The update couldn't be installed",
+  "Nexo se cierra un momento y se abre solo. Tus datos se conservan.": "Nexo closes for a moment and reopens on its own. Your data is kept.",
+  "Revisa tu conexión a internet e inténtalo de nuevo. Tus datos están a salvo.": "Check your internet connection and try again. Your data is safe.",
+  "Reintentar": "Try again"
 }

@@ -122,5 +122,8 @@
   "Video usa YouTube y Música usa Spotify; se cargan desde sus propios servidores cuando los abres.": "Video uses YouTube and Music uses Spotify; they load from their own servers when you open them.",
   "Tema, acento, efecto, volumen y demás ajustes de esta página vuelven a sus valores de fábrica. Tu perfil, tus canales y tus cumpleaños no se tocan.": "Theme, accent, effect, volume and the other settings on this page go back to their factory values. Your profile, channels and birthdays are not touched.",
   "Restablecer": "Reset",
-  "Cian": "Cyan"
+  "Cian": "Cyan",
+  "Instalando… Nexo se cerrará un momento y se abrirá solo.": "Installing… Nexo will close for a moment and reopen on its own.",
+  "No se pudo instalar la actualización. Revisa tu conexión e inténtalo de nuevo.": "The update couldn't be installed. Check your connection and try again.",
+  "Reintentar": "Try again"
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { horaLegible } from "@/lib/hora-legible";
 import { traducir } from "@/lib/i18n";
 import { useEffect } from "react";
 import { claveFecha } from "@/lib/calendario/fechas";
@@ -49,7 +50,7 @@ export function useAvisosClases() {
           const faltan = aMinutos(c.inicio) - minutos;
           if (faltan <= 0 || faltan > aj.avisoClaseMin) continue; // aún falta mucho, o ya empezó
           const donde = [c.aula ? traducir("Aula {aula}", { aula: c.aula }) : "", c.docente].filter(Boolean).join(" · ");
-          avisar(`clase:${c.id}|${hoy}`, traducir("{materia} empieza en {faltan} min", { materia: c.materia, faltan }), `${c.inicio}–${c.fin}${donde ? ` · ${donde}` : ""}`, { ruta: "/horario", etiqueta: traducir("Abrir el horario"), glifo: "reloj" });
+          avisar(`clase:${c.id}|${hoy}`, traducir("{materia} empieza en {faltan} min", { materia: c.materia, faltan }), `${horaLegible(c.inicio)}–${horaLegible(c.fin)}${donde ? ` · ${donde}` : ""}`, { ruta: "/horario", etiqueta: traducir("Abrir el horario"), glifo: "reloj" });
         }
       }
 
@@ -67,7 +68,7 @@ export function useAvisosClases() {
         const partes: string[] = [];
         if (clases.length > 0) {
           const c = clases[0]!;
-          partes.push(c.aula ? traducir("Primera clase: {inicio} {materia} (Aula {aula}).", { inicio: c.inicio, materia: c.materia, aula: c.aula }) : traducir("Primera clase: {inicio} {materia}.", { inicio: c.inicio, materia: c.materia }));
+          partes.push(c.aula ? traducir("Primera clase: {inicio} {materia} (Aula {aula}).", { inicio: horaLegible(c.inicio), materia: c.materia, aula: c.aula }) : traducir("Primera clase: {inicio} {materia}.", { inicio: horaLegible(c.inicio), materia: c.materia }));
         }
         const eventos = items.filter((i) => i.tipo === "evento").map((i) => i.titulo);
         const cumples = items.filter((i) => i.tipo === "amigo").map((i) => i.titulo);

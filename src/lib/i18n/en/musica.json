@@ -268,5 +268,7 @@
   "Playlist · Electrónica": "Playlist · Electronic",
   "Playlist · Chill": "Playlist · Chill",
   "tu cuenta": "your account",
-  "Spotify no pudo reproducir esta pista: {motivo}": "Spotify couldn't play this track: {motivo}"
+  "Spotify no pudo reproducir esta pista: {motivo}": "Spotify couldn't play this track: {motivo}",
+  "Tu cuenta de Spotify todavía no está autorizada para Nexo.": "Your Spotify account isn't authorized for Nexo yet.",
+  "Spotify limita las aplicaciones nuevas a las cuentas que su creador autoriza. Pídele a quien te pasó Nexo que agregue tu correo de Spotify; mientras tanto puedes usar Video y Documentos con normalidad.": "Spotify limits new apps to the accounts their creator authorizes. Ask whoever gave you Nexo to add your Spotify email; meanwhile you can use Video and Documents as usual."
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
@@ -12,6 +13,7 @@ import { useMusicStore } from "@/store/music-store";
  * normal de Nexo en vez de una ruta de servidor: el intercambio del código ocurre en el navegador.
  */
 export function PaginaCallback() {
+  const t = useT();
   const router = useRouter();
   const params = useSearchParams();
   const hecho = useRef(false);
@@ -26,9 +28,9 @@ export function PaginaCallback() {
       if (resultado === "connected") {
         store.setConnection({ status: "connecting" });
       } else if (resultado === "denied") {
-        store.setConnection({ status: "error", message: "No autorizaste el acceso a Spotify.", hint: "Puedes volver a intentarlo cuando quieras; el Modo Invitado sigue funcionando." });
+        store.setConnection({ status: "error", message: t("No autorizaste el acceso a Spotify."), hint: t("Puedes volver a intentarlo cuando quieras; el Modo Invitado sigue funcionando.") });
       } else if (resultado === "error") {
-        store.setConnection({ status: "error", message: "No se pudo completar la conexión con Spotify.", hint: "Revisa que la URI de redirección de tu app de Spotify coincida exactamente e inténtalo de nuevo." });
+        store.setConnection({ status: "error", message: t("No se pudo completar la conexión con Spotify."), hint: t("Revisa que la URI de redirección de tu app de Spotify coincida exactamente e inténtalo de nuevo.") });
       }
       router.replace(tomarDestinoDeRegreso() ?? "/musica/");
     })();
@@ -37,11 +39,11 @@ export function PaginaCallback() {
   return (
     <PlantillaPagina
       migas={[{ etiqueta: "Música", href: "/musica" }, { etiqueta: "Conectando con Spotify" }]}
-      titulo="Conectando con Spotify"
-      descripcion="Un momento, te llevamos de vuelta a Música."
+      titulo={t("Conectando con Spotify")}
+      descripcion={t("Un momento, te llevamos de vuelta a Música.")}
       principal={
         <p className="text-body text-fg-secondary" role="status">
-          Terminando de iniciar sesión…
+          {t("Terminando de iniciar sesión…")}
         </p>
       }
     />

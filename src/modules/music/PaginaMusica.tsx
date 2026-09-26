@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { LogoMarca } from "@/components/fluent/LogoMarca";
 import { useEffect, useRef, useState } from "react";
 import { ArrowSync20Regular } from "@fluentui/react-icons";
@@ -19,6 +20,7 @@ import { SpotifySetupDialog } from "./SpotifySetupDialog";
 
 /** /musica — sugeridos y búsqueda. Modo Invitado (embed oficial) o Modo Conectado (Premium). */
 export function PaginaMusica() {
+  const t = useT();
   const estado = useMusicStore((s) => s.connection.status);
   const connectAvailable = clienteIdConfigurado();
   const cargando = useMusicStore((s) => s.status === "loading");
@@ -47,25 +49,25 @@ export function PaginaMusica() {
   }, [conectado]);
   const actualizar = (
     <Button icon={<ArrowSync20Regular className={cargando ? "animate-spin" : undefined} />} disabled={cargando} onClick={() => void useMusicStore.getState().otrasSugerencias()}>
-      {cargando ? "Actualizando…" : "Otras sugerencias"}
+      {cargando ? t("Actualizando…") : t("Otras sugerencias")}
     </Button>
   );
   const accion =
     conectado ? (
       <Button variant="accent" icon={<ArrowSync20Regular className={cargando ? "animate-spin" : undefined} />} disabled={cargando} onClick={() => void useMusicStore.getState().otrasSugerencias()}>
-        {cargando ? "Actualizando…" : "Otras sugerencias"}
+        {cargando ? t("Actualizando…") : t("Otras sugerencias")}
       </Button>
     ) : estado === "connecting" ? (
       <Button variant="accent" disabled>
-        Conectando…
+        {t("Conectando…")}
       </Button>
     ) : connectAvailable ? (
       <Button variant="accent" icon={<LogoMarca marca="spotify" tam={18} />} onClick={conectarSpotify}>
-        Conectar con Spotify Premium
+        {t("Conectar con Spotify Premium")}
       </Button>
     ) : (
       <Button variant="accent" onClick={() => setGuia(true)}>
-        Cómo activar Premium
+        {t("Cómo activar Premium")}
       </Button>
     );
 
@@ -73,8 +75,8 @@ export function PaginaMusica() {
     <>
       <PlantillaPagina
         migas={[{ etiqueta: "Música" }]}
-        titulo="Música"
-        descripcion="Elige una canción y la música sigue sola. Escucha como invitado o conecta tu cuenta Premium."
+        titulo={t("Música")}
+        descripcion={t("Elige una canción y la música sigue sola. Escucha como invitado o conecta tu cuenta Premium.")}
         accion={accion}
         principal={
           <>

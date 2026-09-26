@@ -1,3 +1,4 @@
+import { horaLegible } from "@/lib/hora-legible";
 import { infoCategoria } from "@/lib/calendario/categorias";
 import { traducir } from "@/lib/i18n";
 import { fechaLarga, fechaDesdeIso, mayuscula, nombreMes } from "@/lib/calendario/fechas";
@@ -99,7 +100,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
         id: `ev-${e.id}`,
         group: traducir("Tareas y eventos"),
         label: e.titulo,
-        hint: `${traducir(infoCategoria(e.categoria).nombre)} · ${mayuscula(fechaLarga(f))}${e.hora ? ` · ${e.hora}` : ""}`,
+        hint: `${traducir(infoCategoria(e.categoria).nombre)} · ${mayuscula(fechaLarga(f))}${e.hora ? ` · ${horaLegible(e.hora)}` : ""}`,
         keywords: [],
         icon: infoCategoria(e.categoria).glifo,
         color: e.color,
@@ -120,7 +121,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
         id: `clase-${c.id}`,
         group: traducir("Horario"),
         label: c.materia,
-        hint: `${nombreDiaSemana(c.dia)} ${c.inicio}–${c.fin}${c.docente ? ` · ${c.docente}` : ""}${c.aula ? ` · ${traducir("Aula {aula}", { aula: c.aula })}` : ""}`,
+        hint: `${nombreDiaSemana(c.dia)} ${horaLegible(c.inicio)}–${horaLegible(c.fin)}${c.docente ? ` · ${c.docente}` : ""}${c.aula ? ` · ${traducir("Aula {aula}", { aula: c.aula })}` : ""}`,
         keywords: [],
         icon: "reloj",
         color: c.color,

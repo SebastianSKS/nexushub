@@ -46,9 +46,22 @@ export function interpolar(texto: string, variables?: Variables): string {
   return texto.replace(/\{(\w+)\}/g, (completo, nombre: string) => (nombre in variables ? String(variables[nombre]) : completo));
 }
 
+/**
+ * Cuando el mismo texto en español se dice distinto en inglés según dónde salga («Cumpleaños» como etiqueta suelta o como
+ * título de un grupo), la clave lleva el contexto detrás de este signo: «Cumpleaños¦grupo». En español (y si falta la
+ * traducción) se muestra solo lo que va antes del signo.
+ */
+export const SEPARADOR_CONTEXTO = "¦";
+
+/** El texto en español de una clave, sin su contexto. */
+export const sinContexto = (clave: string): string => {
+  const i = clave.indexOf(SEPARADOR_CONTEXTO);
+  return i === -1 ? clave : clave.slice(0, i);
+};
+
 /** Traduce una clave (el texto en español) con el diccionario del idioma; en español, o sin traducción, queda el español. */
 export function traducirDe(ingles: Diccionario, idioma: Idioma, clave: string, variables?: Variables): string {
-  const texto = idioma === "en" ? (ingles[clave] ?? clave) : clave;
+  const texto = idioma === "en" ? (ingles[clave] ?? sinContexto(clave)) : sinContexto(clave);
   return interpolar(texto, variables);
 }
 

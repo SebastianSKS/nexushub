@@ -9,5 +9,22 @@
   "Entendido": "Got it",
   "Más tarde": "Later",
   "Listo": "Ready",
-  "Video": "Video"
+  "Video": "Video",
+  "Hoy": "Today",
+  "Mañana": "Tomorrow",
+  "En {n} días": "In {n} days",
+  "Día": "Day",
+  "Mes": "Month",
+  "Año": "Year",
+  "Eliminar": "Delete",
+  "Editar": "Edit",
+  "Sí, eliminar": "Yes, delete",
+  "No": "No",
+  "Nota (opcional)": "Note (optional)",
+  "Título": "Title",
+  "Semana": "Week",
+  "Avisos": "Notifications",
+  "Buscar": "Search",
+  "Ayuda": "Help",
+  "Navegación": "Navigation"
 }

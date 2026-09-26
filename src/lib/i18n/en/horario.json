@@ -1,1 +1,9 @@
-{}
+{
+  "Lunes": "Monday",
+  "Martes": "Tuesday",
+  "Miércoles": "Wednesday",
+  "Jueves": "Thursday",
+  "Viernes": "Friday",
+  "Sábado": "Saturday",
+  "Domingo": "Sunday"
+}

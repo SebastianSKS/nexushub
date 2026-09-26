@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { interpolar, leerPreferencia, localeDe, resolverIdioma, T, traducirDe } from "../src/lib/i18n/nucleo.ts";
+import { interpolar, leerPreferencia, localeDe, resolverIdioma, sinContexto, T, traducirDe } from "../src/lib/i18n/nucleo.ts";
 
 const en = { Guardar: "Save", "Hola, {nombre}": "Hello, {nombre}" };
 
@@ -40,6 +40,15 @@ describe("idiomas: núcleo", () => {
     assert.equal(traducirDe(en, "es", "Hola, {nombre}", { nombre: "Ana" }), "Hola, Ana");
     assert.equal(interpolar("{a} y {b}", { a: 1 }), "1 y {b}");
     assert.equal(interpolar("sin variables"), "sin variables");
+  });
+
+  it("el contexto de una clave (Texto¦contexto) distingue traducciones y nunca se ve", () => {
+    const dic = { "Cumpleaños¦grupo": "Birthdays", Cumpleaños: "Birthday" };
+    assert.equal(traducirDe(dic, "en", "Cumpleaños¦grupo"), "Birthdays");
+    assert.equal(traducirDe(dic, "en", "Cumpleaños"), "Birthday");
+    assert.equal(traducirDe(dic, "es", "Cumpleaños¦grupo"), "Cumpleaños");
+    assert.equal(traducirDe({}, "en", "Cumpleaños¦grupo"), "Cumpleaños");
+    assert.equal(sinContexto("Hola¦saludo"), "Hola");
   });
 
   it("T no cambia el texto", () => {

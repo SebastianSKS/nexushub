@@ -1,5 +1,7 @@
 "use client";
 
+import { useAjustesStore } from "@/store/ajustes-store";
+import { ordenDeDias } from "@/lib/calendario/semana";
 import { useT, localeActual } from "@/lib/i18n";
 import clsx from "clsx";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -47,11 +49,12 @@ function rellenoDia(colores: string[]): string | undefined {
   return `linear-gradient(135deg, ${colores.map((c, i) => `${tinte(c)} ${i * paso}%, ${tinte(c)} ${(i + 1) * paso}%`).join(", ")})`;
 }
 
-/** Calendario del mes (semanas de lunes a domingo). Cada cumpleaños y cada evento es una etiqueta con su color. */
+/** Calendario del mes (con la semana empezando en lunes o en domingo, como se elija en Configuración). Cada cumpleaños y cada evento es una etiqueta con su color. */
 export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia, onAmigo, onEvento }: Props) {
   const t = useT();
+  const primer = useAjustesStore((s) => s.primerDiaSemana);
   const hoy = inicioDelDia(new Date());
-  const dias = diasDelMes(anio, mes);
+  const dias = diasDelMes(anio, mes, primer);
   const esteMes = hoy.getFullYear() === anio && hoy.getMonth() + 1 === mes;
 
   return (
@@ -72,7 +75,7 @@ export function CuadriculaMes({ anio, mes, amigos, eventos, onMes, onHoy, onDia,
       </header>
 
       <div className="grid grid-cols-7 border-b border-stroke" aria-hidden>
-        {DIAS_CORTOS.map((d) => (
+        {ordenDeDias(primer).map((i) => DIAS_CORTOS[i]!).map((d) => (
           <div key={d} className="py-2 text-center text-caption font-semibold text-fg-secondary">
             {t(d)}
           </div>

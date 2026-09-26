@@ -1,4 +1,4 @@
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::menu::{IconMenuItem, Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
 use tauri::{Emitter, Manager};
 
@@ -11,6 +11,8 @@ mod office;
 /// Lo que el comando `actualizar_bandeja` necesita tocar cada vez que cambia la reproducción:
 /// el texto de «Reproducir/Pausar», si «Siguiente» tiene sentido, y el tooltip del icono.
 struct EstadoBandeja {
+    /// La primera línea del menú: «Título · Artista» de lo que suena, con su carátula como icono.
+    ahora: IconMenuItem<tauri::Wry>,
     reproducir: MenuItem<tauri::Wry>,
     siguiente: MenuItem<tauri::Wry>,
     mostrar: MenuItem<tauri::Wry>,
@@ -26,6 +28,7 @@ struct TextosBandeja {
     siguiente: String,
     mostrar: String,
     salir: String,
+    nada: String,
 }
 
 /// Lo llama el frontend cada vez que cambia la pista o el estado de reproducción, para que la
@@ -48,6 +51,15 @@ fn actualizar_bandeja(
         .reproducir
         .set_text(if reproduciendo { pausar } else { reproducir })
         .map_err(|e| e.to_string())?;
+    let linea = match (&titulo, &textos) {
+        (Some(t), _) => t.clone(),
+        (None, Some(x)) => x.nada.clone(),
+        (None, None) => "Nada en reproducción".to_string(),
+    };
+    estado.ahora.set_text(linea).map_err(|e| e.to_string())?;
+    if titulo.is_none() {
+        estado.ahora.set_icon(None).map_err(|e| e.to_string())?;
+    }
     if let Some(t) = &textos {
         estado.siguiente.set_text(t.siguiente.as_str()).map_err(|e| e.to_string())?;
         estado.mostrar.set_text(t.mostrar.as_str()).map_err(|e| e.to_string())?;
@@ -61,6 +73,19 @@ fn actualizar_bandeja(
     };
     estado.tray.set_tooltip(Some(tooltip.as_str())).map_err(|e| e.to_string())?;
     Ok(())
+}
+
+/// La carátula de lo que suena, como icono de la primera línea del menú de la bandeja: píxeles RGBA de `lado` × `lado`
+/// (el frontend la baja de tamaño). Sin píxeles, se quita el icono.
+#[tauri::command]
+fn bandeja_caratula(app: tauri::AppHandle, rgba: Option<Vec<u8>>, lado: u32) -> Result<(), String> {
+    let estado = app.state::<EstadoBandeja>();
+    let icono = match rgba {
+        Some(px) if lado > 0 && px.len() as u64 == u64::from(lado) * u64::from(lado) * 4 => Some(tauri::image::Image::new_owned(px, lado, lado)),
+        Some(_) => return Err("La carátula no tiene el tamaño esperado.".into()),
+        None => None,
+    };
+    estado.ahora.set_icon(icono).map_err(|e| e.to_string())
 }
 
 /// Carpeta del respaldo de datos: la carpeta de datos del usuario (AppData/Roaming) + NexusHub. Es
@@ -199,6 +224,7 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .invoke_handler(tauri::generate_handler![
             actualizar_bandeja,
+            bandeja_caratula,
             leer_respaldo,
             guardar_respaldo,
             leer_historial_respaldo,
@@ -238,12 +264,14 @@ pub fn run() {
             }
 
             // Bandeja del sistema: reproducir/pausar y siguiente sin tener que abrir la ventana.
+            let ahora = IconMenuItem::with_id(app, "ahora", "Nada en reproducción", false, None::<tauri::image::Image>, None::<&str>)?;
             let reproducir = MenuItem::with_id(app, "reproducir", "Reproducir", false, None::<&str>)?;
             let siguiente = MenuItem::with_id(app, "siguiente", "Siguiente", false, None::<&str>)?;
             let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar Nexo", true, None::<&str>)?;
             let salir = MenuItem::with_id(app, "salir", "Salir", true, None::<&str>)?;
             let separador = PredefinedMenuItem::separator(app)?;
-            let menu = Menu::with_items(app, &[&reproducir, &siguiente, &separador, &mostrar, &salir])?;
+            let separador_ahora = PredefinedMenuItem::separator(app)?;
+            let menu = Menu::with_items(app, &[&ahora, &separador_ahora, &reproducir, &siguiente, &separador, &mostrar, &salir])?;
 
             let tray = TrayIconBuilder::with_id("bandeja")
                 .icon(app.default_window_icon().cloned().expect("falta el icono de la app"))
@@ -268,7 +296,7 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            app.manage(EstadoBandeja { reproducir, siguiente, mostrar, salir, tray });
+            app.manage(EstadoBandeja { ahora, reproducir, siguiente, mostrar, salir, tray });
             Ok(())
         })
         .run(tauri::generate_context!())

@@ -1,5 +1,6 @@
 "use client";
 
+import { useZoomInterfaz } from "@/hooks/useZoomInterfaz";
 import { useT } from "@/lib/i18n";
 import { useEffect, useRef, type ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
@@ -64,6 +65,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useGuiasAutomaticas();
   useActualizacionAutomatica();
   useNovedades();
+  useZoomInterfaz();
 
   useEffect(() => {
     cargarAjustes();

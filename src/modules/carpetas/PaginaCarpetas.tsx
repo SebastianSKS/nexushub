@@ -95,7 +95,7 @@ export function PaginaCarpetas() {
 
   // Los logos de Word, Excel… tardan un momento en llegar desde Windows: se piden al entrar, para que ya estén al abrirlos.
   useEffect(() => {
-    if (disponible) void cargarIconosProgramas(["word", "excel", "powerpoint", "texto"]);
+    if (disponible) void cargarIconosProgramas(["word", "excel", "powerpoint", "texto", "pdf"]);
   }, [disponible]);
 
   const recargar = useCallback(async () => {

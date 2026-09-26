@@ -197,6 +197,7 @@ pub fn run() {
             apps::apps_instaladas,
             apps::abrir_app,
             apps::iconos_de_apps,
+            apps::icono_de_tipo,
             avisos::notificar,
             office::office_disponible,
             office::office_convertir

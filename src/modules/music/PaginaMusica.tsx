@@ -1,5 +1,6 @@
 "use client";
 
+import { LogoMarca } from "@/components/fluent/LogoMarca";
 import { useEffect, useRef, useState } from "react";
 import { ArrowSync20Regular } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
@@ -59,7 +60,7 @@ export function PaginaMusica() {
         Conectando…
       </Button>
     ) : connectAvailable ? (
-      <Button variant="accent" onClick={conectarSpotify}>
+      <Button variant="accent" icon={<LogoMarca marca="spotify" tam={18} />} onClick={conectarSpotify}>
         Conectar con Spotify Premium
       </Button>
     ) : (

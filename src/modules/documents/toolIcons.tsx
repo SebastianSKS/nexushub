@@ -27,6 +27,7 @@ import type { InputKind, ToolId } from "@/types/documents";
 const word = <LogoPrograma programa="word" tam={24} />;
 const excel = <LogoPrograma programa="excel" tam={24} />;
 const powerpoint = <LogoPrograma programa="powerpoint" tam={24} />;
+const pdf = <LogoPrograma programa="pdf" tam={24} />;
 
 export const TOOL_ICONS: Record<ToolId, ReactNode> = {
   "word-to-pdf": word,
@@ -52,7 +53,7 @@ export const KIND_ICONS: Record<InputKind, ReactNode> = {
   word,
   excel,
   powerpoint,
-  pdf: <DocumentPdf24Regular />,
+  pdf,
   image: <Image24Regular />,
 };
 
@@ -62,5 +63,5 @@ export function iconForMime(mime: string): ReactNode {
   if (mime.includes("spreadsheetml")) return excel;
   if (mime.includes("presentationml")) return powerpoint;
   if (mime === "text/plain") return <LogoPrograma programa="texto" tam={24} />;
-  return <DocumentPdf24Regular />;
+  return pdf;
 }

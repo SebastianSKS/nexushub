@@ -6,10 +6,12 @@ import clsx from "clsx";
 import { Search20Regular } from "@fluentui/react-icons";
 import { useRouter } from "next/navigation";
 import { Glifo } from "@/components/fluent/Glifo";
+import { LogoMarca } from "@/components/fluent/LogoMarca";
 import { prepararBusqueda, buscarContenido } from "@/lib/busqueda";
 import { buildCommands, filterCommands } from "@/lib/commands";
 import { ENTER, EXIT } from "@/lib/motion";
 import { plegar } from "@/lib/text";
+import { cargarIconosProgramas } from "@/services/iconos-programas";
 import { sincronizarIndice, useIndicePdfs } from "@/services/indice-pdfs";
 import { useAppStore } from "@/store/app-store";
 import { useCanalesStore } from "@/store/canales-store";
@@ -88,6 +90,7 @@ export function GlobalSearch() {
     if (!open) return;
     if (document.activeElement !== inputRef.current) inputRef.current?.focus();
     prepararBusqueda();
+    void cargarIconosProgramas(["pdf"]);
     void sincronizarIndice(30_000); // PDF nuevos que hayas guardado desde la última vez
     useCanalesStore.getState().iniciar(); // los videos de tus canales (usa el caché de 15 min si ya se cargaron)
   }, [open]);
@@ -218,10 +221,16 @@ export function GlobalSearch() {
                         index === activeIndex ? "bg-layer-alt" : "bg-transparent",
                       )}
                     >
-                      {cmd.icon && (
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center" style={{ color: cmd.color }} aria-hidden>
-                          <Glifo nombre={cmd.icon} tam={16} />
+                      {cmd.marca ? (
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center" aria-hidden>
+                          <LogoMarca marca={cmd.marca} tam={cmd.marca === "spotify" || cmd.marca === "youtube" ? 20 : 22} />
                         </span>
+                      ) : (
+                        cmd.icon && (
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center" style={{ color: cmd.color }} aria-hidden>
+                            <Glifo nombre={cmd.icon} tam={16} />
+                          </span>
+                        )
                       )}
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-body text-fg">{cmd.label}</span>

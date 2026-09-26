@@ -157,6 +157,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
           resaltar: terminos,
           keywords: [],
           icon: "documentos",
+          marca: "pdf",
           run: () => void abrirPdfEnPagina({ carpeta: c.carpeta, nombre: c.nombre, pagina: c.fragmento ? c.pagina : undefined }),
         }),
       );
@@ -168,7 +169,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
   lista
     .filter((c) => coincide(terminos, c.nombre))
     .slice(0, POR_GRUPO)
-    .forEach((c) => salida.push({ id: `canal-${c.id}`, group: "Canales", label: c.nombre, hint: c.tipo === "canal" ? "Canal de YouTube" : "Lista de YouTube", keywords: [], icon: "video", run: () => ir(rutaCanal(c.id)) }));
+    .forEach((c) => salida.push({ id: `canal-${c.id}`, group: "Canales", label: c.nombre, hint: c.tipo === "canal" ? "Canal de YouTube" : "Lista de YouTube", keywords: [], icon: "video", marca: "youtube", run: () => ir(rutaCanal(c.id)) }));
 
   const vistos = new Set<string>();
   Object.values(useCanalesStore.getState().feeds)
@@ -177,7 +178,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .sort((a, b) => Date.parse(b.publicado) - Date.parse(a.publicado))
     .slice(0, 6)
     .forEach((v) =>
-      salida.push({ id: `video-${v.videoId}`, group: "Videos", label: v.titulo, hint: `${v.canalNombre} · ${fechaRelativa(v.publicado)}`, keywords: [], icon: "video", run: () => ir(rutaVer(v.videoId)) }),
+      salida.push({ id: `video-${v.videoId}`, group: "Videos", label: v.titulo, hint: `${v.canalNombre} · ${fechaRelativa(v.publicado)}`, keywords: [], icon: "video", marca: "youtube", run: () => ir(rutaVer(v.videoId)) }),
     );
 
   // Favoritos: música (suena al instante) y videos guardados.
@@ -193,6 +194,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
         hint: `${p.fuente === "spotify" ? "Canción" : "Video"} · ${p.artista}`,
         keywords: [],
         icon: "favoritoLleno",
+        marca: p.fuente === "spotify" ? "spotify" : "youtube",
         run: () => (p.fuente === "youtube" ? ir(rutaVer(p.id)) : useReproductorStore.getState().reproducir(p, [p])),
       }),
     );

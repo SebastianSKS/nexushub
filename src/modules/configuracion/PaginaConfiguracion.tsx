@@ -1,5 +1,6 @@
 "use client";
 
+import { AjusteCopiaSeguridad } from "./AjusteCopiaSeguridad";
 import { AjusteZoomInterfaz } from "./AjusteZoomInterfaz";
 import { AjusteMovimiento } from "./AjusteMovimiento";
 import { AjusteBarraLateral } from "./AjusteBarraLateral";
@@ -266,6 +267,10 @@ export function PaginaConfiguracion() {
                   {t("Abrir el calendario")}
                 </Link>
               </TarjetaAjuste>
+            </Seccion>
+
+            <Seccion titulo={t("Copia de seguridad")}>
+              <AjusteCopiaSeguridad />
             </Seccion>
 
             <Seccion titulo={t("Acerca de")}>

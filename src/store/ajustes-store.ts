@@ -1,50 +1,23 @@
 import { create } from "zustand";
 
+import { ACENTO_PREDETERMINADO, AJUSTES_PREDETERMINADOS, normalizarAjustes, type Ajustes, type SeccionInicial } from "@/lib/ajustes-base";
 import { T } from "@/lib/i18n";
-import type { PreferenciaIdioma } from "@/lib/i18n/nucleo";
 
-export type PreferenciaTema = "claro" | "oscuro" | "sistema";
-export type EfectoVentana = "mica" | "acrilico" | "ninguno";
-export type AlTerminar = "nada" | "descargar" | "abrir-carpeta";
-/** Con qué pantalla se abre Nexo: la última que se estaba usando, o una sección fija. */
-export type SeccionInicial = "inicio" | "ultima" | "video" | "musica" | "documentos" | "calendario";
-
-export interface Ajustes {
-  tema: PreferenciaTema;
-  /** Color de acento en hexadecimal (#RRGGBB). */
-  acento: string;
-  efecto: EfectoVentana;
-  volumenPorDefecto: number;
-  reproduccionAutomatica: boolean;
-  alTerminar: AlTerminar;
-  /** Carpeta de salida por defecto (solo en la aplicación de escritorio). */
-  carpetaSalida: string | null;
-  /** Al cerrar la ventana, se oculta a la bandeja del sistema en vez de cerrarse (solo escritorio). */
-  segundoPlano: boolean;
-  /** Avisar con una notificación cada vez que empieza a sonar una canción nueva. */
-  avisarCambioCancion: boolean;
-  /** Con Spotify conectado: al acabarse la cola, seguir con más canciones del mismo artista en vez de parar. */
-  seguirConSimilares: boolean;
-  /** Al terminar un video, pasar solo al siguiente de la cola. */
-  siguienteAutomatico: boolean;
-  /** Minutos antes de cada clase para avisar (0 = no avisar). */
-  avisoClaseMin: number;
-  /** Convertir Word, Excel, PowerPoint y PDF→Word con Microsoft Office si está instalado (mejor calidad). */
-  usarOffice: boolean;
-  /** Al descargar un resultado de Documentos, abrir «Guardar como» (empieza en la carpeta de las materias) en vez de guardar directo en Descargas. */
-  preguntarDondeGuardar: boolean;
-  /** Un resumen de lo que tienes hoy, a la hora elegida. */
-  resumenDia: boolean;
-  /** Hora (0-23) del resumen del día. */
-  resumenHora: number;
-  seccionInicial: SeccionInicial;
-  /** Leer el texto de los PDF de tus carpetas de materias (en este equipo) para poder buscar dentro de ellos con Ctrl+K. */
-  buscarEnPdfs: boolean;
-  /** El idioma de Nexo: «sistema» (el mismo que Windows), español o inglés. */
-  idioma: PreferenciaIdioma;
-}
-
-export const ACENTO_PREDETERMINADO = "#0078D4";
+export {
+  ACENTO_PREDETERMINADO,
+  AJUSTES_PREDETERMINADOS,
+  SECCIONES_OCULTABLES,
+  ZOOMS_INTERFAZ,
+  type Ajustes,
+  type AlTerminar,
+  type EfectoVentana,
+  type FormatoHora,
+  type PreferenciaTema,
+  type PrimerDiaSemana,
+  type ReducirMovimiento,
+  type SeccionInicial,
+  type SeccionOcultable,
+} from "@/lib/ajustes-base";
 
 /** Acentos de Windows 11 que ofrece la página de Configuración. */
 export const ACENTOS: readonly { nombre: string; valor: string }[] = [
@@ -58,57 +31,13 @@ export const ACENTOS: readonly { nombre: string; valor: string }[] = [
   { nombre: T("Gris"), valor: "#5D6870" },
 ];
 
-export const AJUSTES_PREDETERMINADOS: Ajustes = {
-  tema: "oscuro",
-  acento: ACENTO_PREDETERMINADO,
-  efecto: "mica",
-  volumenPorDefecto: 70,
-  reproduccionAutomatica: true,
-  alTerminar: "nada",
-  carpetaSalida: null,
-  segundoPlano: false,
-  avisarCambioCancion: false,
-  seguirConSimilares: true,
-  siguienteAutomatico: true,
-  avisoClaseMin: 10,
-  usarOffice: true,
-  preguntarDondeGuardar: true,
-  resumenDia: true,
-  resumenHora: 6,
-  seccionInicial: "inicio",
-  buscarEnPdfs: true,
-  idioma: "sistema",
-};
-
 export const CLAVE_AJUSTES = "nexushub-ajustes";
 
 function leer(): Ajustes {
   try {
     const crudo = window.localStorage.getItem(CLAVE_AJUSTES);
     if (!crudo) return AJUSTES_PREDETERMINADOS;
-    const d = JSON.parse(crudo) as Partial<Ajustes>;
-    return {
-      tema: d.tema === "claro" || d.tema === "sistema" ? d.tema : "oscuro",
-      acento: typeof d.acento === "string" && /^#[0-9a-f]{6}$/i.test(d.acento) ? d.acento : ACENTO_PREDETERMINADO,
-      efecto: d.efecto === "acrilico" || d.efecto === "ninguno" ? d.efecto : "mica",
-      volumenPorDefecto:
-        typeof d.volumenPorDefecto === "number" ? Math.min(100, Math.max(0, Math.round(d.volumenPorDefecto))) : 70,
-      reproduccionAutomatica: d.reproduccionAutomatica !== false,
-      alTerminar: d.alTerminar === "descargar" ? "descargar" : "nada",
-      carpetaSalida: typeof d.carpetaSalida === "string" ? d.carpetaSalida : null,
-      segundoPlano: d.segundoPlano === true,
-      avisarCambioCancion: d.avisarCambioCancion === true,
-      seguirConSimilares: d.seguirConSimilares !== false,
-      siguienteAutomatico: d.siguienteAutomatico !== false,
-      avisoClaseMin: typeof d.avisoClaseMin === "number" && [0, 5, 10, 15, 30].includes(d.avisoClaseMin) ? d.avisoClaseMin : 10,
-      resumenDia: d.resumenDia !== false,
-      usarOffice: d.usarOffice !== false,
-      buscarEnPdfs: d.buscarEnPdfs !== false,
-      idioma: d.idioma === "es" || d.idioma === "en" ? d.idioma : "sistema",
-      preguntarDondeGuardar: d.preguntarDondeGuardar !== false,
-      resumenHora: typeof d.resumenHora === "number" && Number.isInteger(d.resumenHora) && d.resumenHora >= 0 && d.resumenHora <= 13 ? d.resumenHora : 6,
-      seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",
-    };
+    return normalizarAjustes(JSON.parse(crudo));
   } catch {
     return AJUSTES_PREDETERMINADOS; // almacenamiento bloqueado o JSON dañado: se usan los valores por defecto
   }

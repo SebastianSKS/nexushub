@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T } from "@/lib/i18n";
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Search20Regular } from "@fluentui/react-icons";
@@ -15,7 +16,7 @@ import type { MusicItem } from "@/types/music";
 /** Espera tras la última tecla antes de pedir sugerencias: sin una petición por letra. */
 const ESPERA_MS = 250;
 
-const ETIQUETA: Record<MusicItem["kind"], string> = { track: "Canción", artist: "Artista", album: "Álbum", playlist: "Playlist" };
+const ETIQUETA: Record<MusicItem["kind"], string> = { track: T("Canción"), artist: T("Artista"), album: T("Álbum"), playlist: T("Playlist") };
 
 /**
  * Buscador del módulo, como el de Spotify: al escribir se abre debajo una lista con lo que mejor coincide (canciones,
@@ -23,6 +24,7 @@ const ETIQUETA: Record<MusicItem["kind"], string> = { track: "Canción", artist:
  * los resultados. También acepta un enlace de Spotify (lo resuelve).
  */
 export function MusicSearchBar() {
+  const t = useT();
   const router = useRouter();
   const stored = useMusicStore((s) => s.query);
   const searchAvailable = useMusicStore((s) => s.connection.status === "connected");
@@ -53,7 +55,7 @@ export function MusicSearchBar() {
     }
     const mio = ++seq.current;
     setCargando(true);
-    const t = setTimeout(() => {
+    const espera = setTimeout(() => {
       sugerirBusqueda(q, searchAvailable)
         .then((items) => {
           if (mio !== seq.current) return;
@@ -63,7 +65,7 @@ export function MusicSearchBar() {
         .catch(() => mio === seq.current && setSugerencias([]))
         .finally(() => mio === seq.current && setCargando(false));
     }, ESPERA_MS);
-    return () => clearTimeout(t);
+    return () => clearTimeout(espera);
   }, [text, searchAvailable]);
 
   // Al vaciar el campo vuelven las sugerencias de inicio.
@@ -120,7 +122,7 @@ export function MusicSearchBar() {
 
   return (
     <div ref={contenedor} className="relative w-[min(520px,100%)]">
-      <form onSubmit={submit} role="search" aria-label="Buscar música" className="flex w-full gap-2">
+      <form onSubmit={submit} role="search" aria-label={t("Buscar música")} className="flex w-full gap-2">
         <div className="relative flex h-9 min-w-0 flex-1 items-center overflow-hidden rounded-input border border-stroke bg-layer-alt after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:scale-x-0 after:bg-accent after:transition-transform after:duration-enter after:ease-fluent focus-within:after:scale-x-100">
           <Search20Regular className="ml-3 shrink-0 text-fg-tertiary" aria-hidden />
           <input
@@ -132,8 +134,8 @@ export function MusicSearchBar() {
             }}
             onFocus={() => setAbierto(true)}
             onKeyDown={onKeyDown}
-            placeholder={searchAvailable ? "Busca canciones, artistas, álbumes o playlists" : "Filtrar sugeridos o pegar un enlace de Spotify"}
-            aria-label="Buscar música o pegar un enlace de Spotify"
+            placeholder={searchAvailable ? t("Busca canciones, artistas, álbumes o playlists") : t("Filtrar sugeridos o pegar un enlace de Spotify")}
+            aria-label={t("Buscar música o pegar un enlace de Spotify")}
             aria-expanded={mostrar}
             aria-controls="sugerencias-musica"
             autoComplete="off"
@@ -142,7 +144,7 @@ export function MusicSearchBar() {
           />
         </div>
         <Button type="submit" className="h-9">
-          Buscar
+          {t("Buscar")}
         </Button>
       </form>
 
@@ -150,14 +152,14 @@ export function MusicSearchBar() {
         <div
           id="sugerencias-musica"
           role="listbox"
-          aria-label="Sugerencias de búsqueda"
+          aria-label={t("Sugerencias de búsqueda")}
           onMouseDown={(e) => e.preventDefault()}
           style={{ backgroundColor: "var(--mica-base)" }}
           className="absolute left-0 top-full z-40 mt-1 w-full overflow-hidden rounded-[8px] border border-stroke-strong p-1 shadow-flyout"
         >
           {sugerencias.length === 0 ? (
             <p className="px-3 py-2 text-caption text-fg-secondary" role="status">
-              Buscando…
+              {t("Buscando…")}
             </p>
           ) : (
             <>
@@ -178,7 +180,7 @@ export function MusicSearchBar() {
                       )}
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-body font-semibold text-fg">{item.title}</span>
-                        <span className="block truncate text-caption text-fg-secondary">{item.kind === "track" ? `${ETIQUETA.track} · ${item.subtitle}` : item.subtitle.startsWith(ETIQUETA[item.kind]) ? item.subtitle : `${ETIQUETA[item.kind]} · ${item.subtitle}`}</span>
+                        <span className="block truncate text-caption text-fg-secondary">{item.kind === "track" ? `${t(ETIQUETA.track)} · ${t(item.subtitle)}` : t(item.subtitle).startsWith(t(ETIQUETA[item.kind])) ? t(item.subtitle) : `${t(ETIQUETA[item.kind])} · ${t(item.subtitle)}`}</span>
                       </span>
                     </button>
                   </li>
@@ -186,7 +188,7 @@ export function MusicSearchBar() {
               </ul>
               <button type="button" onClick={buscarTodo} className="mt-1 flex h-10 w-full items-center gap-2 rounded-control border-t border-stroke px-3 text-left text-body text-accent-text hover:bg-layer-alt">
                 <Search20Regular aria-hidden />
-                <span className="truncate">Ver todos los resultados de «{text.trim()}»</span>
+                <span className="truncate">{t("Ver todos los resultados de «{texto}»", { texto: text.trim() })}</span>
               </button>
             </>
           )}

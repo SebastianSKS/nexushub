@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import clsx from "clsx";
 import { MoreHorizontal20Regular, Play24Filled } from "@fluentui/react-icons";
@@ -24,6 +25,7 @@ const clases = (active: boolean) =>
   );
 
 function Interior({ item, active }: { item: MusicItem; active: boolean }) {
+  const t = useT();
   return (
     <>
       <span className="relative block aspect-square w-full overflow-hidden rounded-input bg-layer-alt shadow-card">
@@ -44,7 +46,7 @@ function Interior({ item, active }: { item: MusicItem; active: boolean }) {
         </span>
         {active && (
           <span aria-hidden className="absolute left-2 top-2 rounded-[4px] bg-accent px-1.5 py-0.5 text-caption font-semibold text-accent-on">
-            Sonando
+            {t("Sonando")}
           </span>
         )}
       </span>
@@ -52,8 +54,8 @@ function Interior({ item, active }: { item: MusicItem; active: boolean }) {
         <span className="block truncate text-body font-semibold text-fg" title={item.title}>
           {item.title}
         </span>
-        <span className="mt-0.5 block truncate text-caption text-fg-secondary" title={item.subtitle}>
-          {item.subtitle}
+        <span className="mt-0.5 block truncate text-caption text-fg-secondary" title={t(item.subtitle)}>
+          {t(item.subtitle)}
         </span>
       </span>
     </>
@@ -62,16 +64,17 @@ function Interior({ item, active }: { item: MusicItem; active: boolean }) {
 
 /** Tarjeta de música: carátula cuadrada, título y artista. */
 export function MusicCard({ item, active, onPlay }: MusicCardProps) {
+  const t = useT();
   if (item.kind === "track") {
     const pista = pistaDeItem(item);
     const ids = { artistId: item.artistId, albumId: item.albumId };
     return (
       <div className="group relative" onContextMenu={(e) => abrirMenuPista(e, pista, ids)}>
-        <button type="button" onClick={onPlay} aria-label={`Reproducir ${item.title}, ${item.subtitle}`} aria-current={active ? "true" : undefined} className={clsx(clases(active), "w-full")}>
+        <button type="button" onClick={onPlay} aria-label={t("Reproducir {titulo}, {detalle}", { titulo: item.title, detalle: item.subtitle })} aria-current={active ? "true" : undefined} className={clsx(clases(active), "w-full")}>
           <Interior item={item} active={active} />
         </button>
         <IconButton
-          label={`Más opciones de ${item.title}`}
+          label={t("Más opciones de {titulo}", { titulo: item.title })}
           onClick={(e) => abrirMenuPista(e, pista, ids)}
           className="absolute right-4 top-4 bg-layer/80 opacity-0 backdrop-blur-sm focus-visible:opacity-100 group-hover:opacity-100"
         >
@@ -81,7 +84,7 @@ export function MusicCard({ item, active, onPlay }: MusicCardProps) {
     );
   }
   return (
-    <Link href={rutaLista(item.id, item.kind)} aria-label={`Abrir ${item.title}, ${item.subtitle}`} className={clases(active)}>
+    <Link href={rutaLista(item.id, item.kind)} aria-label={t("Abrir {titulo}, {detalle}", { titulo: item.title, detalle: item.subtitle })} className={clases(active)}>
       <Interior item={item} active={active} />
     </Link>
   );

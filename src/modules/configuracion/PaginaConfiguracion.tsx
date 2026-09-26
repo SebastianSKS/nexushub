@@ -25,6 +25,8 @@ import { AjusteActualizaciones } from "./AjusteActualizaciones";
 import { AjusteCanales } from "./AjusteCanales";
 import { AjusteIndicePdfs } from "./AjusteIndicePdfs";
 import { AjusteInicioAutomatico } from "./AjusteInicioAutomatico";
+import { AjusteNoMolestar } from "./AjusteNoMolestar";
+import { AjusteSonidoAvisos } from "./AjusteSonidoAvisos";
 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
@@ -182,8 +184,10 @@ export function PaginaConfiguracion() {
                   <Switch checked={a.resumenDia} onChange={(v) => a.cambiar({ resumenDia: v })} label={t("Resumen del día")} />
                 </div>
               </TarjetaAjuste>
+              <AjusteSonidoAvisos />
+              <AjusteNoMolestar />
               <TarjetaAjuste glifo="informacion" titulo={t("Probar una notificación")} descripcion={t("Para comprobar que Windows te las muestra. Avisan mientras Nexo esté abierto, aunque sea en la bandeja.")}>
-                <Button onClick={() => void notificarSistema("Nexo", t("Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración."), "prueba", "/configuracion")}>{t("Enviar aviso de prueba")}</Button>
+                <Button onClick={() => void notificarSistema("Nexo", t("Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración."), "prueba", "/configuracion", { ignorarSilencio: true })}>{t("Enviar aviso de prueba")}</Button>
               </TarjetaAjuste>
             </Seccion>
 

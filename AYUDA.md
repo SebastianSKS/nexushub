@@ -25,6 +25,9 @@ Configuración › Avisos › *Sonido de los avisos*: hay cinco sonidos de Nexo,
 **La música de Spotify no suena.**
 Para reproducir dentro de Nexo Spotify pide una cuenta **Premium**. Si acabas de conectarla y no responde, cierra la sesión de Spotify en Configuración y vuelve a conectarla.
 
+**Spotify dice que mi cuenta no está autorizada.**
+Spotify limita las aplicaciones nuevas a un puñado de cuentas que su creador autoriza a mano (una regla de Spotify, no de Nexo). Pídele a quien te pasó Nexo que agregue el correo de tu cuenta de Spotify; mientras tanto, Video, Documentos, Calendario, Horario y Calculadora funcionan con normalidad.
+
 **Los videos o la música tardan en cargar.**
 Ambas secciones usan YouTube y Spotify y necesitan internet. Si tu navegador o tu antivirus bloquean sus servidores, Nexo no los puede mostrar.
 

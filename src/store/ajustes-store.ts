@@ -1,3 +1,4 @@
+import { colorDeTexto } from "@/lib/horario/horario";
 import { create } from "zustand";
 
 import { ACENTO_PREDETERMINADO, AJUSTES_PREDETERMINADOS, normalizarAjustes, type Ajustes, type SeccionInicial } from "@/lib/ajustes-base";
@@ -71,10 +72,13 @@ export function aplicarAjustes(a: Ajustes) {
     root.style.removeProperty("--accent");
     root.style.removeProperty("--accent-hover");
     root.style.removeProperty("--accent-pressed");
+    root.style.removeProperty("--on-accent");
   } else {
     root.style.setProperty("--accent", a.acento);
     root.style.setProperty("--accent-hover", `color-mix(in srgb, ${a.acento} 88%, white)`);
     root.style.setProperty("--accent-pressed", `color-mix(in srgb, ${a.acento} 82%, black)`);
+    // Un acento claro (amarillo, verde limón…) necesita texto oscuro encima para leerse.
+    root.style.setProperty("--on-accent", colorDeTexto(a.acento));
   }
 }
 

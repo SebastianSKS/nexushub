@@ -1,4 +1,5 @@
 import { PDFArray, PDFBool, PDFDict, PDFName, PDFRawStream } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import type { CompressLevel, CompressOptions } from "@/types/documents";
 import { abortarSiCancelado, cargarPdf, cederHilo, MIME_PDF, nombresUnicos, pdfBlob, type Ctx, type Salida } from "./comun";
@@ -58,7 +59,7 @@ export async function comprimirPdf(files: File[], opts: CompressOptions, ctx: Ct
   for (let i = 0; i < n; i++) {
     abortarSiCancelado(ctx.signal);
     const file = files[i]!;
-    const etiqueta = n > 1 ? `${file.name} (${i + 1} de ${n})` : file.name;
+    const etiqueta = n > 1 ? traducir("{name} ({i} de {n})", { name: file.name, i: i + 1, n }) : file.name;
     const rep = (f: number, m: string) => ctx.report((i + Math.min(Math.max(f, 0), 1)) / n, m);
     rep(0.02, `Leyendo ${etiqueta}`);
 
@@ -71,7 +72,7 @@ export async function comprimirPdf(files: File[], opts: CompressOptions, ctx: Ct
     let recomprimidas = 0;
     for (let k = 0; k < imagenes.length; k++) {
       abortarSiCancelado(ctx.signal);
-      rep(0.05 + (k / Math.max(imagenes.length, 1)) * 0.85, `Recomprimiendo imágenes de ${etiqueta} (${k + 1} de ${imagenes.length})`);
+      rep(0.05 + (k / Math.max(imagenes.length, 1)) * 0.85, traducir("Recomprimiendo imágenes de {etiqueta} ({k} de {n})", { etiqueta, k: k + 1, n: imagenes.length }));
       const { ref, stream } = imagenes[k]!;
       const dict = stream.dict;
       const mascara = dict.get(PDFName.of("ImageMask"));
@@ -106,16 +107,16 @@ export async function comprimirPdf(files: File[], opts: CompressOptions, ctx: Ct
     if (guardado.length >= file.size) {
       ctx.warn(
         imagenes.length === 0
-          ? `«${file.name}» no tiene imágenes JPEG que reducir (es solo texto o gráficos): ya estaba tan ligero como se puede sin perder calidad, así que se conserva tal cual.`
-          : `«${file.name}» ya estaba optimizado: no se pudo reducir más, así que se conserva tal cual.`,
+          ? traducir("«{name}» no tiene imágenes JPEG que reducir (es solo texto o gráficos): ya estaba tan ligero como se puede sin perder calidad, así que se conserva tal cual.", { name: file.name })
+          : traducir("«{name}» ya estaba optimizado: no se pudo reducir más, así que se conserva tal cual.", { name: file.name }),
       );
       salidas.push({ name: nombre, blob: file, mime: MIME_PDF, originalSize: file.size });
     } else {
       if (recomprimidas === 0) {
         ctx.warn(
           imagenes.length > 0
-            ? `Las imágenes de «${file.name}» ya estaban optimizadas para este nivel; solo se optimizó la estructura. Prueba con un nivel más fuerte.`
-            : `«${file.name}» no tenía imágenes JPEG que recomprimir; solo se optimizó su estructura.`,
+            ? traducir("Las imágenes de «{name}» ya estaban optimizadas para este nivel; solo se optimizó la estructura. Prueba con un nivel más fuerte.", { name: file.name })
+            : traducir("«{name}» no tenía imágenes JPEG que recomprimir; solo se optimizó su estructura.", { name: file.name }),
         );
       }
       salidas.push({ name: nombre, blob: pdfBlob(guardado), mime: MIME_PDF, originalSize: file.size });

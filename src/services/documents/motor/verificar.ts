@@ -1,4 +1,5 @@
 import { fileTypeFromBlob } from "file-type";
+import { traducir, T } from "@/lib/i18n";
 import { extensionOf } from "@/lib/documents/format";
 import type { InputKind } from "@/types/documents";
 import { DocumentError } from "../errors";
@@ -13,9 +14,9 @@ const MIME_A_TIPO: Record<string, InputKind> = {
 };
 
 const ETIQUETA: Record<InputKind, string> = {
-  word: "documento de Word",
-  excel: "libro de Excel",
-  powerpoint: "presentación de PowerPoint",
+  word: T("documento de Word"),
+  excel: T("libro de Excel"),
+  powerpoint: T("presentación de PowerPoint"),
   pdf: "PDF",
   image: "imagen JPG o PNG",
 };
@@ -31,8 +32,8 @@ export async function verificarContenido(file: File, esperado: InputKind): Promi
   if (!tipo && detectado?.mime === "application/x-cfb" && extensionOf(file.name) === ".doc") tipo = "word";
   if (tipo !== esperado) {
     throw new DocumentError(
-      `«${file.name}» no es realmente un ${ETIQUETA[esperado]}.`,
-      "Su contenido no coincide con su extensión. Ábrelo en su programa y guárdalo de nuevo con el formato correcto.",
+      traducir("«{name}» no es realmente un {esperado}.", { name: file.name, esperado: traducir(ETIQUETA[esperado]) }),
+      traducir("Su contenido no coincide con su extensión. Ábrelo en su programa y guárdalo de nuevo con el formato correcto."),
       "BAD_CONTENT",
     );
   }

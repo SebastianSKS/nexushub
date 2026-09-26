@@ -1,4 +1,6 @@
 import { baseName, extensionOf, safeFileName } from "@/lib/documents/format";
+import { traducir } from "@/lib/i18n";
+import { delSistema } from "@/services/mensajes-sistema";
 import { esEscritorio } from "@/lib/entorno";
 import { useAjustesStore } from "@/store/ajustes-store";
 import type { PdfToWordOptions, ToolId } from "@/types/documents";
@@ -59,21 +61,21 @@ export async function intentarConOffice(toolId: ToolId, archivo: File, opciones:
 
   const nombre = NOMBRE_PROGRAMA[m.programa];
   if (!(await officeDisponible())[m.programa]) {
-    ctx.warn(`Microsoft ${nombre} no está instalado en este equipo: se usó el motor básico de Nexo. Con ${nombre} instalado, el resultado sale igual que guardándolo desde ${nombre}.`);
+    ctx.warn(traducir("Microsoft {nombre} no está instalado en este equipo: se usó el motor básico de Nexo. Con {nombre} instalado, el resultado sale igual que guardándolo desde {nombre}.", { nombre }));
     return null;
   }
   abortarSiCancelado(ctx.signal);
-  ctx.report(0.1, `Convirtiendo con Microsoft ${nombre}`);
+  ctx.report(0.1, traducir("Convirtiendo con Microsoft {nombre}", { nombre }));
   try {
     const resultado = await convertir(m.motor, archivo);
     abortarSiCancelado(ctx.signal);
-    ctx.report(0.95, "Guardando el resultado");
-    ctx.warn(`Convertido con Microsoft ${nombre}: el mismo resultado que guardarlo como ${m.salida === "pdf" ? "PDF" : "Word"} desde ${nombre}.`);
+    ctx.report(0.95, traducir("Guardando el resultado"));
+    ctx.warn(traducir("Convertido con Microsoft {nombre}: el mismo resultado que guardarlo como {formato} desde {nombre}.", { nombre, formato: m.salida === "pdf" ? "PDF" : "Word" }));
     return [{ name: `${safeFileName(baseName(archivo.name))}.${m.salida}`, blob: new Blob([resultado], { type: m.salida === "pdf" ? MIME_PDF : MIME_DOCX }), mime: m.salida === "pdf" ? MIME_PDF : MIME_DOCX }];
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") throw e;
-    const motivo = typeof e === "string" ? e : "no se pudo abrir el archivo";
-    ctx.warn(`No se pudo usar Microsoft ${nombre} (${motivo.replace(/^Office no pudo convertir el archivo:?\s*/i, "").trim() || "no se pudo abrir el archivo"}). Se usó el motor básico de Nexo: revisa el resultado.`);
+    const motivo = typeof e === "string" ? e : traducir("no se pudo abrir el archivo");
+    ctx.warn(traducir("No se pudo usar Microsoft {nombre} ({motivo}). Se usó el motor básico de Nexo: revisa el resultado.", { nombre, motivo: delSistema(motivo.replace(/^Office no pudo convertir el archivo:?\s*/i, "").trim()) || traducir("no se pudo abrir el archivo") }));
     return null;
   }
 }

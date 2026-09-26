@@ -1,4 +1,5 @@
 import { PDFDocument } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import type { OcrOptions } from "@/types/documents";
 import { DocumentError } from "../errors";
@@ -50,7 +51,7 @@ async function* paginasDe(archivo: File, ctx: Ctx): AsyncGenerator<{ lienzo: HTM
   const abierto = await openPdf(archivo);
   try {
     const total = abierto.doc.numPages;
-    if (total > MAX_PAGINAS) throw new DocumentError(`«${archivo.name}» tiene ${total} páginas y el reconocimiento de texto admite hasta ${MAX_PAGINAS}.`, "Divide el PDF en partes con «Dividir PDF» y procésalas una por una.");
+    if (total > MAX_PAGINAS) throw new DocumentError(traducir("«{name}» tiene {total} páginas y el reconocimiento de texto admite hasta {max}.", { name: archivo.name, total, max: MAX_PAGINAS }), traducir("Divide el PDF en partes con «Dividir PDF» y procésalas una por una."));
     for (let n = 1; n <= total; n++) {
       abortarSiCancelado(ctx.signal);
       const pagina = await abierto.doc.getPage(n);
@@ -68,12 +69,12 @@ async function* paginasDe(archivo: File, ctx: Ctx): AsyncGenerator<{ lienzo: HTM
 }
 
 export async function reconocerTexto(archivos: File[], opts: OcrOptions, ctx: Ctx): Promise<Salida[]> {
-  ctx.report(0, "Preparando el reconocimiento de texto");
+  ctx.report(0, traducir("Preparando el reconocimiento de texto"));
   let t: Trabajador;
   try {
     t = await crearTrabajador();
   } catch {
-    throw new DocumentError("No se pudo iniciar el reconocimiento de texto.", "Cierra y vuelve a abrir la aplicación e inténtalo de nuevo.");
+    throw new DocumentError(traducir("No se pudo iniciar el reconocimiento de texto."), traducir("Cierra y vuelve a abrir la aplicación e inténtalo de nuevo."));
   }
   const salidas: Salida[] = [];
   try {
@@ -91,9 +92,9 @@ export async function reconocerTexto(archivos: File[], opts: OcrOptions, ctx: Ct
         if (opts.output === "pdf" && r.data.pdf) partes.push({ bytes: new Uint8Array(r.data.pdf), ancho: p.ancho });
       }
       const base = safeFileName(baseName(archivo.name));
-      if (textos.every((x) => !x)) ctx.warn(`No se encontró texto en «${archivo.name}». Comprueba que la imagen esté nítida, derecha y con buena luz.`);
+      if (textos.every((x) => !x)) ctx.warn(traducir("No se encontró texto en «{name}». Comprueba que la imagen esté nítida, derecha y con buena luz.", { name: archivo.name }));
       if (opts.output === "text") {
-        const cuerpo = textos.length > 1 ? textos.map((x, k) => `--- Página ${k + 1} ---\n${x}`).join("\n\n") : (textos[0] ?? "");
+        const cuerpo = textos.length > 1 ? textos.map((x, k) => `--- ${traducir("Página {n}", { n: k + 1 })} ---\n${x}`).join("\n\n") : (textos[0] ?? "");
         salidas.push({ name: `${base}.txt`, blob: new Blob([cuerpo + "\n"], { type: "text/plain;charset=utf-8" }), mime: "text/plain" });
       } else {
         const unido = await PDFDocument.create();
@@ -112,6 +113,6 @@ export async function reconocerTexto(archivos: File[], opts: OcrOptions, ctx: Ct
   } finally {
     await t.terminate().catch(() => {});
   }
-  ctx.warn("El reconocimiento funciona con texto en español (y letras latinas). Revisa el resultado: la calidad depende de lo nítida que sea la imagen.");
+  ctx.warn(traducir("El reconocimiento funciona con texto en español (y letras latinas). Revisa el resultado: la calidad depende de lo nítida que sea la imagen."));
   return salidas;
 }

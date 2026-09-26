@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import type { PageNumbersOptions, WatermarkOptions } from "@/types/documents";
 import { DocumentError } from "../errors";
@@ -13,13 +14,13 @@ function comprobarTexto(fuente: PDFFont, texto: string) {
   try {
     fuente.encodeText(texto);
   } catch {
-    throw new DocumentError("El texto tiene símbolos que el PDF no puede dibujar (por ejemplo emojis).", "Usa letras, números y signos habituales.");
+    throw new DocumentError(traducir("El texto tiene símbolos que el PDF no puede dibujar (por ejemplo emojis)."), traducir("Usa letras, números y signos habituales."));
   }
 }
 
 export async function ponerMarcaDeAgua(archivos: File[], opts: WatermarkOptions, ctx: Ctx): Promise<Salida[]> {
   const texto = opts.text.trim();
-  if (!texto) throw new DocumentError("Escribe el texto de la marca de agua.");
+  if (!texto) throw new DocumentError(traducir("Escribe el texto de la marca de agua."));
   const salidas: Salida[] = [];
   for (let i = 0; i < archivos.length; i++) {
     abortarSiCancelado(ctx.signal);
@@ -45,15 +46,15 @@ export async function ponerMarcaDeAgua(archivos: File[], opts: WatermarkOptions,
       p.drawText(texto, { x, y, size: tam, font: fuente, color: COLORES[opts.color], opacity: Math.min(1, Math.max(0.05, opts.opacity / 100)), rotate: degrees((ang * 180) / Math.PI) });
       if (n % 20 === 19) await cederHilo();
     }
-    ctx.report((i + 1) / archivos.length, `Marca de agua en ${archivo.name}`);
+    ctx.report((i + 1) / archivos.length, traducir("Marca de agua en {name}", { name: archivo.name }));
     salidas.push({ name: safeFileName(`${baseName(archivo.name)}_marca.pdf`), blob: pdfBlob(await pdf.save()), mime: MIME_PDF });
   }
   return salidas;
 }
 
 function textoNumero(o: PageNumbersOptions, n: number, total: number): string {
-  if (o.format === "of-total") return `${n} de ${total}`;
-  if (o.format === "page") return `Página ${n}`;
+  if (o.format === "of-total") return traducir("{n} de {total}", { n, total });
+  if (o.format === "page") return traducir("Página {n}", { n });
   return `${n}`;
 }
 

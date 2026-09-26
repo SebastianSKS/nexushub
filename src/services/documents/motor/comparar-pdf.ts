@@ -1,4 +1,5 @@
 import { diffLines, type Change } from "diff";
+import { traducir, useIdiomaStore } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import { openPdf } from "../pdfjs";
 import { abortarSiCancelado, cederHilo, type Ctx, type Salida } from "./comun";
@@ -11,7 +12,7 @@ async function extraerTexto(file: File, ctx: Ctx, desde: number, hasta: number):
     const paginas: string[] = [];
     for (let n = 1; n <= total; n++) {
       abortarSiCancelado(ctx.signal);
-      ctx.report(desde + ((n - 1) / total) * (hasta - desde), `Leyendo ${file.name}: página ${n} de ${total}`);
+      ctx.report(desde + ((n - 1) / total) * (hasta - desde), traducir("Leyendo {name}: página {n} de {total}", { name: file.name, n, total }));
       const page = await doc.getPage(n);
       const contenido = await page.getTextContent();
       let texto = "";
@@ -21,7 +22,7 @@ async function extraerTexto(file: File, ctx: Ctx, desde: number, hasta: number):
         if (item.hasEOL) texto += "\n";
       }
       page.cleanup();
-      paginas.push(`——— Página ${n} ———\n${texto.trim()}`);
+      paginas.push(`——— ${traducir("Página {n}", { n })} ———\n${texto.trim()}`);
       await cederHilo();
     }
     return paginas.join("\n\n");
@@ -50,7 +51,7 @@ function reporteHtml(nombreA: string, nombreB: string, partes: Change[]): string
     .join("");
 
   return `<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>Comparación: ${escaparHtml(nombreA)} vs ${escaparHtml(nombreB)}</title>
+<html lang="${useIdiomaStore.getState().idioma}"><head><meta charset="utf-8"><title>${escaparHtml(traducir("Comparación"))}: ${escaparHtml(nombreA)} vs ${escaparHtml(nombreB)}</title>
 <style>
   body { margin: 0; padding: 24px; background: #1b1b1b; color: #e6e6e6; font: 14px/1.6 "Segoe UI", system-ui, sans-serif; }
   h1 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
@@ -63,11 +64,11 @@ function reporteHtml(nombreA: string, nombreB: string, partes: Change[]): string
   .aviso { margin-top: 16px; padding: 10px 14px; background: #2b2b1a; border: 1px solid #4d4626; border-radius: 6px; color: #d9c98a; font-size: 13px; max-width: 900px; }
 </style></head>
 <body>
-  <h1>Comparación de texto</h1>
+  <h1>${escaparHtml(traducir("Comparación de texto"))}</h1>
   <p class="sub"><strong>A:</strong> ${escaparHtml(nombreA)} &nbsp;·&nbsp; <strong>B:</strong> ${escaparHtml(nombreB)}</p>
-  ${iguales ? '<p class="sub">No se encontraron diferencias de texto entre los dos archivos.</p>' : ""}
+  ${iguales ? `<p class="sub">${escaparHtml(traducir("No se encontraron diferencias de texto entre los dos archivos."))}</p>` : ""}
   <div class="reporte">${cuerpo}</div>
-  <p class="aviso">Compara solo el texto, en el orden en que aparece en cada página — no compara imágenes, diseño ni formato. Ábrelo con tu navegador.</p>
+  <p class="aviso">${escaparHtml(traducir("Compara solo el texto, en el orden en que aparece en cada página — no compara imágenes, diseño ni formato. Ábrelo con tu navegador."))}</p>
 </body></html>`;
 }
 
@@ -76,7 +77,7 @@ export async function compararPdf(archivoA: File, archivoB: File, ctx: Ctx): Pro
   const textoA = await extraerTexto(archivoA, ctx, 0, 0.45);
   const textoB = await extraerTexto(archivoB, ctx, 0.45, 0.9);
   abortarSiCancelado(ctx.signal);
-  ctx.report(0.95, "Comparando el texto");
+  ctx.report(0.95, traducir("Comparando el texto"));
   const partes = diffLines(textoA, textoB);
   const html = reporteHtml(archivoA.name, archivoB.name, partes);
   const nombre = safeFileName(`comparacion_${baseName(archivoA.name)}_vs_${baseName(archivoB.name)}.html`);

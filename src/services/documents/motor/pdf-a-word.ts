@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { traducir } from "@/lib/i18n";
 import JSZip from "jszip";
 import type { PDFPageProxy } from "pdfjs-dist";
 import { baseName, safeFileName } from "@/lib/documents/format";
@@ -356,7 +357,7 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
       abortarSiCancelado(ctx.signal);
       const page = await doc.getPage(n);
       if (opts.mode === "fiel") {
-        ctx.report(0.05 + (n / total) * 0.75, `Dibujando la página ${n} de ${total}`);
+        ctx.report(0.05 + (n / total) * 0.75, traducir("Dibujando la página {n} de {total}", { n, total }));
         const vista0 = page.getViewport({ scale: 1 });
         const escala = Math.min(2.2, 2200 / Math.max(vista0.width, vista0.height));
         const vista = page.getViewport({ scale: escala });
@@ -365,11 +366,11 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
         lienzo.height = Math.ceil(vista.height);
         await page.render({ canvas: lienzo, viewport: vista, background: "#ffffff" }).promise;
         const r = await lienzoABytes(lienzo, 0.9);
-        if (!r) throw new DocumentError(`No se pudo dibujar la página ${n}.`, "Prueba con el modo «Texto editable».");
+        if (!r) throw new DocumentError(traducir("No se pudo dibujar la página {n}.", { n }), traducir("Prueba con el modo «Texto editable»."));
         const k = Math.max(vista0.width, vista0.height) > 1200 ? 842 / Math.max(vista0.width, vista0.height) : 1; // Word no admite hojas gigantes
         fielImgs.push({ img: { y: 0, ancho: vista0.width * k, alto: vista0.height * k, bytes: r.bytes, ext: r.ext }, ancho: vista0.width * k, alto: vista0.height * k });
       } else {
-        ctx.report(0.05 + (n / total) * 0.6, `Leyendo la página ${n} de ${total}`);
+        ctx.report(0.05 + (n / total) * 0.6, traducir("Leyendo la página {n} de {total}", { n, total }));
         paginas.push(await leerPagina(page, lib, cuenta));
       }
       page.cleanup();
@@ -386,7 +387,7 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
       ancho = fielImgs[0]!.ancho;
       alto = fielImgs[0]!.alto;
       fielImgs.forEach((f, i) => parrafos.push({ tipo: "imagen", img: f.img, saltoPagina: i > 0 && false }));
-      advertencias.push("Cada página del PDF se insertó como una imagen: se ve idéntica al original, pero el texto no se puede editar. Para obtener texto editable elige «Texto editable».");
+      advertencias.push(traducir("Cada página del PDF se insertó como una imagen: se ve idéntica al original, pero el texto no se puede editar. Para obtener texto editable elige «Texto editable»."));
     } else {
       ancho = paginas[0]!.ancho;
       alto = paginas[0]!.alto;
@@ -394,15 +395,15 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
       const hayImagenes = paginas.some((p) => p.imagenes > 0);
       if (lineasTotales.length === 0 && !hayImagenes) {
         throw new DocumentError(
-          `«${file.name}» no contiene texto ni imágenes que se puedan pasar como contenido editable.`,
-          "Parece un documento de páginas dibujadas o escaneadas. Elige el modo «Fiel al diseño» para conservarlas como imágenes. Nexo no incluye reconocimiento de texto (OCR).",
+          traducir("«{name}» no contiene texto ni imágenes que se puedan pasar como contenido editable.", { name: file.name }),
+          traducir("Parece un documento de páginas dibujadas o escaneadas. Elige el modo «Fiel al diseño» para conservarlas como imágenes. Nexo no incluye reconocimiento de texto (OCR)."),
         );
       }
       const peso = new Map<number, number>();
       for (const l of lineasTotales) peso.set(Math.round(l.size), (peso.get(Math.round(l.size)) ?? 0) + l.texto.length);
       const cuerpo = lineasTotales.length ? [...peso.entries()].sort((a, b) => b[1] - a[1])[0]![0] : 11;
 
-      ctx.report(0.72, "Armando los párrafos");
+      ctx.report(0.72, traducir("Armando los párrafos"));
       for (let pi = 0; pi < paginas.length; pi++) {
         const { elementos } = paginas[pi]!;
         if (elementos.length === 0) continue;
@@ -456,14 +457,14 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
 
       const conGraficos = paginas.filter((p) => p.rutas > 30 && p.imagenes === 0).length;
       if (conGraficos > 0 || (lineasTotales.length < 40 && paginas.some((p) => p.rutas > 30))) {
-        advertencias.push("Este PDF contiene gráficos dibujados (formas, líneas, diagramas o fondos) que no se pueden pasar a Word como objetos. Si son importantes, vuelve a convertirlo con «Fiel al diseño».");
+        advertencias.push(traducir("Este PDF contiene gráficos dibujados (formas, líneas, diagramas o fondos) que no se pueden pasar a Word como objetos. Si son importantes, vuelve a convertirlo con «Fiel al diseño»."));
       }
-      if (lineasTotales.length === 0) advertencias.push("El PDF no tiene texto seleccionable, solo imágenes: se incluyeron las imágenes. Nexo no incluye reconocimiento de texto (OCR).");
-      advertencias.push("Se recuperan el texto (con negrita, cursiva y tamaño), los títulos, los párrafos y las imágenes. No se reconstruyen tablas, columnas ni encabezados y pies de página, y los colores del texto no se conservan: revisa el resultado antes de usarlo.");
+      if (lineasTotales.length === 0) advertencias.push(traducir("El PDF no tiene texto seleccionable, solo imágenes: se incluyeron las imágenes. Nexo no incluye reconocimiento de texto (OCR)."));
+      advertencias.push(traducir("Se recuperan el texto (con negrita, cursiva y tamaño), los títulos, los párrafos y las imágenes. No se reconstruyen tablas, columnas ni encabezados y pies de página, y los colores del texto no se conservan: revisa el resultado antes de usarlo."));
     }
 
     // --- Documento Word ----------------------------------------------------------------------------
-    ctx.report(0.85, "Escribiendo el documento de Word");
+    ctx.report(0.85, traducir("Escribiendo el documento de Word"));
     const fiel = opts.mode === "fiel";
     const margenPt = fiel ? 0 : 56.7;
     const anchoUtil = ancho - margenPt * 2;
@@ -515,7 +516,7 @@ export async function pdfAWord(file: File, opts: PdfToWordOptions, ctx: Ctx): Pr
       `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${cuerpoXml}<w:sectPr><w:pgSz w:w="${Math.round(ancho * 20)}" w:h="${Math.round(alto * 20)}"/><w:pgMar w:top="${mg}" w:right="${mg}" w:bottom="${mg}" w:left="${mg}" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr></w:body></w:document>`,
     );
 
-    ctx.report(0.93, "Comprimiendo el documento");
+    ctx.report(0.93, traducir("Comprimiendo el documento"));
     const blob = await zip.generateAsync({ type: "blob", mimeType: MIME_DOCX, compression: "DEFLATE" });
     for (const a of advertencias) ctx.warn(a);
     return [{ name: safeFileName(`${baseName(file.name)}.docx`), blob, mime: MIME_DOCX }];

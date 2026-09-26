@@ -1,4 +1,5 @@
 import { PDFDocument, degrees } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { baseName, extensionOf, safeFileName } from "@/lib/documents/format";
 import type { ImagesToPdfOptions, MarginOption } from "@/types/documents";
 import { DocumentError } from "../errors";
@@ -50,7 +51,7 @@ export async function imagenesAPdf(files: File[], opts: ImagesToPdfOptions, ctx:
   for (let i = 0; i < n; i++) {
     abortarSiCancelado(ctx.signal);
     const file = files[i]!;
-    ctx.report(i / n, `Añadiendo ${file.name} (${i + 1} de ${n})`);
+    ctx.report(i / n, traducir("Añadiendo {name} ({i} de {n})", { name: file.name, i: i + 1, n }));
     const bytes = await bytesDe(file);
     const esPng = extensionOf(file.name) === ".png";
 
@@ -58,7 +59,7 @@ export async function imagenesAPdf(files: File[], opts: ImagesToPdfOptions, ctx:
     try {
       imagen = esPng ? await pdf.embedPng(bytes) : await pdf.embedJpg(bytes);
     } catch {
-      throw new DocumentError(`No se pudo leer la imagen «${file.name}».`, "Puede estar dañada o usar un formato JPEG/PNG poco común. Ábrela y guárdala de nuevo.", "IMAGE_INVALID");
+      throw new DocumentError(traducir("No se pudo leer la imagen «{name}».", { name: file.name }), traducir("Puede estar dañada o usar un formato JPEG/PNG poco común. Ábrela y guárdala de nuevo."), "IMAGE_INVALID");
     }
 
     // Orientación EXIF (solo JPEG): 3 = 180°, 6 = 90° horario, 8 = 90° antihorario.
@@ -102,7 +103,7 @@ export async function imagenesAPdf(files: File[], opts: ImagesToPdfOptions, ctx:
     await cederHilo();
   }
 
-  ctx.report(0.95, "Guardando el PDF");
+  ctx.report(0.95, traducir("Guardando el PDF"));
   const nombre = n === 1 ? `${baseName(files[0]!.name)}.pdf` : "imagenes.pdf";
   return [{ name: safeFileName(nombre), blob: pdfBlob(await pdf.save()), mime: MIME_PDF }];
 }

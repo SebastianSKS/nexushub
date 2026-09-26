@@ -1,4 +1,5 @@
 import type JSZip from "jszip";
+import { traducir, T } from "@/lib/i18n";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import { DocumentError } from "../errors";
@@ -369,9 +370,9 @@ async function dibujarArbol(pagina: PDFPage, arbol: any, tr: Transformacion, cx:
 
 export async function powerpointAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
   ctx.report(0.03, `Leyendo ${file.name}`);
-  const zip = await abrirOoxml(file, "presentación de PowerPoint");
+  const zip = await abrirOoxml(file, T("presentación de PowerPoint"));
   const pres = await leerXml(zip, "ppt/presentation.xml");
-  if (!pres?.presentation) throw new DocumentError(`«${file.name}» no parece una presentación de PowerPoint (.pptx).`, "Comprueba que sea un .pptx y no un .ppt antiguo.");
+  if (!pres?.presentation) throw new DocumentError(traducir("«{name}» no parece una presentación de PowerPoint (.pptx).", { name: file.name }), traducir("Comprueba que sea un .pptx y no un .ppt antiguo."));
 
   const sz = pres.presentation.sldSz;
   const anchoPt = Number(sz?.["@_cx"] ?? 9144000) / EMU;
@@ -379,7 +380,7 @@ export async function powerpointAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
   const relsPres = await relaciones(zip, "ppt/presentation.xml");
   const crudo = (await zip.file("ppt/presentation.xml")!.async("string")).match(/<p:sldId\b[^>]*>/g) ?? [];
   const diapositivas = crudo.map((tag) => /r:id="([^"]+)"/.exec(tag)?.[1]).filter((id): id is string => !!id && !!relsPres[id]).map((id) => relsPres[id]!.ruta);
-  if (diapositivas.length === 0) throw new DocumentError(`«${file.name}» no tiene diapositivas.`, "Comprueba que la presentación no esté vacía.");
+  if (diapositivas.length === 0) throw new DocumentError(traducir("«{name}» no tiene diapositivas.", { name: file.name }), traducir("Comprueba que la presentación no esté vacía."));
 
   // Tema y estilos de texto del patrón
   const temaXml = await leerXml(zip, "ppt/theme/theme1.xml");
@@ -403,7 +404,7 @@ export async function powerpointAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
 
   for (let d = 0; d < diapositivas.length; d++) {
     abortarSiCancelado(ctx.signal);
-    ctx.report(0.08 + (d / diapositivas.length) * 0.88, `Diapositiva ${d + 1} de ${diapositivas.length}`);
+    ctx.report(0.08 + (d / diapositivas.length) * 0.88, traducir("Diapositiva {d} de {n}", { d: d + 1, n: diapositivas.length }));
     await cederHilo();
 
     const rutaSlide = diapositivas[d]!;
@@ -445,11 +446,11 @@ export async function powerpointAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
     await dibujarArbol(pagina, slide?.sld?.cSld?.spTree ?? {}, IDENTIDAD, cx, rels, { layout, master }, anchoPt, altoPt, colorTexto);
   }
 
-  ctx.report(0.97, "Guardando el PDF");
+  ctx.report(0.97, traducir("Guardando el PDF"));
   const bytes = await doc.save();
-  if (cx.omitidas > 0) ctx.warn(`Se omitieron ${cx.omitidas} imagen(es) en un formato que no se puede incrustar (por ejemplo EMF o SVG).`);
-  if (limp.sustituidos > 0) ctx.warn("Algunos caracteres fuera del alfabeto latino se sustituyeron por «?».");
-  ctx.warn("Se convierten el texto, las imágenes, los fondos y las tablas de cada diapositiva. Las fuentes originales, animaciones, transiciones, gráficos, formas complejas (flechas, WordArt), sombras y notas del orador no se incluyen, y el apilado de objetos puede variar.");
+  if (cx.omitidas > 0) ctx.warn(traducir("Se omitieron {omitidas} imagen(es) en un formato que no se puede incrustar (por ejemplo EMF o SVG).", { omitidas: cx.omitidas }));
+  if (limp.sustituidos > 0) ctx.warn(traducir("Algunos caracteres fuera del alfabeto latino se sustituyeron por «?»."));
+  ctx.warn(traducir("Se convierten el texto, las imágenes, los fondos y las tablas de cada diapositiva. Las fuentes originales, animaciones, transiciones, gráficos, formas complejas (flechas, WordArt), sombras y notas del orador no se incluyen, y el apilado de objetos puede variar."));
   return [{ name: safeFileName(`${baseName(file.name)}.pdf`), blob: pdfBlob(bytes), mime: MIME_PDF }];
 }
 

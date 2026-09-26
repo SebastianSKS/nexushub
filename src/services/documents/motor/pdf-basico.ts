@@ -1,4 +1,5 @@
 import { PDFDocument, degrees } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import { parseRanges, rangesToPages } from "@/lib/documents/ranges";
 import type { RotateOptions, SplitOptions } from "@/types/documents";
@@ -11,13 +12,13 @@ export async function unirPdf(files: File[], ctx: Ctx): Promise<Salida[]> {
   const n = files.length;
   for (let i = 0; i < n; i++) {
     abortarSiCancelado(ctx.signal);
-    ctx.report((i / n) * 0.9, `Añadiendo ${files[i]!.name} (${i + 1} de ${n})`);
+    ctx.report((i / n) * 0.9, traducir("Añadiendo {name} ({i} de {n})", { name: files[i]!.name, i: i + 1, n }));
     const origen = await cargarPdf(files[i]!);
     const paginas = await unido.copyPages(origen, origen.getPageIndices());
     paginas.forEach((p) => unido.addPage(p));
     await cederHilo();
   }
-  ctx.report(0.95, "Guardando el PDF unido");
+  ctx.report(0.95, traducir("Guardando el PDF unido"));
   return [{ name: safeFileName(`${baseName(files[0]!.name)}_unido.pdf`), blob: pdfBlob(await unido.save()), mime: MIME_PDF }];
 }
 
@@ -32,13 +33,13 @@ async function extraer(origen: PDFDocument, paginas: number[]): Promise<Uint8Arr
 export async function dividirPdf(file: File, opts: SplitOptions, ctx: Ctx): Promise<Salida[]> {
   const origen = await cargarPdf(file);
   const analizado = parseRanges(opts.ranges, origen.getPageCount());
-  if (analizado.error) throw new DocumentError(analizado.error, "Corrige los rangos o elige las páginas en las miniaturas.");
+  if (analizado.error) throw new DocumentError(analizado.error, traducir("Corrige los rangos o elige las páginas en las miniaturas."));
 
   const base = baseName(file.name);
   const salidas: Salida[] = [];
 
   if (opts.mode === "single") {
-    ctx.report(0.3, "Extrayendo las páginas elegidas");
+    ctx.report(0.3, traducir("Extrayendo las páginas elegidas"));
     const bytes = await extraer(origen, rangesToPages(analizado.ranges));
     salidas.push({ name: safeFileName(`${base}_paginas.pdf`), blob: pdfBlob(bytes), mime: MIME_PDF });
   } else {
@@ -46,7 +47,7 @@ export async function dividirPdf(file: File, opts: SplitOptions, ctx: Ctx): Prom
     for (let i = 0; i < total; i++) {
       abortarSiCancelado(ctx.signal);
       const [s, e] = analizado.ranges[i]!;
-      ctx.report(i / total, `Creando el rango ${s === e ? s : `${s}-${e}`} (${i + 1} de ${total})`);
+      ctx.report(i / total, traducir("Creando el rango {rango} ({i} de {total})", { rango: s === e ? s : `${s}-${e}`, i: i + 1, total }));
       const bytes = await extraer(origen, rangesToPages([[s, e]]));
       salidas.push({ name: safeFileName(`${base}_${s === e ? `p${s}` : `p${s}-${e}`}.pdf`), blob: pdfBlob(bytes), mime: MIME_PDF });
       await cederHilo();
@@ -60,16 +61,16 @@ export async function rotarPdf(file: File, opts: RotateOptions, ctx: Ctx): Promi
   const pdf = await cargarPdf(file);
   const total = pdf.getPageCount();
   const entradas = Object.entries(opts.rotations);
-  if (entradas.length === 0) throw new DocumentError("No hay ninguna página para girar.", "Elige el giro con los botones antes de procesar.");
+  if (entradas.length === 0) throw new DocumentError(traducir("No hay ninguna página para girar."), traducir("Elige el giro con los botones antes de procesar."));
 
-  ctx.report(0.2, "Girando páginas");
+  ctx.report(0.2, traducir("Girando páginas"));
   for (const [clave, angulo] of entradas) {
     const n = Number(clave);
-    if (!Number.isInteger(n) || n < 1 || n > total) throw new DocumentError(`La página ${clave} no existe en el documento, que tiene ${total}.`);
+    if (!Number.isInteger(n) || n < 1 || n > total) throw new DocumentError(traducir("La página {clave} no existe en el documento, que tiene {total}.", { clave, total }));
     const pagina = pdf.getPage(n - 1);
     pagina.setRotation(degrees((pagina.getRotation().angle + angulo) % 360));
   }
-  ctx.report(0.8, "Guardando el PDF");
+  ctx.report(0.8, traducir("Guardando el PDF"));
   return [{ name: safeFileName(`${baseName(file.name)}_rotado.pdf`), blob: pdfBlob(await pdf.save()), mime: MIME_PDF }];
 }
 
@@ -77,9 +78,9 @@ export async function rotarPdf(file: File, opts: RotateOptions, ctx: Ctx): Promi
 export async function organizarPdf(file: File, orden: number[], ctx: Ctx): Promise<Salida[]> {
   const origen = await cargarPdf(file);
   const total = origen.getPageCount();
-  if (orden.length === 0) throw new DocumentError("No queda ninguna página.", "Deja al menos una página en el documento.");
-  if (orden.some((p) => !Number.isInteger(p) || p < 1 || p > total)) throw new DocumentError("El orden de las páginas no coincide con el documento.", "Vuelve a cargar el archivo.");
-  ctx.report(0.4, "Ordenando las páginas");
+  if (orden.length === 0) throw new DocumentError(traducir("No queda ninguna página."), traducir("Deja al menos una página en el documento."));
+  if (orden.some((p) => !Number.isInteger(p) || p < 1 || p > total)) throw new DocumentError(traducir("El orden de las páginas no coincide con el documento."), traducir("Vuelve a cargar el archivo."));
+  ctx.report(0.4, traducir("Ordenando las páginas"));
   const bytes = await extraer(origen, orden);
   return [{ name: safeFileName(`${baseName(file.name)}_organizado.pdf`), blob: pdfBlob(bytes), mime: MIME_PDF }];
 }

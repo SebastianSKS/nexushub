@@ -1,4 +1,5 @@
 import { PDFArray, PDFDict, PDFHexString, PDFRawStream, PDFStream, PDFString, type PDFContext, type PDFName, type PDFObject } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import { algoritmo2, algoritmo3, algoritmo5, LARGO_LLAVE, llaveDeObjeto, REVISION } from "@/lib/documents/pdf-seguridad";
 import { rc4 } from "@/lib/documents/rc4";
@@ -47,14 +48,14 @@ function cifrarObjeto(obj: PDFObject, llaveObjeto: Uint8Array, context: PDFConte
  * el archivo no se puede abrir.
  */
 export async function protegerPdf(files: File[], contrasena: string, ctx: Ctx): Promise<Salida[]> {
-  if (!contrasena.trim()) throw new DocumentError("Escribe una contraseña.");
+  if (!contrasena.trim()) throw new DocumentError(traducir("Escribe una contraseña."));
   const salidas: Salida[] = [];
   const n = files.length;
 
   for (let i = 0; i < n; i++) {
     abortarSiCancelado(ctx.signal);
     const file = files[i]!;
-    ctx.report(i / n, `Protegiendo ${file.name} (${i + 1} de ${n})`);
+    ctx.report(i / n, traducir("Protegiendo {name} ({i} de {n})", { name: file.name, i: i + 1, n }));
     const pdf = await cargarPdf(file);
     const context = pdf.context;
 

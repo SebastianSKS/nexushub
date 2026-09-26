@@ -1,4 +1,5 @@
 import mammoth from "mammoth/mammoth.browser";
+import { traducir } from "@/lib/i18n";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { baseName, extensionOf, safeFileName } from "@/lib/documents/format";
 import { DocumentError } from "../errors";
@@ -217,8 +218,8 @@ export async function docxToPdfInBrowser(
 ): Promise<DocxConversion> {
   if (extensionOf(file.name) !== ".docx") {
     throw new DocumentError(
-      `«${file.name}» es un .doc antiguo y Nexo solo lee el formato .docx.`,
-      "Ábrelo en Word y guárdalo como .docx (Archivo → Guardar como), o pídele a quien te lo dio el .docx.",
+      traducir("«{name}» es un .doc antiguo y Nexo solo lee el formato .docx.", { name: file.name }),
+      traducir("Ábrelo en Word y guárdalo como .docx (Archivo → Guardar como), o pídele a quien te lo dio el .docx."),
     );
   }
 
@@ -234,13 +235,13 @@ export async function docxToPdfInBrowser(
     html = result.value;
     messageCount = result.messages.length;
   } catch {
-    throw new DocumentError(`«${file.name}» no se pudo leer como documento de Word.`, "Puede estar dañado o protegido con contraseña.");
+    throw new DocumentError(traducir("«{name}» no se pudo leer como documento de Word.", { name: file.name }), traducir("Puede estar dañado o protegido con contraseña."));
   }
 
   const blocks: Block[] = [];
   collectBlocks(new DOMParser().parseFromString(`<body>${html}</body>`, "text/html").body, blocks);
   if (blocks.length === 0) {
-    throw new DocumentError(`«${file.name}» no tiene contenido que convertir.`, "Comprueba que el documento no esté vacío.");
+    throw new DocumentError(traducir("«{name}» no tiene contenido que convertir.", { name: file.name }), traducir("Comprueba que el documento no esté vacío."));
   }
 
   const doc = await PDFDocument.create();
@@ -280,7 +281,7 @@ export async function docxToPdfInBrowser(
 
   for (let b = 0; b < blocks.length; b++) {
     if (signal.aborted) throw new DOMException("Cancelado", "AbortError");
-    onProgress(0.1 + (b / blocks.length) * 0.85, `Maquetando bloque ${b + 1} de ${blocks.length}`);
+    onProgress(0.1 + (b / blocks.length) * 0.85, traducir("Maquetando bloque {b} de {n}", { b: b + 1, n: blocks.length }));
     if (b % 25 === 0) await new Promise((r) => setTimeout(r)); // cede el hilo para que la barra se repinte
     const block = blocks[b]!;
 
@@ -348,15 +349,15 @@ export async function docxToPdfInBrowser(
     }
   }
 
-  onProgress(0.97, "Guardando el PDF");
+  onProgress(0.97, traducir("Guardando el PDF"));
   const bytes = await doc.save();
 
   const warnings = [
-    "El PDF se genera dentro de Nexo a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar.",
+    traducir("El PDF se genera dentro de Nexo a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar."),
   ];
-  if (skippedImages > 0) warnings.push(`Se omitieron ${skippedImages} imagen(es) en un formato que no se puede incrustar (solo PNG y JPEG).`);
-  if (replaced > 0) warnings.push("Algunos caracteres fuera del alfabeto latino (por ejemplo, emojis o escrituras no latinas) se sustituyeron por «?».");
-  if (messageCount > 0 && warnings.length === 1) warnings.push("Algunos estilos del documento no tienen equivalente y se aplicaron como texto normal.");
+  if (skippedImages > 0) warnings.push(traducir("Se omitieron {skippedImages} imagen(es) en un formato que no se puede incrustar (solo PNG y JPEG).", { skippedImages }));
+  if (replaced > 0) warnings.push(traducir("Algunos caracteres fuera del alfabeto latino (por ejemplo, emojis o escrituras no latinas) se sustituyeron por «?»."));
+  if (messageCount > 0 && warnings.length === 1) warnings.push(traducir("Algunos estilos del documento no tienen equivalente y se aplicaron como texto normal."));
 
   return {
     blob: new Blob([bytes as BlobPart], { type: "application/pdf" }),

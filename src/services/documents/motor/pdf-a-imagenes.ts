@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import { DocumentError } from "../errors";
 import { openPdf } from "../pdfjs";
@@ -23,7 +24,7 @@ export async function pdfAImagenes(
 
     for (let n = 1; n <= total; n++) {
       if (signal.aborted) throw new DOMException("Cancelado", "AbortError");
-      onProgress((n - 1) / total, `Página ${n} de ${total}`);
+      onProgress((n - 1) / total, traducir("Página {n} de {total}", { n, total }));
 
       const page = await pdf.getPage(n);
       const viewport = page.getViewport({ scale });
@@ -33,11 +34,11 @@ export async function pdfAImagenes(
       page.cleanup();
 
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
-      if (!blob) throw new DocumentError(`No se pudo generar la imagen de la página ${n}.`, "Prueba con una resolución menor.");
+      if (!blob) throw new DocumentError(traducir("No se pudo generar la imagen de la página {n}.", { n }), traducir("Prueba con una resolución menor."));
       zip.file(`${baseName(file.name)}_pagina-${String(n).padStart(width, "0")}.png`, blob, { compression: "STORE" });
     }
 
-    onProgress(0.98, "Empaquetando el ZIP");
+    onProgress(0.98, traducir("Empaquetando el ZIP"));
     const blob = await zip.generateAsync({ type: "blob", compression: "STORE" });
     return { blob, name: safeFileName(`${baseName(file.name)}_imagenes.zip`) };
   } finally {

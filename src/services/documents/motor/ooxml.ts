@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { traducir } from "@/lib/i18n";
 import { XMLParser } from "fast-xml-parser";
 import type { PDFFont } from "pdf-lib";
 import { DocumentError } from "../errors";
@@ -20,7 +21,7 @@ export async function abrirOoxml(file: File, tipo: string): Promise<JSZip> {
   try {
     return await JSZip.loadAsync(await file.arrayBuffer());
   } catch {
-    throw new DocumentError(`«${file.name}» no se pudo leer como ${tipo}.`, "El archivo puede estar dañado o protegido con contraseña. Ábrelo y guárdalo de nuevo.");
+    throw new DocumentError(traducir("«{name}» no se pudo leer como {tipo}.", { name: file.name, tipo }), traducir("El archivo puede estar dañado o protegido con contraseña. Ábrelo y guárdalo de nuevo."));
   }
 }
 

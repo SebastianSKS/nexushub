@@ -1,4 +1,5 @@
 import type { PDFDocumentProxy } from "pdfjs-dist";
+import { traducir } from "@/lib/i18n";
 import { DocumentError } from "./errors";
 
 let libPromise: Promise<typeof import("pdfjs-dist")> | null = null;
@@ -28,9 +29,9 @@ export async function openPdf(file: File): Promise<OpenedPdf> {
   } catch (err) {
     const name = err instanceof Error ? err.name : "";
     if (name === "PasswordException") {
-      throw new DocumentError(`«${file.name}» está protegido con contraseña.`, "Quita la contraseña con su programa original y vuelve a subirlo.");
+      throw new DocumentError(traducir("«{name}» está protegido con contraseña.", { name: file.name }), traducir("Quita la contraseña con su programa original y vuelve a subirlo."));
     }
-    throw new DocumentError(`«${file.name}» no se pudo abrir como PDF.`, "El archivo puede estar dañado. Prueba con otro.");
+    throw new DocumentError(traducir("«{name}» no se pudo abrir como PDF.", { name: file.name }), traducir("El archivo puede estar dañado. Prueba con otro."));
   }
 }
 
@@ -50,6 +51,6 @@ export async function abrirPdfCifrado(file: File, password: string): Promise<Res
       // 1 = PasswordResponses.NEED_PASSWORD, 2 = PasswordResponses.INCORRECT_PASSWORD.
       return { estado: codigo === 2 ? "incorrecta" : "hace-falta" };
     }
-    throw new DocumentError(`«${file.name}» no se pudo abrir como PDF.`, "El archivo puede estar dañado. Prueba con otro.");
+    throw new DocumentError(traducir("«{name}» no se pudo abrir como PDF.", { name: file.name }), traducir("El archivo puede estar dañado. Prueba con otro."));
   }
 }

@@ -1,4 +1,5 @@
 import { PDFDocument } from "pdf-lib";
+import { traducir } from "@/lib/i18n";
 import { DocumentError } from "../errors";
 
 /**
@@ -40,14 +41,14 @@ export async function cargarPdf(file: File): Promise<PDFDocument> {
   const bytes = new Uint8Array(await file.arrayBuffer());
   try {
     const doc = await PDFDocument.load(bytes, { updateMetadata: false });
-    if (doc.getPageCount() < 1) throw new Error("PDF sin páginas");
+    if (doc.getPageCount() < 1) throw new Error(traducir("PDF sin páginas"));
     return doc;
   } catch (err) {
     const texto = err instanceof Error ? `${err.name} ${err.message}` : "";
     if (/encrypt/i.test(texto)) {
-      throw new DocumentError(`«${file.name}» está protegido con contraseña.`, "Quita la contraseña del PDF con su programa original y vuelve a subirlo.", "PDF_ENCRYPTED");
+      throw new DocumentError(traducir("«{name}» está protegido con contraseña.", { name: file.name }), traducir("Quita la contraseña del PDF con su programa original y vuelve a subirlo."), "PDF_ENCRYPTED");
     }
-    throw new DocumentError(`«${file.name}» no se pudo leer como PDF.`, "El archivo puede estar dañado. Prueba a abrirlo y guardarlo de nuevo como PDF.", "PDF_INVALID");
+    throw new DocumentError(traducir("«{name}» no se pudo leer como PDF.", { name: file.name }), traducir("El archivo puede estar dañado. Prueba a abrirlo y guardarlo de nuevo como PDF."), "PDF_INVALID");
   }
 }
 

@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { traducir, T, localeActual } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
 import { DocumentError } from "../errors";
 import { abortarSiCancelado, cederHilo, MIME_PDF, pdfBlob, type Ctx, type Salida } from "./comun";
@@ -29,7 +30,6 @@ interface Estilo {
   alin: Celda["alin"];
 }
 
-const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 const MAX_FILAS = 20_000;
 const MAX_COLS = 200;
 const MAX_PAGINAS = 400;
@@ -86,8 +86,8 @@ function formatearFecha(serial: number, code: string): string {
       const t = tok.toLowerCase();
       if (t === "yyyy") return String(d.getUTCFullYear());
       if (t === "yy") return dos(d.getUTCFullYear() % 100);
-      if (t === "mmmm") return ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"][d.getUTCMonth()]!;
-      if (t === "mmm") return MESES[d.getUTCMonth()]!;
+      if (t === "mmmm") return d.toLocaleDateString(localeActual(), { month: "long", timeZone: "UTC" });
+      if (t === "mmm") return d.toLocaleDateString(localeActual(), { month: "short", timeZone: "UTC" }).replace(".", "");
       if (t === "mm" || t === "m") {
         const siguienteSeg = /^[^a-z]*s/i.test(todo.slice(pos + tok.length));
         if (ultimoFueHora || siguienteSeg) {
@@ -96,8 +96,8 @@ function formatearFecha(serial: number, code: string): string {
         }
         return t === "mm" ? dos(d.getUTCMonth() + 1) : String(d.getUTCMonth() + 1);
       }
-      if (t === "dddd") return ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"][d.getUTCDay()]!;
-      if (t === "ddd") return ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"][d.getUTCDay()]!;
+      if (t === "dddd") return d.toLocaleDateString(localeActual(), { weekday: "long", timeZone: "UTC" });
+      if (t === "ddd") return d.toLocaleDateString(localeActual(), { weekday: "short", timeZone: "UTC" }).replace(".", "");
       if (t === "dd") return dos(d.getUTCDate());
       if (t === "d") return String(d.getUTCDate());
       if (t === "hh" || t === "h") {
@@ -119,7 +119,7 @@ function formatearNumero(valor: number, code: string): string {
   const dec = /0\.(0+)/.exec(limpio)?.[1]?.length ?? (/#\.(#+)/.test(limpio) ? 0 : 0);
   const miles = /#,##|,#|0,0/.test(limpio);
   const v = porcentaje ? valor * 100 : valor;
-  let s = v.toLocaleString("es-MX", { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: miles });
+  let s = v.toLocaleString(localeActual(), { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: miles });
   const moneda = /\[\$([^\]-]*)[^\]]*\]|"([$€£¥][^"]*)"|([$€£¥])/.exec(code);
   const simbolo = (moneda?.[1] ?? moneda?.[2] ?? moneda?.[3] ?? "").trim();
   if (simbolo) s = code.indexOf(simbolo) > code.search(/[0#]/) ? `${s} ${simbolo}` : `${simbolo}${s}`;
@@ -137,9 +137,9 @@ function formatearValor(crudo: string, xf: Estilo | undefined, codigos: Map<numb
 }
 
 async function leerLibro(file: File) {
-  const zip = await abrirOoxml(file, "hoja de cálculo de Excel");
+  const zip = await abrirOoxml(file, T("hoja de cálculo de Excel"));
   const libro = await leerXml(zip, "xl/workbook.xml");
-  if (!libro?.workbook) throw new DocumentError(`«${file.name}» no parece un archivo de Excel (.xlsx).`, "Comprueba que sea un .xlsx y no un .xls antiguo.");
+  if (!libro?.workbook) throw new DocumentError(traducir("«{name}» no parece un archivo de Excel (.xlsx).", { name: file.name }), traducir("Comprueba que sea un .xlsx y no un .xls antiguo."));
   const rels = await relaciones(zip, "xl/workbook.xml");
 
   // Cadenas compartidas
@@ -235,7 +235,7 @@ const ALTO_PREDET = 15;
 export async function excelAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
   ctx.report(0.03, `Leyendo ${file.name}`);
   const { hojas, recortadas } = await leerLibro(file);
-  if (hojas.length === 0) throw new DocumentError(`«${file.name}» no tiene celdas con datos.`, "Comprueba que las hojas no estén vacías u ocultas.");
+  if (hojas.length === 0) throw new DocumentError(traducir("«{name}» no tiene celdas con datos.", { name: file.name }), traducir("Comprueba que las hojas no estén vacías u ocultas."));
 
   const doc = await PDFDocument.create();
   const normal = await doc.embedFont(StandardFonts.Helvetica);
@@ -251,7 +251,7 @@ export async function excelAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
   for (let h = 0; h < hojas.length; h++) {
     const hoja = hojas[h]!;
     abortarSiCancelado(ctx.signal);
-    ctx.report(0.1 + (h / hojas.length) * 0.85, `Maquetando la hoja «${hoja.nombre}» (${h + 1} de ${hojas.length})`);
+    ctx.report(0.1 + (h / hojas.length) * 0.85, traducir("Maquetando la hoja «{nombre}» ({h} de {n})", { nombre: hoja.nombre, h: h + 1, n: hojas.length }));
     await cederHilo();
 
     const cols: number[] = [];
@@ -320,7 +320,7 @@ export async function excelAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
         }
         paginas++;
         const pagina = doc.addPage([pw, ph]);
-        const partes = [grupos.length > 1 ? `columnas ${g + 1}/${grupos.length}` : "", bloques.length > 1 ? `página ${b + 1}/${bloques.length}` : ""].filter(Boolean).join(" · ");
+        const partes = [grupos.length > 1 ? traducir("columnas {g}/{n}", { g: g + 1, n: grupos.length }) : "", bloques.length > 1 ? traducir("página {b}/{n}", { b: b + 1, n: bloques.length }) : ""].filter(Boolean).join(" · ");
         pagina.drawText(limpiar(`${hoja.nombre}${partes ? `  ·  ${partes}` : ""}`), { x: MARGEN, y: ph - MARGEN + 4, size: 8, font: normal, color: rgb(0.45, 0.45, 0.45) });
 
         let y = ph - MARGEN - ENCABEZADO + 10;
@@ -356,12 +356,12 @@ export async function excelAPdf(file: File, ctx: Ctx): Promise<Salida[]> {
     }
   }
 
-  ctx.report(0.97, "Guardando el PDF");
+  ctx.report(0.97, traducir("Guardando el PDF"));
   const bytes = await doc.save();
-  if (recortadas) ctx.warn(`Solo se convirtieron las primeras ${MAX_FILAS.toLocaleString("es")} filas de cada hoja.`);
-  if (cortado) ctx.warn(`El PDF se limitó a ${MAX_PAGINAS} páginas. Convierte por partes si necesitas el resto.`);
-  if (recortadoAncho) ctx.warn("Algunos textos son más largos que su celda y se cortaron con «…». El PDF no ajusta el alto de las filas al texto.");
-  if (limpiador.sustituidos > 0) ctx.warn("Algunos caracteres fuera del alfabeto latino se sustituyeron por «?».");
-  ctx.warn("Se convierten los valores y formatos básicos de cada hoja (números, porcentajes, fechas, negrita, alineación). Gráficos, imágenes, colores de relleno, combinaciones de celdas y formato condicional no se incluyen.");
+  if (recortadas) ctx.warn(traducir("Solo se convirtieron las primeras {n} filas de cada hoja.", { n: MAX_FILAS.toLocaleString(localeActual()) }));
+  if (cortado) ctx.warn(traducir("El PDF se limitó a {max} páginas. Convierte por partes si necesitas el resto.", { max: MAX_PAGINAS }));
+  if (recortadoAncho) ctx.warn(traducir("Algunos textos son más largos que su celda y se cortaron con «…». El PDF no ajusta el alto de las filas al texto."));
+  if (limpiador.sustituidos > 0) ctx.warn(traducir("Algunos caracteres fuera del alfabeto latino se sustituyeron por «?»."));
+  ctx.warn(traducir("Se convierten los valores y formatos básicos de cada hoja (números, porcentajes, fechas, negrita, alineación). Gráficos, imágenes, colores de relleno, combinaciones de celdas y formato condicional no se incluyen."));
   return [{ name: safeFileName(`${baseName(file.name)}.pdf`), blob: pdfBlob(bytes), mime: MIME_PDF }];
 }

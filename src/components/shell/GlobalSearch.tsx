@@ -40,7 +40,7 @@ function useDatosBuscables(): string {
   return [indicePdfs, eventos.length, amigos.length, notas.length, clases.length, favoritos.length, canales.length, Object.keys(feeds).length, Object.values(feeds).reduce((n, f) => n + f.videos.length, 0)].join("-");
 }
 
-/** El fragmento de un PDF, con las palabras buscadas resaltadas (funciona igual con o sin acentos: el texto plegado mide lo mismo). */
+/** El fragmento de un archivo, con las palabras buscadas resaltadas (funciona igual con o sin acentos: el texto plegado mide lo mismo). */
 function Resaltado({ texto, palabras }: { texto: string; palabras?: string[] }) {
   const partes = useMemo(() => {
     const ps = (palabras ?? []).map(plegar).filter(Boolean);
@@ -93,8 +93,8 @@ export function GlobalSearch() {
     if (!open) return;
     if (document.activeElement !== inputRef.current) inputRef.current?.focus();
     prepararBusqueda();
-    void cargarIconosProgramas(["pdf"]);
-    void sincronizarIndice(30_000); // PDF nuevos que hayas guardado desde la última vez
+    void cargarIconosProgramas(["pdf", "word", "excel", "powerpoint"]);
+    void sincronizarIndice(30_000); // archivos nuevos que hayas guardado desde la última vez
     useCanalesStore.getState().iniciar(); // los videos de tus canales (usa el caché de 15 min si ya se cargaron)
   }, [open]);
 
@@ -202,7 +202,7 @@ export function GlobalSearch() {
             <div id={listId} role="listbox" aria-label={t("Resultados")}>
               {groups.length === 0 && (
                 <p className="px-3 py-6 text-center text-body text-fg-secondary">
-                  {t("No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus PDF.", { query })}
+                  {t("No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus archivos.", { query })}
                 </p>
               )}
               {groups.map(([group, items]) => (
@@ -249,7 +249,7 @@ export function GlobalSearch() {
             </div>
             {leyendo && (
               <p className="px-3 pb-1.5 pt-2 text-caption text-fg-tertiary" role="status">
-                {t("Leyendo tus PDF para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.", { hechos, total })}
+                {t("Leyendo tus archivos para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.", { hechos, total })}
               </p>
             )}
           </motion.div>

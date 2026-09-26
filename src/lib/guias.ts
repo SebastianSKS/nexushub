@@ -32,7 +32,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     final: T("Empezar"),
     pasos: [
       { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Horario y Calculadora, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
-      { glifo: "buscar", titulo: T("Encuentra lo que sea"), texto: T("Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF. También resuelve cuentas: escribe 25*4 y te da el resultado.") },
+      { glifo: "buscar", titulo: T("Encuentra lo que sea"), texto: T("Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF, Word, Excel y PowerPoint. También resuelve cuentas: escribe 25*4 y te da el resultado.") },
       { glifo: "informacion", titulo: T("Ayuda en cada sección"), texto: T("En la barra de arriba hay un signo de interrogación (?). Púlsalo en cualquier sección para ver otra vez su explicación, cuando quieras.") },
       { glifo: "carpeta", titulo: T("Tus materias, ordenadas"), texto: T("Horario, Calendario y Documentos trabajan juntos: cada materia tiene su carpeta en Documentos › Nexo › Tareas, y Nexo te avisa antes de cada clase.") },
       { glifo: "configuracion", titulo: T("Hazlo tuyo"), texto: T("En Configuración eliges el tema, el color, los avisos y más. Todo se guarda solo en este equipo.") },
@@ -90,7 +90,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Aquí se guardan tus tareas. Son carpetas reales de tu computadora, en Documentos › Nexo › Tareas, y Nexo puede crearlas desde tu horario.") },
       { glifo: "agregar", titulo: T("Añade y crea"), texto: T("Entra a una carpeta y arrastra tus archivos, o usa «Añadir archivos». «Nuevo archivo» crea un Word, Excel, PowerPoint o texto en blanco justo ahí.") },
       { glifo: "externo", titulo: T("Ábrelos con su programa"), texto: T("Toca un archivo para abrirlo con su programa. Con los botones de la derecha lo renombras o lo eliminas; una carpeta solo se elimina si está vacía.") },
-      { glifo: "buscar", titulo: T("Busca dentro de tus PDF"), texto: T("Con Ctrl + K puedes buscar una palabra dentro de los PDF de tus materias y abrirlos justo en esa página.") },
+      { glifo: "buscar", titulo: T("Busca dentro de tus archivos"), texto: T("Con Ctrl + K puedes buscar una palabra dentro de los PDF, Word, Excel y PowerPoint de tus materias. Los PDF se abren justo en esa página.") },
     ],
   },
   calendario: {
@@ -131,7 +131,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     pasos: [
       { glifo: "paleta", titulo: T("Hazlo tuyo"), texto: T("Elige tema claro u oscuro, el color de acento y el efecto de la ventana.") },
       { glifo: "campana", titulo: T("Avisos"), texto: T("Decide si te avisa antes de cada clase, si te hace un resumen del día y si te dice qué canción suena.") },
-      { glifo: "documentos", titulo: T("Documentos"), texto: T("Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus PDF se cambian en la sección Documentos de esta página.") },
+      { glifo: "documentos", titulo: T("Documentos"), texto: T("Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.") },
       { glifo: "actualizar", titulo: T("Actualizaciones"), texto: T("En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.") },
     ],
   },

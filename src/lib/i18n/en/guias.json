@@ -4,7 +4,7 @@
   "Bienvenido a Nexo": "Welcome to Nexo",
   "Video, Música, Documentos, Calendario, Horario y Calculadora, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.": "Video, Music, Documents, Calendar, Schedule and Calculator, all in a single window. This is just the welcome: each section explains how it works the first time you enter. “Skip” skips it.",
   "Encuentra lo que sea": "Find anything",
-  "Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF. También resuelve cuentas: escribe 25*4 y te da el resultado.": "Press Ctrl + K (or use the bar at the top) and search for tasks, classes, channels, songs, notes and even words inside your PDFs. It also does math: type 25*4 and it gives you the result.",
+  "Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF, Word, Excel y PowerPoint. También resuelve cuentas: escribe 25*4 y te da el resultado.": "Press Ctrl + K (or use the bar at the top) and search for tasks, classes, channels, songs, notes and even words inside your PDF, Word, Excel and PowerPoint files. It also does math: type 25*4 and it gives you the result.",
   "Ayuda en cada sección": "Help in every section",
   "En la barra de arriba hay un signo de interrogación (?). Púlsalo en cualquier sección para ver otra vez su explicación, cuando quieras.": "There is a question mark (?) in the top bar. Press it in any section to see its explanation again whenever you want.",
   "Tus materias, ordenadas": "Your subjects, organized",
@@ -82,10 +82,12 @@
   "Elige tema claro u oscuro, el color de acento y el efecto de la ventana.": "Pick a light or dark theme, the accent color and the window effect.",
   "Avisos": "Notifications",
   "Decide si te avisa antes de cada clase, si te hace un resumen del día y si te dice qué canción suena.": "Decide whether it notifies you before each class, gives you a daily summary and tells you which song is playing.",
-  "Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus PDF se cambian en la sección Documentos de esta página.": "Converting with Microsoft Office, choosing where to save and searching inside your PDFs are changed in the Documents section of this page.",
+  "Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.": "Converting with Microsoft Office, choosing where to save and searching inside your files are changed in the Documents section of this page.",
   "Actualizaciones": "Updates",
   "En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.": "In “About” you check for updates and can see the welcome again. Your data is stored only on this computer.",
   "Atajos de teclado": "Keyboard shortcuts",
   "Hazlo más rápido": "Do it faster",
-  "Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 6 para saltar de sección.": "Here are all the shortcuts. The most useful ones: Ctrl + K to search and Ctrl + 1 to Ctrl + 6 to jump between sections."
+  "Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 6 para saltar de sección.": "Here are all the shortcuts. The most useful ones: Ctrl + K to search and Ctrl + 1 to Ctrl + 6 to jump between sections.",
+  "Busca dentro de tus archivos": "Search inside your files",
+  "Con Ctrl + K puedes buscar una palabra dentro de los PDF, Word, Excel y PowerPoint de tus materias. Los PDF se abren justo en esa página.": "With Ctrl + K you can search for a word inside the PDF, Word, Excel and PowerPoint files of your subjects. PDFs open right on that page."
 }

@@ -55,22 +55,7 @@ export function cumpleEn(c: Cumple, fecha: Date): boolean {
   return f.getMonth() === fecha.getMonth() && f.getDate() === fecha.getDate();
 }
 
-/** Las 6 semanas (42 días) que se dibujan para un mes, empezando en lunes. */
-export function diasDelMes(anio: number, mes: number): { fecha: Date; delMes: boolean }[] {
-  const primero = new Date(anio, mes - 1, 1);
-  const desfase = (primero.getDay() + 6) % 7; // lunes = 0
-  return Array.from({ length: 42 }, (_, i) => {
-    const fecha = new Date(anio, mes - 1, 1 - desfase + i);
-    return { fecha, delMes: fecha.getMonth() === mes - 1 };
-  });
-}
-
-/** Los 7 días (lunes a domingo) de la semana que contiene `fecha`. */
-export function diasDeLaSemana(fecha: Date): Date[] {
-  const f = inicioDelDia(fecha);
-  const desfase = (f.getDay() + 6) % 7; // lunes = 0
-  return Array.from({ length: 7 }, (_, i) => new Date(f.getFullYear(), f.getMonth(), f.getDate() - desfase + i));
-}
+export { diasDelMes, diasDeLaSemana } from "./semana";
 
 /** Convierte "AAAA-MM-DD" (hora local, sin desfases de zona horaria) a Date. */
 export function fechaDesdeIso(iso: string): Date {

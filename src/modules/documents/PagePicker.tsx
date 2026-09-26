@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useMemo, useRef } from "react";
 import { Button } from "@/components/fluent/Button";
 import { formatBytes } from "@/lib/documents/format";
@@ -13,6 +14,7 @@ import { PageThumbnails } from "./PageThumbnails";
  * texto de rangos (una sola fuente de verdad); en Rotar, en `selectedPages`.
  */
 export function PagePicker({ file, mode }: { file: QueuedFile; mode: "split" | "rotate" }) {
+  const t = useT();
   const split = useDocumentsStore((s) => s.options.split);
   const rotations = useDocumentsStore((s) => s.options.rotate.rotations);
   const selectedPages = useDocumentsStore((s) => s.selectedPages);
@@ -66,8 +68,8 @@ export function PagePicker({ file, mode }: { file: QueuedFile; mode: "split" | "
           </p>
           <p className="text-caption text-fg-secondary">
             {formatBytes(file.file.size)}
-            {pageCount !== undefined && ` · ${pageCount} ${pageCount === 1 ? "página" : "páginas"}`}
-            {selected.size > 0 && ` · ${selected.size} seleccionadas`}
+            {pageCount !== undefined && ` · ${pageCount === 1 ? t("1 página") : t("{n} páginas", { n: pageCount })}`}
+            {selected.size > 0 && ` · ${t("{n} seleccionadas", { n: selected.size })}`}
           </p>
         </div>
         <div className="flex gap-2">
@@ -76,10 +78,10 @@ export function PagePicker({ file, mode }: { file: QueuedFile; mode: "split" | "
             disabled={!pageCount}
             className="h-7"
           >
-            Seleccionar todo
+            {t("Seleccionar todo")}
           </Button>
           <Button variant="subtle" onClick={() => commit(new Set())} disabled={selected.size === 0} className="h-7">
-            Ninguna
+            {t("Ninguna")}
           </Button>
         </div>
       </div>
@@ -90,7 +92,7 @@ export function PagePicker({ file, mode }: { file: QueuedFile; mode: "split" | "
         onToggle={onToggle}
         onLoaded={setPageCount}
       />
-      <p className="text-caption text-fg-tertiary">Haz clic para elegir páginas; con Mayús + clic eliges un intervalo.</p>
+      <p className="text-caption text-fg-tertiary">{t("Haz clic para elegir páginas; con Mayús + clic eliges un intervalo.")}</p>
     </div>
   );
 }

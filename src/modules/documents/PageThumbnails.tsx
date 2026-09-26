@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { OpenedPdf } from "@/services/documents/pdfjs";
@@ -20,6 +21,7 @@ interface PageThumbnailsProps {
 
 /** Cuadrícula de miniaturas de todas las páginas de un PDF (renderizadas con pdf.js en el navegador). */
 export function PageThumbnails({ file, selected, rotations, order, onToggle, onLoaded }: PageThumbnailsProps) {
+  const t = useT();
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [error, setError] = useState<{ message: string; hint?: string } | null>(null);
   const onLoadedRef = useRef(onLoaded);
@@ -60,7 +62,7 @@ export function PageThumbnails({ file, selected, rotations, order, onToggle, onL
   if (!doc) {
     // Skeleton con la forma final: misma cuadrícula y proporción que las miniaturas reales.
     return (
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3" aria-busy="true" aria-label="Cargando páginas">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3" aria-busy="true" aria-label={t("Cargando páginas")}>
         {Array.from({ length: 8 }, (_, i) => (
           <div key={i} className="rounded-control border border-stroke p-2">
             <div className="skeleton aspect-[3/4] w-full" />
@@ -80,7 +82,7 @@ export function PageThumbnails({ file, selected, rotations, order, onToggle, onL
           page={page}
           selected={selected.has(page)}
           rotation={rotations?.[page] ?? 0}
-          etiqueta={order ? (page === posicion + 1 ? `${page}` : `${posicion + 1} (era ${page})`) : undefined}
+          etiqueta={order ? (page === posicion + 1 ? `${page}` : t("{pos} (era {pag})", { pos: posicion + 1, pag: page })) : undefined}
           onToggle={onToggle}
         />
       ))}

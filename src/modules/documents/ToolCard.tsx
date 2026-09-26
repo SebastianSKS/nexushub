@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import clsx from "clsx";
 import { rutaHerramienta } from "@/lib/rutas";
@@ -16,6 +17,7 @@ interface ToolCardProps {
 
 /** Tarjeta de herramienta: un enlace real a /documentos/<herramienta> (clic con rueda, menú contextual). */
 export function ToolCard({ tool, compatible, suggested }: ToolCardProps) {
+  const t = useT();
   const clases = clsx(
     "rounded-control reveal group relative flex min-h-[132px] flex-col items-start gap-3 border bg-layer p-4 text-left shadow-card",
     "transition-[background-color,border-color,transform,opacity] duration-exit ease-fluent",
@@ -33,8 +35,8 @@ export function ToolCard({ tool, compatible, suggested }: ToolCardProps) {
         {TOOL_ICONS[tool.id]}
       </span>
       <span className="min-w-0">
-        <span className="block text-body font-semibold text-fg">{tool.name}</span>
-        <span className="mt-0.5 line-clamp-2 block text-caption text-fg-secondary">{tool.description}</span>
+        <span className="block text-body font-semibold text-fg">{t(tool.name)}</span>
+        <span className="mt-0.5 line-clamp-2 block text-caption text-fg-secondary">{t(tool.description)}</span>
       </span>
     </>
   );

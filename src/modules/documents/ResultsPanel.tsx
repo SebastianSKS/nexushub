@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, traducir } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDownload20Regular, CheckmarkCircle16Filled, CheckmarkCircle20Filled, ErrorCircle16Filled } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
@@ -12,6 +13,7 @@ import { iconForMime } from "./toolIcons";
 
 /** Resultado: nombre, peso, ahorro (en compresión) y botón de descarga por archivo. */
 export function ResultsPanel() {
+  const t = useT();
   const results = useDocumentsStore((s) => s.results);
   const warnings = useDocumentsStore((s) => s.warnings);
   const clearFiles = useDocumentsStore((s) => s.clearFiles);
@@ -24,7 +26,7 @@ export function ResultsPanel() {
       if (d.cancelado) return; // cerró «Guardar como» sin guardar: no hay nada que avisar
       setHechos((h) => ({ ...h, [clave]: d }));
     } catch (e) {
-      setHechos((h) => ({ ...h, [clave]: { error: e instanceof Error ? e.message : "No se pudo guardar el archivo." } }));
+      setHechos((h) => ({ ...h, [clave]: { error: e instanceof Error ? e.message : t("No se pudo guardar el archivo.") } }));
     }
   };
   const ref = useRef<HTMLDivElement>(null);
@@ -48,7 +50,7 @@ export function ResultsPanel() {
       <div className="mb-3 flex items-center gap-2">
         <CheckmarkCircle20Filled className="text-success-fg" aria-hidden />
         <h3 className="text-body font-semibold text-fg">
-          {results.length === 1 ? "Tu archivo está listo" : `Tus ${results.length} archivos están listos`}
+          {results.length === 1 ? t("Tu archivo está listo") : t("Tus {n} archivos están listos", { n: results.length })}
         </h3>
       </div>
 
@@ -69,7 +71,7 @@ export function ResultsPanel() {
                     {formatBytes(r.originalSize)} → {formatBytes(r.size)}
                     {" · "}
                     <span className={r.savedPercent ? "font-semibold text-success-fg" : ""}>
-                      {r.savedPercent ? `${r.savedPercent}% menos` : "sin reducción posible"}
+                      {r.savedPercent ? t("{n}% menos", { n: r.savedPercent }) : t("sin reducción posible")}
                     </span>
                   </>
                 ) : (
@@ -81,10 +83,10 @@ export function ResultsPanel() {
               variant={hechos[r.id] && !("error" in hechos[r.id]!) ? "standard" : results.length === 1 ? "accent" : "standard"}
               icon={<ArrowDownload20Regular />}
               onClick={() => void guardar(r.id, r.blob, r.name)}
-              aria-label={`Descargar ${r.name}`}
+              aria-label={t("Descargar {nombre}", { nombre: r.name })}
               className="h-8 shrink-0"
             >
-              Descargar
+              {t("Descargar")}
             </Button>
             </div>
             <Confirmacion estado={hechos[r.id]} />
@@ -104,11 +106,11 @@ export function ResultsPanel() {
         {results.length > 1 && hechos.zip && <Confirmacion estado={hechos.zip} />}
         {results.length > 1 && (
           <Button onClick={downloadAll} disabled={zipping} icon={<ArrowDownload20Regular />} className="w-full">
-            {zipping ? "Preparando el ZIP…" : "Descargar todo (ZIP)"}
+            {zipping ? t("Preparando el ZIP…") : t("Descargar todo (ZIP)")}
           </Button>
         )}
         <Button variant="subtle" onClick={clearFiles} className="w-full">
-          Procesar otros archivos
+          {t("Procesar otros archivos")}
         </Button>
       </div>
     </Card>
@@ -117,6 +119,7 @@ export function ResultsPanel() {
 
 /** «✓ Guardado en Descargas como …» con acceso a la carpeta; o el motivo si no se pudo. */
 function Confirmacion({ estado }: { estado: Descargado | { error: string } | undefined }) {
+  const t = useT();
   if (!estado) return null;
   if ("error" in estado) {
     return (
@@ -130,11 +133,11 @@ function Confirmacion({ estado }: { estado: Descargado | { error: string } | und
     <p role="status" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-success-fg">
       <span className="flex items-center gap-1.5 font-semibold">
         <CheckmarkCircle16Filled className="shrink-0" aria-hidden />
-        {estado.ruta ? `Guardado en «${carpetaDe(estado.ruta)}» como «${estado.nombre}»` : "Descarga iniciada: búscala en las descargas de tu navegador"}
+        {estado.ruta ? t("Guardado en «{carpeta}» como «{nombre}»", { carpeta: carpetaDe(estado.ruta), nombre: estado.nombre }) : t("Descarga iniciada: búscala en las descargas de tu navegador")}
       </span>
       {estado.ruta && (
         <button type="button" onClick={() => void mostrarDescarga(estado.ruta!).catch(() => {})} className="text-accent-text underline hover:no-underline">
-          Mostrar en la carpeta
+          {t("Mostrar en la carpeta")}
         </button>
       )}
     </p>
@@ -145,5 +148,5 @@ function Confirmacion({ estado }: { estado: Descargado | { error: string } | und
 function carpetaDe(ruta: string): string {
   const partes = ruta.split(/[\\/]/);
   const carpeta = partes[partes.length - 2] ?? "";
-  return carpeta === "Downloads" ? "Descargas" : carpeta;
+  return carpeta === "Downloads" ? traducir("Descargas") : carpeta;
 }

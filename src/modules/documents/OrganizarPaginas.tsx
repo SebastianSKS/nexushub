@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef } from "react";
 import { formatBytes } from "@/lib/documents/format";
 import { useDocumentsStore } from "@/store/documents-store";
@@ -8,6 +9,7 @@ import { PageThumbnails } from "./PageThumbnails";
 
 /** Miniaturas del PDF en el orden que va a quedar. Se eligen páginas con clic y se mueven o eliminan desde el panel de opciones. */
 export function OrganizarPaginas({ file }: { file: QueuedFile }) {
+  const t = useT();
   const order = useDocumentsStore((s) => s.options.organize.order);
   const selectedPages = useDocumentsStore((s) => s.selectedPages);
   const pageCount = useDocumentsStore((s) => s.pageCount);
@@ -47,13 +49,13 @@ export function OrganizarPaginas({ file }: { file: QueuedFile }) {
         </p>
         <p className="text-caption text-fg-secondary">
           {formatBytes(file.file.size)}
-          {pageCount !== undefined && ` · ${pageCount} ${pageCount === 1 ? "página" : "páginas"}`}
-          {pageCount !== undefined && order.length !== pageCount && order.length > 0 && ` · quedarán ${order.length}`}
-          {selectedPages.length > 0 && ` · ${selectedPages.length} seleccionadas`}
+          {pageCount !== undefined && ` · ${pageCount === 1 ? t("1 página") : t("{n} páginas", { n: pageCount })}`}
+          {pageCount !== undefined && order.length !== pageCount && order.length > 0 && ` · ${t("quedarán {n}", { n: order.length })}`}
+          {selectedPages.length > 0 && ` · ${t("{n} seleccionadas", { n: selectedPages.length })}`}
         </p>
       </div>
       <PageThumbnails file={file.file} selected={new Set(selectedPages)} order={order.length > 0 ? order : undefined} onToggle={onToggle} onLoaded={cargado} />
-      <p className="text-caption text-fg-tertiary">Haz clic en las páginas que quieras mover o eliminar (con Mayús eliges un intervalo) y usa los botones del panel.</p>
+      <p className="text-caption text-fg-tertiary">{t("Haz clic en las páginas que quieras mover o eliminar (con Mayús eliges un intervalo) y usa los botones del panel.")}</p>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T, traducir } from "@/lib/i18n";
 import { useEffect } from "react";
 import { Button } from "@/components/fluent/Button";
 import { InfoBar } from "@/components/fluent/InfoBar";
@@ -22,13 +23,14 @@ import { ResultsPanel } from "./ResultsPanel";
 
 /** Texto del botón principal: «Unir 3 archivos», «Convertir a PDF»… */
 function textoAccion(toolId: ToolId, base: string, n: number): string {
-  if (toolId === "merge" && n >= 2) return `Unir ${n} archivos`;
-  if (toolId === "images-to-pdf" && n >= 1) return `Crear PDF con ${n} ${n === 1 ? "imagen" : "imágenes"}`;
-  return base;
+  if (toolId === "merge" && n >= 2) return traducir("Unir {n} archivos", { n });
+  if (toolId === "images-to-pdf" && n >= 1) return n === 1 ? traducir("Crear PDF con 1 imagen") : traducir("Crear PDF con {n} imágenes", { n });
+  return traducir(base);
 }
 
 /** /documentos/[herramienta]: archivos a la izquierda; opciones, progreso y resultado en el panel lateral. */
 export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
+  const t = useT();
   const tool = getTool(toolId);
   const files = useDocumentsStore((s) => s.files);
   const status = useDocumentsStore((s) => s.runStatus);
@@ -54,15 +56,15 @@ export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
 
   return (
     <PlantillaPagina
-      migas={[{ etiqueta: "Documentos", href: "/documentos" }, { etiqueta: tool.name }]}
-      titulo={tool.name}
-      descripcion={tool.description}
+      migas={[{ etiqueta: "Documentos", href: "/documentos" }, { etiqueta: t(tool.name) }]}
+      titulo={t(tool.name)}
+      descripcion={t(tool.description)}
       accion={
         <Button variant="accent" onClick={startRun} disabled={bloqueo !== null || corriendo}>
           {textoAccion(toolId, tool.action, files.length)}
         </Button>
       }
-      motivo={corriendo ? "Procesando: puedes seguir el avance en el panel de progreso." : bloqueo}
+      motivo={corriendo ? t("Procesando: puedes seguir el avance en el panel de progreso.") : bloqueo ? t(bloqueo) : bloqueo}
       principal={
         <>
           <NoticeStack />
@@ -73,7 +75,7 @@ export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
               multiple={!single}
               count={files.length}
               compact={files.length > 0}
-              title={files.length > 0 ? "Añadir más archivos" : undefined}
+              title={files.length > 0 ? T("Añadir más archivos") : undefined}
             />
           ) : null}
 
@@ -94,7 +96,7 @@ export function PaginaHerramienta({ toolId }: { toolId: ToolId }) {
             ))}
 
           {files.length > 0 && single && !conPaginas && (
-            <DropZone onFiles={addFiles} accept={accept} multiple={false} compact title="Cambiar archivo" />
+            <DropZone onFiles={addFiles} accept={accept} multiple={false} compact title={T("Cambiar archivo")} />
           )}
         </>
       }

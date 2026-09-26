@@ -132,6 +132,15 @@ export function PaginaConfiguracion() {
                       </button>
                     );
                   })}
+                  {/* Cualquier otro color: el selector del sistema. Queda marcado si el acento actual no es de los de arriba. */}
+                  <label
+                    title={t("Otro color")}
+                    className={clsx("relative flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 transition-transform duration-exit ease-fluent hover:scale-110 focus-within:ring-2 focus-within:ring-accent", ACENTOS.some((c) => c.valor.toLowerCase() === a.acento.toLowerCase()) ? "border-transparent" : "border-fg")}
+                    style={{ background: ACENTOS.some((c) => c.valor.toLowerCase() === a.acento.toLowerCase()) ? "conic-gradient(#e5484d, #f0812a, #ffd43b, #2ec4a6, #3b82f6, #a26bff, #e5509f, #e5484d)" : a.acento }}
+                  >
+                    <input type="color" value={a.acento.toLowerCase()} aria-label={t("Otro color")} onChange={(e) => a.cambiar({ acento: e.target.value.toUpperCase() })} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
+                    {!ACENTOS.some((c) => c.valor.toLowerCase() === a.acento.toLowerCase()) && <Glifo nombre="exito" tam={11} className="pointer-events-none text-white mix-blend-difference" />}
+                  </label>
                 </div>
               </TarjetaAjuste>
               <AjusteZoomInterfaz />

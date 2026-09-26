@@ -1,5 +1,8 @@
 "use client";
 
+import { useAjustesStore } from "@/store/ajustes-store";
+import { horaLegible } from "@/lib/hora-legible";
+import { eventosPorAvisarDeHora } from "@/lib/calendario/avisos-hora";
 import { traducir } from "@/lib/i18n";
 import { useEffect } from "react";
 import { notificarSistema } from "@/lib/notificar";
@@ -62,10 +65,32 @@ export function useAvisosCumples() {
       }
     };
 
+    // Los eventos con hora (un examen a las 8:30): un aviso unos minutos antes de que empiecen.
+    const revisarHora = () => {
+      const st = useCalendarioStore.getState();
+      const margen = useAjustesStore.getState().avisoEventoMin;
+      for (const { evento, faltan, clave } of eventosPorAvisarDeHora(st.eventos, new Date(), margen)) {
+        if (st.yaAvisado(clave)) continue;
+        st.marcarAvisado(clave);
+        const titulo = traducir("En {n} min: {titulo}", { n: faltan, titulo: evento.titulo });
+        const texto = traducir("Empieza a las {hora}.", { hora: horaLegible(evento.hora ?? "") });
+        notificarSistema(titulo, texto, clave, "/calendario");
+        st.mostrarAviso({ titulo, texto });
+      }
+    };
+
     revisar();
-    const id = setInterval(revisar, 60_000);
+    revisarHora();
+    const id = setInterval(() => {
+      revisar();
+      revisarHora();
+    }, 60_000);
     // Al volver a la ventana (p. ej. tras suspender el equipo) se revisa de inmediato.
-    const alVolver = () => document.visibilityState === "visible" && revisar();
+    const alVolver = () => {
+      if (document.visibilityState !== "visible") return;
+      revisar();
+      revisarHora();
+    };
     document.addEventListener("visibilitychange", alVolver);
     return () => {
       clearInterval(id);

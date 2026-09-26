@@ -6,6 +6,7 @@ mod captura_spotify;
 mod apps;
 mod avisos;
 mod carpetas;
+mod identidad;
 mod office;
 
 /// Lo que el comando `actualizar_bandeja` necesita tocar cada vez que cambia la reproducción:
@@ -262,6 +263,10 @@ pub fn run() {
                 // misma dirección de verdad.
                 captura_spotify::iniciar();
             }
+
+            // Que las notificaciones de Windows salgan con el nombre y el icono de Nexo (y no como «Windows PowerShell»).
+            #[cfg(target_os = "windows")]
+            identidad::registrar(app.handle());
 
             // Bandeja del sistema: reproducir/pausar y siguiente sin tener que abrir la ventana.
             let ahora = IconMenuItem::with_id(app, "ahora", "Nada en reproducción", false, None::<tauri::image::Image>, None::<&str>)?;

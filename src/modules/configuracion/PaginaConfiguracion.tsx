@@ -1,5 +1,7 @@
 "use client";
 
+import { AjusteInicioSemana } from "./AjusteInicioSemana";
+import { AjusteFormatoHora } from "./AjusteFormatoHora";
 import { useHora } from "@/hooks/useHora";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -90,6 +92,8 @@ export function PaginaConfiguracion() {
                   onChange={(idioma) => a.cambiar({ idioma })}
                 />
               </TarjetaAjuste>
+              <AjusteFormatoHora />
+              <AjusteInicioSemana />
               <TarjetaAjuste glifo="paleta" titulo={t("Tema")} descripcion={t("Elige entre claro, oscuro o el mismo que usa Windows.")}>
                 <SegmentedControl<PreferenciaTema>
                   label={t("Tema")}

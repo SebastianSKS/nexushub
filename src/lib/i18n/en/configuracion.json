@@ -146,5 +146,13 @@
   "Sin avisos ni sonidos de {desde} a {hasta}. Lo que pase mientras tanto no se repite después.": "No notifications or sounds from {desde} to {hasta}. Whatever happens in the meantime isn't repeated afterwards.",
   "Elige unas horas (por ejemplo de noche) en las que Nexo no te avise ni suene.": "Choose some hours (at night, for example) when Nexo won't notify you or make a sound.",
   "Desde": "From",
-  "Hasta": "To"
+  "Hasta": "To",
+  "Formato de hora": "Time format",
+  "Cómo se escriben las horas del horario, el calendario y los avisos. Ahora: {ejemplo}.": "How times are written in the schedule, the calendar and the notices. Now: {ejemplo}.",
+  "24 horas": "24-hour",
+  "12 horas": "12-hour",
+  "La semana empieza el": "The week starts on",
+  "El primer día de cada semana en el Calendario.": "The first day of each week in the Calendar.",
+  "Lunes": "Monday",
+  "Domingo": "Sunday"
 }

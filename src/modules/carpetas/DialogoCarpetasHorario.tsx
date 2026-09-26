@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -14,6 +15,7 @@ import { crearCarpeta, ErrorCarpetas, listarCarpetas, nombreCarpetaDe } from "@/
  * tiene carpeta, todo viene marcado y se puede desmarcar. Nunca se crea nada sin pulsar el botón.
  */
 export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abierto: boolean; materias: string[]; onCerrar: () => void }) {
+  const t = useT();
   const [faltan, setFaltan] = useState<string[]>([]);
   const [elegidas, setElegidas] = useState<Set<string>>(new Set());
   const [cargando, setCargando] = useState(true);
@@ -33,7 +35,7 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
         setFaltan(pendientes);
         setElegidas(new Set(pendientes));
       })
-      .catch((e: unknown) => setError(e instanceof ErrorCarpetas ? e.message : "No se pudieron leer tus carpetas."))
+      .catch((e: unknown) => setError(e instanceof ErrorCarpetas ? e.message : t("No se pudieron leer tus carpetas.")))
       .finally(() => setCargando(false));
   }, [abierto, materias]);
 
@@ -50,7 +52,7 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
       }
     }
     setCreadas(hechas);
-    if (fallos.length) setError(`No se pudo crear: ${fallos.join(", ")}. Puedes crearlas a mano en «Mis tareas».`);
+    if (fallos.length) setError(t("No se pudo crear: {lista}. Puedes crearlas a mano en «Mis tareas».", { lista: fallos.join(", ") }));
   };
 
   const alternar = (m: string) =>
@@ -62,44 +64,44 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
     });
 
   return (
-    <Dialog open={abierto} onClose={onCerrar} title="¿Crear carpetas para tus tareas?" maxWidth={520}>
+    <Dialog open={abierto} onClose={onCerrar} title={t("¿Crear carpetas para tus tareas?")} maxWidth={520}>
       {cargando ? (
-        <p className="py-4 text-body text-fg-secondary">Revisando tus carpetas…</p>
+        <p className="py-4 text-body text-fg-secondary">{t("Revisando tus carpetas…")}</p>
       ) : creadas !== null ? (
         <div className="flex flex-col gap-4">
           {creadas > 0 && (
-            <InfoBar severity="success" title={`${creadas} ${creadas === 1 ? "carpeta creada" : "carpetas creadas"}`}>
-              Quedan en Documentos › Nexo › Tareas. Ahí guardas los trabajos de cada materia.
+            <InfoBar severity="success" title={creadas === 1 ? t("1 carpeta creada") : t("{n} carpetas creadas", { n: creadas })}>
+              {t("Quedan en Documentos › Nexo › Tareas. Ahí guardas los trabajos de cada materia.")}
             </InfoBar>
           )}
-          {error && <InfoBar severity="warning" title="Algo no salió">{error}</InfoBar>}
+          {error && <InfoBar severity="warning" title={t("Algo no salió")}>{error}</InfoBar>}
           <div className="flex justify-end gap-2">
-            <Button onClick={onCerrar}>Cerrar</Button>
+            <Button onClick={onCerrar}>{t("Cerrar")}</Button>
             <Link href="/documentos/carpetas" onClick={onCerrar} className="rounded-control inline-flex h-8 items-center bg-accent px-4 text-body text-accent-on shadow-card transition-colors duration-exit ease-fluent hover:bg-accent-hover">
-              Ver mis tareas
+              {t("Ver mis tareas")}
             </Link>
           </div>
         </div>
       ) : error ? (
         <div className="flex flex-col gap-4">
-          <InfoBar severity="error" title="No se pudo continuar">{error}</InfoBar>
+          <InfoBar severity="error" title={t("No se pudo continuar")}>{error}</InfoBar>
           <div className="flex justify-end">
-            <Button onClick={onCerrar}>Cerrar</Button>
+            <Button onClick={onCerrar}>{t("Cerrar")}</Button>
           </div>
         </div>
       ) : faltan.length === 0 ? (
         <div className="flex flex-col gap-4">
-          <p className="text-body text-fg">Todas tus materias ya tienen su carpeta. No hace falta crear nada.</p>
+          <p className="text-body text-fg">{t("Todas tus materias ya tienen su carpeta. No hace falta crear nada.")}</p>
           <div className="flex justify-end">
-            <Button onClick={onCerrar}>Cerrar</Button>
+            <Button onClick={onCerrar}>{t("Cerrar")}</Button>
           </div>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
           <p className="text-body text-fg-secondary">
-            Una carpeta por materia, para guardar ahí las tareas y trabajos. Desmarca las que no quieras; siempre puedes añadir, renombrar o quitar carpetas después.
+            {t("Una carpeta por materia, para guardar ahí las tareas y trabajos. Desmarca las que no quieras; siempre puedes añadir, renombrar o quitar carpetas después.")}
           </p>
-          <ul className="flex max-h-[260px] flex-col gap-1 overflow-y-auto pr-1" aria-label="Materias sin carpeta">
+          <ul className="flex max-h-[260px] flex-col gap-1 overflow-y-auto pr-1" aria-label={t("Materias sin carpeta")}>
             {faltan.map((m) => {
               const marcada = elegidas.has(m);
               return (
@@ -122,9 +124,9 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
             })}
           </ul>
           <div className="flex justify-end gap-2">
-            <Button onClick={onCerrar}>Ahora no</Button>
+            <Button onClick={onCerrar}>{t("Ahora no")}</Button>
             <Button variant="accent" disabled={elegidas.size === 0} onClick={() => void crear()}>
-              Crear {elegidas.size} {elegidas.size === 1 ? "carpeta" : "carpetas"}
+              {elegidas.size === 1 ? t("Crear 1 carpeta") : t("Crear {n} carpetas", { n: elegidas.size })}
             </Button>
           </div>
         </div>

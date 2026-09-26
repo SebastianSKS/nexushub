@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useNavStore } from "@/store/nav-store";
+import { BotonGuia } from "./BotonGuia";
 import { Migas, type Miga } from "./Migas";
 
 interface PlantillaPaginaProps {
@@ -42,7 +43,10 @@ export function PlantillaPagina({ migas, titulo, descripcion, accion, motivo, pr
 
       <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
         <div className="min-w-0">
-          <h1 className="text-title text-fg">{titulo}</h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <h1 className="text-title text-fg">{titulo}</h1>
+            <BotonGuia />
+          </div>
           <p className="mt-1 text-body text-fg-secondary">{descripcion}</p>
         </div>
         {accion && (

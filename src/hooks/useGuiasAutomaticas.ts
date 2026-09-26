@@ -33,14 +33,14 @@ export function useGuiasAutomaticas() {
   useEffect(() => {
     if (!cargado || abierta) return;
     const { abrir } = useGuiasStore.getState();
-    // Un respiro para que la pantalla termine de dibujarse antes de poner la guía encima.
+    // Un instante para que la pantalla termine de dibujarse antes de poner la guía encima.
     if (!vistas.includes("bienvenida")) {
-      const t = setTimeout(() => abrir("bienvenida"), 500);
+      const t = setTimeout(() => abrir("bienvenida"), 300);
       return () => clearTimeout(t);
     }
     const id = guiaDeRuta(ruta);
     if (!id || id === "bienvenida" || vistas.includes(id) || silenciada.current === ruta) return;
-    const t = setTimeout(() => abrir(id), 900);
+    const t = setTimeout(() => abrir(id), 250);
     return () => clearTimeout(t);
   }, [cargado, vistas, abierta, ruta]);
 }

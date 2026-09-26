@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, useIdioma, traducir } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Timer20Regular } from "@fluentui/react-icons";
 import clsx from "clsx";
@@ -10,11 +11,13 @@ import { useReproductorStore } from "@/store/reproductor-store";
 /** Lo que falta para que el temporizador pause la música, en texto corto («23 min»). */
 function restante(hasta: number): string {
   const s = Math.max(0, Math.round((hasta - Date.now()) / 1000));
-  return s >= 90 ? `${Math.ceil(s / 60)} min` : `${s} s`;
+  return s >= 90 ? traducir("{n} min", { n: Math.ceil(s / 60) }) : traducir("{n} s", { n: s });
 }
 
 /** Botón de la barra de música: «Temporizador para dormir» con sus opciones. */
 export function TemporizadorDormir({ className }: { className?: string }) {
+  const t = useT();
+  useIdioma();
   const dormir = useReproductorStore((s) => s.dormir);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const [, refrescar] = useState(0);
@@ -28,26 +31,26 @@ export function TemporizadorDormir({ className }: { className?: string }) {
 
   const poner = (minutos: number) => {
     useReproductorStore.getState().programarDormir({ modo: "tiempo", hasta: Date.now() + minutos * 60_000 });
-    avisoBreve("Temporizador activado", `La música se detendrá en ${minutos} minutos.`);
+    avisoBreve(t("Temporizador activado"), t("La música se detendrá en {n} minutos.", { n: minutos }));
   };
 
   const items: MenuItem[] = [
-    { etiqueta: "En 5 minutos", onSelect: () => poner(5) },
-    { etiqueta: "En 15 minutos", onSelect: () => poner(15) },
-    { etiqueta: "En 30 minutos", onSelect: () => poner(30) },
-    { etiqueta: "En 45 minutos", onSelect: () => poner(45) },
-    { etiqueta: "En 1 hora", onSelect: () => poner(60) },
+    { etiqueta: t("En 5 minutos"), onSelect: () => poner(5) },
+    { etiqueta: t("En 15 minutos"), onSelect: () => poner(15) },
+    { etiqueta: t("En 30 minutos"), onSelect: () => poner(30) },
+    { etiqueta: t("En 45 minutos"), onSelect: () => poner(45) },
+    { etiqueta: t("En 1 hora"), onSelect: () => poner(60) },
     {
-      etiqueta: "Al terminar esta canción",
+      etiqueta: t("Al terminar esta canción"),
       onSelect: () => {
         useReproductorStore.getState().programarDormir({ modo: "cancion" });
-        avisoBreve("Temporizador activado", "La música se detendrá al terminar esta canción.");
+        avisoBreve(t("Temporizador activado"), t("La música se detendrá al terminar esta canción."));
       },
     },
-    ...(dormir ? [{ etiqueta: "Desactivar el temporizador", onSelect: () => useReproductorStore.getState().programarDormir(null) }] : []),
+    ...(dormir ? [{ etiqueta: t("Desactivar el temporizador"), onSelect: () => useReproductorStore.getState().programarDormir(null) }] : []),
   ];
 
-  const etiqueta = dormir ? (dormir.modo === "tiempo" ? `Temporizador: faltan ${restante(dormir.hasta)}` : "Temporizador: al terminar la canción") : "Temporizador para dormir";
+  const etiqueta = dormir ? (dormir.modo === "tiempo" ? t("Temporizador: faltan {tiempo}", { tiempo: restante(dormir.hasta) }) : t("Temporizador: al terminar la canción")) : t("Temporizador para dormir");
 
   return (
     <>
@@ -65,7 +68,7 @@ export function TemporizadorDormir({ className }: { className?: string }) {
         <Timer20Regular />
         {dormir?.modo === "tiempo" && <span className="tabular">{restante(dormir.hasta)}</span>}
       </button>
-      <MenuFlyout abierto={menu !== null} x={menu?.x ?? 0} y={menu?.y ?? 0} items={items} etiqueta="Temporizador para dormir" onCerrar={() => setMenu(null)} />
+      <MenuFlyout abierto={menu !== null} x={menu?.x ?? 0} y={menu?.y ?? 0} items={items} etiqueta={t("Temporizador para dormir")} onCerrar={() => setMenu(null)} />
     </>
   );
 }

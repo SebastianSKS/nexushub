@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -22,6 +23,7 @@ import { PanelLetra } from "./PanelLetra";
 
 /** Vista grande "Reproduciendo ahora": carátula grande, controles y favorito, a pantalla completa. */
 export function ReproductorGrande() {
+  const t = useT();
   const abierto = useAppStore((s) => s.reproductorGrandeAbierto);
   const cerrar = () => useAppStore.getState().setReproductorGrandeAbierto(false);
   const pista = useReproductorStore((s) => s.pista);
@@ -62,7 +64,7 @@ export function ReproductorGrande() {
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label="Reproduciendo ahora"
+          aria-label={t("Reproduciendo ahora")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: ENTER }}
           exit={{ opacity: 0, transition: EXIT }}
@@ -81,7 +83,7 @@ export function ReproductorGrande() {
             />
           </div>
 
-          <IconButton label="Cerrar" onClick={cerrar} className="absolute right-4 top-4 h-9 w-9 text-white hover:bg-white/10">
+          <IconButton label={t("Cerrar")} onClick={cerrar} className="absolute right-4 top-4 h-9 w-9 text-white hover:bg-white/10">
             <Glifo nombre="cerrar" tam={14} />
           </IconButton>
 
@@ -111,7 +113,7 @@ export function ReproductorGrande() {
             <div className="flex items-center gap-3">
               <EcualizadorVisual activo={reproduciendo} />
               <IconButton
-                label={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+                label={favorito ? t("Quitar de favoritos") : t("Añadir a favoritos")}
                 onClick={() => void (pista.fuente === "spotify" ? alternarMeGusta(pista) : useFavoritosStore.getState().alternarFavorito(pista))}
                 className={favorito ? "text-accent-text hover:bg-white/10" : "text-white hover:bg-white/10"}
               >
@@ -123,11 +125,11 @@ export function ReproductorGrande() {
               <span className="tabular w-10 text-right">{formatDuration(progreso)}</span>
               <div className="min-w-0 flex-1">
                 <Slider
-                  label="Posición de la canción"
+                  label={t("Posición de la canción")}
                   value={Math.min(progreso, duracion || progreso)}
                   max={Math.max(duracion, 1)}
                   disabled={!capacidades.buscar || duracion <= 0}
-                  valueText={`${formatDuration(progreso)} de ${formatDuration(duracion)}`}
+                  valueText={t("{a} de {b}", { a: formatDuration(progreso), b: formatDuration(duracion) })}
                   onCommit={(v) => st().buscar(v)}
                 />
               </div>
@@ -136,21 +138,21 @@ export function ReproductorGrande() {
 
             <div className="flex items-center gap-4">
               {puedeSaltar && (
-                <IconButton label="Anterior" onClick={() => st().anterior()} className="h-10 w-10 text-white hover:bg-white/10">
+                <IconButton label={t("Anterior")} onClick={() => st().anterior()} className="h-10 w-10 text-white hover:bg-white/10">
                   <Glifo nombre="anterior" tam={18} />
                 </IconButton>
               )}
               <button
                 type="button"
                 onClick={() => st().alternar()}
-                aria-label={reproduciendo ? "Pausar" : "Reproducir"}
-                title={reproduciendo ? "Pausar" : "Reproducir"}
+                aria-label={reproduciendo ? t("Pausar") : t("Reproducir")}
+                title={reproduciendo ? t("Pausar") : t("Reproducir")}
                 className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-on shadow-flyout transition-colors duration-exit ease-fluent hover:bg-accent-hover active:bg-accent-pressed"
               >
                 <Glifo nombre={reproduciendo ? "pausar" : "reproducir"} tam={24} />
               </button>
               {puedeSaltar && (
-                <IconButton label="Siguiente" onClick={() => st().siguiente()} className="h-10 w-10 text-white hover:bg-white/10">
+                <IconButton label={t("Siguiente")} onClick={() => st().siguiente()} className="h-10 w-10 text-white hover:bg-white/10">
                   <Glifo nombre="siguiente" tam={18} />
                 </IconButton>
               )}
@@ -160,7 +162,7 @@ export function ReproductorGrande() {
               <div className="flex w-full max-w-[220px] items-center gap-2 text-white/70">
                 <Glifo nombre="volumen" tam={14} />
                 <div className="min-w-0 flex-1">
-                  <Slider label="Volumen" value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
+                  <Slider label={t("Volumen")} value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
                 </div>
               </div>
             )}
@@ -173,7 +175,7 @@ export function ReproductorGrande() {
                   aria-pressed={mostrarLetra}
                   className={clsx("rounded-control h-8 px-3 text-body transition-colors duration-exit ease-fluent", mostrarLetra ? "bg-white text-black" : "bg-white/10 text-white hover:bg-white/20")}
                 >
-                  Letra
+                  {t("Letra")}
                 </button>
                 {pista.artistId && (
                   <button
@@ -184,7 +186,7 @@ export function ReproductorGrande() {
                     }}
                     className="rounded-control h-8 bg-white/10 px-3 text-body text-white transition-colors duration-exit ease-fluent hover:bg-white/20"
                   >
-                    Ver artista
+                    {t("Ver artista")}
                   </button>
                 )}
               </div>

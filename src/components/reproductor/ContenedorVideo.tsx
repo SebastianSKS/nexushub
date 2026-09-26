@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type RefObject } from "react";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -25,6 +26,7 @@ const TRANSICION = "transform 300ms cubic-bezier(0,0,0,1), width 300ms cubic-bez
  * Solo se animan transform, width y height (nunca top/left), y solo al cambiar de modo.
  */
 export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement | null> }) {
+  const t = useT();
   const contRef = useRef<HTMLDivElement>(null);
   const modoPrevio = useRef<Modo>("oculto");
   const temporizador = useRef<number | undefined>(undefined);
@@ -112,7 +114,7 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
     <div
       ref={contRef}
       role="region"
-      aria-label="Reproductor de video"
+      aria-label={t("Reproductor de video")}
       className="fixed left-0 top-0 z-30 overflow-hidden bg-black"
       style={{ borderRadius: modo === "mini" ? 8 : 8, willChange: "transform, width, height", visibility: "hidden" }}
     >
@@ -132,14 +134,14 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
             className="rounded-control flex h-7 items-center gap-1.5 px-2 text-caption font-semibold text-white hover:bg-white/15"
           >
             <Glifo nombre="contraer" tam={14} />
-            Volver al video
+            {t("Volver al video")}
           </Link>
           <span className="flex-1" />
           <button
             type="button"
             onClick={alternar}
-            aria-label={reproduciendo ? "Pausar" : "Reproducir"}
-            title={reproduciendo ? "Pausar" : "Reproducir"}
+            aria-label={reproduciendo ? t("Pausar") : t("Reproducir")}
+            title={reproduciendo ? t("Pausar") : t("Reproducir")}
             className="rounded-control flex h-7 w-7 items-center justify-center text-white hover:bg-white/15"
           >
             <Glifo nombre={reproduciendo ? "pausar" : "reproducir"} tam={14} />
@@ -147,8 +149,8 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
           <button
             type="button"
             onClick={cerrar}
-            aria-label="Cerrar miniatura y detener el video"
-            title="Cerrar"
+            aria-label={t("Cerrar miniatura y detener el video")}
+            title={t("Cerrar")}
             className="rounded-control flex h-7 w-7 items-center justify-center text-white hover:bg-white/15"
           >
             <Glifo nombre="cerrar" tam={12} />

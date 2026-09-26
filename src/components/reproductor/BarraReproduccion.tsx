@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,7 @@ function Boton({
 }
 
 function Contenido() {
+  const t = useT();
   const router = useRouter();
   const pista = useReproductorStore((s) => s.pista);
   const reproduciendo = useReproductorStore((s) => s.reproduciendo);
@@ -78,7 +80,7 @@ function Contenido() {
       <button
         type="button"
         onClick={() => useAppStore.getState().setReproductorGrandeAbierto(true)}
-        aria-label={`Abrir la vista grande de «${pista.titulo}»`}
+        aria-label={t("Abrir la vista grande de «{titulo}»", { titulo: pista.titulo })}
         className="rounded-control flex min-w-0 items-center gap-3 py-1 pl-1 pr-2 text-left transition-colors duration-exit ease-fluent hover:bg-layer-alt"
       >
         {pista.caratula ? (
@@ -98,27 +100,27 @@ function Contenido() {
       {/* Centro: controles y progreso */}
       <div className="mx-auto flex w-full max-w-[560px] flex-col items-center gap-0.5">
         <div className="flex items-center gap-1">
-          {puedeSaltar && <Boton nombre="anterior" etiqueta="Anterior" onClick={() => st().anterior()} />}
+          {puedeSaltar && <Boton nombre="anterior" etiqueta={t("Anterior")} onClick={() => st().anterior()} />}
           <button
             type="button"
             onClick={() => st().alternar()}
-            aria-label={reproduciendo ? "Pausar" : "Reproducir"}
-            title={reproduciendo ? "Pausar" : "Reproducir"}
+            aria-label={reproduciendo ? t("Pausar") : t("Reproducir")}
+            title={reproduciendo ? t("Pausar") : t("Reproducir")}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-accent-on transition-colors duration-exit ease-fluent hover:bg-accent-hover active:bg-accent-pressed"
           >
             <Glifo nombre={reproduciendo ? "pausar" : "reproducir"} tam={16} />
           </button>
-          {puedeSaltar && <Boton nombre="siguiente" etiqueta="Siguiente" onClick={() => st().siguiente()} />}
+          {puedeSaltar && <Boton nombre="siguiente" etiqueta={t("Siguiente")} onClick={() => st().siguiente()} />}
         </div>
         <div className="flex w-full items-center gap-2 text-caption text-fg-secondary">
           <span className="tabular w-10 text-right">{formatDuration(progreso)}</span>
           <div className="min-w-0 flex-1">
             <Slider
-              label="Posición de la canción"
+              label={t("Posición de la canción")}
               value={Math.min(progreso, duracion || progreso)}
               max={Math.max(duracion, 1)}
               disabled={!capacidades.buscar || duracion <= 0}
-              valueText={`${formatDuration(progreso)} de ${formatDuration(duracion)}`}
+              valueText={t("{a} de {b}", { a: formatDuration(progreso), b: formatDuration(duracion) })}
               onCommit={(v) => st().buscar(v)}
             />
           </div>
@@ -128,11 +130,11 @@ function Contenido() {
 
       {/* Derecha: aleatorio, repetir, volumen, expandir (solo lo que la fuente activa puede cumplir) */}
       <div className="flex items-center justify-end gap-0.5">
-        {capacidades.aleatorio && <Boton nombre="aleatorio" etiqueta="Aleatorio" activo={aleatorio} onClick={() => st().setAleatorio(!aleatorio)} />}
+        {capacidades.aleatorio && <Boton nombre="aleatorio" etiqueta={t("Aleatorio")} activo={aleatorio} onClick={() => st().setAleatorio(!aleatorio)} />}
         {capacidades.repetir && (
           <Boton
             nombre={repetir === "una" ? "repetirUna" : "repetir"}
-            etiqueta={repetir === "no" ? "Repetir: desactivado" : repetir === "una" ? "Repetir: una canción" : "Repetir: todas"}
+            etiqueta={repetir === "no" ? t("Repetir: desactivado") : repetir === "una" ? t("Repetir: una canción") : t("Repetir: todas")}
             activo={repetir !== "no"}
             onClick={() => st().setRepetir(repetir === "no" ? "todas" : repetir === "todas" ? "una" : "no")}
           />
@@ -143,25 +145,25 @@ function Contenido() {
             useAppStore.getState().setMostrarLetra(true);
             useAppStore.getState().setReproductorGrandeAbierto(true);
           }}
-          aria-label="Ver la letra"
-          title="Ver la letra"
+          aria-label={t("Ver la letra")}
+          title={t("Ver la letra")}
           className="rounded-control h-8 shrink-0 px-2 text-caption font-semibold text-fg transition-colors duration-exit ease-fluent hover:bg-layer-alt"
         >
-          Letra
+          {t("Letra")}
         </button>
         <TemporizadorDormir />
         {capacidades.volumen && (
           <div className="flex w-[84px] items-center">
-            <Slider label="Volumen" value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
+            <Slider label={t("Volumen")} value={volumen} max={100} valueText={`${Math.round(volumen)} %`} onCommit={(v) => st().setVolumen(v)} onChange={(v) => st().setVolumen(v)} />
           </div>
         )}
         <Boton
           nombre={favorito ? "favoritoLleno" : "favorito"}
-          etiqueta={favorito ? "Quitar de Me gusta" : "Me gusta"}
+          etiqueta={favorito ? t("Quitar de Me gusta") : t("Me gusta")}
           activo={favorito}
           onClick={() => void alternarMeGusta(pista)}
         />
-        <Boton nombre="expandir" etiqueta="Abrir Música" onClick={() => router.push("/musica")} />
+        <Boton nombre="expandir" etiqueta={t("Abrir Música")} onClick={() => router.push("/musica")} />
       </div>
     </div>
   );
@@ -172,6 +174,7 @@ function Contenido() {
  * deslizándose hacia arriba UNA vez; el contenido de la ventana se encoge para dejarle sitio.
  */
 export function BarraReproduccion() {
+  const t = useT();
   const visible = useReproductorStore((s) => s.fuente === "spotify" && s.pista !== null);
   return (
     <AnimatePresence initial={false}>
@@ -179,7 +182,7 @@ export function BarraReproduccion() {
         <motion.div
           key="barra-musica"
           role="region"
-          aria-label="Reproductor de música"
+          aria-label={t("Reproductor de música")}
           initial={{ height: 0 }}
           animate={{ height: ALTO_BARRA_MUSICA }}
           exit={{ height: 0 }}

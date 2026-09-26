@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { useProgreso } from "@/hooks/useProgreso";
@@ -8,6 +9,7 @@ import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 
 /** Letra de la canción que suena: si viene con tiempos, se marca la línea actual y se puede pulsar una para saltar a ella. */
 export function PanelLetra({ pista }: { pista: Pista }) {
+  const tr = useT();
   const [estado, setEstado] = useState<{ id: string; letra: Letra | null | "error" } | "cargando">("cargando");
   const progreso = useProgreso();
   const contenedor = useRef<HTMLDivElement>(null);
@@ -36,15 +38,15 @@ export function PanelLetra({ pista }: { pista: Pista }) {
   }, [actual]);
 
   const centrado = "flex h-full items-center justify-center text-center text-body text-white/60";
-  if (letra === "cargando") return <div className={centrado} role="status">Buscando la letra…</div>;
-  if (letra === "error") return <div className={centrado} role="status">No se pudo buscar la letra. Comprueba tu conexión a internet.</div>;
-  if (!letra || (!letra.sincronizada && !letra.plana)) return <div className={centrado} role="status">No encontramos la letra de esta canción.</div>;
+  if (letra === "cargando") return <div className={centrado} role="status">{tr("Buscando la letra…")}</div>;
+  if (letra === "error") return <div className={centrado} role="status">{tr("No se pudo buscar la letra. Comprueba tu conexión a internet.")}</div>;
+  if (!letra || (!letra.sincronizada && !letra.plana)) return <div className={centrado} role="status">{tr("No encontramos la letra de esta canción.")}</div>;
 
   return (
     <div
       ref={contenedor}
       tabIndex={0}
-      aria-label="Letra de la canción"
+      aria-label={tr("Letra de la canción")}
       onWheel={() => (manualHasta.current = Date.now() + 4000)}
       onTouchMove={() => (manualHasta.current = Date.now() + 4000)}
       className="h-full overflow-y-auto px-2 py-[30vh] text-left [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] focus-visible:outline-none"

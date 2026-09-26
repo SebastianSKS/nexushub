@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { Play24Filled } from "@fluentui/react-icons";
 import clsx from "clsx";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -17,9 +18,10 @@ interface PistaCardProps {
 
 /** Tarjeta de una pista guardada (favorito o reciente, de Música o de Video): carátula, título, autor y estrella. */
 export function PistaCard({ pista, active, favorito, onPlay, onAlternarFavorito }: PistaCardProps) {
+  const t = useT();
   return (
     <div onContextMenu={pista.fuente === "spotify" ? (e) => abrirMenuPista(e, pista) : undefined} className={clsx("rounded-control reveal group relative border bg-layer p-3 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt", active ? "border-accent" : "border-stroke")}>
-      <button type="button" onClick={onPlay} aria-label={`Reproducir ${pista.titulo}, ${pista.artista}`} aria-current={active ? "true" : undefined} className="block w-full text-left">
+      <button type="button" onClick={onPlay} aria-label={t("Reproducir {titulo}, {detalle}", { titulo: pista.titulo, detalle: pista.artista })} aria-current={active ? "true" : undefined} className="block w-full text-left">
         <span className="relative block aspect-square w-full overflow-hidden rounded-input bg-layer-alt shadow-card">
           {pista.caratula ? (
             // eslint-disable-next-line @next/next/no-img-element -- carátula remota
@@ -38,7 +40,7 @@ export function PistaCard({ pista, active, favorito, onPlay, onAlternarFavorito 
           </span>
           {active && (
             <span aria-hidden className="absolute left-2 top-2 rounded-[4px] bg-accent px-1.5 py-0.5 text-caption font-semibold text-accent-on">
-              Sonando
+              {t("Sonando")}
             </span>
           )}
         </span>
@@ -52,7 +54,7 @@ export function PistaCard({ pista, active, favorito, onPlay, onAlternarFavorito 
         </span>
       </button>
       <IconButton
-        label={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+        label={favorito ? t("Quitar de favoritos") : t("Añadir a favoritos")}
         onClick={onAlternarFavorito}
         className={clsx("absolute right-4 top-4 bg-layer/80 backdrop-blur-sm", favorito ? "text-accent-text" : "text-fg opacity-0 group-hover:opacity-100 group-focus-within:opacity-100")}
       >

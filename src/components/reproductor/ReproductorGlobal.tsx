@@ -1,5 +1,6 @@
 "use client";
 
+import { traducir } from "@/lib/i18n";
 import { useEffect, useRef } from "react";
 import { useAdaptadorSpotify } from "@/hooks/useAdaptadorSpotify";
 import { useAdaptadorYouTube } from "@/hooks/useAdaptadorYouTube";
@@ -68,7 +69,7 @@ export function ReproductorGlobal() {
           useReproductorStore.getState().pausar();
           setTimeout(() => c?.volumen?.(original), 800); // el volumen queda como estaba para la próxima vez
           useReproductorStore.setState({ dormir: null });
-          avisoBreve("Temporizador: música pausada", "Buenas noches.");
+          avisoBreve(traducir("Temporizador: música pausada"), traducir("Buenas noches."));
         }
       }, 400);
     }, 1000);

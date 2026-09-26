@@ -21,6 +21,17 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.2.0",
+    novedades: [
+      { glifo: "campana", titulo: T("Avisos con tu sonido"), texto: T("Elige cómo suenan (cinco sonidos de Nexo o los de Windows) y activa «No molestar» en las horas que quieras. Ahora los avisos salen como «Nexo», con su icono.") },
+      { glifo: "examen", titulo: T("Aviso antes de un examen"), texto: T("Si un evento tiene hora, Nexo te avisa unos minutos antes de que empiece (tú eliges cuántos).") },
+      { glifo: "paleta", titulo: T("Hazlo más tuyo"), texto: T("Cualquier color de acento, tamaño de la interfaz, horas en 12 o 24 horas, semana que empieza en lunes o domingo, menos animaciones y secciones que puedes esconder.") },
+      { glifo: "descargar", titulo: T("Copia de seguridad"), texto: T("Guarda todos tus datos en un archivo y restáuralos en otra computadora. No incluye tu sesión de Spotify.") },
+      { glifo: "energia", titulo: T("Nexo en la bandeja al encender el equipo"), texto: T("Con «Iniciar con Windows», Nexo arranca directo en la bandeja, sin abrir ventana, y te sigue avisando.") },
+      { glifo: "informacion", titulo: T("Más cuidado por dentro"), texto: T("Si algo falla ves una pantalla clara (tus datos están a salvo) con un botón para avisar del problema, y la barra de abajo dice cuando no hay internet.") },
+    ],
+  },
+  {
     version: "0.1.4",
     novedades: [
       { glifo: "pantalla", titulo: T("Nexo también en inglés"), texto: T("En Configuración › Apariencia › Idioma elige Español, English o «Igual que Windows». Cambia todo: menús, guías, novedades, avisos y hasta la bandeja del sistema.") },

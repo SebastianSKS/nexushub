@@ -22,5 +22,16 @@
   "La canción, en la bandeja": "The song, in the tray",
   "El menú del icono junto al reloj muestra lo que suena, con su carátula, y desde ahí puedes pausar o pasar a la siguiente.": "The menu of the icon next to the clock shows what's playing, with its cover, and from there you can pause or skip to the next one.",
   "Actualizaciones más seguras": "Safer updates",
-  "Si la descarga falla se reintenta sola y, si aun así no se puede, te lo dice con un botón «Reintentar». Tus datos se guardan antes de instalar.": "If the download fails it retries on its own and, if it still can't, it tells you with a “Try again” button. Your data is saved before installing."
+  "Si la descarga falla se reintenta sola y, si aun así no se puede, te lo dice con un botón «Reintentar». Tus datos se guardan antes de instalar.": "If the download fails it retries on its own and, if it still can't, it tells you with a “Try again” button. Your data is saved before installing.",
+  "Avisos con tu sonido": "Notifications with your sound",
+  "Elige cómo suenan (cinco sonidos de Nexo o los de Windows) y activa «No molestar» en las horas que quieras. Ahora los avisos salen como «Nexo», con su icono.": "Choose how they sound (five Nexo sounds or Windows' own) and turn on “Do not disturb” for the hours you want. Notifications now appear as “Nexo”, with its icon.",
+  "Aviso antes de un examen": "A heads-up before an exam",
+  "Si un evento tiene hora, Nexo te avisa unos minutos antes de que empiece (tú eliges cuántos).": "If an event has a time, Nexo notifies you a few minutes before it starts (you choose how many).",
+  "Hazlo más tuyo": "Make it yours",
+  "Cualquier color de acento, tamaño de la interfaz, horas en 12 o 24 horas, semana que empieza en lunes o domingo, menos animaciones y secciones que puedes esconder.": "Any accent color, interface size, 12- or 24-hour times, a week that starts on Monday or Sunday, fewer animations and sections you can hide.",
+  "Copia de seguridad": "Backup",
+  "Guarda todos tus datos en un archivo y restáuralos en otra computadora. No incluye tu sesión de Spotify.": "Save all your data in a file and restore it on another computer. It doesn't include your Spotify session.",
+  "Nexo en la bandeja al encender el equipo": "Nexo in the tray when you turn on your computer",
+  "Con «Iniciar con Windows», Nexo arranca directo en la bandeja, sin abrir ventana, y te sigue avisando.": "With “Start with Windows”, Nexo starts straight in the tray, without opening a window, and keeps notifying you.",
+  "Si algo falla ves una pantalla clara (tus datos están a salvo) con un botón para avisar del problema, y la barra de abajo dice cuando no hay internet.": "If something fails you see a clear screen (your data is safe) with a button to report the problem, and the bar at the bottom tells you when there's no internet."
 }

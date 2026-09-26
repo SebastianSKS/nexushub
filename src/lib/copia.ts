@@ -6,6 +6,8 @@
  * Nunca lleva las credenciales de Spotify (ni nada temporal): se puede compartir el archivo sin regalar tu cuenta.
  */
 
+import { T } from "./i18n/nucleo.ts";
+
 export const PREFIJO_DATOS = "nexushub-";
 export const VERSION_COPIA = 1;
 /** Tope de tamaño de un archivo de copia al leerlo (los datos de Nexo pesan unos pocos KB; esto es de sobra). */
@@ -59,19 +61,19 @@ export type ResultadoLectura = { ok: true; copia: CopiaDatos; ignoradas: number 
 
 /** Lee un archivo de copia que llega de fuera: si no es de Nexo o está mal, dice por qué; si sirve, deja solo lo permitido. */
 export function leerCopia(texto: string): ResultadoLectura {
-  if (texto.length > MAX_BYTES_COPIA) return { ok: false, motivo: "El archivo es demasiado grande para ser una copia de Nexo." };
+  if (texto.length > MAX_BYTES_COPIA) return { ok: false, motivo: T("El archivo es demasiado grande para ser una copia de Nexo.") };
   let crudo: unknown;
   try {
     crudo = JSON.parse(texto);
   } catch {
-    return { ok: false, motivo: "El archivo no se puede leer: no es una copia de Nexo." };
+    return { ok: false, motivo: T("El archivo no se puede leer: no es una copia de Nexo.") };
   }
-  if (!crudo || typeof crudo !== "object") return { ok: false, motivo: "El archivo no es una copia de Nexo." };
+  if (!crudo || typeof crudo !== "object") return { ok: false, motivo: T("El archivo no es una copia de Nexo.") };
   const c = crudo as Record<string, unknown>;
-  if (c.app !== "Nexo" || c.tipo !== "copia-de-seguridad") return { ok: false, motivo: "El archivo no es una copia de Nexo." };
-  if (typeof c.version !== "number" || !Number.isInteger(c.version) || c.version < 1) return { ok: false, motivo: "El archivo no dice de qué versión es." };
-  if (c.version > VERSION_COPIA) return { ok: false, motivo: "La copia es de una versión más nueva de Nexo. Actualiza Nexo y vuelve a intentarlo." };
-  if (!c.datos || typeof c.datos !== "object" || Array.isArray(c.datos)) return { ok: false, motivo: "La copia no trae datos." };
+  if (c.app !== "Nexo" || c.tipo !== "copia-de-seguridad") return { ok: false, motivo: T("El archivo no es una copia de Nexo.") };
+  if (typeof c.version !== "number" || !Number.isInteger(c.version) || c.version < 1) return { ok: false, motivo: T("El archivo no dice de qué versión es.") };
+  if (c.version > VERSION_COPIA) return { ok: false, motivo: T("La copia es de una versión más nueva de Nexo. Actualiza Nexo y vuelve a intentarlo.") };
+  if (!c.datos || typeof c.datos !== "object" || Array.isArray(c.datos)) return { ok: false, motivo: T("La copia no trae datos.") };
 
   const datos: Record<string, string> = {};
   let ignoradas = 0;
@@ -82,7 +84,7 @@ export function leerCopia(texto: string): ResultadoLectura {
     }
     datos[k] = v;
   }
-  if (Object.keys(datos).length === 0) return { ok: false, motivo: "La copia está vacía." };
+  if (Object.keys(datos).length === 0) return { ok: false, motivo: T("La copia está vacía.") };
   return {
     ok: true,
     ignoradas,

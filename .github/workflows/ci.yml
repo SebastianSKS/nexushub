@@ -52,3 +52,5 @@ jobs:
           workspaces: src-tauri
       - name: Revisar que compile
         run: cargo check --manifest-path src-tauri/Cargo.toml --locked
+      - name: Pruebas de la parte de escritorio
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked

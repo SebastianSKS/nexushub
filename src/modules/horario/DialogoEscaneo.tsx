@@ -1,5 +1,6 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import clsx from "clsx";
@@ -21,6 +22,7 @@ type Fase = { tipo: "elegir" } | { tipo: "leyendo"; fraccion: number; texto: str
  */
 export function DialogoEscaneo({ abierto, onCerrar, onGuardado }: { abierto: boolean; onCerrar: () => void; onGuardado?: (materias: string[]) => void }) {
   const t = useT();
+  const { hora } = useHora();
   const [fase, setFase] = useState<Fase>({ tipo: "elegir" });
   const [encima, setEncima] = useState(false);
   const entrada = useRef<HTMLInputElement>(null);
@@ -104,7 +106,7 @@ export function DialogoEscaneo({ abierto, onCerrar, onGuardado }: { abierto: boo
                 <span aria-hidden className="h-8 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: c.color }} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-body font-semibold text-fg">{c.materia}{c.codigo && <span className="ml-2 font-normal text-fg-tertiary">{c.codigo}</span>}</span>
-                  <span className="block truncate text-caption text-fg-secondary">{nombreDiaSemana(c.dia)} · {c.inicio} – {c.fin}{c.docente && ` · ${c.docente}`}</span>
+                  <span className="block truncate text-caption text-fg-secondary">{nombreDiaSemana(c.dia)} · {hora(c.inicio)} – {hora(c.fin)}{c.docente && ` · ${c.docente}`}</span>
                 </span>
                 {c.dudosa && <span className="shrink-0 rounded-full bg-layer-alt px-2 text-caption text-fg-secondary">{t("Revisar")}</span>}
                 <button type="button" onClick={() => quitar(i)} aria-label={t("Quitar {materia} del {dia}", { materia: c.materia, dia: nombreDiaSemana(c.dia) })} title={t("Quitar")} className="rounded-control flex h-8 w-8 shrink-0 items-center justify-center text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt hover:text-fg">

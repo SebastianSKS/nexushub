@@ -1,5 +1,6 @@
 "use client";
 
+import { useAjustesStore } from "@/store/ajustes-store";
 import { useT } from "@/lib/i18n";
 import { Suspense, useRef, type KeyboardEvent } from "react";
 import Link from "next/link";
@@ -74,6 +75,7 @@ export function PanelNavegacion() {
   const colapsado = useAppStore((s) => s.sidebarCollapsed);
   const alternar = useAppStore((s) => s.toggleSidebar);
   const ref = useRef<HTMLElement>(null);
+  const ocultas = useAjustesStore((s) => s.seccionesOcultas);
   const cumplesHoy = useCalendarioStore((s) => s.amigos.filter((a) => cumpleEn(a, new Date())).length);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
@@ -112,7 +114,8 @@ export function PanelNavegacion() {
       </button>
 
       <ul className="flex flex-col gap-0.5">
-        {SECCIONES_PRINCIPALES.map((s) => (
+        {/* Las que se escondieron en Configuración no salen aquí (siguen con su atajo y en Ctrl+K), salvo la que estás viendo. */}
+        {SECCIONES_PRINCIPALES.filter((s) => activa === s.id || !(ocultas as readonly string[]).includes(s.id)).map((s) => (
           <li key={s.id}>
             <Item seccion={s} activa={activa === s.id} colapsado={colapsado} insignia={s.id === "calendario" ? cumplesHoy : 0} />
           </li>

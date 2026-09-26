@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { esEscritorio } from "@/lib/entorno";
+import { traducir, useIdioma } from "@/lib/i18n";
 import { useReproductorStore } from "@/store/reproductor-store";
 
 /**
@@ -9,6 +10,7 @@ import { useReproductorStore } from "@/store/reproductor-store";
  * acciones (Reproducir/Pausar, Siguiente) para aplicarlas sobre el reproductor real. Solo en escritorio.
  */
 export function useBandeja() {
+  const idioma = useIdioma();
   useEffect(() => {
     if (!esEscritorio()) return;
     let cancelado = false;
@@ -22,7 +24,7 @@ export function useBandeja() {
       const actualizar = () => {
         const s = useReproductorStore.getState();
         const siguienteActivo = s.pista !== null && (s.capacidades.saltar || s.cola.length > 1);
-        const actual = `${s.reproduciendo}|${s.pista?.id ?? ""}|${s.pista?.fuente ?? ""}|${siguienteActivo}`;
+        const actual = `${idioma}|${s.reproduciendo}|${s.pista?.id ?? ""}|${s.pista?.fuente ?? ""}|${siguienteActivo}`;
         if (actual === clave) return;
         clave = actual;
         void invoke("actualizar_bandeja", {
@@ -30,6 +32,13 @@ export function useBandeja() {
           hayPista: s.pista !== null,
           siguienteActivo,
           titulo: s.pista ? `${s.pista.titulo} · ${s.pista.artista}` : null,
+          textos: {
+            reproducir: traducir("Reproducir"),
+            pausar: traducir("Pausar"),
+            siguiente: traducir("Siguiente"),
+            mostrar: traducir("Mostrar Nexo"),
+            salir: traducir("Salir"),
+          },
         }).catch(() => {});
       };
 
@@ -45,5 +54,5 @@ export function useBandeja() {
       cancelado = true;
       quitar.splice(0).forEach((fn) => fn());
     };
-  }, []);
+  }, [idioma]);
 }

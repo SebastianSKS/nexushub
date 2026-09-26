@@ -116,5 +116,7 @@
   "Abrir el buscador global": "Open global search",
   "Espacio": "Space",
   "Reproducir o pausar (si el foco no está en un campo)": "Play or pause (if the focus isn't in a text field)",
-  "Mostrar esta página de atajos": "Show this shortcuts page"
+  "Mostrar esta página de atajos": "Show this shortcuts page",
+  "Mostrar Nexo": "Show Nexo",
+  "Salir": "Quit"
 }

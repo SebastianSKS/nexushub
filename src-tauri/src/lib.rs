@@ -13,7 +13,19 @@ mod office;
 struct EstadoBandeja {
     reproducir: MenuItem<tauri::Wry>,
     siguiente: MenuItem<tauri::Wry>,
+    mostrar: MenuItem<tauri::Wry>,
+    salir: MenuItem<tauri::Wry>,
     tray: TrayIcon<tauri::Wry>,
+}
+
+/// Los textos del menú de la bandeja en el idioma de la aplicación (los pone el frontend, que es quien sabe el idioma).
+#[derive(serde::Deserialize)]
+struct TextosBandeja {
+    reproducir: String,
+    pausar: String,
+    siguiente: String,
+    mostrar: String,
+    salir: String,
 }
 
 /// Lo llama el frontend cada vez que cambia la pista o el estado de reproducción, para que la
@@ -25,12 +37,22 @@ fn actualizar_bandeja(
     hay_pista: bool,
     siguiente_activo: bool,
     titulo: Option<String>,
+    textos: Option<TextosBandeja>,
 ) -> Result<(), String> {
     let estado = app.state::<EstadoBandeja>();
+    let (reproducir, pausar) = match &textos {
+        Some(t) => (t.reproducir.as_str(), t.pausar.as_str()),
+        None => ("Reproducir", "Pausar"),
+    };
     estado
         .reproducir
-        .set_text(if reproduciendo { "Pausar" } else { "Reproducir" })
+        .set_text(if reproduciendo { pausar } else { reproducir })
         .map_err(|e| e.to_string())?;
+    if let Some(t) = &textos {
+        estado.siguiente.set_text(t.siguiente.as_str()).map_err(|e| e.to_string())?;
+        estado.mostrar.set_text(t.mostrar.as_str()).map_err(|e| e.to_string())?;
+        estado.salir.set_text(t.salir.as_str()).map_err(|e| e.to_string())?;
+    }
     estado.reproducir.set_enabled(hay_pista).map_err(|e| e.to_string())?;
     estado.siguiente.set_enabled(siguiente_activo).map_err(|e| e.to_string())?;
     let tooltip = match titulo {
@@ -246,7 +268,7 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            app.manage(EstadoBandeja { reproducir, siguiente, tray });
+            app.manage(EstadoBandeja { reproducir, siguiente, mostrar, salir, tray });
             Ok(())
         })
         .run(tauri::generate_context!())

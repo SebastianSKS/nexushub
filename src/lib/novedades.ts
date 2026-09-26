@@ -24,6 +24,9 @@ export const NOVEDADES: readonly NovedadesDeVersion[] = [
     version: "0.1.4",
     novedades: [
       { glifo: "pantalla", titulo: T("Nexo también en inglés"), texto: T("En Configuración › Apariencia › Idioma elige Español, English o «Igual que Windows». Cambia todo: menús, guías, novedades, avisos y hasta la bandeja del sistema.") },
+      { glifo: "buscar", titulo: T("Busca dentro de Word, Excel y PowerPoint"), texto: T("Ctrl + K ahora encuentra palabras también dentro de los Word, Excel y PowerPoint de tus carpetas de materias, además de los PDF. Excel te dice la hoja y PowerPoint la diapositiva.") },
+      { glifo: "musica", titulo: T("La canción, en la bandeja"), texto: T("El menú del icono junto al reloj muestra lo que suena, con su carátula, y desde ahí puedes pausar o pasar a la siguiente.") },
+      { glifo: "actualizar", titulo: T("Actualizaciones más seguras"), texto: T("Si la descarga falla se reintenta sola y, si aun así no se puede, te lo dice con un botón «Reintentar». Tus datos se guardan antes de instalar.") },
       { glifo: "exito", titulo: T("Más cuidado por dentro"), texto: T("Nexo ahora se revisa solo con pruebas automáticas cada vez que se cambia algo, para que las actualizaciones lleguen más estables.") },
     ],
   },

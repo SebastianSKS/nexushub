@@ -16,5 +16,11 @@
   "Nexo también en inglés": "Nexo now in English too",
   "En Configuración › Apariencia › Idioma elige Español, English o «Igual que Windows». Cambia todo: menús, guías, novedades, avisos y hasta la bandeja del sistema.": "In Settings › Appearance › Language choose Español, English or “Same as Windows”. It changes everything: menus, guides, what's new, notices and even the system tray.",
   "Más cuidado por dentro": "More care under the hood",
-  "Nexo ahora se revisa solo con pruebas automáticas cada vez que se cambia algo, para que las actualizaciones lleguen más estables.": "Nexo is now checked automatically with tests every time something changes, so updates arrive more stable."
+  "Nexo ahora se revisa solo con pruebas automáticas cada vez que se cambia algo, para que las actualizaciones lleguen más estables.": "Nexo is now checked automatically with tests every time something changes, so updates arrive more stable.",
+  "Busca dentro de Word, Excel y PowerPoint": "Search inside Word, Excel and PowerPoint",
+  "Ctrl + K ahora encuentra palabras también dentro de los Word, Excel y PowerPoint de tus carpetas de materias, además de los PDF. Excel te dice la hoja y PowerPoint la diapositiva.": "Ctrl + K now finds words inside the Word, Excel and PowerPoint files in your subject folders too, besides PDFs. Excel tells you the sheet and PowerPoint the slide.",
+  "La canción, en la bandeja": "The song, in the tray",
+  "El menú del icono junto al reloj muestra lo que suena, con su carátula, y desde ahí puedes pausar o pasar a la siguiente.": "The menu of the icon next to the clock shows what's playing, with its cover, and from there you can pause or skip to the next one.",
+  "Actualizaciones más seguras": "Safer updates",
+  "Si la descarga falla se reintenta sola y, si aun así no se puede, te lo dice con un botón «Reintentar». Tus datos se guardan antes de instalar.": "If the download fails it retries on its own and, if it still can't, it tells you with a “Try again” button. Your data is saved before installing."
 }

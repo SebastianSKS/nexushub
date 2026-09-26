@@ -1,3 +1,4 @@
+import { traducir } from "@/lib/i18n";
 let embedApi: Promise<SpotifyIFrameAPI> | null = null;
 let sdkReady: Promise<void> | null = null;
 
@@ -16,7 +17,7 @@ export function loadSpotifyEmbedApi(): Promise<SpotifyIFrameAPI> {
     window.onSpotifyIframeApiReady = (api) => resolve(api);
     inject("https://open.spotify.com/embed/iframe-api/v1", () => {
       embedApi = null; // permite reintentar
-      reject(new Error("No se pudo cargar el reproductor de Spotify"));
+      reject(new Error(traducir("No se pudo cargar el reproductor de Spotify")));
     });
   });
   return embedApi;
@@ -30,7 +31,7 @@ export function loadSpotifySdk(): Promise<void> {
     window.onSpotifyWebPlaybackSDKReady = () => resolve();
     inject("https://sdk.scdn.co/spotify-player.js", () => {
       sdkReady = null;
-      reject(new Error("No se pudo cargar el SDK de Spotify"));
+      reject(new Error(traducir("No se pudo cargar el SDK de Spotify")));
     });
   });
   return sdkReady;

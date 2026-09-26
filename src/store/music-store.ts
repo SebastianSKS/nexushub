@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { traducir } from "@/lib/i18n";
 import { cargarCatalogo, type SeccionMusica } from "@/services/music/catalogo";
 import { MusicApiError } from "@/services/music/errores";
 import type { MusicItem, SpotifyConnection, SpotifyPlaylist } from "@/types/music";
@@ -66,7 +67,7 @@ export const useMusicStore = create<MusicState>((set, get) => ({
       set({ status: "ready", items: res.items, secciones: res.secciones, heading: res.heading, permisosExtra: query.trim() ? get().permisosExtra : (res.permisosExtra ?? null) });
     } catch (err) {
       if (seq !== requestSeq) return;
-      const e = err instanceof MusicApiError ? err : new MusicApiError("No se pudo cargar la música.", "Inténtalo de nuevo.");
+      const e = err instanceof MusicApiError ? err : new MusicApiError(traducir("No se pudo cargar la música."), traducir("Inténtalo de nuevo."));
       set({ status: "error", error: { message: e.message, hint: e.hint, code: e.code } });
     }
   },

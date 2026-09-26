@@ -1,4 +1,5 @@
 import { getTexto } from "@/lib/red";
+import { traducir } from "@/lib/i18n";
 import type { Pista } from "@/store/reproductor-store";
 import type { MusicItem } from "@/types/music";
 
@@ -54,25 +55,25 @@ export async function cargarLista(tipo: TipoLista, id: string): Promise<ListaSpo
   try {
     res = await getTexto(`https://open.spotify.com/embed/${tipo}/${id}`, { timeoutMs: 12_000 });
   } catch {
-    throw new ErrorLista("No se pudo contactar con Spotify.", "Comprueba tu conexión a internet e inténtalo de nuevo.");
+    throw new ErrorLista(traducir("No se pudo contactar con Spotify."), traducir("Comprueba tu conexión a internet e inténtalo de nuevo."));
   }
-  if (res.status === 404) throw new ErrorLista("Spotify no encuentra esta lista.", "Puede que haya sido borrada o sea privada.");
-  if (res.status !== 200) throw new ErrorLista("Spotify no respondió como se esperaba.", "Inténtalo de nuevo en unos segundos.");
+  if (res.status === 404) throw new ErrorLista(traducir("Spotify no encuentra esta lista."), traducir("Puede que haya sido borrada o sea privada."));
+  if (res.status !== 200) throw new ErrorLista(traducir("Spotify no respondió como se esperaba."), traducir("Inténtalo de nuevo en unos segundos."));
 
   const m = /<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/.exec(res.text);
-  if (!m) throw new ErrorLista("No se pudo leer el contenido de esta lista.", "Spotify pudo cambiar el formato de su página. Puedes reproducirla igualmente con «Reproducir».");
+  if (!m) throw new ErrorLista(traducir("No se pudo leer el contenido de esta lista."), traducir("Spotify pudo cambiar el formato de su página. Puedes reproducirla igualmente con «Reproducir»."));
   let e: Entidad | undefined;
   try {
     e = (JSON.parse(m[1]!) as { props?: { pageProps?: { state?: { data?: { entity?: Entidad } } } } }).props?.pageProps?.state?.data?.entity;
   } catch {
     e = undefined;
   }
-  if (!e) throw new ErrorLista("No se pudo leer el contenido de esta lista.", "Puedes reproducirla igualmente con «Reproducir».");
+  if (!e) throw new ErrorLista(traducir("No se pudo leer el contenido de esta lista."), traducir("Puedes reproducirla igualmente con «Reproducir»."));
 
   return {
     tipo,
     id,
-    titulo: e.title ?? e.name ?? "Lista de Spotify",
+    titulo: e.title ?? e.name ?? traducir("Lista de Spotify"),
     subtitulo: e.subtitle ?? "",
     caratula: e.coverArt?.sources?.[0]?.url ?? "",
     canciones: (e.trackList ?? [])

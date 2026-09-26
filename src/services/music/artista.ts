@@ -1,4 +1,5 @@
 import { useMusicStore } from "@/store/music-store";
+import { traducir } from "@/lib/i18n";
 import type { Pista } from "@/store/reproductor-store";
 import type { MusicItem } from "@/types/music";
 import { spotifyApi } from "./api";
@@ -35,11 +36,11 @@ const imagenMediana = (imgs?: { url: string; width?: number }[]) => {
 export async function cargarArtista(id: string): Promise<DatosArtista> {
   const [api, lista] = await Promise.all([
     spotifyApi<ArtistaApi>(`/artists/${id}`),
-    cargarLista("artist", id).catch((e: unknown) => (e instanceof ErrorLista ? e : new ErrorLista("No se pudo cargar al artista."))),
+    cargarLista("artist", id).catch((e: unknown) => (e instanceof ErrorLista ? e : new ErrorLista(traducir("No se pudo cargar al artista.")))),
   ]);
   const enLista = lista instanceof ErrorLista ? null : lista;
-  if (api.status !== 200 && !enLista) throw lista instanceof ErrorLista ? lista : new ErrorLista("No se pudo cargar al artista.");
-  const nombre = api.data?.name ?? enLista?.titulo ?? "Artista";
+  if (api.status !== 200 && !enLista) throw lista instanceof ErrorLista ? lista : new ErrorLista(traducir("No se pudo cargar al artista."));
+  const nombre = api.data?.name ?? enLista?.titulo ?? traducir("Artista");
   return {
     id,
     nombre,
@@ -59,7 +60,7 @@ const deAlbum = (a: AlbumApi, nombre: string): MusicItem => ({
   kind: "album",
   id: a.id,
   title: a.name,
-  subtitle: `${a.release_date?.slice(0, 4) ?? ""}${a.release_date ? " · " : ""}${a.album_type === "single" ? "Sencillo" : "Álbum"} · ${nombre}`,
+  subtitle: `${a.release_date?.slice(0, 4) ?? ""}${a.release_date ? " · " : ""}${a.album_type === "single" ? traducir("Sencillo") : traducir("Álbum")} · ${nombre}`,
   cover: imagenMediana(a.images),
 });
 
@@ -111,7 +112,7 @@ export async function albumesGuardados(): Promise<{ items: MusicItem[]; resultad
     items: data.items
       .map((i) => i.album)
       .filter((a): a is NonNullable<typeof a> => !!a)
-      .map((a) => ({ kind: "album" as const, id: a.id, title: a.name, subtitle: `Álbum · ${(a.artists ?? []).map((x) => x.name).join(", ")}`, cover: imagenMediana(a.images) })),
+      .map((a) => ({ kind: "album" as const, id: a.id, title: a.name, subtitle: traducir("Álbum · {artistas}", { artistas: (a.artists ?? []).map((x) => x.name).join(", ") }), cover: imagenMediana(a.images) })),
     resultado: "ok",
   };
 }

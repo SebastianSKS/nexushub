@@ -26,5 +26,16 @@
   "Avisos": "Notifications",
   "Buscar": "Search",
   "Ayuda": "Help",
-  "Navegación": "Navigation"
+  "Navegación": "Navigation",
+  "Reproducir": "Play",
+  "Pausar": "Pause",
+  "Aleatorio": "Shuffle",
+  "Volumen": "Volume",
+  "Renombrar": "Rename",
+  "Conectar": "Connect",
+  "Playlist": "Playlist",
+  "Artista": "Artist",
+  "Ir a Música": "Go to Music",
+  "Cargando…": "Loading…",
+  "Inténtalo de nuevo en un momento.": "Try again in a moment."
 }

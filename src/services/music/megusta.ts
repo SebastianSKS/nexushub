@@ -1,4 +1,5 @@
 import { useCalendarioStore } from "@/store/calendario-store";
+import { traducir, T } from "@/lib/i18n";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useMusicStore } from "@/store/music-store";
 import type { Pista } from "@/store/reproductor-store";
@@ -30,12 +31,12 @@ export async function alternarMeGusta(pista: Pista): Promise<void> {
   const conectado = ms.connection.status === "connected";
   if (pista.fuente !== "spotify" || !pista.id.startsWith("track:") || !conectado) return;
   if (ms.permisosBiblioteca === "faltan") {
-    avisoBreve("Guardada en tus favoritos de Nexo");
-    pedirPermisoSpotify("guardar también en «Canciones que te gustan» de Spotify");
+    avisoBreve(traducir("Guardada en tus favoritos de Nexo"));
+    pedirPermisoSpotify(T("guardar también en «Canciones que te gustan» de Spotify"));
     return;
   }
   const r = await guardarMeGusta(pista.id, quiere);
-  if (r === "ok") avisoBreve(quiere ? "Guardada en «Canciones que te gustan»" : "Quitada de «Canciones que te gustan»", pista.titulo);
-  else if (r === "permisos") pedirPermisoSpotify("guardar en «Canciones que te gustan»");
-  else avisoBreve("No se pudo actualizar «Canciones que te gustan»", "Inténtalo de nuevo en un momento.");
+  if (r === "ok") avisoBreve(quiere ? traducir("Guardada en «Canciones que te gustan»") : traducir("Quitada de «Canciones que te gustan»"), pista.titulo);
+  else if (r === "permisos") pedirPermisoSpotify(T("guardar en «Canciones que te gustan»"));
+  else avisoBreve(traducir("No se pudo actualizar «Canciones que te gustan»"), traducir("Inténtalo de nuevo en un momento."));
 }

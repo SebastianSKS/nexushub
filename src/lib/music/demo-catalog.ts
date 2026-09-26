@@ -1,3 +1,4 @@
+import { T } from "@/lib/i18n";
 import type { MusicItem } from "@/types/music";
 
 /**
@@ -10,56 +11,56 @@ export const DEMO_MUSIC: readonly MusicItem[] = [
     "kind": "playlist",
     "id": "37i9dQZF1DWWQRwui0ExPn",
     "title": "lofi beats",
-    "subtitle": "Playlist · Para concentrarse",
+    "subtitle": T("Playlist · Para concentrarse"),
     "cover": "https://i.scdn.co/image/ab67706f00000002266beb50b0032b0f140a749e"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DWZeKCadgRdKQ",
     "title": "Deep Focus",
-    "subtitle": "Playlist · Para concentrarse",
+    "subtitle": T("Playlist · Para concentrarse"),
     "cover": "https://i.scdn.co/image/ab67706f000000026020f2f6476db518ef747da4"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DX4sWSpwq3LiO",
     "title": "Peaceful Piano",
-    "subtitle": "Playlist · Para concentrarse",
+    "subtitle": T("Playlist · Para concentrarse"),
     "cover": "https://i.scdn.co/image/ab67706f0000000270e1fb7db7b45809d6a80377"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DX10zKzsJ2jva",
     "title": "Viva Latino",
-    "subtitle": "Playlist · Latino",
+    "subtitle": T("Playlist · Latino"),
     "cover": "https://i.scdn.co/image/ab67706f0000000291a1a63cc880fed3abb539dd"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DXcBWIGoYBM5M",
     "title": "Today’s Top Hits",
-    "subtitle": "Playlist · Éxitos",
+    "subtitle": T("Playlist · Éxitos"),
     "cover": "https://i.scdn.co/image/ab67706f00000002622db66d648829915229cb74"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DWXRqgorJj26U",
     "title": "Rock Classics",
-    "subtitle": "Playlist · Rock",
+    "subtitle": T("Playlist · Rock"),
     "cover": "https://i.scdn.co/image/ab67706f00000002694bf33281695f3b7542a09a"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DX4dyzvuaRJ0n",
     "title": "mint",
-    "subtitle": "Playlist · Electrónica",
+    "subtitle": T("Playlist · Electrónica"),
     "cover": "https://i.scdn.co/image/ab67706f000000027a205124c2dafd9f16bccd33"
   },
   {
     "kind": "playlist",
     "id": "37i9dQZF1DX4WYpdgoIcn6",
     "title": "Chill Hits",
-    "subtitle": "Playlist · Chill",
+    "subtitle": T("Playlist · Chill"),
     "cover": "https://i.scdn.co/image/ab67706f000000020408713c731caaf1f800615a"
   },
   {

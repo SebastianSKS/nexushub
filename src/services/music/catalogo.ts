@@ -1,4 +1,5 @@
 import { DEMO_MUSIC } from "@/lib/music/demo-catalog";
+import { traducir, T } from "@/lib/i18n";
 import { normalize } from "@/lib/text";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import type { MusicItem } from "@/types/music";
@@ -62,17 +63,17 @@ const cover = (imgs: Imagen[] | undefined) => {
 };
 
 const dePista = (t: PistaApi): MusicItem => ({ kind: "track", id: t.id, title: t.name, subtitle: `${t.artists.map((a) => a.name).join(", ")} · ${t.album.name}`, cover: cover(t.album.images), artistId: t.artists[0]?.id, albumId: t.album.id });
-const deAlbum = (a: AlbumApi): MusicItem => ({ kind: "album", id: a.id, title: a.name, subtitle: `Álbum · ${a.artists.map((x) => x.name).join(", ")}`, cover: cover(a.images) });
-const deLista = (l: ListaApi): MusicItem => ({ kind: "playlist", id: l.id, title: l.name, subtitle: `Playlist${l.owner?.display_name ? ` · ${l.owner.display_name}` : ""}`, cover: cover(l.images ?? []) });
-const deArtista = (a: ArtistaApi): MusicItem => ({ kind: "artist", id: a.id, title: a.name, subtitle: "Artista", cover: cover(a.images) });
+const deAlbum = (a: AlbumApi): MusicItem => ({ kind: "album", id: a.id, title: a.name, subtitle: traducir("Álbum · {artistas}", { artistas: a.artists.map((x) => x.name).join(", ") }), cover: cover(a.images) });
+const deLista = (l: ListaApi): MusicItem => ({ kind: "playlist", id: l.id, title: l.name, subtitle: `${traducir("Playlist")}${l.owner?.display_name ? ` · ${l.owner.display_name}` : ""}`, cover: cover(l.images ?? []) });
+const deArtista = (a: ArtistaApi): MusicItem => ({ kind: "artist", id: a.id, title: a.name, subtitle: traducir("Artista"), cover: cover(a.images) });
 function sinNulos<T>(lista: (T | null)[] | undefined): T[] {
   return (lista ?? []).filter((x): x is T => x !== null && x !== undefined);
 }
 
 function errorDeEstado(status: number): MusicApiError {
-  if (status === 0) return new MusicApiError("No se pudo contactar con Spotify.", "Comprueba tu internet; si usas un bloqueador de anuncios, desactívalo para esta página.", "NETWORK");
-  if (status === 401) return new MusicApiError("Spotify cerró tu sesión.", "Conéctate de nuevo con Spotify Premium.", "NO_SESSION");
-  return new MusicApiError("Spotify no pudo completar la búsqueda.", "Inténtalo de nuevo en unos segundos.", "UNKNOWN");
+  if (status === 0) return new MusicApiError(traducir("No se pudo contactar con Spotify."), traducir("Comprueba tu internet; si usas un bloqueador de anuncios, desactívalo para esta página."), "NETWORK");
+  if (status === 401) return new MusicApiError(traducir("Spotify cerró tu sesión."), traducir("Conéctate de nuevo con Spotify Premium."), "NO_SESSION");
+  return new MusicApiError(traducir("Spotify no pudo completar la búsqueda."), traducir("Inténtalo de nuevo en unos segundos."), "UNKNOWN");
 }
 
 function sinRepetir(items: MusicItem[], vistas = new Set<string>()): MusicItem[] {
@@ -90,10 +91,10 @@ async function buscarConectado(query: string): Promise<SeccionMusica[]> {
 
   const canciones = sinRepetir([...sinNulos(a.data.tracks?.items), ...(b.status === 200 ? sinNulos(b.data?.tracks?.items) : [])].map(dePista));
   const secciones: SeccionMusica[] = [
-    { titulo: "Canciones", items: canciones },
-    { titulo: "Artistas", items: sinNulos(a.data.artists?.items).slice(0, 6).map(deArtista) },
-    { titulo: "Álbumes", items: sinNulos(a.data.albums?.items).map(deAlbum) },
-    { titulo: "Playlists", items: sinNulos(a.data.playlists?.items).map(deLista) },
+    { titulo: traducir("Canciones"), items: canciones },
+    { titulo: traducir("Artistas"), items: sinNulos(a.data.artists?.items).slice(0, 6).map(deArtista) },
+    { titulo: traducir("Álbumes"), items: sinNulos(a.data.albums?.items).map(deAlbum) },
+    { titulo: traducir("Playlists"), items: sinNulos(a.data.playlists?.items).map(deLista) },
   ];
   return secciones.filter((s) => s.items.length > 0);
 }
@@ -106,24 +107,24 @@ function azar<T>(lista: readonly T[], n: number): T[] {
 
 /** Géneros (etiqueta que entiende Spotify, y cómo se muestra) para descubrir música distinta cada vez. */
 const GENEROS: readonly { tag: string; nombre: string }[] = [
-  { tag: "reggaeton", nombre: "Reggaetón" },
-  { tag: "latin pop", nombre: "Pop latino" },
-  { tag: "rock en espanol", nombre: "Rock en español" },
-  { tag: "cumbia", nombre: "Cumbia" },
-  { tag: "regional mexican", nombre: "Regional mexicano" },
-  { tag: "corridos tumbados", nombre: "Corridos tumbados" },
-  { tag: "hip hop", nombre: "Hip hop" },
-  { tag: "trap latino", nombre: "Trap latino" },
-  { tag: "lo-fi", nombre: "Lo-fi para estudiar" },
-  { tag: "indie pop", nombre: "Indie pop" },
-  { tag: "edm", nombre: "Electrónica" },
-  { tag: "salsa", nombre: "Salsa" },
-  { tag: "latin ballad", nombre: "Baladas" },
-  { tag: "k-pop", nombre: "K-pop" },
-  { tag: "rock", nombre: "Rock" },
-  { tag: "jazz", nombre: "Jazz" },
-  { tag: "synthwave", nombre: "Synthwave" },
-  { tag: "anime", nombre: "Música de anime" },
+  { tag: "reggaeton", nombre: T("Reggaetón") },
+  { tag: "latin pop", nombre: T("Pop latino") },
+  { tag: "rock en espanol", nombre: T("Rock en español") },
+  { tag: "cumbia", nombre: T("Cumbia") },
+  { tag: "regional mexican", nombre: T("Regional mexicano") },
+  { tag: "corridos tumbados", nombre: T("Corridos tumbados") },
+  { tag: "hip hop", nombre: T("Hip hop") },
+  { tag: "trap latino", nombre: T("Trap latino") },
+  { tag: "lo-fi", nombre: T("Lo-fi para estudiar") },
+  { tag: "indie pop", nombre: T("Indie pop") },
+  { tag: "edm", nombre: T("Electrónica") },
+  { tag: "salsa", nombre: T("Salsa") },
+  { tag: "latin ballad", nombre: T("Baladas") },
+  { tag: "k-pop", nombre: T("K-pop") },
+  { tag: "rock", nombre: T("Rock") },
+  { tag: "jazz", nombre: T("Jazz") },
+  { tag: "synthwave", nombre: T("Synthwave") },
+  { tag: "anime", nombre: T("Música de anime") },
 ];
 
 export async function buscarCanciones(q: string, offset = 0): Promise<MusicItem[]> {
@@ -168,11 +169,11 @@ async function inicioConectado(): Promise<{ secciones: SeccionMusica[]; permisos
   if (novedades.status === 0) throw errorDeEstado(0);
 
   const secciones: SeccionMusica[] = [
-    { titulo: "Escuchado hace poco", items: enReciente },
-    { titulo: "Tus más escuchadas", items: enTop },
-    { titulo: "Novedades: álbumes recién salidos", items: novedades.status === 200 ? sinNulos(novedades.data?.albums?.items).map(deAlbum) : [] },
-    ...semillas.map((a, i): SeccionMusica => ({ titulo: `Más de ${a}`, items: (resto[i] as MusicItem[]) ?? [] })),
-    ...generos.map((g, i): SeccionMusica => ({ titulo: `Descubre: ${g.nombre}`, items: (resto[semillas.length + i] as MusicItem[]) ?? [] })),
+    { titulo: traducir("Escuchado hace poco"), items: enReciente },
+    { titulo: traducir("Tus más escuchadas"), items: enTop },
+    { titulo: traducir("Novedades: álbumes recién salidos"), items: novedades.status === 200 ? sinNulos(novedades.data?.albums?.items).map(deAlbum) : [] },
+    ...semillas.map((a, i): SeccionMusica => ({ titulo: traducir("Más de {artista}", { artista: a }), items: (resto[i] as MusicItem[]) ?? [] })),
+    ...generos.map((g, i): SeccionMusica => ({ titulo: traducir("Descubre: {genero}", { genero: traducir(g.nombre) }), items: (resto[semillas.length + i] as MusicItem[]) ?? [] })),
   ];
   return { secciones: secciones.filter((s) => s.items.length > 0), permisosExtra };
 }
@@ -182,10 +183,10 @@ function inicioInvitado(): SeccionMusica[] {
   const mezcla = azar(DEMO_MUSIC, DEMO_MUSIC.length);
   const de = (k: MusicItem["kind"]) => mezcla.filter((m) => m.kind === k);
   return [
-    { titulo: "Para concentrarte y relajarte", items: de("playlist") },
-    { titulo: "Canciones para escuchar", items: de("track") },
-    { titulo: "Álbumes", items: de("album") },
-    { titulo: "Artistas", items: de("artist") },
+    { titulo: traducir("Para concentrarte y relajarte"), items: de("playlist") },
+    { titulo: traducir("Canciones para escuchar"), items: de("track") },
+    { titulo: traducir("Álbumes"), items: de("album") },
+    { titulo: traducir("Artistas"), items: de("artist") },
   ].filter((s) => s.items.length > 0);
 }
 
@@ -227,30 +228,30 @@ export async function cargarCatalogo(query: string, conectado: boolean): Promise
   if (!q) {
     if (!conectado) {
       const secciones = inicioInvitado();
-      return { heading: "Sugeridos para escuchar", items: soloCanciones(secciones), secciones };
+      return { heading: traducir("Sugeridos para escuchar"), items: soloCanciones(secciones), secciones };
     }
     const { secciones, permisosExtra } = await inicioConectado();
     // Si Spotify no dio nada (permisos o límites), al menos los sugeridos de siempre, pero mezclados.
     if (secciones.length === 0) {
       const respaldo = inicioInvitado();
-      return { heading: "Sugeridos para escuchar", items: soloCanciones(respaldo), secciones: respaldo, permisosExtra };
+      return { heading: traducir("Sugeridos para escuchar"), items: soloCanciones(respaldo), secciones: respaldo, permisosExtra };
     }
-    return { heading: "Para ti", items: soloCanciones(secciones), secciones, permisosExtra };
+    return { heading: traducir("Para ti"), items: soloCanciones(secciones), secciones, permisosExtra };
   }
 
   const ref = parseSpotifyLink(q);
   if (ref) {
     const item = await resolveLink(ref);
-    return { heading: "Enlace de Spotify", items: item.kind === "track" ? [item] : [], secciones: [{ titulo: "Enlace de Spotify", items: [item] }] };
+    return { heading: traducir("Enlace de Spotify"), items: item.kind === "track" ? [item] : [], secciones: [{ titulo: traducir("Enlace de Spotify"), items: [item] }] };
   }
 
   if (conectado) {
     const secciones = await buscarConectado(q);
-    return { heading: `Resultados para «${q}»`, items: soloCanciones(secciones), secciones };
+    return { heading: traducir("Resultados para «{q}»", { q }), items: soloCanciones(secciones), secciones };
   }
 
   const terminos = normalize(q).split(/\s+/).filter(Boolean);
   const items = DEMO_MUSIC.filter((m) => terminos.every((t) => normalize(`${m.title} ${m.subtitle}`).includes(t)));
-  const titulo = `Sugeridos que coinciden con «${q}»`;
+  const titulo = traducir("Sugeridos que coinciden con «{q}»", { q });
   return { heading: titulo, items: items.filter((i) => i.kind === "track"), secciones: items.length ? [{ titulo, items }] : [] };
 }

@@ -1,4 +1,5 @@
 import { fetchExterno } from "@/lib/red";
+import { traducir, T } from "@/lib/i18n";
 import type { MusicItem, MusicKind } from "@/types/music";
 import { MusicApiError } from "./errores";
 
@@ -18,7 +19,7 @@ export function parseSpotifyLink(text: string): SpotifyRef | null {
   return m ? { kind: m[1] as MusicKind, id: m[2]! } : null;
 }
 
-const KIND_LABEL: Record<MusicKind, string> = { track: "Canción", album: "Álbum", playlist: "Playlist", artist: "Artista" };
+const KIND_LABEL: Record<MusicKind, string> = { track: T("Canción"), album: T("Álbum"), playlist: T("Playlist"), artist: T("Artista") };
 
 /** Artistas de una canción, leídos de los datos públicos del embed. Es un extra: si falla, se omite. */
 async function trackArtists(id: string): Promise<string | null> {
@@ -42,15 +43,15 @@ export async function resolveLink(ref: SpotifyRef): Promise<MusicItem> {
   try {
     res = await fetchExterno(`https://open.spotify.com/oembed?url=${encodeURIComponent(target)}`, { timeoutMs: 8000, cache: "no-store" });
   } catch {
-    throw new MusicApiError("No se pudo contactar con Spotify.", "Comprueba tu conexión a internet e inténtalo de nuevo.", "NETWORK");
+    throw new MusicApiError(traducir("No se pudo contactar con Spotify."), traducir("Comprueba tu conexión a internet e inténtalo de nuevo."), "NETWORK");
   }
   if (!res.ok) {
-    throw new MusicApiError("Spotify no encontró ese enlace.", "Copia el enlace desde Spotify (Compartir → Copiar enlace) y asegúrate de que el contenido sea público.", "LINK_NOT_FOUND");
+    throw new MusicApiError(traducir("Spotify no encontró ese enlace."), traducir("Copia el enlace desde Spotify (Compartir → Copiar enlace) y asegúrate de que el contenido sea público."), "LINK_NOT_FOUND");
   }
   const data = (await res.json()) as { title?: string; thumbnail_url?: string };
   if (!data.title || !data.thumbnail_url) {
-    throw new MusicApiError("No se pudo leer la información de ese enlace.", undefined, "LINK_UNREADABLE");
+    throw new MusicApiError(traducir("No se pudo leer la información de ese enlace."), undefined, "LINK_UNREADABLE");
   }
-  const subtitle = ref.kind === "track" ? ((await trackArtists(ref.id)) ?? KIND_LABEL.track) : KIND_LABEL[ref.kind];
+  const subtitle = ref.kind === "track" ? ((await trackArtists(ref.id)) ?? traducir(KIND_LABEL.track)) : traducir(KIND_LABEL[ref.kind]);
   return { kind: ref.kind, id: ref.id, title: data.title, subtitle, cover: data.thumbnail_url };
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import { AjusteZoomInterfaz } from "./AjusteZoomInterfaz";
+import { AjusteMovimiento } from "./AjusteMovimiento";
+import { AjusteBarraLateral } from "./AjusteBarraLateral";
 import { AjusteInicioSemana } from "./AjusteInicioSemana";
 import { AjusteFormatoHora } from "./AjusteFormatoHora";
 import { useHora } from "@/hooks/useHora";
@@ -129,6 +132,9 @@ export function PaginaConfiguracion() {
                   })}
                 </div>
               </TarjetaAjuste>
+              <AjusteZoomInterfaz />
+              <AjusteMovimiento />
+              <AjusteBarraLateral />
               <TarjetaAjuste glifo="pantalla" titulo={t("Efecto de ventana")} descripcion={t("Material del fondo de la ventana.")}>
                 <SegmentedControl<EfectoVentana>
                   label={t("Efecto de ventana")}

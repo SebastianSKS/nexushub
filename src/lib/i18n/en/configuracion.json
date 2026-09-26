@@ -154,5 +154,15 @@
   "La semana empieza el": "The week starts on",
   "El primer día de cada semana en el Calendario.": "The first day of each week in the Calendar.",
   "Lunes": "Monday",
-  "Domingo": "Sunday"
+  "Domingo": "Sunday",
+  "Animaciones": "Animations",
+  "Las transiciones al cambiar de sección y al abrir cuadros. Reducirlas ayuda si te mareas o quieres que todo sea más directo.": "The transitions when switching sections and opening dialogs. Reducing them helps if they make you dizzy or you want everything more direct.",
+  "Todas": "All",
+  "Reducidas": "Reduced",
+  "Tamaño de la interfaz": "Interface size",
+  "Agranda o achica todo Nexo: textos, botones y cuadros.": "Makes all of Nexo bigger or smaller: text, buttons and dialogs.",
+  "100 % (normal)": "100% (normal)",
+  "Secciones de la barra lateral": "Sidebar sections",
+  "Esconde las que no usas. Siguen ahí: se abren con su atajo Ctrl+número y con la búsqueda (Ctrl+K).": "Hide the ones you don't use. They're still there: they open with their Ctrl+number shortcut and with search (Ctrl+K).",
+  "Mostrar {seccion} en la barra lateral": "Show {seccion} in the sidebar"
 }

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { ACENTO_PREDETERMINADO, AJUSTES_PREDETERMINADOS, normalizarAjustes, type Ajustes, type SeccionInicial } from "@/lib/ajustes-base";
-import { T } from "@/lib/i18n";
+import { T } from "@/lib/i18n/nucleo";
 
 export {
   ACENTO_PREDETERMINADO,

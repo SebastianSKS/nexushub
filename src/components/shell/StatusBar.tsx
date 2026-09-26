@@ -1,5 +1,6 @@
 "use client";
 
+import { useEnLinea } from "@/hooks/useEnLinea";
 import { useT } from "@/lib/i18n";
 import {
   CheckmarkCircle16Regular,
@@ -15,6 +16,7 @@ export function StatusBar() {
   const operation = useAppStore((s) => s.operation);
   const nowPlaying = useAppStore((s) => s.nowPlaying);
   const filesProcessed = useAppStore((s) => s.filesProcessed);
+  const enLinea = useEnLinea();
 
   return (
     <footer className="grid h-statusbar shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-4 border-t border-stroke px-4 text-caption text-fg-secondary">
@@ -40,6 +42,11 @@ export function StatusBar() {
                 <span className="tabular shrink-0">{Math.round(operation.progress)}%</span>
               </>
             )}
+          </>
+        ) : !enLinea ? (
+          <>
+            <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-[var(--warning-fg,#f7630c)]" />
+            <span title={t("Video y Música necesitan internet; el resto de Nexo funciona igual.")}>{t("Sin conexión")}</span>
           </>
         ) : (
           <>

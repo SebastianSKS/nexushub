@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { traducir } from "@/lib/i18n";
 import { esEscritorio } from "@/lib/entorno";
+import { textoDeOffice, tipoDeArchivo, type TipoOffice } from "@/lib/office-texto";
 import { plegar } from "@/lib/text";
 import { abrirEnSistema } from "@/services/carpetas";
 import { getPdfjs } from "@/services/documents/pdfjs";
@@ -8,10 +9,10 @@ import { useAjustesStore } from "@/store/ajustes-store";
 import { useCalendarioStore } from "@/store/calendario-store";
 
 /**
- * Buscar DENTRO de los PDF de tus carpetas de materias (Documentos/Nexo/Tareas).
+ * Buscar DENTRO de los PDF y los documentos de Office (.docx, .xlsx, .pptx) de tus carpetas de materias (Documentos/Nexo/Tareas).
  *
- * Todo pasa en este equipo: la aplicación de escritorio entrega los PDF, pdf.js les saca el texto página por página y
- * ese texto se guarda en la base de datos del propio navegador de la ventana (IndexedDB). Nada se sube a internet.
+ * Todo pasa en este equipo: la aplicación de escritorio entrega los archivos, pdf.js les saca el texto página por página
+ * (y `office-texto` el de Word, Excel y PowerPoint) y ese texto se guarda en la base de datos del propio navegador de la ventana (IndexedDB). Nada se sube a internet.
  * Es solo un índice: si se borra, se vuelve a armar leyendo los archivos, que no se tocan nunca.
  * Cada vez solo se lee lo nuevo o lo que cambió (por fecha de modificación y tamaño).
  */
@@ -32,7 +33,11 @@ interface PdfEnDisco {
 
 interface Registro extends PdfEnDisco {
   clave: string;
-  /** Texto de cada página (con los espacios ya juntados). */
+  /** Qué es: los registros de antes de que hubiera Office no lo traen y son PDF. */
+  tipo?: "pdf" | TipoOffice;
+  /** Solo Excel: el nombre de cada hoja (una «página» por hoja). */
+  nombresUnidad?: string[];
+  /** Texto de cada página (con los espacios ya juntados); en Office, de cada trozo, hoja o diapositiva. */
   paginas: string[];
   /** No se pudo sacar texto: escaneado (solo imágenes) o con contraseña. */
   sinTexto: boolean;
@@ -146,12 +151,32 @@ export function cargarIndice(): Promise<void> {
 /** Juntar espacios y saltos de línea: así los fragmentos se leen bien y las posiciones cuadran con el texto plegado. */
 const limpiar = (t: string) => t.replace(/\s+/g, " ").trim();
 
+/** Word, Excel o PowerPoint: su texto sale del ZIP de XML. Si no se puede abrir (dañado o con contraseña), queda como sin texto. */
+async function leerOffice(p: PdfEnDisco, tipo: TipoOffice): Promise<Registro> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  const bytes = await invoke<ArrayBuffer>("archivo_leer", { carpeta: p.carpeta, nombre: p.nombre });
+  const base: Registro = { ...p, clave: clave(p), tipo, paginas: [], sinTexto: true, version: VERSION_INDICE };
+  try {
+    const texto = await textoDeOffice(bytes, tipo);
+    const paginas = texto.unidades.map(limpiar);
+    if (paginas.every((t) => t === "")) return base;
+    return { ...base, paginas, nombresUnidad: texto.nombres, sinTexto: false };
+  } catch {
+    return base;
+  }
+}
+
+async function leerArchivo(p: PdfEnDisco): Promise<Registro> {
+  const tipo = tipoDeArchivo(p.nombre);
+  return tipo && tipo !== "pdf" ? leerOffice(p, tipo) : leerPdf(p);
+}
+
 async function leerPdf(p: PdfEnDisco): Promise<Registro> {
   const { invoke } = await import("@tauri-apps/api/core");
   const bytes = await invoke<ArrayBuffer>("archivo_leer", { carpeta: p.carpeta, nombre: p.nombre });
   const lib = await getPdfjs();
   const tarea = lib.getDocument({ data: new Uint8Array(bytes) });
-  const base: Registro = { ...p, clave: clave(p), paginas: [], sinTexto: true, version: VERSION_INDICE };
+  const base: Registro = { ...p, clave: clave(p), tipo: "pdf", paginas: [], sinTexto: true, version: VERSION_INDICE };
   try {
     const doc = await tarea.promise;
     const paginas: string[] = [];
@@ -208,7 +233,7 @@ export function sincronizarIndice(esperaMs = 0): Promise<void> {
       for (const p of pendientes) {
         if (miGeneracion !== generacion) return;
         try {
-          const r = await leerPdf(p);
+          const r = await leerArchivo(p);
           if (miGeneracion !== generacion) return;
           memoria.set(r.clave, aMemoria(r));
           void guardarRegistro(r);
@@ -247,8 +272,11 @@ export async function borrarIndice(): Promise<void> {
 export interface CoincidenciaPdf {
   carpeta: string;
   nombre: string;
-  /** La mejor página (la que más veces nombra lo buscado). */
+  tipo: "pdf" | TipoOffice;
+  /** La mejor página (la que más veces nombra lo buscado); en Excel, la hoja; en PowerPoint, la diapositiva. */
   pagina: number;
+  /** Solo Excel: el nombre de esa hoja. */
+  nombreUnidad?: string;
   /** Cuántas páginas del archivo lo nombran. */
   paginasConCoincidencia: number;
   /** Un trozo de esa página alrededor de lo encontrado, con el texto original. */
@@ -312,6 +340,8 @@ export function buscarEnPdfs(terminos: string[]): CoincidenciaPdf[] {
     salida.push({
       carpeta: r.carpeta,
       nombre: r.nombre,
+      tipo: r.tipo ?? "pdf",
+      nombreUnidad: mejor === -1 ? undefined : r.nombresUnidad?.[pagina],
       pagina: pagina + 1,
       paginasConCoincidencia: paginas,
       fragmento: mejor === -1 ? "" : fragmentoDe(r.paginas[pagina], Math.max(0, pos)),
@@ -322,12 +352,12 @@ export function buscarEnPdfs(terminos: string[]): CoincidenciaPdf[] {
   return salida.sort((a, b) => b.puntaje - a.puntaje || a.nombre.localeCompare(b.nombre));
 }
 
-/** Abre el PDF en la página donde apareció lo buscado (sin página, con el programa de siempre). Si el archivo ya no está, lo dice y lo saca del índice. */
-export async function abrirPdfEnPagina(c: { carpeta: string; nombre: string; pagina?: number }): Promise<void> {
+/** Abre el archivo que salió en la búsqueda: un PDF, en la página donde apareció lo buscado; lo demás, con su programa de siempre. Si ya no está, lo dice y lo saca del índice. */
+export async function abrirArchivoBuscado(c: { carpeta: string; nombre: string; pagina?: number }): Promise<void> {
   try {
     await abrirEnSistema(c.carpeta, c.nombre, c.pagina);
   } catch {
-    useCalendarioStore.getState().mostrarAviso({ titulo: traducir("No se pudo abrir el PDF"), texto: traducir("«{nombre}» ya no está en la carpeta {carpeta}.", { nombre: c.nombre, carpeta: c.carpeta }), destino: null, autocerrar: 4000 });
+    useCalendarioStore.getState().mostrarAviso({ titulo: traducir("No se pudo abrir el archivo"), texto: traducir("«{nombre}» ya no está en la carpeta {carpeta}.", { nombre: c.nombre, carpeta: c.carpeta }), destino: null, autocerrar: 4000 });
     void sincronizarIndice();
   }
 }

@@ -17,7 +17,7 @@ import { useAjustesStore } from "@/store/ajustes-store";
 import { useNotasStore } from "@/store/notas-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import { abrirAcceso } from "@/services/accesos";
-import { abrirPdfEnPagina, buscarEnPdfs } from "@/services/indice-pdfs";
+import { abrirArchivoBuscado, buscarEnPdfs, type CoincidenciaPdf } from "@/services/indice-pdfs";
 import type { Command } from "@/types";
 
 /** Cuántos resultados se muestran como máximo de cada tipo (el resto se afina escribiendo más). */
@@ -43,6 +43,16 @@ export function prepararBusqueda() {
   useNotasStore.getState().cargar();
   useHorarioStore.getState().cargar();
   useFavoritosStore.getState().cargar();
+}
+
+/** «Materia · página 3 (y en 2 más)», «Materia · hoja «Notas»», «Materia · diapositiva 4»… según el tipo de archivo. */
+function pistaDeCoincidencia(c: CoincidenciaPdf): string {
+  if (!c.fragmento) return `${c.carpeta} · ${c.tipo === "pdf" ? "PDF" : c.tipo === "word" ? "Word" : c.tipo === "excel" ? "Excel" : "PowerPoint"}`;
+  const mas = c.paginasConCoincidencia > 1 ? ` ${traducir("(y en {n} más)", { n: c.paginasConCoincidencia - 1 })}` : "";
+  if (c.tipo === "pdf") return `${traducir("{carpeta} · página {n}", { carpeta: c.carpeta, n: c.pagina })}${mas}`;
+  if (c.tipo === "excel") return `${traducir("{carpeta} · hoja «{hoja}»", { carpeta: c.carpeta, hoja: c.nombreUnidad ?? String(c.pagina) })}${mas}`;
+  if (c.tipo === "powerpoint") return `${traducir("{carpeta} · diapositiva {n}", { carpeta: c.carpeta, n: c.pagina })}${mas}`;
+  return `${c.carpeta} · Word`;
 }
 
 /**
@@ -144,22 +154,22 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
       salida.push({ id: `nota-${n.id}`, group: traducir("Apuntes"), label: n.texto, hint: n.hecha ? traducir("Hecho") : traducir("Pendiente"), keywords: [], icon: "tarea", run: () => ir("/calendario") }),
     );
 
-  // Dentro de tus PDF (el texto ya leído de las carpetas de materias): el archivo, la página y el trozo donde aparece.
+  // Dentro de tus PDF y documentos de Office (el texto ya leído de las carpetas de materias): el archivo, el lugar y el trozo donde aparece.
   if (useAjustesStore.getState().buscarEnPdfs && q.length >= 3) {
     buscarEnPdfs(terminos)
       .slice(0, POR_GRUPO)
       .forEach((c) =>
         salida.push({
           id: `pdf-${c.carpeta}/${c.nombre}`,
-          group: traducir("En tus PDF"),
+          group: traducir("En tus documentos"),
           label: c.nombre,
-          hint: c.fragmento ? `${traducir("{carpeta} · página {n}", { carpeta: c.carpeta, n: c.pagina })}${c.paginasConCoincidencia > 1 ? ` ${traducir("(y en {n} más)", { n: c.paginasConCoincidencia - 1 })}` : ""}` : `${c.carpeta} · PDF`,
+          hint: pistaDeCoincidencia(c),
           detalle: c.fragmento || undefined,
           resaltar: terminos,
           keywords: [],
           icon: "documentos",
-          marca: "pdf",
-          run: () => void abrirPdfEnPagina({ carpeta: c.carpeta, nombre: c.nombre, pagina: c.fragmento ? c.pagina : undefined }),
+          marca: c.tipo,
+          run: () => void abrirArchivoBuscado({ carpeta: c.carpeta, nombre: c.nombre, pagina: c.tipo === "pdf" && c.fragmento ? c.pagina : undefined }),
         }),
       );
   }

@@ -13,6 +13,8 @@ export type TipoOffice = "word" | "excel" | "powerpoint";
 export interface TextoOffice {
   tipo: TipoOffice;
   unidades: string[];
+  /** Solo en Excel: el nombre de la hoja de cada unidad. */
+  nombres?: string[];
 }
 
 /** Cuántos caracteres seguidos de un Word se agrupan en una unidad. */
@@ -97,9 +99,9 @@ function cadenasCompartidas(xml: string): string[] {
   return salida;
 }
 
-export async function textoDeExcel(zip: JSZip): Promise<string[]> {
+export async function textoDeExcel(zip: JSZip): Promise<{ unidades: string[]; nombres: string[] }> {
   const libro = await leerTexto(zip, "xl/workbook.xml");
-  if (!libro) return [];
+  if (!libro) return { unidades: [], nombres: [] };
   const rels = (await leerTexto(zip, "xl/_rels/workbook.xml.rels")) ?? "";
   const destino = new Map<string, string>();
   for (const m of rels.matchAll(/<Relationship\b[^>]*>/g)) {
@@ -110,6 +112,7 @@ export async function textoDeExcel(zip: JSZip): Promise<string[]> {
   const compartidas = cadenasCompartidas((await leerTexto(zip, "xl/sharedStrings.xml")) ?? "");
 
   const unidades: string[] = [];
+  const nombres: string[] = [];
   for (const h of libro.matchAll(/<(?:\w+:)?sheet\b[^>]*>/g)) {
     const nombre = decodificarXml(/\bname="([^"]*)"/.exec(h[0])?.[1] ?? "");
     const rid = /\br:id="([^"]*)"/.exec(h[0])?.[1] ?? /\bid="([^"]*)"/.exec(h[0])?.[1];
@@ -134,8 +137,9 @@ export async function textoDeExcel(zip: JSZip): Promise<string[]> {
       }
     }
     unidades.push(juntar([nombre, ...valores].join(" ")));
+    nombres.push(nombre);
   }
-  return unidades.filter(Boolean);
+  return { unidades, nombres };
 }
 
 export async function textoDePowerPoint(zip: JSZip): Promise<string[]> {
@@ -155,6 +159,6 @@ export async function textoDePowerPoint(zip: JSZip): Promise<string[]> {
 /** El texto de un .docx/.xlsx/.pptx. Lanza si el ZIP no se puede abrir (dañado o con contraseña). */
 export async function textoDeOffice(bytes: ArrayBuffer | Uint8Array, tipo: TipoOffice): Promise<TextoOffice> {
   const zip = await JSZip.loadAsync(bytes);
-  const unidades = tipo === "word" ? await textoDeWord(zip) : tipo === "excel" ? await textoDeExcel(zip) : await textoDePowerPoint(zip);
-  return { tipo, unidades };
+  if (tipo === "excel") return { tipo, ...(await textoDeExcel(zip)) };
+  return { tipo, unidades: tipo === "word" ? await textoDeWord(zip) : await textoDePowerPoint(zip) };
 }

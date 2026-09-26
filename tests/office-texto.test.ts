@@ -72,6 +72,7 @@ describe("textoDeOffice", () => {
     });
     const r = await textoDeOffice(bytes, "excel");
     assert.deepEqual(r.unidades, ["Notas & pesos Matemáticas 9.5 Cálculo integral en línea", "Vacía", "Otra fórmula"]);
+    assert.deepEqual(r.nombres, ["Notas & pesos", "Vacía", "Otra"]);
   });
 
   it("PowerPoint: una unidad por diapositiva, en orden numérico, conservando las vacías", async () => {

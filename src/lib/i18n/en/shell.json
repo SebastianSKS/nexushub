@@ -75,8 +75,8 @@
   "Buscar en Nexo": "Search Nexo",
   "Buscador global": "Global search",
   "Resultados": "Results",
-  "No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus PDF.": "I didn't find anything for “{query}”. Try the name of a subject, a task, a channel, “documents” or a word inside your PDFs.",
-  "Leyendo tus PDF para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.": "Reading your PDFs so you can search inside them ({hechos} of {total})… you can keep searching.",
+  "No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus archivos.": "I didn't find anything for “{query}”. Try the name of a subject, a task, a channel, “documents” or a word inside your files.",
+  "Leyendo tus archivos para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.": "Reading your files so you can search inside them ({hechos} of {total})… you can keep searching.",
   "Pulsa Enter para copiar el resultado": "Press Enter to copy the result",
   "Tareas y eventos": "Tasks and events",
   "Aula {aula}": "Room {aula}",
@@ -85,7 +85,7 @@
   "Apuntes": "Notes",
   "Hecho": "Done",
   "Pendiente": "Pending",
-  "En tus PDF": "In your PDFs",
+  "En tus documentos": "In your documents",
   "{carpeta} · página {n}": "{carpeta} · page {n}",
   "(y en {n} más)": "(and on {n} more)",
   "Canales": "Channels",
@@ -118,5 +118,8 @@
   "Reproducir o pausar (si el foco no está en un campo)": "Play or pause (if the focus isn't in a text field)",
   "Mostrar esta página de atajos": "Show this shortcuts page",
   "Mostrar Nexo": "Show Nexo",
-  "Salir": "Quit"
+  "Salir": "Quit",
+  "{carpeta} · hoja «{hoja}»": "{carpeta} · sheet “{hoja}”",
+  "{carpeta} · diapositiva {n}": "{carpeta} · slide {n}",
+  "No se pudo abrir el archivo": "The file couldn't be opened"
 }

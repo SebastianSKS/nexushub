@@ -63,6 +63,8 @@ export function aplicarAjustes(a: Ajustes) {
   const resuelto = a.tema === "sistema" ? (oscuroSistema ? "dark" : "light") : a.tema === "claro" ? "light" : "dark";
   root.dataset.theme = resuelto;
   root.dataset.efecto = a.efecto;
+  // «sistema» = lo que pida Windows; «reducido» y «normal» mandan sobre Windows.
+  root.dataset.movimiento = a.reducirMovimiento === "si" ? "reducido" : a.reducirMovimiento === "no" ? "normal" : "sistema";
 
   if (a.acento.toLowerCase() === ACENTO_PREDETERMINADO.toLowerCase()) {
     // Acento de Windows por defecto: valores exactos del sistema de diseño.

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
@@ -24,10 +25,11 @@ const ID_SPOTIFY = /^[A-Za-z0-9]{22}$/;
 const GRID = "grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4";
 
 function Discografia({ titulo, items, hayMas, cargando, onMas }: { titulo: string; items: MusicItem[]; hayMas: boolean; cargando: boolean; onMas: () => void }) {
+  const t = useT();
   if (items.length === 0) return null;
   return (
-    <section aria-label={titulo}>
-      <h2 className="mb-3 text-subtitle text-fg">{titulo}</h2>
+    <section aria-label={t(titulo)}>
+      <h2 className="mb-3 text-subtitle text-fg">{t(titulo)}</h2>
       <div className={GRID}>
         {items.map((a) => (
           <MusicCard key={a.id} item={a} active={false} onPlay={() => undefined} />
@@ -35,7 +37,7 @@ function Discografia({ titulo, items, hayMas, cargando, onMas }: { titulo: strin
       </div>
       {hayMas && (
         <Button className="mt-3" disabled={cargando} onClick={onMas}>
-          {cargando ? "Cargando…" : "Ver más"}
+          {cargando ? t("Cargando…") : t("Ver más")}
         </Button>
       )}
     </section>
@@ -44,6 +46,7 @@ function Discografia({ titulo, items, hayMas, cargando, onMas }: { titulo: strin
 
 /** /musica/artista?id= — foto y nombre, lo más escuchado, discografía y «Seguir». */
 export function PaginaArtista() {
+  const t = useT();
   const params = useSearchParams();
   const id = params.get("id") ?? "";
   const valido = ID_SPOTIFY.test(id);
@@ -74,7 +77,7 @@ export function PaginaArtista() {
           void cargarDiscografia(id, d.nombre, "single").then((r) => !cancelado && setSencillos({ ...r, cargando: false }));
         }
       })
-      .catch((e: unknown) => !cancelado && setError(e instanceof ErrorLista ? e.message : "No se pudo cargar al artista."))
+      .catch((e: unknown) => !cancelado && setError(e instanceof ErrorLista ? e.message : t("No se pudo cargar al artista.")))
       .finally(() => !cancelado && setCargando(false));
     return () => {
       cancelado = true;
@@ -95,15 +98,15 @@ export function PaginaArtista() {
   };
 
   const alternarSeguir = async () => {
-    if (permisos === "faltan") return pedirPermisoSpotify("seguir artistas");
+    if (permisos === "faltan") return pedirPermisoSpotify(T("seguir artistas"));
     if (sigo === null) return;
     const quiere = !sigo;
     const r = await seguirArtista(id, quiere);
     if (r === "ok") {
       setSigo(quiere);
-      avisoBreve(quiere ? "Ahora sigues a" : "Dejaste de seguir a", datos?.nombre);
-    } else if (r === "permisos") pedirPermisoSpotify("seguir artistas");
-    else avisoBreve("No se pudo actualizar", "Inténtalo de nuevo en un momento.");
+      avisoBreve(quiere ? t("Ahora sigues a") : t("Dejaste de seguir a"), datos?.nombre);
+    } else if (r === "permisos") pedirPermisoSpotify(T("seguir artistas"));
+    else avisoBreve(t("No se pudo actualizar"), t("Inténtalo de nuevo en un momento."));
   };
 
   const populares = datos?.populares ?? [];
@@ -118,27 +121,27 @@ export function PaginaArtista() {
 
   return (
     <PlantillaPagina
-      migas={[{ etiqueta: "Música", href: "/musica" }, { etiqueta: datos?.nombre ?? "Artista" }]}
-      titulo={datos?.nombre ?? (valido ? (cargando ? "Cargando…" : "Artista") : "Artista no válido")}
-      descripcion="Artista"
+      migas={[{ etiqueta: "Música", href: "/musica" }, { etiqueta: datos?.nombre ?? t("Artista") }]}
+      titulo={datos?.nombre ?? (valido ? (cargando ? t("Cargando…") : t("Artista")) : t("Artista no válido"))}
+      descripcion={t("Artista")}
       accion={
         datos && (
           <div className="flex flex-wrap justify-end gap-2">
             {conectado && (sigo !== null || permisos === "faltan") && (
               <Button onClick={() => void alternarSeguir()} aria-pressed={sigo === true}>
-                {sigo ? "Siguiendo" : "Seguir"}
+                {sigo ? t("Siguiendo") : t("Seguir")}
               </Button>
             )}
             {populares.length > 0 && (
               <>
                 <Button icon={<Headphones20Regular />} onClick={radio}>
-                  Radio
+                  {t("Radio")}
                 </Button>
                 <Button icon={<ArrowShuffle20Regular />} onClick={aleatorio}>
-                  Aleatorio
+                  {t("Aleatorio")}
                 </Button>
                 <Button variant="accent" icon={<Play20Filled />} onClick={() => reproducir(0)}>
-                  Reproducir
+                  {t("Reproducir")}
                 </Button>
               </>
             )}
@@ -147,19 +150,19 @@ export function PaginaArtista() {
       }
       principal={
         !valido ? (
-          <InfoBar severity="error" title="Este enlace no lleva a un artista de Spotify." action={<BotonEnlace href="/musica">Ir a Música</BotonEnlace>}>
-            Falta el identificador del artista o no es válido.
+          <InfoBar severity="error" title={t("Este enlace no lleva a un artista de Spotify.")} action={<BotonEnlace href="/musica">{t("Ir a Música")}</BotonEnlace>}>
+            {t("Falta el identificador del artista o no es válido.")}
           </InfoBar>
         ) : error ? (
-          <InfoBar severity="warning" title={error} action={<Button className="h-7" onClick={() => setIntento((n) => n + 1)}>Reintentar</Button>}>
-            Comprueba tu conexión e inténtalo de nuevo.
+          <InfoBar severity="warning" title={error} action={<Button className="h-7" onClick={() => setIntento((n) => n + 1)}>{t("Reintentar")}</Button>}>
+            {t("Comprueba tu conexión e inténtalo de nuevo.")}
           </InfoBar>
         ) : (
           <div className="flex flex-col gap-8">
-            {cargando && !datos && <p className="text-body text-fg-secondary" role="status">Cargando al artista…</p>}
+            {cargando && !datos && <p className="text-body text-fg-secondary" role="status">{t("Cargando al artista…")}</p>}
             {populares.length > 0 && (
-              <section aria-label="Populares">
-                <h2 className="mb-3 text-subtitle text-fg">Populares</h2>
+              <section aria-label={t("Populares")}>
+                <h2 className="mb-3 text-subtitle text-fg">{t("Populares")}</h2>
                 <ol className="overflow-hidden rounded-control border border-stroke bg-layer">
                   {populares.map((c, i) => (
                     <li key={`${c.id}-${i}`} className="group relative" onContextMenu={(e) => abrirMenuPista(e, c, { artistId: id })}>
@@ -173,7 +176,7 @@ export function PaginaArtista() {
                         <span className={clsx("truncate text-body", sonando === c.id ? "font-semibold text-accent-text" : "text-fg")}>{c.titulo}</span>
                         <span className="tabular text-right text-caption text-fg-secondary">{formatDuration(c.duracion)}</span>
                       </button>
-                      <IconButton label={`Más opciones de ${c.titulo}`} onClick={(e) => abrirMenuPista(e, c as Pista, { artistId: id })} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
+                      <IconButton label={t("Más opciones de {titulo}", { titulo: c.titulo })} onClick={(e) => abrirMenuPista(e, c as Pista, { artistId: id })} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
                         <MoreHorizontal20Regular />
                       </IconButton>
                     </li>
@@ -181,9 +184,9 @@ export function PaginaArtista() {
                 </ol>
               </section>
             )}
-            <Discografia titulo="Álbumes" items={albumes.items} hayMas={albumes.hayMas} cargando={albumes.cargando} onMas={() => void masDe("album")} />
-            <Discografia titulo="Sencillos y EP" items={sencillos.items} hayMas={sencillos.hayMas} cargando={sencillos.cargando} onMas={() => void masDe("single")} />
-            {datos && populares.length === 0 && albumes.items.length === 0 && !cargando && <p className="text-body text-fg-secondary">No encontré canciones de este artista.</p>}
+            <Discografia titulo={T("Álbumes")} items={albumes.items} hayMas={albumes.hayMas} cargando={albumes.cargando} onMas={() => void masDe("album")} />
+            <Discografia titulo={T("Sencillos y EP")} items={sencillos.items} hayMas={sencillos.hayMas} cargando={sencillos.cargando} onMas={() => void masDe("single")} />
+            {datos && populares.length === 0 && albumes.items.length === 0 && !cargando && <p className="text-body text-fg-secondary">{t("No encontré canciones de este artista.")}</p>}
           </div>
         )
       }

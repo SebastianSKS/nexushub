@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
@@ -18,10 +19,11 @@ import { useMusicStore } from "@/store/music-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 import { AccionesPlaylist } from "./AccionesPlaylist";
 
-const ETIQUETA_TIPO: Record<TipoLista, string> = { playlist: "Playlist", album: "Álbum", artist: "Artista", track: "Canción" };
+const ETIQUETA_TIPO: Record<TipoLista, string> = { playlist: T("Playlist"), album: T("Álbum"), artist: T("Artista"), track: T("Canción") };
 
 /** /musica/lista?id=&tipo= — el contenido de una playlist, álbum o artista. */
 export function PaginaLista() {
+  const t = useT();
   const params = useSearchParams();
   const id = params.get("id") ?? "";
   const tipoParam = params.get("tipo") ?? "playlist";
@@ -61,15 +63,15 @@ export function PaginaLista() {
     setError(null);
     cargarLista(tipo, id)
       .then((l) => !cancelado && setLista(l))
-      .catch((e: unknown) => !cancelado && setError(e instanceof ErrorLista ? e : new ErrorLista("No se pudo cargar la lista.", "Inténtalo de nuevo.")))
+      .catch((e: unknown) => !cancelado && setError(e instanceof ErrorLista ? e : new ErrorLista(t("No se pudo cargar la lista."), t("Inténtalo de nuevo."))))
       .finally(() => !cancelado && setCargando(false));
     return () => {
       cancelado = true;
     };
   }, [id, tipo, valido, intento]);
 
-  const titulo = lista?.titulo ?? (valido ? "Cargando…" : "Lista no válida");
-  const pistaContexto: Pista = { id: `${tipo}:${id}`, titulo: lista?.titulo ?? ETIQUETA_TIPO[tipo], artista: lista?.subtitulo ?? "Spotify", caratula: lista?.caratula ?? "", duracion: 0, fuente: "spotify" };
+  const titulo = lista?.titulo ?? (valido ? t("Cargando…") : t("Lista no válida"));
+  const pistaContexto: Pista = { id: `${tipo}:${id}`, titulo: lista?.titulo ?? t(ETIQUETA_TIPO[tipo]), artista: lista?.subtitulo ?? "Spotify", caratula: lista?.caratula ?? "", duracion: 0, fuente: "spotify" };
   // Con Spotify conectado, cada canción muestra SU carátula (la que trae Spotify al sonar), no la de la lista.
   const caratulaDe = () => (conectado ? "" : (lista?.caratula ?? ""));
   const pistaDeCancion = (c: ListaSpotify["canciones"][number]): Pista => ({ id: c.id, titulo: c.titulo, artista: c.artista, caratula: caratulaDe(), duracion: c.duracion, fuente: "spotify" });
@@ -94,38 +96,38 @@ export function PaginaLista() {
     <PlantillaPagina
       migas={[{ etiqueta: "Música", href: "/musica" }, { etiqueta: titulo }]}
       titulo={titulo}
-      descripcion={lista ? [ETIQUETA_TIPO[tipo], lista.subtitulo, lista.canciones.length > 0 ? `${lista.canciones.length} canciones` : ""].filter(Boolean).join(" · ") : ETIQUETA_TIPO[tipo]}
+      descripcion={lista ? [t(ETIQUETA_TIPO[tipo]), lista.subtitulo, lista.canciones.length > 0 ? t("{n} canciones", { n: lista.canciones.length }) : ""].filter(Boolean).join(" · ") : t(ETIQUETA_TIPO[tipo])}
       accion={
         valido && (
           <div className="flex flex-wrap justify-end gap-2">
             {propia && <AccionesPlaylist id={id} nombre={propia.nombre} onRenombrada={(n) => setLista((l) => (l ? { ...l, titulo: n } : l))} />}
             {primera >= 0 && (
               <Button icon={<ArrowShuffle20Regular />} onClick={reproducirAleatorio}>
-                Aleatorio
+                {t("Aleatorio")}
               </Button>
             )}
             <Button variant="accent" icon={<Play20Filled />} onClick={reproducirTodo}>
-              Reproducir
+              {t("Reproducir")}
             </Button>
           </div>
         )
       }
       principal={
         !valido ? (
-          <InfoBar severity="error" title="Este enlace no lleva a una lista de Spotify." action={<BotonEnlace href="/musica">Ir a Música</BotonEnlace>}>
-            Falta el identificador de la lista o no es válido.
+          <InfoBar severity="error" title={t("Este enlace no lleva a una lista de Spotify.")} action={<BotonEnlace href="/musica">{t("Ir a Música")}</BotonEnlace>}>
+            {t("Falta el identificador de la lista o no es válido.")}
           </InfoBar>
         ) : (
           <>
             {error && (
-              <InfoBar severity="warning" title={error.message} action={<Button className="h-7" onClick={() => setIntento((n) => n + 1)}>Reintentar</Button>}>
+              <InfoBar severity="warning" title={error.message} action={<Button className="h-7" onClick={() => setIntento((n) => n + 1)}>{t("Reintentar")}</Button>}>
                 {error.pista}
               </InfoBar>
             )}
-            {cargando && !lista && <p className="text-body text-fg-secondary" role="status">Cargando las canciones…</p>}
+            {cargando && !lista && <p className="text-body text-fg-secondary" role="status">{t("Cargando las canciones…")}</p>}
             {lista && lista.canciones.length > 0 && (
               <Card className="overflow-hidden p-0">
-                <ol aria-label="Canciones">
+                <ol aria-label={t("Canciones")}>
                   {lista.canciones.map((c, i) => (
                     <li key={`${c.id}-${i}`} className="group relative" onContextMenu={(e) => abrirMenuPista(e, pistaDeCancion(c), propia ? { playlistId: id } : undefined)}>
                       <button
@@ -145,7 +147,7 @@ export function PaginaLista() {
                         </span>
                         <span className="tabular text-right text-caption text-fg-secondary">{formatDuration(c.duracion)}</span>
                       </button>
-                      <IconButton label={`Más opciones de ${c.titulo}`} onClick={(e) => abrirMenuPista(e, pistaDeCancion(c), propia ? { playlistId: id } : undefined)} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
+                      <IconButton label={t("Más opciones de {titulo}", { titulo: c.titulo })} onClick={(e) => abrirMenuPista(e, pistaDeCancion(c), propia ? { playlistId: id } : undefined)} className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
                         <MoreHorizontal20Regular />
                       </IconButton>
                     </li>

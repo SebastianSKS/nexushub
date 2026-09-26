@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { ArrowShuffle20Regular, MoreHorizontal20Regular, Play20Filled } from "@fluentui/react-icons";
@@ -19,6 +20,7 @@ import { AvisoPermisos } from "./PermisosSpotify";
 
 /** /musica/me-gusta — «Canciones que te gustan» de tu cuenta de Spotify. */
 export function PaginaMeGusta() {
+  const t = useT();
   const conectado = useMusicStore((s) => s.connection.status === "connected");
   const estado = useMusicStore((s) => s.connection.status);
   const permisos = useMusicStore((s) => s.permisosBiblioteca);
@@ -56,16 +58,16 @@ export function PaginaMeGusta() {
   return (
     <PlantillaPagina
       migas={[{ etiqueta: "Música", href: "/musica" }, { etiqueta: "Canciones que te gustan" }]}
-      titulo="Canciones que te gustan"
-      descripcion={conectado && total > 0 ? `${total} canciones guardadas en tu cuenta de Spotify` : "Lo que guardas con el corazón en Spotify."}
+      titulo={t("Canciones que te gustan")}
+      descripcion={conectado && total > 0 ? t("{n} canciones guardadas en tu cuenta de Spotify", { n: total }) : t("Lo que guardas con el corazón en Spotify.")}
       accion={
         pistas.length > 0 && (
           <div className="flex gap-2">
             <Button icon={<ArrowShuffle20Regular />} onClick={aleatorio}>
-              Aleatorio
+              {t("Aleatorio")}
             </Button>
             <Button variant="accent" icon={<Play20Filled />} onClick={() => reproducir(0)}>
-              Reproducir
+              {t("Reproducir")}
             </Button>
           </div>
         )
@@ -74,30 +76,30 @@ export function PaginaMeGusta() {
         !conectado ? (
           <InfoBar
             severity="info"
-            title={estado === "connecting" ? "Conectando con Spotify…" : "Conecta tu cuenta de Spotify para ver tus canciones guardadas."}
-            action={estado === "connecting" ? undefined : <Button onClick={conectarSpotify}>Conectar</Button>}
+            title={estado === "connecting" ? t("Conectando con Spotify…") : t("Conecta tu cuenta de Spotify para ver tus canciones guardadas.")}
+            action={estado === "connecting" ? undefined : <Button onClick={conectarSpotify}>{t("Conectar")}</Button>}
           >
-            Necesitas Spotify Premium conectado en la sección Música.
+            {t("Necesitas Spotify Premium conectado en la sección Música.")}
           </InfoBar>
         ) : fallo === "permisos" || permisos === "faltan" ? (
-          <AvisoPermisos texto="Para ver tus canciones guardadas, Spotify te pide tu permiso una sola vez. Regresas justo aquí." />
+          <AvisoPermisos texto={T("Para ver tus canciones guardadas, Spotify te pide tu permiso una sola vez. Regresas justo aquí.")} />
         ) : fallo === "error" ? (
-          <InfoBar severity="warning" title="No se pudieron cargar tus canciones." action={<Button className="h-7" onClick={() => void cargarMas(0)}>Reintentar</Button>}>
-            Comprueba tu conexión e inténtalo de nuevo.
+          <InfoBar severity="warning" title={t("No se pudieron cargar tus canciones.")} action={<Button className="h-7" onClick={() => void cargarMas(0)}>{t("Reintentar")}</Button>}>
+            {t("Comprueba tu conexión e inténtalo de nuevo.")}
           </InfoBar>
         ) : (
           <>
-            {cargando && pistas.length === 0 && <p className="text-body text-fg-secondary" role="status">Cargando tus canciones…</p>}
+            {cargando && pistas.length === 0 && <p className="text-body text-fg-secondary" role="status">{t("Cargando tus canciones…")}</p>}
             {!cargando && pistas.length === 0 && (
               <Card className="p-6">
-                <p className="text-body text-fg">Aún no has guardado canciones.</p>
-                <p className="mt-1 text-body text-fg-secondary">Pulsa el corazón de una canción mientras suena, o usa «Guardar en Me gusta» en su menú (los tres puntos).</p>
-                <BotonEnlace href="/musica">Ir a Música</BotonEnlace>
+                <p className="text-body text-fg">{t("Aún no has guardado canciones.")}</p>
+                <p className="mt-1 text-body text-fg-secondary">{t("Pulsa el corazón de una canción mientras suena, o usa «Guardar en Me gusta» en su menú (los tres puntos).")}</p>
+                <BotonEnlace href="/musica">{t("Ir a Música")}</BotonEnlace>
               </Card>
             )}
             {pistas.length > 0 && (
               <Card className="overflow-hidden p-0">
-                <ol aria-label="Canciones que te gustan">
+                <ol aria-label={t("Canciones que te gustan")}>
                   {pistas.map((c, i) => (
                     <li key={c.id} className="group relative" onContextMenu={(e) => abrirMenuPista(e, c)}>
                       <button
@@ -121,7 +123,7 @@ export function PaginaMeGusta() {
                         </span>
                         <span className="tabular text-right text-caption text-fg-secondary">{formatDuration(c.duracion)}</span>
                       </button>
-                      <IconButton label={`Más opciones de ${c.titulo}`} onClick={(e) => abrirMenuPista(e, c)} className="absolute right-2 top-3 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
+                      <IconButton label={t("Más opciones de {titulo}", { titulo: c.titulo })} onClick={(e) => abrirMenuPista(e, c)} className="absolute right-2 top-3 opacity-0 focus-visible:opacity-100 group-hover:opacity-100">
                         <MoreHorizontal20Regular />
                       </IconButton>
                     </li>
@@ -131,7 +133,7 @@ export function PaginaMeGusta() {
             )}
             {pistas.length > 0 && pistas.length < total && (
               <Button disabled={cargando} onClick={() => void cargarMas(pistas.length)} className="self-start">
-                {cargando ? "Cargando…" : `Cargar más (${total - pistas.length} restantes)`}
+                {cargando ? t("Cargando…") : t("Cargar más ({n} restantes)", { n: total - pistas.length })}
               </Button>
             )}
           </>

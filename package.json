@@ -17,6 +17,7 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "release:manifest": "node scripts/generar-latest-json.mjs",
+    "release:verificar": "node scripts/verificar-release.mjs",
     "predev": "node scripts/copiar-tesseract.mjs",
     "prebuild": "node scripts/copiar-tesseract.mjs"
   },

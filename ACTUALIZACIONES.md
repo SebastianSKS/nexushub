@@ -32,6 +32,11 @@ Cada nueva versión se publica ahí a mano, en tres pasos.
    ```bash
    npm run release:manifest
    ```
+   Y **revisa todo antes de subirlo** (versiones, firma del instalador con la llave de `tauri.conf.json`,
+   `latest.json`). Si algo falla, no lo publiques: dejaría a quien ya tiene Nexo sin poder actualizar.
+   ```bash
+   npm run release:verificar
+   ```
 4. En GitHub → tu repositorio → **Releases** → **Draft a new release**:
    - Tag: `v` seguido de la versión, p. ej. `v0.1.1`.
    - Adjunta los **tres** archivos que están en
@@ -39,7 +44,12 @@ Cada nueva versión se publica ahí a mano, en tres pasos.
      el `Nexo_X.Y.Z_x64-setup.exe.sig` y el `latest.json`.
    - Publica el release (no lo marques como «pre-release»: Nexo solo mira el más reciente
      que no lo sea).
-5. Quien ya tenga Nexo abierto verá la actualización al pulsar «Buscar actualizaciones» en
+5. Comprueba lo ya publicado, como lo haría una copia de Nexo (baja `latest.json` y el instalador desde
+   GitHub y verifica la firma):
+   ```bash
+   npm run release:verificar -- --remoto
+   ```
+6. Quien ya tenga Nexo abierto verá la actualización al pulsar «Buscar actualizaciones» en
    Configuración → Acerca de.
 
 Si algún día quieres que esto se haga solo al hacer `git push` (sin repetir los pasos 2-4 a mano),

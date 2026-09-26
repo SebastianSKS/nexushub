@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T } from "@/lib/i18n";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/fluent/Button";
@@ -13,6 +14,7 @@ import { useMusicStore } from "@/store/music-store";
 
 /** Renombrar y eliminar una playlist tuya (botones de la cabecera y sus diálogos). */
 export function AccionesPlaylist({ id, nombre, onRenombrada }: { id: string; nombre: string; onRenombrada: (nuevo: string) => void }) {
+  const t = useT();
   const router = useRouter();
   const [dialogo, setDialogo] = useState<"renombrar" | "eliminar" | null>(null);
   const [texto, setTexto] = useState(nombre);
@@ -20,7 +22,7 @@ export function AccionesPlaylist({ id, nombre, onRenombrada }: { id: string; nom
 
   const refrescarBarraLateral = () => void fetchMyPlaylists().then((p) => useMusicStore.getState().setPlaylists(p));
   const falla = (r: "permisos" | "error") =>
-    r === "permisos" ? pedirPermisoSpotify("editar tus playlists") : avisoBreve("No se pudo completar", "Inténtalo de nuevo en un momento.");
+    r === "permisos" ? pedirPermisoSpotify(T("editar tus playlists")) : avisoBreve(t("No se pudo completar"), t("Inténtalo de nuevo en un momento."));
 
   const renombrar = async () => {
     const n = texto.trim();
@@ -32,7 +34,7 @@ export function AccionesPlaylist({ id, nombre, onRenombrada }: { id: string; nom
     setDialogo(null);
     onRenombrada(n);
     refrescarBarraLateral();
-    avisoBreve("Playlist renombrada", n);
+    avisoBreve(t("Playlist renombrada"), n);
   };
 
   const eliminar = async () => {
@@ -43,7 +45,7 @@ export function AccionesPlaylist({ id, nombre, onRenombrada }: { id: string; nom
     if (r !== "ok") return falla(r);
     setDialogo(null);
     refrescarBarraLateral();
-    avisoBreve("Playlist eliminada", nombre);
+    avisoBreve(t("Playlist eliminada"), nombre);
     router.push("/musica");
   };
 
@@ -55,26 +57,26 @@ export function AccionesPlaylist({ id, nombre, onRenombrada }: { id: string; nom
           setDialogo("renombrar");
         }}
       >
-        Renombrar
+        {t("Renombrar")}
       </Button>
-      <Button onClick={() => setDialogo("eliminar")}>Eliminar</Button>
+      <Button onClick={() => setDialogo("eliminar")}>{t("Eliminar")}</Button>
 
-      <Dialog open={dialogo === "renombrar"} onClose={() => setDialogo(null)} title="Renombrar playlist" maxWidth={420}>
-        <TextInput label="Nombre" value={texto} maxLength={100} onChange={(e) => setTexto(e.target.value)} onKeyDown={(e) => e.key === "Enter" && void renombrar()} />
+      <Dialog open={dialogo === "renombrar"} onClose={() => setDialogo(null)} title={t("Renombrar playlist")} maxWidth={420}>
+        <TextInput label={t("Nombre")} value={texto} maxLength={100} onChange={(e) => setTexto(e.target.value)} onKeyDown={(e) => e.key === "Enter" && void renombrar()} />
         <div className="mt-4 flex justify-end gap-2">
-          <Button onClick={() => setDialogo(null)}>Cancelar</Button>
+          <Button onClick={() => setDialogo(null)}>{t("Cancelar")}</Button>
           <Button variant="accent" disabled={!texto.trim() || ocupado} onClick={() => void renombrar()}>
-            Guardar
+            {t("Guardar")}
           </Button>
         </div>
       </Dialog>
 
-      <Dialog open={dialogo === "eliminar"} onClose={() => setDialogo(null)} title="¿Eliminar esta playlist?" maxWidth={420}>
-        <p className="text-body text-fg-secondary">«{nombre}» dejará de estar en tu biblioteca de Spotify. Las canciones no se borran de Spotify.</p>
+      <Dialog open={dialogo === "eliminar"} onClose={() => setDialogo(null)} title={t("¿Eliminar esta playlist?")} maxWidth={420}>
+        <p className="text-body text-fg-secondary">{t("«{nombre}» dejará de estar en tu biblioteca de Spotify. Las canciones no se borran de Spotify.", { nombre })}</p>
         <div className="mt-4 flex justify-end gap-2">
-          <Button onClick={() => setDialogo(null)}>Cancelar</Button>
+          <Button onClick={() => setDialogo(null)}>{t("Cancelar")}</Button>
           <Button variant="accent" disabled={ocupado} onClick={() => void eliminar()}>
-            Eliminar
+            {t("Eliminar")}
           </Button>
         </div>
       </Dialog>

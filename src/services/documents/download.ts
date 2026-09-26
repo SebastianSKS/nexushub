@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { traducir } from "@/lib/i18n";
 import { esEscritorio } from "@/lib/entorno";
 import { useAjustesStore } from "@/store/ajustes-store";
 import type { ResultItem } from "@/types/documents";
@@ -57,7 +58,7 @@ export async function descargar(blob: Blob, name: string): Promise<Descargado> {
       if (ruta === null) return { nombre: name, cancelado: true };
       return { ruta, nombre: ruta.split(/[\\/]/).pop() ?? name };
     } catch (e) {
-      throw new Error(typeof e === "string" ? e : "No se pudo guardar el archivo.");
+      throw new Error(typeof e === "string" ? e : traducir("No se pudo guardar el archivo."));
     }
   }
   saveBlob(blob, name);

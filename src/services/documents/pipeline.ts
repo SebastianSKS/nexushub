@@ -1,4 +1,5 @@
 import { getTool } from "@/lib/documents/tools";
+import { traducir } from "@/lib/i18n";
 import type { CompressOptions, OcrOptions, OrganizeOptions, PageNumbersOptions, WatermarkOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, ProtectOptions, QueuedFile, ResultItem, RotateOptions, SplitOptions, ToolId, UnlockOptions } from "@/types/documents";
 import { DocumentError } from "./errors";
 import { compararPdf } from "./motor/comparar-pdf";
@@ -41,7 +42,7 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
   const advertencias: string[] = [];
 
   // 1) El contenido real de cada archivo debe corresponder a la herramienta.
-  onProgress(0, "Comprobando los archivos");
+  onProgress(0, traducir("Comprobando los archivos"));
   for (const f of files) {
     abortarSiCancelado(signal);
     const permitido = f.kind && tool.accepts.includes(f.kind) ? f.kind : tool.accepts[0]!;
@@ -103,7 +104,7 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
         abortarSiCancelado(signal);
         const file = archivos[i]!;
         const ctx = contexto(2 + (i / n) * 96, 2 + ((i + 1) / n) * 96);
-        const etiqueta = (m: string) => (n > 1 ? `${m} · ${file.name} (${i + 1} de ${n})` : m);
+        const etiqueta = (m: string) => (n > 1 ? traducir("{m} · {name} ({i} de {n})", { m, name: file.name, i: i + 1, n }) : m);
         const rep = ctx.report;
         ctx.report = (f, m) => rep(f, etiqueta(m));
 
@@ -124,7 +125,7 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
         } else if (toolId === "excel-to-pdf") salidas.push(...(await excelAPdf(file, ctx)));
         else if (toolId === "powerpoint-to-pdf") salidas.push(...(await powerpointAPdf(file, ctx)));
         else if (toolId === "pdf-to-word") salidas.push(...(await pdfAWord(file, options as PdfToWordOptions, ctx)));
-        else throw new DocumentError(`La herramienta «${tool.name}» no está disponible.`);
+        else throw new DocumentError(traducir("La herramienta «{herramienta}» no está disponible.", { herramienta: traducir(tool.name) }));
       }
     }
   }

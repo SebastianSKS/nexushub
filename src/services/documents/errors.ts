@@ -1,3 +1,4 @@
+import { traducir } from "@/lib/i18n";
 /** Error que ya trae un mensaje para el usuario (qué pasó + qué hacer). */
 export class DocumentError extends Error {
   readonly hint?: string;
@@ -19,7 +20,7 @@ export function isAbort(err: unknown): boolean {
 export function describeError(err: unknown): { message: string; hint?: string } {
   if (err instanceof DocumentError) return { message: err.message, hint: err.hint };
   return {
-    message: "Ocurrió un error inesperado.",
-    hint: "Inténtalo de nuevo. Si se repite, prueba con otro archivo.",
+    message: traducir("Ocurrió un error inesperado."),
+    hint: traducir("Inténtalo de nuevo. Si se repite, prueba con otro archivo."),
   };
 }

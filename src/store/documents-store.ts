@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { traducir } from "@/lib/i18n";
 import { getTool } from "@/lib/documents/tools";
 import { intakeFiles } from "@/services/documents/intake";
 import type {
@@ -131,8 +132,8 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       if (accepted.length > 1) {
         pushNotice({
           severity: "info",
-          title: `${tool!.name} trabaja con un archivo a la vez.`,
-          message: `Se usó «${accepted[0]!.file.name}».`,
+          title: traducir("{herramienta} trabaja con un archivo a la vez.", { herramienta: traducir(tool!.name) }),
+          message: traducir("Se usó «{name}».", { name: accepted[0]!.file.name }),
         });
       }
       set({
@@ -171,16 +172,16 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
         next = accepted;
         pushNotice({
           severity: "info",
-          title: `${left} ${left === 1 ? "archivo quedó fuera" : "archivos quedaron fuera"} de ${tool.name}.`,
-          message: "No corresponden a esta herramienta. Vuelve a soltarlos si los necesitas para otra.",
+          title: left === 1 ? traducir("1 archivo quedó fuera de {herramienta}.", { herramienta: traducir(tool.name) }) : traducir("{n} archivos quedaron fuera de {herramienta}.", { n: left, herramienta: traducir(tool.name) }),
+          message: traducir("No corresponden a esta herramienta. Vuelve a soltarlos si los necesitas para otra."),
         });
       }
       if (next.length > tool.maxFiles) {
         next = next.slice(0, tool.maxFiles);
         pushNotice({
           severity: "info",
-          title: `${tool.name} trabaja con un archivo a la vez.`,
-          message: `Se usó «${next[0]!.file.name}».`,
+          title: traducir("{herramienta} trabaja con un archivo a la vez.", { herramienta: traducir(tool.name) }),
+          message: traducir("Se usó «{name}».", { name: next[0]!.file.name }),
         });
       }
     }

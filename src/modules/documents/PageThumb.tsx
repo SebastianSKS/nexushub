@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import clsx from "clsx";
@@ -18,6 +19,7 @@ interface PageThumbProps {
 
 /** Miniatura de una página. Se dibuja solo cuando entra en pantalla, para que 200 páginas no bloqueen la interfaz. */
 export function PageThumb({ doc, page, selected, rotation, etiqueta, onToggle }: PageThumbProps) {
+  const t = useT();
   const boxRef = useRef<HTMLButtonElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visible, setVisible] = useState(false);
@@ -75,7 +77,7 @@ export function PageThumb({ doc, page, selected, rotation, etiqueta, onToggle }:
       type="button"
       role="checkbox"
       aria-checked={selected}
-      aria-label={`Página ${page}`}
+      aria-label={t("Página {n}", { n: page })}
       onClick={(e) => onToggle(page, e.shiftKey)}
       className={clsx(
         "rounded-control reveal group relative flex flex-col items-center gap-1.5 border p-2 transition-colors duration-exit ease-fluent",

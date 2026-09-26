@@ -1,3 +1,4 @@
+import { traducir } from "@/lib/i18n";
 export type PageRange = readonly [start: number, end: number];
 
 export interface ParsedRanges {
@@ -11,14 +12,14 @@ export interface ParsedRanges {
  */
 export function parseRanges(input: string, pageCount: number): ParsedRanges {
   const text = input.trim();
-  if (!text) return { ranges: [], error: "Indica al menos una página o rango, por ejemplo 1-3, 5." };
+  if (!text) return { ranges: [], error: traducir("Indica al menos una página o rango, por ejemplo 1-3, 5.") };
 
   const ranges: PageRange[] = [];
   for (const part of text.split(/[,;]+/)) {
     const token = part.trim();
     if (!token) continue;
     const match = /^(\d+)\s*(?:-\s*(\d+))?$/.exec(token);
-    if (!match) return { ranges: [], error: `«${token}» no es un rango válido. Usa números y guiones, como 1-3, 5.` };
+    if (!match) return { ranges: [], error: traducir("«{token}» no es un rango válido. Usa números y guiones, como 1-3, 5.", { token }) };
     const a = Number(match[1]);
     const b = match[2] === undefined ? a : Number(match[2]);
     const start = Math.min(a, b);
@@ -26,12 +27,15 @@ export function parseRanges(input: string, pageCount: number): ParsedRanges {
     if (start < 1 || end > pageCount) {
       return {
         ranges: [],
-        error: `El rango ${token} queda fuera del documento, que tiene ${pageCount} ${pageCount === 1 ? "página" : "páginas"}.`,
+        error:
+          pageCount === 1
+            ? traducir("El rango {token} queda fuera del documento, que tiene 1 página.", { token })
+            : traducir("El rango {token} queda fuera del documento, que tiene {pageCount} páginas.", { token, pageCount }),
       };
     }
     ranges.push([start, end]);
   }
-  if (ranges.length === 0) return { ranges: [], error: "Indica al menos una página o rango, por ejemplo 1-3, 5." };
+  if (ranges.length === 0) return { ranges: [], error: traducir("Indica al menos una página o rango, por ejemplo 1-3, 5.") };
   return { ranges };
 }
 

@@ -1,4 +1,5 @@
 import { notificarSistema } from "@/lib/notificar";
+import { traducir } from "@/lib/i18n";
 import { rutaHerramienta } from "@/lib/rutas";
 import { getTool } from "@/lib/documents/tools";
 import { parseRanges } from "@/lib/documents/ranges";
@@ -51,22 +52,22 @@ function optionsFor(toolId: ToolId): unknown {
 export function getBlocker(toolId: ToolId, pageCount?: number): string | null {
   const { files, options } = useDocumentsStore.getState();
   const tool = getTool(toolId);
-  if (files.length === 0) return "Añade al menos un archivo.";
-  if (files.length < tool.minFiles) return `Añade al menos ${tool.minFiles} archivos.`;
-  if (files.some((f) => !f.kind || !tool.accepts.includes(f.kind))) return "Quita los archivos que no corresponden a esta herramienta.";
+  if (files.length === 0) return traducir("Añade al menos un archivo.");
+  if (files.length < tool.minFiles) return traducir("Añade al menos {minFiles} archivos.", { minFiles: tool.minFiles });
+  if (files.some((f) => !f.kind || !tool.accepts.includes(f.kind))) return traducir("Quita los archivos que no corresponden a esta herramienta.");
   if (toolId === "split") {
-    if (pageCount === undefined) return "Cargando el documento…";
+    if (pageCount === undefined) return traducir("Cargando el documento…");
     return parseRanges(options.split.ranges, pageCount).error ?? null;
   }
-  if (toolId === "rotate" && Object.keys(options.rotate.rotations).length === 0) return "Gira alguna página para poder aplicar el cambio.";
-  if (toolId === "protect-pdf" && !options.protectPdf.password.trim()) return "Escribe una contraseña.";
-  if (toolId === "unlock-pdf" && !options.unlockPdf.password.trim()) return "Escribe la contraseña del PDF.";
+  if (toolId === "rotate" && Object.keys(options.rotate.rotations).length === 0) return traducir("Gira alguna página para poder aplicar el cambio.");
+  if (toolId === "protect-pdf" && !options.protectPdf.password.trim()) return traducir("Escribe una contraseña.");
+  if (toolId === "unlock-pdf" && !options.unlockPdf.password.trim()) return traducir("Escribe la contraseña del PDF.");
   if (toolId === "organize") {
-    if (pageCount === undefined || options.organize.order.length === 0) return "Cargando el documento…";
-    if (options.organize.order.length === pageCount && options.organize.order.every((p, i) => p === i + 1)) return "Cambia el orden o elimina alguna página para poder guardar.";
+    if (pageCount === undefined || options.organize.order.length === 0) return traducir("Cargando el documento…");
+    if (options.organize.order.length === pageCount && options.organize.order.every((p, i) => p === i + 1)) return traducir("Cambia el orden o elimina alguna página para poder guardar.");
   }
-  if (toolId === "watermark" && !options.watermark.text.trim()) return "Escribe el texto de la marca de agua.";
-  if (toolId === "compare-pdf" && files.length !== 2) return "Añade exactamente 2 archivos para comparar.";
+  if (toolId === "watermark" && !options.watermark.text.trim()) return traducir("Escribe el texto de la marca de agua.");
+  if (toolId === "compare-pdf" && files.length !== 2) return traducir("Añade exactamente 2 archivos para comparar.");
   return null;
 }
 
@@ -81,14 +82,14 @@ export async function startRun(): Promise<void> {
   current = new AbortController();
   docs.clearNotices();
   docs.beginRun();
-  app.setOperation({ label: `${tool.name}: preparando`, progress: 0 });
+  app.setOperation({ label: `${traducir(tool.name)}: ${traducir("preparando")}`, progress: 0 });
 
   try {
     const outcome = await runTool(docs.toolId, files, optionsFor(docs.toolId), {
       signal: current.signal,
       onProgress: (progress, message) => {
         useDocumentsStore.getState().setProgress(progress, message);
-        useAppStore.getState().setOperation({ label: `${tool.name}: ${message}`, progress });
+        useAppStore.getState().setOperation({ label: `${traducir(tool.name)}: ${message}`, progress });
       },
     });
     const store = useDocumentsStore.getState();
@@ -99,22 +100,22 @@ export async function startRun(): Promise<void> {
     if (useAjustesStore.getState().alTerminar === "descargar" && outcome.results.length > 0) {
       try {
         if (outcome.results.length === 1) await descargar(outcome.results[0]!.blob, outcome.results[0]!.name);
-        else await descargar(await zipResults(outcome.results), `${tool.name}.zip`);
+        else await descargar(await zipResults(outcome.results), `${traducir(tool.name)}.zip`);
       } catch (e) {
-        store.pushNotice({ severity: "error", title: "No se pudo guardar el resultado.", message: e instanceof Error ? e.message : "Descárgalo desde el panel de resultados." });
+        store.pushNotice({ severity: "error", title: traducir("No se pudo guardar el resultado."), message: e instanceof Error ? e.message : traducir("Descárgalo desde el panel de resultados.") });
       }
     }
     app.addFilesProcessed(files.length);
     const mensaje =
-      outcome.results.length === 1 ? "Tu archivo está listo para descargar." : `Tus ${outcome.results.length} archivos están listos para descargar.`;
-    store.pushNotice({ severity: "success", title: `${tool.name}: listo.`, message: mensaje });
-    if (outcome.results.length > 0) notificarSistema(`${tool.name}: listo`, mensaje, "conversion-lista", rutaHerramienta(tool.id));
+      outcome.results.length === 1 ? traducir("Tu archivo está listo para descargar.") : traducir("Tus {n} archivos están listos para descargar.", { n: outcome.results.length });
+    store.pushNotice({ severity: "success", title: traducir("{herramienta}: listo.", { herramienta: traducir(tool.name) }), message: mensaje });
+    if (outcome.results.length > 0) notificarSistema(traducir("{herramienta}: listo", { herramienta: traducir(tool.name) }), mensaje, "conversion-lista", rutaHerramienta(tool.id));
     // Las advertencias (modo básico, ya optimizado…) se muestran junto al resultado, no como avisos flotantes.
   } catch (err) {
     const store = useDocumentsStore.getState();
     if (isAbort(err)) {
       store.resetRun();
-      store.pushNotice({ severity: "info", title: "Operación cancelada.", message: "No se guardó ningún resultado." });
+      store.pushNotice({ severity: "info", title: traducir("Operación cancelada."), message: traducir("No se guardó ningún resultado.") });
     } else {
       const { message, hint } = describeError(err);
       store.failRun();

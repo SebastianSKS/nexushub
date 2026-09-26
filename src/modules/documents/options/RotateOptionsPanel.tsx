@@ -40,9 +40,9 @@ export function RotateOptionsPanel() {
       <p className="text-body text-fg-secondary">
         {selected.length > 0
           ? selected.length === 1
-            ? "Se girará la página seleccionada."
-            : `Se girarán las ${selected.length} páginas seleccionadas.`
-          : "Sin selección: el giro se aplica a todas las páginas. Elige algunas en las miniaturas para girar solo esas."}
+            ? t("Se girará la página seleccionada.")
+            : t("Se girarán las {n} páginas seleccionadas.", { n: selected.length })
+          : t("Sin selección: el giro se aplica a todas las páginas. Elige algunas en las miniaturas para girar solo esas.")}
       </p>
       <div className="grid grid-cols-2 gap-2">
         <Button onClick={() => rotate(270)} disabled={targets.length === 0} icon={<ArrowRotateCounterclockwise20Regular />}>
@@ -65,8 +65,10 @@ export function RotateOptionsPanel() {
       </Button>
       <p className="text-caption text-fg-tertiary">
         {rotatedCount === 0
-          ? "Aún no has girado ninguna página."
-          : `${rotatedCount} ${rotatedCount === 1 ? "página girada" : "páginas giradas"}; verás el resultado en las miniaturas.`}
+          ? t("Aún no has girado ninguna página.")
+          : rotatedCount === 1
+            ? t("1 página girada; verás el resultado en las miniaturas.")
+            : t("{n} páginas giradas; verás el resultado en las miniaturas.", { n: rotatedCount })}
       </p>
     </div>
   );

@@ -21,8 +21,8 @@ export function OcrOptionsPanel() {
       />
       <p className="text-caption text-fg-tertiary">
         {o.output === "pdf"
-          ? "Un PDF igual al original, pero en el que puedes buscar, seleccionar y copiar el texto. Las páginas quedan como imagen."
-          : "Un archivo .txt con el texto reconocido, listo para pegar en Word o en tus apuntes."}
+          ? t("Un PDF igual al original, pero en el que puedes buscar, seleccionar y copiar el texto. Las páginas quedan como imagen.")
+          : t("Un archivo .txt con el texto reconocido, listo para pegar en Word o en tus apuntes.")}
       </p>
       <p className="text-caption text-fg-tertiary">{t("Funciona sin internet y en tu equipo. Leer cada página tarda unos segundos; la primera vez, un poco más.")}</p>
     </div>

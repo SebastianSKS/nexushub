@@ -24,8 +24,10 @@ export function SplitOptionsPanel() {
         error={parsed?.error}
         hint={
           selectedCount > 0
-            ? `${selectedCount} ${selectedCount === 1 ? "página seleccionada" : "páginas seleccionadas"}. También puedes elegirlas en las miniaturas.`
-            : "Escribe los rangos o haz clic en las miniaturas."
+            ? selectedCount === 1
+              ? t("1 página seleccionada. También puedes elegirla en las miniaturas.")
+              : t("{n} páginas seleccionadas. También puedes elegirlas en las miniaturas.", { n: selectedCount })
+            : t("Escribe los rangos o haz clic en las miniaturas.")
         }
         onChange={(e) => setOption("split", { ...o, ranges: e.target.value })}
         autoComplete="off"
@@ -42,8 +44,8 @@ export function SplitOptionsPanel() {
       />
       <p className="text-caption text-fg-tertiary">
         {o.mode === "single"
-          ? "Todas las páginas elegidas se juntan en un único PDF."
-          : "Cada rango separado por coma genera su propio PDF."}
+          ? t("Todas las páginas elegidas se juntan en un único PDF.")
+          : t("Cada rango separado por coma genera su propio PDF.")}
       </p>
     </div>
   );

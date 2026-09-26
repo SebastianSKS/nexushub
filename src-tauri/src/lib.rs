@@ -9,6 +9,14 @@ mod carpetas;
 mod identidad;
 mod office;
 
+/// El argumento con el que Windows inicia Nexo al encender el equipo: sin ventana, solo en la bandeja.
+const ARGUMENTO_OCULTO: &str = "--oculto";
+
+/// ¿Nexo se abrió con el argumento de «iniciar oculto»?
+fn iniciado_oculto() -> bool {
+    std::env::args().any(|a| a == ARGUMENTO_OCULTO)
+}
+
 /// Lo que el comando `actualizar_bandeja` necesita tocar cada vez que cambia la reproducción:
 /// el texto de «Reproducir/Pausar», si «Siguiente» tiene sentido, y el tooltip del icono.
 struct EstadoBandeja {
@@ -217,9 +225,10 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        // Al iniciar con Windows, Nexo arranca directo en la bandeja (`--oculto`) para no abrir una ventana al encender el equipo.
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
-            None,
+            Some(vec![ARGUMENTO_OCULTO]),
         ))
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_notification::init())
@@ -262,6 +271,22 @@ pub fn run() {
                 // Solo en la compilación final: en `tauri dev` el servidor de Next ya sirve esa
                 // misma dirección de verdad.
                 captura_spotify::iniciar();
+            }
+
+            // Iniciado por Windows al encender el equipo: sin ventana (se abre desde la bandeja).
+            if iniciado_oculto() {
+                if let Some(ventana) = app.get_webview_window("main") {
+                    let _ = ventana.hide();
+                }
+            }
+            // Si ya estaba activado «Iniciar con Windows», se vuelve a registrar: así lleva `--oculto` y la ruta actual del programa
+            // (que cambia si Nexo se reinstala en otro sitio).
+            {
+                use tauri_plugin_autostart::ManagerExt;
+                let inicio = app.autolaunch();
+                if inicio.is_enabled().unwrap_or(false) {
+                    let _ = inicio.enable();
+                }
             }
 
             // Que las notificaciones de Windows salgan con el nombre y el icono de Nexo (y no como «Windows PowerShell»).

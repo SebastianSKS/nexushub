@@ -1,4 +1,6 @@
+import { traducir } from "@/lib/i18n";
 import { esEscritorio } from "@/lib/entorno";
+import { delSistema } from "@/services/mensajes-sistema";
 
 /**
  * «Mis tareas»: carpetas de verdad (una por materia) en Documentos/Nexo/Tareas. Todo el trabajo con el disco
@@ -24,12 +26,12 @@ export class ErrorCarpetas extends Error {}
 export const carpetasDisponibles = (): boolean => esEscritorio();
 
 async function pedir<T>(orden: string, args?: Record<string, unknown>): Promise<T> {
-  if (!esEscritorio()) throw new ErrorCarpetas("Las carpetas de tareas solo están en la aplicación de escritorio.");
+  if (!esEscritorio()) throw new ErrorCarpetas(traducir("Las carpetas de tareas solo están en la aplicación de escritorio."));
   const { invoke } = await import("@tauri-apps/api/core");
   try {
     return await invoke<T>(orden, args);
   } catch (e) {
-    throw new ErrorCarpetas(typeof e === "string" ? e : "No se pudo completar. Inténtalo de nuevo.");
+    throw new ErrorCarpetas(typeof e === "string" ? delSistema(e) : traducir("No se pudo completar. Inténtalo de nuevo."));
   }
 }
 
@@ -46,7 +48,7 @@ export const abrirEnSistema = (carpeta?: string, archivo?: string, pagina?: numb
 
 /** Guarda un archivo en una carpeta (nunca pisa otro con el mismo nombre). Devuelve el nombre con el que quedó. */
 export async function guardarArchivo(carpeta: string, archivo: File): Promise<string> {
-  if (!esEscritorio()) throw new ErrorCarpetas("Las carpetas de tareas solo están en la aplicación de escritorio.");
+  if (!esEscritorio()) throw new ErrorCarpetas(traducir("Las carpetas de tareas solo están en la aplicación de escritorio."));
   const { invoke } = await import("@tauri-apps/api/core");
   try {
     // El contenido viaja como cuerpo binario (rápido con PDF grandes); el nombre, en encabezados.
@@ -54,7 +56,7 @@ export async function guardarArchivo(carpeta: string, archivo: File): Promise<st
       headers: { "x-carpeta": encodeURIComponent(carpeta), "x-nombre": encodeURIComponent(archivo.name) },
     });
   } catch (e) {
-    throw new ErrorCarpetas(typeof e === "string" ? e : "No se pudo guardar el archivo.");
+    throw new ErrorCarpetas(typeof e === "string" ? delSistema(e) : traducir("No se pudo guardar el archivo."));
   }
 }
 

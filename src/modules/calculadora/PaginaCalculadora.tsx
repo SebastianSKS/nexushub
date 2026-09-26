@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T } from "@/lib/i18n";
 import { useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
@@ -22,18 +23,18 @@ interface Tecla {
 }
 
 const NUMERICAS: Tecla[][] = [
-  [{ etiqueta: "C", accion: "borrar", nombre: "Borrar todo", tipo: "operador" }, { etiqueta: "⌫", accion: "atras", nombre: "Borrar el último", tipo: "operador" }, { etiqueta: "%", texto: "%", nombre: "Por ciento", tipo: "operador" }, { etiqueta: "÷", texto: "÷", nombre: "Dividir", tipo: "operador" }],
-  [{ etiqueta: "7", texto: "7" }, { etiqueta: "8", texto: "8" }, { etiqueta: "9", texto: "9" }, { etiqueta: "×", texto: "×", nombre: "Multiplicar", tipo: "operador" }],
-  [{ etiqueta: "4", texto: "4" }, { etiqueta: "5", texto: "5" }, { etiqueta: "6", texto: "6" }, { etiqueta: "−", texto: "−", nombre: "Restar", tipo: "operador" }],
-  [{ etiqueta: "1", texto: "1" }, { etiqueta: "2", texto: "2" }, { etiqueta: "3", texto: "3" }, { etiqueta: "+", texto: "+", nombre: "Sumar", tipo: "operador" }],
-  [{ etiqueta: "Ans", accion: "ans", nombre: "Resultado anterior", tipo: "operador" }, { etiqueta: "0", texto: "0" }, { etiqueta: ".", texto: ".", nombre: "Punto decimal" }, { etiqueta: "=", accion: "igual", nombre: "Calcular", tipo: "acento" }],
+  [{ etiqueta: "C", accion: "borrar", nombre: T("Borrar todo"), tipo: "operador" }, { etiqueta: "⌫", accion: "atras", nombre: T("Borrar el último"), tipo: "operador" }, { etiqueta: "%", texto: "%", nombre: T("Por ciento"), tipo: "operador" }, { etiqueta: "÷", texto: "÷", nombre: T("Dividir"), tipo: "operador" }],
+  [{ etiqueta: "7", texto: "7" }, { etiqueta: "8", texto: "8" }, { etiqueta: "9", texto: "9" }, { etiqueta: "×", texto: "×", nombre: T("Multiplicar"), tipo: "operador" }],
+  [{ etiqueta: "4", texto: "4" }, { etiqueta: "5", texto: "5" }, { etiqueta: "6", texto: "6" }, { etiqueta: "−", texto: "−", nombre: T("Restar"), tipo: "operador" }],
+  [{ etiqueta: "1", texto: "1" }, { etiqueta: "2", texto: "2" }, { etiqueta: "3", texto: "3" }, { etiqueta: "+", texto: "+", nombre: T("Sumar"), tipo: "operador" }],
+  [{ etiqueta: "Ans", accion: "ans", nombre: T("Resultado anterior"), tipo: "operador" }, { etiqueta: "0", texto: "0" }, { etiqueta: ".", texto: ".", nombre: T("Punto decimal") }, { etiqueta: "=", accion: "igual", nombre: T("Calcular"), tipo: "acento" }],
 ];
 
 const CIENTIFICAS: Tecla[][] = [
-  [{ etiqueta: "(", texto: "(", nombre: "Abrir paréntesis" }, { etiqueta: ")", texto: ")", nombre: "Cerrar paréntesis" }, { etiqueta: "x²", texto: "^2", nombre: "Al cuadrado" }, { etiqueta: "xʸ", texto: "^", nombre: "Potencia" }, { etiqueta: "√", texto: "√(", nombre: "Raíz cuadrada" }],
-  [{ etiqueta: "sin", texto: "sin(" }, { etiqueta: "cos", texto: "cos(" }, { etiqueta: "tan", texto: "tan(" }, { etiqueta: "π", texto: "π", nombre: "Pi" }, { etiqueta: "³√", texto: "cbrt(", nombre: "Raíz cúbica" }],
-  [{ etiqueta: "sin⁻¹", texto: "asin(", nombre: "Arcoseno" }, { etiqueta: "cos⁻¹", texto: "acos(", nombre: "Arcocoseno" }, { etiqueta: "tan⁻¹", texto: "atan(", nombre: "Arcotangente" }, { etiqueta: "e", texto: "e", nombre: "Número e" }, { etiqueta: "|x|", texto: "abs(", nombre: "Valor absoluto" }],
-  [{ etiqueta: "ln", texto: "ln(", nombre: "Logaritmo natural" }, { etiqueta: "log", texto: "log(", nombre: "Logaritmo base 10" }, { etiqueta: "10ˣ", texto: "10^", nombre: "Diez a la" }, { etiqueta: "eˣ", texto: "exp(", nombre: "e a la" }, { etiqueta: "n!", texto: "!", nombre: "Factorial" }],
+  [{ etiqueta: "(", texto: "(", nombre: T("Abrir paréntesis") }, { etiqueta: ")", texto: ")", nombre: T("Cerrar paréntesis") }, { etiqueta: "x²", texto: "^2", nombre: T("Al cuadrado") }, { etiqueta: "xʸ", texto: "^", nombre: T("Potencia") }, { etiqueta: "√", texto: "√(", nombre: T("Raíz cuadrada") }],
+  [{ etiqueta: "sin", texto: "sin(" }, { etiqueta: "cos", texto: "cos(" }, { etiqueta: "tan", texto: "tan(" }, { etiqueta: "π", texto: "π", nombre: T("Pi") }, { etiqueta: "³√", texto: "cbrt(", nombre: T("Raíz cúbica") }],
+  [{ etiqueta: "sin⁻¹", texto: "asin(", nombre: T("Arcoseno") }, { etiqueta: "cos⁻¹", texto: "acos(", nombre: T("Arcocoseno") }, { etiqueta: "tan⁻¹", texto: "atan(", nombre: T("Arcotangente") }, { etiqueta: "e", texto: "e", nombre: T("Número e") }, { etiqueta: "|x|", texto: "abs(", nombre: T("Valor absoluto") }],
+  [{ etiqueta: "ln", texto: "ln(", nombre: T("Logaritmo natural") }, { etiqueta: "log", texto: "log(", nombre: T("Logaritmo base 10") }, { etiqueta: "10ˣ", texto: "10^", nombre: T("Diez a la") }, { etiqueta: "eˣ", texto: "exp(", nombre: T("e a la") }, { etiqueta: "n!", texto: "!", nombre: T("Factorial") }],
 ];
 
 /**
@@ -51,6 +52,7 @@ const ESTILO_TECLA: Record<NonNullable<Tecla["tipo"]>, string> = {
 
 /** /calculadora — normal y científica, con historial. Se puede escribir con el teclado o pulsar los botones. */
 export function PaginaCalculadora() {
+  const tr = useT();
   const [modo, setModo] = useState<Modo>("normal");
   const [grados, setGrados] = useState(true);
   const [expr, setExpr] = useState("");
@@ -106,7 +108,7 @@ export function PaginaCalculadora() {
       setHistorial((h) => [{ expr, res: texto }, ...h].slice(0, 30));
     } catch (e) {
       setResultado(null);
-      setError(e instanceof ErrorCalculo ? e.message : "No se pudo calcular");
+      setError(e instanceof ErrorCalculo ? tr(e.message, e.variables) : tr("No se pudo calcular"));
     }
   };
 
@@ -117,9 +119,9 @@ export function PaginaCalculadora() {
     campo.current?.focus();
   };
 
-  const pulsar = (t: Tecla) => {
-    if (t.accion === "borrar") return limpiar();
-    if (t.accion === "atras") {
+  const pulsar = (tecla: Tecla) => {
+    if (tecla.accion === "borrar") return limpiar();
+    if (tecla.accion === "atras") {
       if (resultado !== null) return limpiar();
       const el = campo.current;
       const ini = el?.selectionStart ?? expr.length;
@@ -133,9 +135,9 @@ export function PaginaCalculadora() {
       });
       return;
     }
-    if (t.accion === "igual") return calcular();
-    if (t.accion === "ans") return insertar("Ans");
-    if (t.texto) insertar(t.texto);
+    if (tecla.accion === "igual") return calcular();
+    if (tecla.accion === "ans") return insertar("Ans");
+    if (tecla.texto) insertar(tecla.texto);
   };
 
   const copiar = async () => {
@@ -149,35 +151,35 @@ export function PaginaCalculadora() {
     }
   };
 
-  const boton = (t: Tecla, i: number) => (
+  const boton = (tecla: Tecla, i: number) => (
     <button
-      key={`${t.etiqueta}-${i}`}
+      key={`${tecla.etiqueta}-${i}`}
       type="button"
-      onClick={() => pulsar(t)}
-      aria-label={t.nombre ?? t.etiqueta}
+      onClick={() => pulsar(tecla)}
+      aria-label={tr(tecla.nombre ?? tecla.etiqueta)}
       className={clsx(
         "rounded-control flex h-14 select-none items-center justify-center text-fg transition-[background-color,transform] duration-exit ease-fluent active:scale-[0.97]",
-        ESTILO_TECLA[t.tipo ?? "numero"],
-        t.tipo !== "acento" && "border border-stroke",
+        ESTILO_TECLA[tecla.tipo ?? "numero"],
+        tecla.tipo !== "acento" && "border border-stroke",
       )}
     >
-      {t.etiqueta}
+      {tecla.etiqueta}
     </button>
   );
 
   return (
     <PlantillaPagina
       migas={[{ etiqueta: "Calculadora" }]}
-      titulo="Calculadora"
-      descripcion="Normal y científica. Puedes pulsar los botones o escribir con el teclado."
+      titulo={tr("Calculadora")}
+      descripcion={tr("Normal y científica. Puedes pulsar los botones o escribir con el teclado.")}
       accion={
         <SegmentedControl<Modo>
-          label="Tipo de calculadora"
+          label={tr("Tipo de calculadora")}
           etiquetaVisible={false}
           value={modo}
           options={[
-            { value: "normal", label: "Normal" },
-            { value: "cientifica", label: "Científica" },
+            { value: "normal", label: tr("Normal") },
+            { value: "cientifica", label: tr("Científica") },
           ]}
           onChange={setModo}
         />
@@ -188,13 +190,13 @@ export function PaginaCalculadora() {
           <div className="px-5 pb-3 pt-4" style={{ backgroundImage: "linear-gradient(to bottom, color-mix(in srgb, var(--accent) 14%, transparent), transparent)" }}>
             <div className="flex h-6 items-center justify-between">
               {modo === "cientifica" ? (
-                <button type="button" onClick={() => setGrados((g) => !g)} title="Cambiar entre grados y radianes" aria-label={`Ángulos en ${grados ? "grados" : "radianes"}. Pulsa para cambiar`} className="rounded-control h-6 border border-stroke px-2 text-caption text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt">
-                  {grados ? "Grados" : "Radianes"}
+                <button type="button" onClick={() => setGrados((g) => !g)} title={tr("Cambiar entre grados y radianes")} aria-label={tr("Ángulos en {unidad}. Pulsa para cambiar", { unidad: grados ? tr("grados") : tr("radianes") })} className="rounded-control h-6 border border-stroke px-2 text-caption text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt">
+                  {grados ? tr("Grados") : tr("Radianes")}
                 </button>
               ) : (
                 <span />
               )}
-              <Button variant="subtle" className="h-6 px-2 text-caption" onClick={copiar} disabled={resultado === null}>{copiado ? "Copiado" : "Copiar"}</Button>
+              <Button variant="subtle" className="h-6 px-2 text-caption" onClick={copiar} disabled={resultado === null}>{copiado ? tr("Copiado") : tr("Copiar")}</Button>
             </div>
             <input
               ref={campo}
@@ -213,7 +215,7 @@ export function PaginaCalculadora() {
                   limpiar();
                 }
               }}
-              aria-label="Operación"
+              aria-label={tr("Operación")}
               placeholder="0"
               spellCheck={false}
               autoComplete="off"
@@ -234,7 +236,7 @@ export function PaginaCalculadora() {
           <div className={clsx("grid gap-1.5 p-3 pt-1", modo === "cientifica" ? "min-[760px]:grid-cols-[1.25fr_1fr]" : "")}>
             {modo === "cientifica" && (
               <div className="grid grid-cols-5 gap-1.5 self-start">
-                {CIENTIFICAS.flat().map((t, i) => boton({ ...t, tipo: "funcion" }, i))}
+                {CIENTIFICAS.flat().map((tecla, i) => boton({ ...tecla, tipo: "funcion" }, i))}
               </div>
             )}
             <div className="grid grid-cols-4 gap-1.5">{NUMERICAS.flat().map(boton)}</div>
@@ -244,18 +246,18 @@ export function PaginaCalculadora() {
       lateral={
         <Card className="p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-body font-semibold text-fg">Historial</h2>
+            <h2 className="text-body font-semibold text-fg">{tr("Historial")}</h2>
             {historial.length > 0 && (
-              <Button variant="subtle" className="h-7" onClick={() => setHistorial([])}>Borrar</Button>
+              <Button variant="subtle" className="h-7" onClick={() => setHistorial([])}>{tr("Borrar")}</Button>
             )}
           </div>
           {historial.length === 0 ? (
-            <p className="text-body text-fg-secondary">Tus cuentas aparecerán aquí.</p>
+            <p className="text-body text-fg-secondary">{tr("Tus cuentas aparecerán aquí.")}</p>
           ) : (
             <ul className="flex max-h-[420px] flex-col gap-1 overflow-y-auto">
               {historial.map((h, i) => (
                 <li key={`${h.expr}-${i}`}>
-                  <button type="button" onClick={() => insertar(h.res)} title="Usar este resultado" className="rounded-control reveal flex w-full flex-col items-end px-2 py-1.5 text-right transition-colors duration-exit ease-fluent hover:bg-layer-alt">
+                  <button type="button" onClick={() => insertar(h.res)} title={tr("Usar este resultado")} className="rounded-control reveal flex w-full flex-col items-end px-2 py-1.5 text-right transition-colors duration-exit ease-fluent hover:bg-layer-alt">
                     <span className="tabular w-full truncate text-caption text-fg-secondary">{h.expr}</span>
                     <span className="tabular text-body font-semibold text-fg">= {h.res}</span>
                   </button>

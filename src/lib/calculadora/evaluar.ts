@@ -1,10 +1,19 @@
+import { T, type Variables } from "../i18n/nucleo.ts";
+
 /**
  * Calculadora: evalúa lo que se escribe («2+3×sin(30)», «√(16)+5!», «15%»…) con un analizador propio.
  * No usa `eval` ni `Function`: solo entiende números, operadores, paréntesis, constantes y las funciones de
  * la lista, así que no puede ejecutar nada más.
  */
 
-export class ErrorCalculo extends Error {}
+export class ErrorCalculo extends Error {
+  /** Lo que completa el mensaje (que es una clave de traducción con {marcadores}). */
+  variables?: Variables;
+  constructor(mensaje: string, variables?: Variables) {
+    super(mensaje);
+    this.variables = variables;
+  }
+}
 
 export interface OpcionesCalculo {
   /** true = los ángulos de sin, cos, tan… van en grados; false = en radianes. */
@@ -42,7 +51,7 @@ function tokenizar(texto: string): Token[] {
       const exp = /^e[+-]?\d+/.exec(s.slice(j));
       if (exp) j += exp[0].length;
       const n = Number(s.slice(i, j));
-      if (!Number.isFinite(n) || /\..*\./.test(s.slice(i, j).replace(/e.*/, ""))) throw new ErrorCalculo("Número mal escrito");
+      if (!Number.isFinite(n) || /\..*\./.test(s.slice(i, j).replace(/e.*/, ""))) throw new ErrorCalculo(T("Número mal escrito"));
       tokens.push({ t: "num", v: n });
       i = j;
     } else if (/[a-z]/.test(c)) {
@@ -54,14 +63,14 @@ function tokenizar(texto: string): Token[] {
       tokens.push({ t: "op", v: c });
       i++;
     } else {
-      throw new ErrorCalculo(`No entiendo «${c}»`);
+      throw new ErrorCalculo(T("No entiendo «{c}»"), { c });
     }
   }
   return tokens;
 }
 
 function factorial(n: number): number {
-  if (!Number.isInteger(n) || n < 0) throw new ErrorCalculo("El factorial es solo de enteros desde 0");
+  if (!Number.isInteger(n) || n < 0) throw new ErrorCalculo(T("El factorial es solo de enteros desde 0"));
   if (n > 170) return Infinity;
   let r = 1;
   for (let k = 2; k <= n; k++) r *= k;
@@ -71,7 +80,7 @@ function factorial(n: number): number {
 /** Evalúa la expresión. Lanza `ErrorCalculo` con un mensaje corto si no se puede. */
 export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number {
   const tokens = tokenizar(texto);
-  if (tokens.length === 0) throw new ErrorCalculo("Escribe una operación");
+  if (tokens.length === 0) throw new ErrorCalculo(T("Escribe una operación"));
   let pos = 0;
 
   const ver = () => tokens[pos];
@@ -93,26 +102,26 @@ export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number
         return Math.abs(r) < 1e-15 ? 0 : r;
       }
       case "tan": {
-        if (grados && Math.abs(((x % 180) + 180) % 180 - 90) < 1e-9) throw new ErrorCalculo("La tangente no existe ahí");
+        if (grados && Math.abs(((x % 180) + 180) % 180 - 90) < 1e-9) throw new ErrorCalculo(T("La tangente no existe ahí"));
         const r = Math.tan(aRad(x));
         return Math.abs(r) < 1e-15 ? 0 : r;
       }
       case "asin":
-        if (x < -1 || x > 1) throw new ErrorCalculo("El arcoseno va de −1 a 1");
+        if (x < -1 || x > 1) throw new ErrorCalculo(T("El arcoseno va de −1 a 1"));
         return deRad(Math.asin(x));
       case "acos":
-        if (x < -1 || x > 1) throw new ErrorCalculo("El arcocoseno va de −1 a 1");
+        if (x < -1 || x > 1) throw new ErrorCalculo(T("El arcocoseno va de −1 a 1"));
         return deRad(Math.acos(x));
       case "atan":
         return deRad(Math.atan(x));
       case "ln":
-        if (x <= 0) throw new ErrorCalculo("El logaritmo pide un número mayor que 0");
+        if (x <= 0) throw new ErrorCalculo(T("El logaritmo pide un número mayor que 0"));
         return Math.log(x);
       case "log":
-        if (x <= 0) throw new ErrorCalculo("El logaritmo pide un número mayor que 0");
+        if (x <= 0) throw new ErrorCalculo(T("El logaritmo pide un número mayor que 0"));
         return Math.log10(x);
       case "sqrt":
-        if (x < 0) throw new ErrorCalculo("No hay raíz cuadrada real de un negativo");
+        if (x < 0) throw new ErrorCalculo(T("No hay raíz cuadrada real de un negativo"));
         return Math.sqrt(x);
       case "cbrt":
         return Math.cbrt(x);
@@ -123,7 +132,7 @@ export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number
       case "fact":
         return factorial(x);
       default:
-        throw new ErrorCalculo(`No conozco «${nombre}»`);
+        throw new ErrorCalculo(T("No conozco «{nombre}»"), { nombre });
     }
   };
 
@@ -135,7 +144,7 @@ export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number
 
   function primario(): number {
     const t = ver();
-    if (!t) throw new ErrorCalculo("Falta un número");
+    if (!t) throw new ErrorCalculo(T("Falta un número"));
     if (t.t === "num") {
       pos++;
       return t.v;
@@ -156,9 +165,9 @@ export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number
         const arg = esOp("(") ? primario() : potencia();
         return funcion(nombre, arg);
       }
-      throw new ErrorCalculo(`No conozco «${t.v}»`);
+      throw new ErrorCalculo(T("No conozco «{nombre}»"), { nombre: String(t.v) });
     }
-    throw new ErrorCalculo("Falta un número");
+    throw new ErrorCalculo(T("Falta un número"));
   }
 
   function posfijo(): number {
@@ -205,7 +214,7 @@ export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number
       } else if (esOp("/")) {
         pos++;
         const d = unario();
-        if (d === 0) throw new ErrorCalculo("No se puede dividir entre 0");
+        if (d === 0) throw new ErrorCalculo(T("No se puede dividir entre 0"));
         v /= d;
       } else if (empiezaValor()) {
         v *= unario();
@@ -227,9 +236,9 @@ export function evaluar(texto: string, { grados, ans }: OpcionesCalculo): number
   }
 
   const r = suma();
-  if (pos < tokens.length) throw new ErrorCalculo("Sobra algo al final");
-  if (Number.isNaN(r)) throw new ErrorCalculo("Resultado no válido");
-  if (!Number.isFinite(r)) throw new ErrorCalculo("El resultado es demasiado grande");
+  if (pos < tokens.length) throw new ErrorCalculo(T("Sobra algo al final"));
+  if (Number.isNaN(r)) throw new ErrorCalculo(T("Resultado no válido"));
+  if (!Number.isFinite(r)) throw new ErrorCalculo(T("El resultado es demasiado grande"));
   return r;
 }
 

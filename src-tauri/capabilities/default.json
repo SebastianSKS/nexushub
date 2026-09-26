@@ -12,6 +12,7 @@
     "core:window:allow-start-dragging",
     "core:window:allow-is-maximized",
     "core:window:allow-set-effects",
+    "core:webview:allow-set-webview-zoom",
     "core:window:allow-hide",
     "autostart:default",
     "updater:default",

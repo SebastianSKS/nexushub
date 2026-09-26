@@ -1,5 +1,7 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
+import { useAjustesStore } from "@/store/ajustes-store";
 import { useT, localeActual } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -43,6 +45,8 @@ function carriles(clases: Clase[]): { clase: Clase; carril: number; de: number }
 /** /horario — el horario semanal de clases, escaneado desde una imagen o escrito a mano. */
 export function PaginaHorario() {
   const t = useT();
+  const { hora, enPunto } = useHora();
+  const anchoRiel = useAjustesStore((s) => s.formatoHora) === "12h" ? 84 : 56;
   const clases = useHorarioStore((s) => s.clases);
   const [escaneo, setEscaneo] = useState(false);
   const [dialogo, setDialogo] = useState(false);
@@ -115,17 +119,17 @@ export function PaginaHorario() {
           ) : (
             <section aria-label={t("Horario semanal")} className="overflow-x-auto rounded-[8px] border border-stroke bg-layer shadow-card">
               <div className="min-w-[640px]">
-                <div className="grid border-b border-stroke" style={{ gridTemplateColumns: `56px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
+                <div className="grid border-b border-stroke" style={{ gridTemplateColumns: `${anchoRiel}px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
                   <div />
                   {Array.from({ length: diasVisibles }, (_, i) => (
                     <div key={i} className={clsx("py-2.5 text-center text-body font-semibold", i === hoy ? "text-accent-text" : "text-fg")}>{nombreDiaSemana(i)}</div>
                   ))}
                 </div>
-                <div className="grid" style={{ gridTemplateColumns: `56px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
+                <div className="grid" style={{ gridTemplateColumns: `${anchoRiel}px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
                   <div className="relative" style={{ height: alto }} aria-hidden>
                     {horas.slice(0, -1).map((h) => (
                       <span key={h} className="absolute right-2 -translate-y-1/2 text-caption text-fg-tertiary" style={{ top: (h - minIni) * PX_POR_MINUTO + 10 }}>
-                        {String(h / 60).padStart(2, "0")}:00
+                        {enPunto(h / 60)}
                       </span>
                     ))}
                   </div>
@@ -143,13 +147,13 @@ export function PaginaHorario() {
                             key={clase.id}
                             type="button"
                             onClick={() => abrir(clase)}
-                            aria-label={t("Editar {materia}, {dia} de {inicio} a {fin}", { materia: clase.materia, dia: nombreDiaSemana(clase.dia), inicio: clase.inicio, fin: clase.fin })}
-                            title={`${clase.materia}${clase.codigo ? ` (${clase.codigo})` : ""}\n${clase.inicio} – ${clase.fin}${clase.docente ? `\n${clase.docente}` : ""}${clase.aula ? `\n${t("Aula {aula}", { aula: clase.aula })}` : ""}`}
+                            aria-label={t("Editar {materia}, {dia} de {inicio} a {fin}", { materia: clase.materia, dia: nombreDiaSemana(clase.dia), inicio: hora(clase.inicio), fin: hora(clase.fin) })}
+                            title={`${clase.materia}${clase.codigo ? ` (${clase.codigo})` : ""}\n${hora(clase.inicio)} – ${hora(clase.fin)}${clase.docente ? `\n${clase.docente}` : ""}${clase.aula ? `\n${t("Aula {aula}", { aula: clase.aula })}` : ""}`}
                             className="absolute overflow-hidden rounded-[4px] px-1.5 py-1 text-left shadow-card transition-[filter] duration-exit hover:brightness-110"
                             style={{ top: top + 1, height: altura - 2, left: `calc(${(carril / de) * 100}% + 2px)`, width: `calc(${100 / de}% - 4px)`, backgroundColor: clase.color, color: colorDeTexto(clase.color) }}
                           >
                             <span className="block text-caption font-semibold leading-tight">{clase.materia}</span>
-                            {altura > 46 && <span className="mt-0.5 block text-caption leading-tight opacity-90">{clase.inicio} – {clase.fin}</span>}
+                            {altura > 46 && <span className="mt-0.5 block text-caption leading-tight opacity-90">{hora(clase.inicio)} – {hora(clase.fin)}</span>}
                             {altura > 78 && clase.docente && <span className="mt-0.5 block text-caption leading-tight opacity-90">{clase.docente}</span>}
                           </button>
                         );

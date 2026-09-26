@@ -166,15 +166,24 @@
   animation: skeleton-shimmer 1.6s linear infinite;
 }
 
+/* Menos movimiento: cuando Windows lo pide (y no se eligió lo contrario en Configuración) o cuando se eligió reducirlo siempre. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :root:not([data-movimiento="normal"]) *,
+  :root:not([data-movimiento="normal"]) *::before,
+  :root:not([data-movimiento="normal"]) *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+:root[data-movimiento="reducido"] *,
+:root[data-movimiento="reducido"] *::before,
+:root[data-movimiento="reducido"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* --- Slider Fluent (progreso, volumen) ----------------------------------------
@@ -298,5 +307,6 @@
   animation: marquesina 9s linear infinite alternate;
 }
 @media (prefers-reduced-motion: reduce) {
-  .marquesina-mov { animation: none; }
+  :root:not([data-movimiento="normal"]) .marquesina-mov { animation: none; }
 }
+:root[data-movimiento="reducido"] .marquesina-mov { animation: none; }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -23,6 +24,7 @@ interface Elemento {
 
 /** Una tarjeta al estilo de la columna de YouTube: miniatura grande a la izquierda y el texto a la derecha. */
 function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: boolean; onAbrir: () => void; onAccion: () => void }) {
+  const t = useT();
   const { pista } = el;
   const visto = useProgresoVideoStore((s) => s.progreso[pista.id]);
   const meta = [pista.artista, el.publicado ? fechaRelativa(el.publicado) : ""].filter(Boolean).join(" · ");
@@ -30,7 +32,7 @@ function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: bool
 
   return (
     <div className={clsx("group relative flex gap-2.5 rounded-control p-1.5 transition-colors duration-exit ease-fluent hover:bg-layer-alt", actual && "bg-layer-alt")}>
-      <button type="button" onClick={onAbrir} aria-label={`Reproducir ${pista.titulo}, de ${pista.artista}`} aria-current={actual ? "true" : undefined} className="flex min-w-0 flex-1 gap-2.5 text-left">
+      <button type="button" onClick={onAbrir} aria-label={t("Reproducir {titulo}, de {artista}", { titulo: pista.titulo, artista: pista.artista })} aria-current={actual ? "true" : undefined} className="flex min-w-0 flex-1 gap-2.5 text-left">
         <span className="relative block aspect-video w-[152px] shrink-0 overflow-hidden rounded-[8px] bg-layer-alt">
           {/* eslint-disable-next-line @next/next/no-img-element -- miniatura remota de YouTube */}
           <img src={pista.caratula} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
@@ -41,7 +43,7 @@ function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: bool
           )}
           {actual && (
             <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-caption font-semibold text-white" aria-hidden>
-              Reproduciendo
+              {t("Reproduciendo")}
             </span>
           )}
           {visto && !actual && (
@@ -63,8 +65,8 @@ function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: bool
         <button
           type="button"
           onClick={onAccion}
-          aria-label={enCola ? `Quitar de la cola: ${pista.titulo}` : `Añadir a la cola: ${pista.titulo}`}
-          title={enCola ? "Quitar de la cola" : "Añadir a la cola"}
+          aria-label={enCola ? t("Quitar de la cola: {titulo}", { titulo: pista.titulo }) : t("Añadir a la cola: {titulo}", { titulo: pista.titulo })}
+          title={enCola ? t("Quitar de la cola") : t("Añadir a la cola")}
           className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-layer text-fg opacity-0 shadow-card transition-opacity duration-exit ease-fluent hover:bg-layer-alt focus-visible:opacity-100 group-hover:opacity-100"
         >
           {enCola ? <Dismiss20Regular /> : <Add20Regular />}
@@ -79,6 +81,7 @@ function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: bool
  * automática) y debajo más videos de tus canales para seguir viendo. Los chips filtran por canal.
  */
 export function ColaVideos() {
+  const t = useT();
   const router = useRouter();
   const cola = useReproductorStore((s) => s.cola);
   const idxActual = useReproductorStore((s) => s.indiceActual);
@@ -112,19 +115,19 @@ export function ColaVideos() {
   const canal = actual?.artista;
 
   return (
-    <section aria-label="Siguiente" className="flex min-h-0 flex-col gap-3">
+    <section aria-label={t("Siguiente")} className="flex min-h-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-3 px-1">
-        <h2 className="text-body font-semibold text-fg">Siguiente</h2>
+        <h2 className="text-body font-semibold text-fg">{t("Siguiente")}</h2>
         <label className="flex items-center gap-2 text-caption text-fg-secondary">
-          Reproducción automática
-          <Switch checked={siguienteAuto} onChange={(v) => useAjustesStore.getState().cambiar({ siguienteAutomatico: v })} label="Reproducir el siguiente video automáticamente" />
+          {t("Reproducción automática")}
+          <Switch checked={siguienteAuto} onChange={(v) => useAjustesStore.getState().cambiar({ siguienteAutomatico: v })} label={t("Reproducir el siguiente video automáticamente")} />
         </label>
       </div>
 
-      <div className="flex flex-wrap gap-2 px-1" role="group" aria-label="Filtrar">
+      <div className="flex flex-wrap gap-2 px-1" role="group" aria-label={t("Filtrar")}>
         {[
-          { valor: false, texto: "Todo" },
-          ...(canal ? [{ valor: true, texto: `De ${canal}` }] : []),
+          { valor: false, texto: t("Todo") },
+          ...(canal ? [{ valor: true, texto: t("De {canal}", { canal }) }] : []),
         ].map((c) => (
           <button
             key={c.texto}
@@ -148,7 +151,7 @@ export function ColaVideos() {
         {recomendados.map((el) => (
           <Tarjeta key={`r-${el.pista.id}`} el={el} actual={false} onAbrir={() => router.push(rutaVer(el.pista.id))} onAccion={() => encolar(el.pista)} />
         ))}
-        {siguientes.length === 0 && recomendados.length === 0 && <p className="px-1 py-3 text-body text-fg-secondary">No hay más videos que mostrar por ahora.</p>}
+        {siguientes.length === 0 && recomendados.length === 0 && <p className="px-1 py-3 text-body text-fg-secondary">{t("No hay más videos que mostrar por ahora.")}</p>}
       </div>
     </section>
   );

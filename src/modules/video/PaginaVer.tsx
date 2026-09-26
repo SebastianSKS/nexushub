@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Next20Regular, Previous20Regular } from "@fluentui/react-icons";
@@ -30,7 +31,7 @@ const ID_VIDEO = /^[\w-]{11}$/;
 
 /** Título y autor de un video de YouTube que no está en ninguno de tus canales (oEmbed, sin clave). */
 async function metadatosDe(id: string): Promise<{ titulo: string; artista: string; caratula: string }> {
-  const respaldo = { titulo: "Video de YouTube", artista: "YouTube", caratula: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` };
+  const respaldo = { titulo: traducir("Video de YouTube"), artista: "YouTube", caratula: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` };
   try {
     const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`;
     const res = await fetchExterno(url, { cache: "no-store" });
@@ -44,6 +45,7 @@ async function metadatosDe(id: string): Promise<{ titulo: string; artista: strin
 
 /** /video/ver?id= — el video, en el «hueco» de la página. El reproductor real vive en la raíz. */
 export function PaginaVer() {
+  const t = useT();
   const router = useRouter();
   const id = useSearchParams().get("id") ?? "";
   const valido = ID_VIDEO.test(id);
@@ -105,7 +107,7 @@ export function PaginaVer() {
     });
   }, [valido, router]);
 
-  const titulo = pista?.titulo ?? (valido ? "Cargando video…" : "Video no válido");
+  const titulo = pista?.titulo ?? (valido ? t("Cargando video…") : t("Video no válido"));
   const canalCrumb = video ? [{ etiqueta: video.canalNombre, href: rutaCanal(video.canalId) }] : [];
   const descripcion = pista ? [pista.artista, video ? fechaRelativa(video.publicado) : ""].filter(Boolean).join(" · ") : "";
   const urlYouTube = `https://www.youtube.com/watch?v=${id}`;
@@ -116,7 +118,7 @@ export function PaginaVer() {
       <PlantillaPagina
         migas={[{ etiqueta: "Video", href: "/video" }, ...canalCrumb, { etiqueta: titulo }]}
         titulo={titulo}
-        descripcion={descripcion || "Reproductor de video"}
+        descripcion={descripcion || t("Reproductor de video")}
         accion={
           valido && (
             <div className="flex gap-2">
@@ -125,18 +127,18 @@ export function PaginaVer() {
                 disabled={!pistaFavorito}
                 onClick={() => pistaFavorito && useFavoritosStore.getState().alternarFavorito(pistaFavorito)}
               >
-                {favorito ? "En favoritos" : "Añadir a favoritos"}
+                {favorito ? t("En favoritos") : t("Añadir a favoritos")}
               </Button>
               <Button variant="accent" onClick={() => void abrirExterno(urlYouTube)}>
-                Abrir en YouTube
+                {t("Abrir en YouTube")}
               </Button>
             </div>
           )
         }
         principal={
           !valido ? (
-            <InfoBar severity="error" title="Este enlace no lleva a un video." action={<BotonEnlace href="/video">Ir a Video</BotonEnlace>}>
-              Falta el identificador del video o no es válido (debe tener 11 caracteres).
+            <InfoBar severity="error" title={t("Este enlace no lleva a un video.")} action={<BotonEnlace href="/video">{t("Ir a Video")}</BotonEnlace>}>
+              {t("Falta el identificador del video o no es válido (debe tener 11 caracteres).")}
             </InfoBar>
           ) : (
             <>
@@ -145,11 +147,11 @@ export function PaginaVer() {
               </div>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-body text-fg-secondary">Velocidad</span>
+                  <span className="text-body text-fg-secondary">{t("Velocidad")}</span>
                   <Selector<number>
-                    label="Velocidad de reproducción"
+                    label={t("Velocidad de reproducción")}
                     value={velocidad}
-                    options={VELOCIDADES.map((v) => ({ value: v, label: v === 1 ? "Normal" : `${v}×` }))}
+                    options={VELOCIDADES.map((v) => ({ value: v, label: v === 1 ? t("Normal") : `${v}×` }))}
                     onChange={(v) => {
                       useProgresoVideoStore.getState().setVelocidad(v);
                       obtenerReproductor()?.setPlaybackRate(v);
@@ -159,7 +161,7 @@ export function PaginaVer() {
                 </div>
                 {retomadoEn > 0 && !empezoDeCero && (
                   <p className="flex items-center gap-2 text-body text-fg-secondary">
-                    Retomaste desde {formatDuration(retomadoEn)}.
+                    {t("Retomaste desde {tiempo}.", { tiempo: formatDuration(retomadoEn) })}
                     <Button
                       variant="subtle"
                       className="h-7"
@@ -169,7 +171,7 @@ export function PaginaVer() {
                         setEmpezoDeCero(true);
                       }}
                     >
-                      Empezar de nuevo
+                      {t("Empezar de nuevo")}
                     </Button>
                   </p>
                 )}
@@ -181,7 +183,7 @@ export function PaginaVer() {
                   action={
                     hayCola ? (
                       <Button className="h-7" onClick={() => useReproductorStore.getState().siguiente()}>
-                        Saltar al siguiente
+                        {t("Saltar al siguiente")}
                       </Button>
                     ) : undefined
                   }
@@ -190,10 +192,10 @@ export function PaginaVer() {
               {hayCola && (
                 <div className="flex gap-2">
                   <Button icon={<Previous20Regular />} onClick={() => useReproductorStore.getState().anterior()}>
-                    Anterior
+                    {t("Anterior")}
                   </Button>
                   <Button icon={<Next20Regular />} onClick={() => useReproductorStore.getState().siguiente()}>
-                    Siguiente
+                    {t("Siguiente")}
                   </Button>
                 </div>
               )}

@@ -45,6 +45,7 @@ const ANCHO_COLAPSO = 1000;
 export function Ventana({ children }: { children: ReactNode }) {
   const t = useT();
   const cargarAjustes = useAjustesStore((s) => s.cargar);
+  const movimiento = useAjustesStore((s) => s.reducirMovimiento);
   const colapsadoAuto = useRef(false);
 
   useGlobalShortcuts();
@@ -87,7 +88,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={movimiento === "si" ? "always" : movimiento === "no" ? "never" : "user"}>
       <a
         href="#contenido"
         className="rounded-control absolute left-3 top-3 z-[60] -translate-y-[200%] bg-accent px-4 py-2 text-body text-accent-on focus:translate-y-0"

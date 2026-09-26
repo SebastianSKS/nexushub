@@ -260,6 +260,18 @@ fn es_pdf(nombre: &str) -> bool {
     Path::new(nombre).extension().and_then(|e| e.to_str()).is_some_and(|e| e.eq_ignore_ascii_case("pdf"))
 }
 
+/// Los archivos cuyo texto se puede leer para el buscador: PDF y documentos de Office nuevos (.docx, .xlsx, .pptx).
+/// Los temporales que Office deja mientras un archivo está abierto («~$tarea.docx») no cuentan.
+fn es_indexable(nombre: &str) -> bool {
+    if nombre.starts_with("~$") {
+        return false;
+    }
+    Path::new(nombre)
+        .extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|e| ["pdf", "docx", "xlsx", "pptx"].iter().any(|x| e.eq_ignore_ascii_case(x)))
+}
+
 #[derive(Serialize)]
 pub struct PdfListado {
     carpeta: String,
@@ -268,7 +280,7 @@ pub struct PdfListado {
     modificado: u64,
 }
 
-/// Todos los PDF que hay en las carpetas de las materias (para que el buscador sepa qué leer).
+/// Todos los PDF y documentos de Office que hay en las carpetas de las materias (para que el buscador sepa qué leer).
 #[tauri::command]
 pub async fn pdfs_listar(app: AppHandle) -> Result<Vec<PdfListado>, String> {
     let raiz = base(&app)?;
@@ -282,7 +294,7 @@ pub async fn pdfs_listar(app: AppHandle) -> Result<Vec<PdfListado>, String> {
             if let Ok(rd) = std::fs::read_dir(c.path()) {
                 for f in rd.flatten() {
                     let nombre = f.file_name().to_string_lossy().to_string();
-                    if let (true, true, Ok(m)) = (f.path().is_file(), es_pdf(&nombre), f.metadata()) {
+                    if let (true, true, Ok(m)) = (f.path().is_file(), es_indexable(&nombre), f.metadata()) {
                         lista.push(PdfListado { carpeta: carpeta.clone(), nombre, bytes: m.len(), modificado: m.modified().map(segs).unwrap_or(0) });
                     }
                 }
@@ -294,12 +306,12 @@ pub async fn pdfs_listar(app: AppHandle) -> Result<Vec<PdfListado>, String> {
     .map_err(|e| e.to_string())?
 }
 
-/// Los bytes de un PDF de una carpeta de materia, para leerle el texto. Solo PDF y solo dentro de la carpeta base.
+/// Los bytes de un PDF o documento de Office de una carpeta de materia, para leerle el texto. Solo esos tipos y solo dentro de la carpeta base.
 #[tauri::command]
 pub async fn archivo_leer(app: AppHandle, carpeta: String, nombre: String) -> Result<Response, String> {
     let ruta = base(&app)?.join(nombre_existente(&carpeta)?).join(nombre_existente(&nombre)?);
-    if !es_pdf(&nombre) {
-        return Err("Solo se pueden leer PDF.".into());
+    if !es_indexable(&nombre) {
+        return Err("Solo se pueden leer PDF y documentos de Office.".into());
     }
     tauri::async_runtime::spawn_blocking(move || {
         let meta = std::fs::metadata(&ruta).map_err(|_| "Ese archivo ya no existe.".to_string())?;
@@ -447,5 +459,24 @@ pub fn descarga_mostrar(ruta: String) -> Result<(), String> {
         #[cfg(not(target_os = "macos"))]
         let mut orden = std::process::Command::new("xdg-open");
         orden.arg(carpeta).spawn().map(|_| ()).map_err(|e| e.to_string())
+    }
+}
+
+#[cfg(test)]
+mod pruebas {
+    use super::*;
+
+    #[test]
+    fn indexa_pdf_y_office_nuevo_sin_importar_mayusculas() {
+        for n in ["a.pdf", "Tarea.DOCX", "datos.xlsx", "expo.PPTX"] {
+            assert!(es_indexable(n), "{n} debería indexarse");
+        }
+    }
+
+    #[test]
+    fn no_indexa_lo_demas_ni_los_temporales_de_office() {
+        for n in ["viejo.doc", "hoja.xls", "foto.png", "sin_extension", "~$tarea.docx", "notas.txt"] {
+            assert!(!es_indexable(n), "{n} no debería indexarse");
+        }
     }
 }

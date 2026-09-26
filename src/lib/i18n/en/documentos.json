@@ -96,7 +96,7 @@
   "El archivo pesa demasiado (máximo 200 MB).": "The file is too large (maximum 200 MB).",
   "El archivo pesa demasiado para leerlo.": "The file is too large to read.",
   "El archivo está vacío o pesa demasiado (máximo 100 MB).": "The file is empty or too large (maximum 100 MB).",
-  "Solo se pueden leer PDF.": "Only PDFs can be read.",
+  "Solo se pueden leer PDF y documentos de Office.": "Only PDFs and Office documents can be read.",
   "Ruta no permitida.": "Path not allowed.",
   "Ese tipo de archivo no es válido.": "That file type isn't valid.",
   "Ese tipo de archivo no se puede convertir con Office.": "That file type can't be converted with Office.",

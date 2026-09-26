@@ -20,7 +20,7 @@ export const MENSAJES_DEL_SISTEMA = [
   T("El archivo pesa demasiado (máximo 200 MB)."),
   T("El archivo pesa demasiado para leerlo."),
   T("El archivo está vacío o pesa demasiado (máximo 100 MB)."),
-  T("Solo se pueden leer PDF."),
+  T("Solo se pueden leer PDF y documentos de Office."),
   T("Ruta no permitida."),
   T("Ese tipo de archivo no es válido."),
   T("Ese tipo de archivo no se puede convertir con Office."),

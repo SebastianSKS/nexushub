@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, traducir } from "@/lib/i18n";
 import { Button } from "@/components/fluent/Button";
 import { TarjetaAjuste } from "@/components/fluent/TarjetaAjuste";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
@@ -8,24 +9,25 @@ import { useActualizacionesStore, type EstadoActualizacion } from "@/store/actua
 const texto = (estado: EstadoActualizacion, version: string | null, progreso: number | null): string => {
   switch (estado) {
     case "buscando":
-      return "Buscando actualizaciones…";
+      return traducir("Buscando actualizaciones…");
     case "al-dia":
-      return "Ya tienes la última versión.";
+      return traducir("Ya tienes la última versión.");
     case "disponible":
-      return `Hay una versión nueva: Nexo ${version}.`;
+      return traducir("Hay una versión nueva: Nexo {version}.", { version: version ?? "" });
     case "descargando":
-      return progreso !== null ? `Descargando la actualización… ${progreso} %` : "Descargando la actualización…";
+      return progreso !== null ? traducir("Descargando la actualización… {n} %", { n: progreso }) : traducir("Descargando la actualización…");
     case "lista":
-      return "Instalada. Reinicia para terminar.";
+      return traducir("Instalada. Reinicia para terminar.");
     case "error":
-      return "No se pudo comprobar. Revisa tu conexión a internet.";
+      return traducir("No se pudo comprobar. Revisa tu conexión a internet.");
     default:
-      return "Nexo busca solo al abrir. También puedes comprobarlo ahora.";
+      return traducir("Nexo busca solo al abrir. También puedes comprobarlo ahora.");
   }
 };
 
 /** Busca, descarga e instala actualizaciones desde el repositorio configurado en tauri.conf.json. Comparte estado con el aviso «Actualizar ahora». */
 export function AjusteActualizaciones() {
+  const t = useT();
   const escritorio = useEsEscritorio();
   const { estado, version, progreso } = useActualizacionesStore();
   const buscar = useActualizacionesStore((s) => s.buscar);
@@ -35,18 +37,18 @@ export function AjusteActualizaciones() {
   if (!escritorio) return null;
 
   return (
-    <TarjetaAjuste glifo="actualizar" titulo="Actualizaciones" descripcion={texto(estado, version, progreso)}>
+    <TarjetaAjuste glifo="actualizar" titulo={t("Actualizaciones")} descripcion={texto(estado, version, progreso)}>
       {estado === "lista" ? (
         <Button variant="accent" onClick={() => void reiniciar()}>
-          Reiniciar ahora
+          {t("Reiniciar ahora")}
         </Button>
       ) : estado === "disponible" ? (
         <Button variant="accent" onClick={() => void instalar()}>
-          Actualizar ahora
+          {t("Actualizar ahora")}
         </Button>
       ) : (
         <Button onClick={() => void buscar()} disabled={estado === "buscando" || estado === "descargando"}>
-          Buscar actualizaciones
+          {t("Buscar actualizaciones")}
         </Button>
       )}
     </TarjetaAjuste>

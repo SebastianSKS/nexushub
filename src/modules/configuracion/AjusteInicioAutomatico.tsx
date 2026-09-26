@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Switch } from "@/components/fluent/Switch";
 import { TarjetaAjuste } from "@/components/fluent/TarjetaAjuste";
@@ -11,6 +12,7 @@ import { esEscritorio } from "@/lib/entorno";
  * guarda en el store de ajustes: se lee de Windows al abrir la página y se cambia ahí mismo.
  */
 export function AjusteInicioAutomatico() {
+  const t = useT();
   const [disponible, setDisponible] = useState(false);
   const [activo, setActivo] = useState(false);
   const [error, setError] = useState(false);
@@ -27,10 +29,10 @@ export function AjusteInicioAutomatico() {
   if (!disponible) return null;
 
   return (
-    <TarjetaAjuste glifo="energia" titulo="Iniciar con Windows" descripcion={error ? "No se pudo comprobar. Puede que Windows lo bloquee con una política del sistema." : "Abre Nexo, minimizado en la bandeja, al encender el equipo."}>
+    <TarjetaAjuste glifo="energia" titulo={t("Iniciar con Windows")} descripcion={error ? t("No se pudo comprobar. Puede que Windows lo bloquee con una política del sistema.") : t("Abre Nexo, minimizado en la bandeja, al encender el equipo.")}>
       <Switch
         checked={activo}
-        label="Iniciar con Windows"
+        label={t("Iniciar con Windows")}
         onChange={(v) => {
           void (async () => {
             try {

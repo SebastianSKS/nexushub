@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/fluent/Button";
@@ -36,6 +37,7 @@ function filtrar(videos: VideoCanal[], consulta: string): VideoCanal[] {
 
 /** Muro de videos de los canales indicados (todos = Novedades). Al pulsar uno se abre /video/ver?id=. */
 export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
+  const t = useT();
   const router = useRouter();
   const canales = useCanalesStore((s) => s.canales);
   const feeds = useCanalesStore((s) => s.feeds);
@@ -68,9 +70,9 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
   if (iniciado && canales.length === 0) {
     return (
       <Card className="flex flex-col items-start gap-3 p-6">
-        <h2 className="text-subtitle text-fg">Aún no sigues ningún canal</h2>
-        <p className="text-body text-fg-secondary">Usa «Agregar canal» (arriba a la derecha) y pega el enlace de un canal de YouTube, o recupera los canales sugeridos.</p>
-        <Button onClick={restaurarSugeridos}>Restaurar canales sugeridos</Button>
+        <h2 className="text-subtitle text-fg">{t("Aún no sigues ningún canal")}</h2>
+        <p className="text-body text-fg-secondary">{t("Usa «Agregar canal» (arriba a la derecha) y pega el enlace de un canal de YouTube, o recupera los canales sugeridos.")}</p>
+        <Button onClick={restaurarSugeridos}>{t("Restaurar canales sugeridos")}</Button>
       </Card>
     );
   }
@@ -79,52 +81,52 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
     <section aria-labelledby="muro-titulo" aria-busy={cargando}>
       <h2 id="muro-titulo" className="mb-3 text-subtitle text-fg">
         {titulo}
-        {busqueda.trim() && <span className="ml-2 text-body font-normal text-fg-secondary">· filtrando por «{busqueda.trim()}»</span>}
+        {busqueda.trim() && <span className="ml-2 text-body font-normal text-fg-secondary">· {t("filtrando por «{busqueda}»", { busqueda: busqueda.trim() })}</span>}
       </h2>
 
       {errores.length > 0 && (
         <div className="mb-4 flex flex-col gap-2">
           {errores.slice(0, 3).map(({ id, feed }) => {
-            const nombre = canales.find((c) => c.id === id)?.nombre ?? "canal";
+            const nombre = canales.find((c) => c.id === id)?.nombre ?? t("canal");
             return (
               <InfoBar
                 key={id}
                 severity="warning"
-                title={`No se pudo actualizar «${nombre}».`}
+                title={t("No se pudo actualizar «{nombre}».", { nombre })}
                 action={
                   <Button className="h-7" onClick={() => void cargarFeed(id, { fresco: true })}>
-                    Reintentar
+                    {t("Reintentar")}
                   </Button>
                 }
               >
                 {feed?.error?.mensaje} {feed?.error?.pista}
-                {feed && feed.videos.length > 0 && " Se muestran los videos que ya estaban cargados."}
+                {feed && feed.videos.length > 0 && ` ${t("Se muestran los videos que ya estaban cargados.")}`}
               </InfoBar>
             );
           })}
-          {errores.length > 3 && <p className="text-caption text-fg-secondary">Y otros {errores.length - 3} canales con el mismo problema.</p>}
+          {errores.length > 3 && <p className="text-caption text-fg-secondary">{t("Y otros {n} canales con el mismo problema.", { n: errores.length - 3 })}</p>}
         </div>
       )}
 
       {visibles.length === 0 ? (
         cargando ? (
-          <div className={CUADRICULA} role="status" aria-label="Cargando videos">
+          <div className={CUADRICULA} role="status" aria-label={t("Cargando videos")}>
             {Array.from({ length: 12 }, (_, i) => (
               <EsqueletoVideo key={i} />
             ))}
           </div>
         ) : busqueda.trim() ? (
           <Card className="p-6">
-            <p className="text-body text-fg">No hay videos que coincidan con «{busqueda.trim()}».</p>
-            <p className="mt-1 text-body text-fg-secondary">Esta búsqueda solo mira los videos ya cargados de tus canales. Prueba con otra palabra o agrega más canales.</p>
+            <p className="text-body text-fg">{t("No hay videos que coincidan con «{busqueda}».", { busqueda: busqueda.trim() })}</p>
+            <p className="mt-1 text-body text-fg-secondary">{t("Esta búsqueda solo mira los videos ya cargados de tus canales. Prueba con otra palabra o agrega más canales.")}</p>
             <Button className="mt-4" onClick={() => useCanalesStore.getState().setBusqueda("")}>
-              Borrar búsqueda
+              {t("Borrar búsqueda")}
             </Button>
           </Card>
         ) : errores.length > 0 ? null : (
           <Card className="p-6">
-            <p className="text-body text-fg">{ids.length === 1 ? "Este canal no tiene videos publicados todavía." : "Tus canales no tienen videos publicados todavía."}</p>
-            <p className="mt-1 text-body text-fg-secondary">Cuando publiquen algo aparecerá aquí.</p>
+            <p className="text-body text-fg">{ids.length === 1 ? t("Este canal no tiene videos publicados todavía.") : t("Tus canales no tienen videos publicados todavía.")}</p>
+            <p className="mt-1 text-body text-fg-secondary">{t("Cuando publiquen algo aparecerá aquí.")}</p>
           </Card>
         )
       ) : (

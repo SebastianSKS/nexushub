@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PistaCard } from "@/components/reproductor/PistaCard";
@@ -11,6 +12,7 @@ const GRID = "grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4";
 
 /** Tus videos favoritos: solo se muestra cuando hay alguno. */
 export function FavoritosVideo() {
+  const t = useT();
   const router = useRouter();
   // El filtro NO va dentro del selector: .filter() devuelve un array nuevo en cada lectura y eso
   // rompe useSyncExternalStore (bucle infinito). Se lee el array estable y se filtra aparte, memoizado.
@@ -23,8 +25,8 @@ export function FavoritosVideo() {
   if (favoritos.length === 0) return null;
 
   return (
-    <section aria-label="Favoritos">
-      <h2 className="mb-3 text-subtitle text-fg">Favoritos</h2>
+    <section aria-label={t("Favoritos")}>
+      <h2 className="mb-3 text-subtitle text-fg">{t("Favoritos")}</h2>
       <div className={GRID}>
         {favoritos.map((p) => (
           <PistaCard

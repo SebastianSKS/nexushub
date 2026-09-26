@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import clsx from "clsx";
 import { Add20Regular, Checkmark20Regular, Open24Regular, Play24Filled } from "@fluentui/react-icons";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -29,6 +30,7 @@ interface TarjetaVideoProps {
  * «Solo en YouTube», y al pulsarlo abre YouTube en otra pestaña en vez de intentar reproducirlo.
  */
 export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, duracion, onReproducir, onEncolar, onAlternarFavorito }: TarjetaVideoProps) {
+  const t = useT();
   const meta = [video.canalNombre, fechaRelativa(video.publicado)].filter(Boolean).join(" · ");
   // Cuánto va visto (la barra roja de abajo de la miniatura, como en YouTube).
   const visto = useProgresoVideoStore((s) => s.progreso[video.videoId]);
@@ -50,7 +52,7 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
         type="button"
         onClick={abrir}
         aria-label={
-          incrustable ? `Reproducir ${video.titulo}, de ${video.canalNombre}` : `Abrir en YouTube: ${video.titulo}, de ${video.canalNombre}`
+          incrustable ? t("Reproducir {titulo}, de {artista}", { titulo: video.titulo, artista: video.canalNombre }) : t("Abrir en YouTube: {titulo}, de {artista}", { titulo: video.titulo, artista: video.canalNombre })
         }
         aria-current={activo ? "true" : undefined}
         className="block w-full text-left"
@@ -83,16 +85,16 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
               className="absolute left-1.5 top-1.5 rounded-[4px] px-1.5 py-0.5 text-caption font-semibold"
               style={{ backgroundColor: "var(--warning)", color: "#000000" }}
             >
-              Solo en YouTube
+              {t("Solo en YouTube")}
             </span>
           )}
           {activo && incrustable && (
             <span className="absolute left-1.5 top-1.5 rounded-[4px] bg-accent px-1.5 py-0.5 text-caption font-semibold text-accent-on" aria-hidden>
-              Reproduciendo
+              {t("Reproduciendo")}
             </span>
           )}
           {visto && (
-            <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-black/50" title={`Vas en ${formatDuration(visto.t)}`}>
+            <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 bg-black/50" title={t("Vas en {tiempo}", { tiempo: formatDuration(visto.t) })}>
               <span className="block h-full bg-[#ff0000]" style={{ width: `${Math.min(100, (visto.t / visto.d) * 100)}%` }} />
             </span>
           )}
@@ -118,7 +120,7 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
 
       <div className="absolute right-3.5 top-3.5 flex gap-1">
         <IconButton
-          label={favorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+          label={favorito ? t("Quitar de favoritos") : t("Añadir a favoritos")}
           onClick={onAlternarFavorito}
           className={clsx(
             "acrylic h-8 w-8 text-fg transition-opacity duration-exit ease-fluent focus-visible:opacity-100 group-hover:opacity-100",
@@ -132,8 +134,8 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
             type="button"
             onClick={onEncolar}
             disabled={enCola}
-            aria-label={enCola ? `${video.titulo} ya está en la cola` : `Añadir a la cola: ${video.titulo}`}
-            title={enCola ? "En la cola" : "Añadir a la cola"}
+            aria-label={enCola ? t("{titulo} ya está en la cola", { titulo: video.titulo }) : t("Añadir a la cola: {titulo}", { titulo: video.titulo })}
+            title={enCola ? t("En la cola") : t("Añadir a la cola")}
             className={clsx(
               "acrylic flex h-8 w-8 items-center justify-center rounded-control text-fg",
               "transition-opacity duration-exit ease-fluent focus-visible:opacity-100 group-hover:opacity-100",

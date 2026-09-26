@@ -1,3 +1,4 @@
+import { traducir } from "@/lib/i18n";
 const SCRIPT_URL = "https://www.youtube.com/iframe_api";
 
 let cargando: Promise<typeof YT> | null = null;
@@ -19,7 +20,7 @@ export function cargarApiYouTube(): Promise<typeof YT> {
     script.async = true;
     script.onerror = () => {
       cargando = null; // permite reintentar
-      reject(new Error("No se pudo cargar la API de YouTube"));
+      reject(new Error(traducir("No se pudo cargar la API de YouTube")));
     };
     document.head.appendChild(script);
   });

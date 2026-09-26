@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { traducir } from "@/lib/i18n";
 import {
   guardarCanales,
   guardarDuraciones,
@@ -84,7 +85,7 @@ async function conConcurrencia<T>(items: T[], n: number, tarea: (x: T) => Promis
 const aError = (err: unknown): ErrorFeed =>
   err instanceof ErrorApi
     ? { mensaje: err.message, pista: err.pista, codigo: err.codigo }
-    : { mensaje: "Ocurrió un error inesperado.", pista: "Inténtalo de nuevo en unos segundos." };
+    : { mensaje: traducir("Ocurrió un error inesperado."), pista: traducir("Inténtalo de nuevo en unos segundos.") };
 
 export const useCanalesStore = create<CanalesState>((set, get) => {
   const persistir = (canales: Canal[]) => {
@@ -140,7 +141,7 @@ export const useCanalesStore = create<CanalesState>((set, get) => {
         if (dev.timeoutRed) {
           // Simula lo que ocurre cuando YouTube no responde a tiempo.
           await new Promise((r) => setTimeout(r, 1200));
-          throw new ErrorApi("YouTube tardó demasiado en responder.", "Comprueba tu conexión a internet e inténtalo de nuevo.", "TIMEOUT");
+          throw new ErrorApi(traducir("YouTube tardó demasiado en responder."), traducir("Comprueba tu conexión a internet e inténtalo de nuevo."), "TIMEOUT");
         }
         const videos = dev.feedVacio ? [] : (await traerVideos(id, canal.tipo, opts.fresco)).videos;
         set((s) => ({ feeds: { ...s.feeds, [id]: { estado: "listo", videos } } }));
@@ -159,10 +160,10 @@ export const useCanalesStore = create<CanalesState>((set, get) => {
       try {
         const r = await resolverEntrada(entrada);
         if (get().canales.some((c) => c.id === r.id)) {
-          return { ok: false, error: { mensaje: `Ya sigues a «${r.nombre}».`, pista: "Está en la lista de la izquierda." } };
+          return { ok: false, error: { mensaje: traducir("Ya sigues a «{nombre}».", { nombre: r.nombre }), pista: traducir("Está en la lista de la izquierda.") } };
         }
         if (get().canales.length >= 40) {
-          return { ok: false, error: { mensaje: "Llegaste al máximo de 40 canales.", pista: "Quita alguno para poder agregar otro." } };
+          return { ok: false, error: { mensaje: traducir("Llegaste al máximo de 40 canales."), pista: traducir("Quita alguno para poder agregar otro.") } };
         }
         const canal: Canal = { id: r.id, nombre: r.nombre, avatar: r.avatar, tipo: r.tipo, agregadoEn: ahora() };
         const canales = [...get().canales, canal];

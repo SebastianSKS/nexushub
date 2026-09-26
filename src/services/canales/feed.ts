@@ -1,4 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
+import { traducir } from "@/lib/i18n";
 import { ID_VIDEO } from "@/lib/canales/ids";
 import type { TipoCanal, VideoCanal } from "@/types/canal";
 import { ErrorApi } from "./errores";
@@ -36,7 +37,7 @@ export function urlFeed(id: string, tipo: TipoCanal): string {
 export function parsearFeed(xml: string): FeedParseado {
   const doc = parser.parse(xml) as { feed?: Record<string, unknown> };
   const feed = doc.feed;
-  if (!feed) throw new ErrorApi("YouTube devolvió un feed que no se pudo leer.", undefined, "FEED_INVALIDO");
+  if (!feed) throw new ErrorApi(traducir("YouTube devolvió un feed que no se pudo leer."), undefined, "FEED_INVALIDO");
 
   const videos: VideoCanal[] = [];
   for (const raw of arreglo(feed.entry as Record<string, unknown> | Record<string, unknown>[] | undefined)) {
@@ -45,7 +46,7 @@ export function parsearFeed(xml: string): FeedParseado {
     const autor = raw.author as { name?: unknown } | undefined;
     videos.push({
       videoId,
-      titulo: texto(raw.title) || "(sin título)",
+      titulo: texto(raw.title) || traducir("(sin título)"),
       canalId: texto(raw["yt:channelId"]),
       canalNombre: texto(autor?.name),
       publicado: texto(raw.published),
@@ -61,13 +62,13 @@ async function feedDesdeRss(id: string, tipo: TipoCanal): Promise<FeedParseado> 
   const res = await getTextoYouTube(urlFeed(id, tipo), { timeoutMs: 10_000 });
   if (res.status === 404 || res.status === 400) {
     throw new ErrorApi(
-      tipo === "canal" ? "Ese canal no existe o ya no tiene videos públicos." : "Esa lista de reproducción no existe o es privada.",
-      "Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador.",
+      tipo === "canal" ? traducir("Ese canal no existe o ya no tiene videos públicos.") : traducir("Esa lista de reproducción no existe o es privada."),
+      traducir("Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador."),
       "FEED_NO_ENCONTRADO",
     );
   }
   if (res.status !== 200) {
-    throw new ErrorApi("YouTube no pudo entregar los videos de este canal.", "Inténtalo de nuevo en unos minutos.", "FEED_ERROR");
+    throw new ErrorApi(traducir("YouTube no pudo entregar los videos de este canal."), traducir("Inténtalo de nuevo en unos minutos."), "FEED_ERROR");
   }
   return parsearFeed(res.text);
 }

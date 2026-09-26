@@ -1,5 +1,6 @@
 "use client";
 
+import { traducir } from "@/lib/i18n";
 import { useEffect, useRef, type RefObject } from "react";
 import { cargarApiYouTube, fijarReproductor } from "@/services/canales/youtube-iframe";
 import { registrarControlador } from "@/services/reproductor/controladores";
@@ -13,13 +14,13 @@ function describirError(codigo: number): string {
   switch (codigo) {
     case 101:
     case 150:
-      return "El dueño de este video no permite reproducirlo fuera de YouTube. Ábrelo en YouTube o salta al siguiente.";
+      return traducir("El dueño de este video no permite reproducirlo fuera de YouTube. Ábrelo en YouTube o salta al siguiente.");
     case 100:
-      return "Este video ya no está disponible (fue borrado o es privado).";
+      return traducir("Este video ya no está disponible (fue borrado o es privado).");
     case 2:
-      return "YouTube no reconoce el identificador de este video.";
+      return traducir("YouTube no reconoce el identificador de este video.");
     default:
-      return "YouTube no pudo reproducir este video. Inténtalo de nuevo o salta al siguiente.";
+      return traducir("YouTube no pudo reproducir este video. Inténtalo de nuevo o salta al siguiente.");
   }
 }
 
@@ -143,7 +144,7 @@ export function useAdaptadorYouTube(hostRef: RefObject<HTMLDivElement | null>) {
       })
       .catch(() => {
         creandoRef.current = false;
-        useReproductorStore.getState().informar({ error: "No se pudo cargar el reproductor de YouTube. Comprueba tu conexión a internet e inténtalo de nuevo." });
+        useReproductorStore.getState().informar({ error: traducir("No se pudo cargar el reproductor de YouTube. Comprueba tu conexión a internet e inténtalo de nuevo.") });
       });
   }, [esYouTube, solicitud, hostRef]);
 

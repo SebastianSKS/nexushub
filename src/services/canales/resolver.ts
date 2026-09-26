@@ -1,4 +1,5 @@
 import { analizarEntrada, MENSAJE_NO_ENCONTRADO, type Entrada } from "@/lib/canales/entrada";
+import { traducir } from "@/lib/i18n";
 import { ID_CANAL } from "@/lib/canales/ids";
 import type { CanalResuelto } from "@/types/canal";
 import { ErrorApi } from "./errores";
@@ -44,7 +45,7 @@ function mapaPermanente() {
   };
 }
 
-const noEncontrado = () => new ErrorApi(MENSAJE_NO_ENCONTRADO, "Prueba con la dirección del canal (youtube.com/@nombre) o pega el enlace de cualquiera de sus videos.", "CANAL_NO_ENCONTRADO");
+const noEncontrado = () => new ErrorApi(traducir(MENSAJE_NO_ENCONTRADO), traducir("Prueba con la dirección del canal (youtube.com/@nombre) o pega el enlace de cualquiera de sus videos."), "CANAL_NO_ENCONTRADO");
 
 // --- Extracción del ID desde el HTML de la página del canal ------------------------------------
 // Orden: canonical → itemprop → "channelId". El último es el menos fiable: en páginas reales
@@ -96,7 +97,7 @@ async function completarCanal(id: string, htmlPagina?: string, confirmarNombre =
   }
 
   const nombreHtml = html ? meta(html, "title") : undefined;
-  const nombre = decodificar(nombreHtml ?? "") || feed.videos[0]?.canalNombre || feed.nombre || "Canal de YouTube";
+  const nombre = decodificar(nombreHtml ?? "") || feed.videos[0]?.canalNombre || feed.nombre || traducir("Canal de YouTube");
 
   // Si el ID salió del patrón menos fiable, el nombre del feed debe coincidir con el de la página.
   if (confirmarNombre && nombreHtml) {
@@ -111,7 +112,7 @@ async function desdePagina(url: string): Promise<CanalResuelto> {
   const res = await getTextoYouTube(url, { navegador: true });
   if (res.status === 404 || res.status === 400) throw noEncontrado();
   if (res.status !== 200) {
-    throw new ErrorApi("YouTube no respondió al buscar ese canal.", "Inténtalo de nuevo en unos segundos.", "PAGINA_ERROR");
+    throw new ErrorApi(traducir("YouTube no respondió al buscar ese canal."), traducir("Inténtalo de nuevo en unos segundos."), "PAGINA_ERROR");
   }
   const hallado = extraerIdDeHtml(res.text);
   if (!hallado) throw noEncontrado();
@@ -124,7 +125,7 @@ async function desdeLista(id: string): Promise<CanalResuelto> {
     throw err;
   });
   const primero = feed.videos[0];
-  return { id, nombre: feed.nombre || "Lista de reproducción", avatar: primero ? `https://i.ytimg.com/vi/${primero.videoId}/mqdefault.jpg` : null, tipo: "lista" };
+  return { id, nombre: feed.nombre || traducir("Lista de reproducción"), avatar: primero ? `https://i.ytimg.com/vi/${primero.videoId}/mqdefault.jpg` : null, tipo: "lista" };
 }
 
 /**

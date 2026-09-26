@@ -1,4 +1,5 @@
 import type { AlmacenCanales, Canal, TipoCanal } from "@/types/canal";
+import { traducir } from "@/lib/i18n";
 import { HOSTS_AVATAR, ID_CANAL, ID_LISTA } from "./ids";
 
 const CLAVE_CANALES = "nexushub-canales";
@@ -117,14 +118,14 @@ export function interpretarImportacion(texto: string): { canales: Canal[]; inval
   try {
     datos = JSON.parse(texto);
   } catch {
-    return { error: "Ese archivo no es un JSON válido. Usa un archivo creado con «Exportar mis canales»." };
+    return { error: traducir("Ese archivo no es un JSON válido. Usa un archivo creado con «Exportar mis canales».") };
   }
   const almacen = datos as Partial<AlmacenCanales> | null;
   if (!almacen || almacen.version !== 1 || !Array.isArray(almacen.canales)) {
-    return { error: "Ese archivo no tiene el formato de Nexo. Usa un archivo creado con «Exportar mis canales»." };
+    return { error: traducir("Ese archivo no tiene el formato de Nexo. Usa un archivo creado con «Exportar mis canales».") };
   }
   const limpios = limpiarLista(almacen.canales);
-  if (limpios.length === 0) return { error: "El archivo no contiene ningún canal válido." };
+  if (limpios.length === 0) return { error: traducir("El archivo no contiene ningún canal válido.") };
   // Lo importado es una elección explícita de quien reparte la lista: nunca llega marcado como «sugerido».
   const canales = limpios.map(({ sugerido: _s, ...resto }) => resto);
   return { canales, invalidos: almacen.canales.length - limpios.length };

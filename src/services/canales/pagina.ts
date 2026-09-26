@@ -4,6 +4,7 @@
  * `ytInitialData`. No es una API oficial: si YouTube cambia su página, esto puede dejar de funcionar y
  * habrá que ajustarlo; por eso el RSS sigue siendo la primera opción y esto solo se usa si falla.
  */
+import { traducir } from "@/lib/i18n";
 import { ID_VIDEO } from "@/lib/canales/ids";
 import type { TipoCanal, VideoCanal } from "@/types/canal";
 import { ErrorApi } from "./errores";
@@ -117,7 +118,7 @@ export function parsearPagina(datos: unknown, id: string, tipo: TipoCanal, ahora
     const instante = cuando ?? ahora - i * 1000;
     return {
       videoId: b.videoId,
-      titulo: b.titulo || "(sin título)",
+      titulo: b.titulo || traducir("(sin título)"),
       canalId: tipo === "canal" ? id : "",
       canalNombre: tipo === "canal" ? nombre : b.autor,
       publicado: new Date(instante - i).toISOString(), // -i ms: desempata videos del mismo día sin cambiar el orden
@@ -134,20 +135,20 @@ export async function feedDesdePagina(id: string, tipo: TipoCanal): Promise<{ no
   const res = await getTextoYouTube(url, { navegador: true, timeoutMs: 15_000 });
   if (res.status === 404 || res.status === 400) {
     throw new ErrorApi(
-      tipo === "canal" ? "Ese canal no existe o ya no tiene videos públicos." : "Esa lista de reproducción no existe o es privada.",
-      "Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador.",
+      tipo === "canal" ? traducir("Ese canal no existe o ya no tiene videos públicos.") : traducir("Esa lista de reproducción no existe o es privada."),
+      traducir("Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador."),
       "FEED_NO_ENCONTRADO",
     );
   }
-  if (res.status !== 200) throw new ErrorApi("YouTube no pudo entregar los videos de este canal.", "Inténtalo de nuevo en unos minutos.", "FEED_ERROR");
+  if (res.status !== 200) throw new ErrorApi(traducir("YouTube no pudo entregar los videos de este canal."), traducir("Inténtalo de nuevo en unos minutos."), "FEED_ERROR");
   const datos = extraerDatosIniciales(res.text);
-  if (!datos) throw new ErrorApi("YouTube no pudo entregar los videos de este canal.", "Inténtalo de nuevo en unos minutos.", "FEED_ERROR");
+  if (!datos) throw new ErrorApi(traducir("YouTube no pudo entregar los videos de este canal."), traducir("Inténtalo de nuevo en unos minutos."), "FEED_ERROR");
   const resultado = parsearPagina(datos, id, tipo);
   // YouTube responde 200 con una página de «no existe» para IDs inventados: sin nombre ni videos, no hay canal.
   if (!resultado.nombre && resultado.videos.length === 0) {
     throw new ErrorApi(
-      tipo === "canal" ? "Ese canal no existe o ya no tiene videos públicos." : "Esa lista de reproducción no existe o es privada.",
-      "Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador.",
+      tipo === "canal" ? traducir("Ese canal no existe o ya no tiene videos públicos.") : traducir("Esa lista de reproducción no existe o es privada."),
+      traducir("Revisa el enlace, o abre el canal en YouTube y copia la dirección desde la barra del navegador."),
       "FEED_NO_ENCONTRADO",
     );
   }

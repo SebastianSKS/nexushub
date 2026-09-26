@@ -1,4 +1,5 @@
 import { fetchExterno } from "@/lib/red";
+import { traducir } from "@/lib/i18n";
 import { esHostYouTube } from "@/lib/canales/entrada";
 import { ErrorApi } from "./errores";
 
@@ -27,7 +28,7 @@ export interface ResultadoHttp {
 export async function getTextoYouTube(url: string, opts: { timeoutMs?: number; navegador?: boolean } = {}): Promise<ResultadoHttp> {
   const parsed = new URL(url);
   if (parsed.protocol !== "https:" || !esHostYouTube(parsed.hostname)) {
-    throw new ErrorApi("Ese enlace no es de YouTube.", undefined, "NO_YOUTUBE");
+    throw new ErrorApi(traducir("Ese enlace no es de YouTube."), undefined, "NO_YOUTUBE");
   }
   try {
     const res = await fetchExterno(url, {
@@ -40,15 +41,15 @@ export async function getTextoYouTube(url: string, opts: { timeoutMs?: number; n
     // solo tiene sentido cuando la respuesta viene directo de internet (aplicación de escritorio).
     const destino = res.url ? new URL(res.url).hostname : "";
     if (destino && destino !== "127.0.0.1" && destino !== "localhost" && !esHostYouTube(destino)) {
-      throw new ErrorApi("YouTube redirigió a un sitio externo.", undefined, "REDIRECT");
+      throw new ErrorApi(traducir("YouTube redirigió a un sitio externo."), undefined, "REDIRECT");
     }
     return { status: res.status, text: await res.text() };
   } catch (err) {
     if (err instanceof ErrorApi) throw err;
     const timeout = err instanceof DOMException && (err.name === "TimeoutError" || err.name === "AbortError");
     throw new ErrorApi(
-      timeout ? "YouTube tardó demasiado en responder." : "No se pudo contactar con YouTube.",
-      "Comprueba tu conexión a internet e inténtalo de nuevo en unos segundos.",
+      timeout ? traducir("YouTube tardó demasiado en responder.") : traducir("No se pudo contactar con YouTube."),
+      traducir("Comprueba tu conexión a internet e inténtalo de nuevo en unos segundos."),
       timeout ? "TIMEOUT" : "NETWORK",
     );
   }

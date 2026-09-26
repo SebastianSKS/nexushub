@@ -221,6 +221,11 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       const store = useMusicStore.getState();
       const me = await spotifyApi<Me>("/me");
       if (cancelado) return;
+      if (me.status === 403) {
+        // Las aplicaciones de Spotify en modo de desarrollo solo dejan entrar a las cuentas que su dueño autorizó a mano.
+        store.setConnection({ status: "error", message: traducir("Tu cuenta de Spotify todavía no está autorizada para Nexo."), hint: traducir("Spotify limita las aplicaciones nuevas a las cuentas que su creador autoriza. Pídele a quien te pasó Nexo que agregue tu correo de Spotify; mientras tanto puedes usar Video y Documentos con normalidad.") });
+        return;
+      }
       if (me.status !== 200 || !me.data) {
         store.setConnection({ status: "error", message: traducir("Spotify no respondió con tu perfil."), hint: me.status === 0 ? traducir("No se pudo contactar con Spotify: comprueba tu internet o desactiva el bloqueador (en Brave, el escudo) para esta página.") : traducir("Cierra la sesión de Spotify en Nexo y conéctate de nuevo.") });
         return;

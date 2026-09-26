@@ -1,4 +1,5 @@
 import type { PSM } from "tesseract.js";
+import { traducir } from "@/lib/i18n";
 import type { ImagenRgba } from "./imagen";
 import type { LineaOcr, ModoOcr, PalabraOcr, Reconocedor, ResultadoOcr } from "./escaneo";
 
@@ -15,7 +16,7 @@ export async function leerImagen(archivo: Blob): Promise<ImagenRgba> {
   lienzo.width = w;
   lienzo.height = h;
   const ctx = lienzo.getContext("2d", { willReadFrequently: true });
-  if (!ctx) throw new Error("No se pudo preparar la imagen.");
+  if (!ctx) throw new Error(traducir("No se pudo preparar la imagen."));
   ctx.fillStyle = "#fff"; // los PNG con transparencia se leen sobre blanco
   ctx.fillRect(0, 0, w, h);
   ctx.drawImage(bitmap, 0, 0, w, h);

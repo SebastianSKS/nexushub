@@ -7,6 +7,7 @@
  * separado. Eso es mucho más fiable que leer toda la imagen de golpe, porque el texto sobre un fondo de color
  * (verde oscuro, azul…) se prepara bloque a bloque antes de reconocerlo.
  */
+import { traducir } from "@/lib/i18n";
 import { aBlancoYNegro, aHex, colorDeFondoEnFila, escalar, esBlanco, lineasHorizontales, lineasVerticales, prepararBloque, recortar, segmentarColores, type ImagenRgba, type Rgb } from "./imagen";
 
 export interface PalabraOcr {
@@ -199,7 +200,7 @@ export async function escanearHorario(
   const avisar = (f: number, t: string) => alProgreso?.(f, t);
 
   // 1) Los días (columnas): se buscan sus nombres en la fila de arriba.
-  avisar(0.05, "Buscando los días y las horas…");
+  avisar(0.05, traducir("Buscando los días y las horas…"));
   const kAncla = limitar(1800 / img.width, 1, 4);
   const paraAnclas = aBlancoYNegro(escalar(img, kAncla), (l) => l < 110, 0);
   const anclas = await reconocer(paraAnclas, "disperso");
@@ -224,12 +225,12 @@ export async function escanearHorario(
       else if (simMejor > previo.sim) Object.assign(previo, nuevo);
     }
   }
-  if (dias.length < 3) throw new ErrorEscaneo("No encontré los días de la semana (Lunes, Martes…) en la imagen. Prueba con una imagen más grande o recortada solo a la tabla.");
+  if (dias.length < 3) throw new ErrorEscaneo(traducir("No encontré los días de la semana (Lunes, Martes…) en la imagen. Prueba con una imagen más grande o recortada solo a la tabla."));
 
   const pasos: number[] = [];
   for (const a of dias) for (const b of dias) if (a.i > b.i) pasos.push((a.xc - b.xc) / (a.i - b.i));
   const paso = mediana(pasos);
-  if (!(paso > 20)) throw new ErrorEscaneo("Las columnas de los días no tienen sentido en esta imagen. Prueba con una captura más nítida de la tabla.");
+  if (!(paso > 20)) throw new ErrorEscaneo(traducir("Las columnas de los días no tienen sentido en esta imagen. Prueba con una captura más nítida de la tabla."));
   const x0 = mediana(dias.map((d) => d.xc - d.i * paso));
   const ultimoDia = Math.max(4, ...dias.map((d) => d.i));
   const yCabecera = mediana(dias.map((d) => d.y1));
@@ -297,7 +298,7 @@ export async function escanearHorario(
       if (h) etiquetas.push({ fila: -1, yc: yTop + ((l.y0 + l.y1) / 2 - 10) / kF, ...h });
     }
   }
-  if (etiquetas.length < 2) throw new ErrorEscaneo("No pude leer las horas de la izquierda (por ejemplo «07:00 - 08:00»). Prueba con una imagen más nítida.");
+  if (etiquetas.length < 2) throw new ErrorEscaneo(traducir("No pude leer las horas de la izquierda (por ejemplo «07:00 - 08:00»). Prueba con una imagen más nítida."));
   // Una etiqueta mal leída (por ejemplo «12:00 - 13:09») no debe torcer todo: solo cuentan las de duración normal.
   const duracion = mediana(etiquetas.map((e) => e.fin - e.ini));
   const buenas = etiquetas.filter((e) => Math.abs(e.fin - e.ini - duracion) <= 5);
@@ -315,7 +316,7 @@ export async function escanearHorario(
   if (!minutoEnBorde) {
     // Sin líneas claras: recta a través de las etiquetas.
     const recta = regresion(buenas.map((e) => ({ x: (e.ini + e.fin) / 2, y: e.yc })));
-    if (!recta || recta.b <= 0) throw new ErrorEscaneo("Las horas de la izquierda no están en orden. Prueba con otra imagen.");
+    if (!recta || recta.b <= 0) throw new ErrorEscaneo(traducir("Las horas de la izquierda no están en orden. Prueba con otra imagen."));
     minutoEnBorde = (y: number) => Math.round((y - recta.a) / recta.b / 15) * 15;
   }
   const alto = filas.length >= 3 ? alturaFila : 60;
@@ -324,7 +325,7 @@ export async function escanearHorario(
   const grosor = Math.max(3, Math.round(alto * 0.06));
 
   // 3) Los bloques de color de cada columna.
-  avisar(0.2, "Buscando las clases…");
+  avisar(0.2, traducir("Buscando las clases…"));
   const yIni = Math.max(0, Math.round(yCabecera + 2));
   const bloques: Bloque[] = [];
   for (let d = 0; d <= ultimoDia; d++) {
@@ -338,13 +339,13 @@ export async function escanearHorario(
       bloques.push({ dia: d, y0: yIni + t.desde, y1: yIni + t.hasta, color: t.color, materia: "", codigo: "", confianza: 0 });
     }
   }
-  if (bloques.length === 0) throw new ErrorEscaneo("No encontré clases (bloques de color) en la tabla. ¿Es la imagen de un horario con las clases coloreadas?");
+  if (bloques.length === 0) throw new ErrorEscaneo(traducir("No encontré clases (bloques de color) en la tabla. ¿Es la imagen de un horario con las clases coloreadas?"));
 
   // 4) Leer cada bloque por separado.
   const kBloque = limitar(300 / paso, 1, 4);
   for (let i = 0; i < bloques.length; i++) {
     const b = bloques[i]!;
-    avisar(0.25 + 0.55 * (i / bloques.length), `Leyendo clase ${i + 1} de ${bloques.length}…`);
+    avisar(0.25 + 0.55 * (i / bloques.length), traducir("Leyendo clase {i} de {n}…", { i: i + 1, n: bloques.length }));
     const col = columnas[b.dia]!;
     const recorte = recortar(img, col.izq + 3, b.y0 + 3, col.der - 3, b.y1 - 3);
     const leido = await reconocer(prepararBloque(escalar(recorte, kBloque), b.color), "bloque");
@@ -382,7 +383,7 @@ export async function escanearHorario(
   const codigosLeyenda = new Map<Bloque[], string>();
   const izqLeyenda = ultima.der + 1;
   if (img.width - izqLeyenda > paso) {
-    avisar(0.85, "Buscando a los docentes…");
+    avisar(0.85, traducir("Buscando a los docentes…"));
     const colores: Rgb[] = [];
     for (let y = yIni; y < img.height; y++) colores.push(colorDeFondoEnFila(img, izqLeyenda + 6, img.width - 6, y));
     const nombresClase = grupos.map((g) => normalizar(g[0]!.materia)).filter((n) => n.length >= 3);
@@ -446,7 +447,7 @@ export async function escanearHorario(
     if (fin - ini < 30 || ini < 0 || fin > 24 * 60) continue;
     const nombre = b.materia ? tituloBonito(b.materia) : "";
     clases.push({
-      materia: nombre || "Clase sin nombre",
+      materia: nombre || traducir("Clase sin nombre"),
       codigo: b.codigo,
       docente: docentes.get(normalizar(b.materia) + "|" + grupos.findIndex((g) => g.includes(b))) ?? "",
       dia: b.dia,
@@ -456,6 +457,6 @@ export async function escanearHorario(
       dudosa: normalizar(b.materia).length < 4 || b.confianza < 55,
     });
   }
-  if (clases.length === 0) throw new ErrorEscaneo("Encontré la tabla pero ninguna clase con un tamaño razonable.");
+  if (clases.length === 0) throw new ErrorEscaneo(traducir("Encontré la tabla pero ninguna clase con un tamaño razonable."));
   return clases.sort((a, b) => a.dia - b.dia || a.inicio.localeCompare(b.inicio));
 }

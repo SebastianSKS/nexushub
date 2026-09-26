@@ -196,5 +196,12 @@
   "La copia trae tus ajustes.": "The backup has your settings.",
   "Se hizo el {fecha}.": "It was made on {fecha}.",
   "Lo que trae la copia reemplaza a lo que tienes ahora; lo que la copia no trae se queda como está. Nexo se recargará al terminar.": "What the backup has replaces what you have now; what it doesn't have stays as it is. Nexo will reload when it's done.",
-  "Copia de seguridad": "Backup"
+  "Copia de seguridad": "Backup",
+  "¿Algo no funciona?": "Is something not working?",
+  "Cuéntanos qué pasó. El aviso lleva la versión y tu sistema, nunca tus archivos, calendario ni nombre.": "Tell us what happened. The report includes the version and your system, never your files, calendar or name.",
+  "Copiar información técnica": "Copy technical information",
+  "Ver versiones": "See releases",
+  "Copiado. Pégalo en tu mensaje.": "Copied. Paste it in your message.",
+  "No se pudo copiar.": "Couldn't copy.",
+  "Avisar del problema": "Report the problem"
 }

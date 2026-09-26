@@ -129,9 +129,10 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Configuración"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "paleta", titulo: T("Hazlo tuyo"), texto: T("Elige tema claro u oscuro, el color de acento y el efecto de la ventana.") },
-      { glifo: "campana", titulo: T("Avisos"), texto: T("Decide si te avisa antes de cada clase, si te hace un resumen del día y si te dice qué canción suena.") },
+      { glifo: "paleta", titulo: T("Hazlo tuyo"), texto: T("Elige tema claro u oscuro, cualquier color de acento, el tamaño de la interfaz, las animaciones y qué secciones ves en la barra lateral.") },
+      { glifo: "campana", titulo: T("Avisos"), texto: T("Decide si te avisa antes de cada clase o de un examen con hora, con qué sonido, y en qué horas no quieres que te moleste.") },
       { glifo: "documentos", titulo: T("Documentos"), texto: T("Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.") },
+      { glifo: "descargar", titulo: T("Tus datos, a salvo"), texto: T("Guarda una copia de seguridad para pasar todo a otra computadora, o restáurala aquí. No incluye tu sesión de Spotify.") },
       { glifo: "actualizar", titulo: T("Actualizaciones"), texto: T("En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.") },
     ],
   },

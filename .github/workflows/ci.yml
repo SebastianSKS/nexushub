@@ -1,0 +1,54 @@
+name: CI
+
+# En cada subida y en cada solicitud de cambios: comprueba tipos, idiomas y pruebas, compila la web y revisa que compile
+# la parte de escritorio (Rust). Si algo se rompe, GitHub lo marca con una ✗ antes de que llegue a nadie.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web (tipos, idiomas, pruebas y compilación)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tipos (TypeScript)
+        run: npm run typecheck
+      - name: Idiomas (todo texto tiene su traducción al inglés)
+        run: npm run i18n:check
+      - name: Pruebas
+        run: npm test
+      - name: Compilar la web (exportación estática)
+        run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-out
+          path: out
+          retention-days: 1
+
+  escritorio:
+    name: Escritorio (Rust / Tauri)
+    needs: web
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-out
+          path: out
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Revisar que compile
+        run: cargo check --manifest-path src-tauri/Cargo.toml --locked

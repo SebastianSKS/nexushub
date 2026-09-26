@@ -1,6 +1,6 @@
 import { esEscritorio } from "@/lib/entorno";
-import { enHorasDeSilencio } from "@/lib/silencio";
-import { esSonidoNexo, esSonidoWindows, reproducirSonidoNexo, type SonidoAviso } from "@/lib/sonidos";
+import { planDeAviso, type OpcionesDePlan } from "@/lib/plan-aviso";
+import { reproducirSonidoNexo } from "@/lib/sonidos";
 import { useAjustesStore } from "@/store/ajustes-store";
 
 export type PermisoNotificaciones = "granted" | "denied" | "default" | "no-soportado";
@@ -39,12 +39,7 @@ export async function pedirPermisoNotificaciones(): Promise<PermisoNotificacione
   }
 }
 
-export interface OpcionesAviso {
-  /** Mandarlo aunque sea una hora de «No molestar» (el aviso de prueba de Configuración). */
-  ignorarSilencio?: boolean;
-  /** Con qué sonido, en vez del elegido en Configuración (para probar cada uno). */
-  sonido?: SonidoAviso;
-}
+export type OpcionesAviso = OpcionesDePlan;
 
 /**
  * Envía una notificación del sistema, si hay permiso y no es hora de «No molestar». Suena como se haya elegido en
@@ -53,19 +48,17 @@ export interface OpcionesAviso {
  */
 export async function notificarSistema(titulo: string, cuerpo: string, etiqueta?: string, ruta?: string, opciones: OpcionesAviso = {}): Promise<boolean> {
   const a = useAjustesStore.getState();
-  if (!opciones.ignorarSilencio && enHorasDeSilencio(new Date(), { activo: a.silencioActivo, desde: a.silencioDesde, hasta: a.silencioHasta })) return false;
-  const elegido = opciones.sonido ?? a.sonidoAvisos;
-  // El sonido que le toca poner al aviso de Windows: el de Windows elegido, o «silencio» (suena Nexo, o nada).
-  const sonidoDelAviso = esSonidoWindows(elegido) ? elegido : "silencio";
+  const plan = planDeAviso(a, new Date(), opciones);
+  if (!plan.enviar) return false;
   const tocarNexo = () => {
-    if (esSonidoNexo(elegido)) reproducirSonidoNexo(elegido, a.volumenAvisos);
+    if (plan.tocarNexo) reproducirSonidoNexo(plan.tocarNexo, a.volumenAvisos);
   };
 
   if (esEscritorio()) {
     // Con una ruta, el aviso lo muestra el programa para poder llevar a esa sección al hacer clic (ver avisos.rs).
     try {
       const { invoke } = await import("@tauri-apps/api/core");
-      await invoke("notificar", { titulo, cuerpo, ruta: ruta ?? null, sonido: sonidoDelAviso });
+      await invoke("notificar", { titulo, cuerpo, ruta: ruta ?? null, sonido: plan.sonidoDelAviso });
       tocarNexo();
       return true;
     } catch {
@@ -74,7 +67,7 @@ export async function notificarSistema(titulo: string, cuerpo: string, etiqueta?
     try {
       const { isPermissionGranted, requestPermission, sendNotification } = await import("@tauri-apps/plugin-notification");
       if (!(await isPermissionGranted()) && (await requestPermission()) !== "granted") return false;
-      sendNotification({ title: titulo, body: cuerpo, ...(esSonidoWindows(elegido) ? { sound: "Default" } : {}) });
+      sendNotification({ title: titulo, body: cuerpo, ...(plan.conSonidoDeWindows ? { sound: "Default" } : {}) });
       tocarNexo();
       return true;
     } catch {
@@ -83,7 +76,7 @@ export async function notificarSistema(titulo: string, cuerpo: string, etiqueta?
   }
   if (typeof Notification === "undefined" || Notification.permission !== "granted") return false;
   try {
-    new Notification(titulo, { body: cuerpo, tag: etiqueta, silent: !esSonidoWindows(elegido) });
+    new Notification(titulo, { body: cuerpo, tag: etiqueta, silent: !plan.conSonidoDeWindows });
     tocarNexo();
     return true;
   } catch {

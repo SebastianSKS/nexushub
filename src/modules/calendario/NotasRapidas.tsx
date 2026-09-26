@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState, type FormEvent } from "react";
 import clsx from "clsx";
 import { Card } from "@/components/fluent/Card";
@@ -9,6 +10,7 @@ import { useNotasStore } from "@/store/notas-store";
 
 /** Lista corta de pendientes junto al calendario: sin fecha, solo escribir y tachar. */
 export function NotasRapidas() {
+  const t = useT();
   const notas = useNotasStore((s) => s.notas);
   const { agregar, alternar, quitar } = useNotasStore.getState();
   const [texto, setTexto] = useState("");
@@ -25,25 +27,25 @@ export function NotasRapidas() {
   return (
     <Card className="p-4">
       <h2 className="mb-3 flex items-center gap-2 text-body font-semibold text-fg">
-        <Glifo nombre="agregar" tam={16} className="text-accent-text" /> Notas rápidas
+        <Glifo nombre="agregar" tam={16} className="text-accent-text" /> {t("Notas rápidas")}
       </h2>
 
       <form onSubmit={enviar} className="mb-3 flex gap-2">
         <label htmlFor="nueva-nota" className="sr-only">
-          Nueva nota
+          {t("Nueva nota")}
         </label>
         <input
           id="nueva-nota"
           value={texto}
           maxLength={200}
-          placeholder="Escribe algo y pulsa Enter…"
+          placeholder={t("Escribe algo y pulsa Enter…")}
           onChange={(e) => setTexto(e.target.value)}
           className="h-8 flex-1 rounded-input border border-stroke bg-layer-alt px-3 text-body text-fg placeholder:text-fg-tertiary transition-colors duration-exit ease-fluent hover:bg-layer focus-visible:border-accent focus-visible:outline-none"
         />
       </form>
 
       {notas.length === 0 ? (
-        <p className="text-body text-fg-secondary">Sin pendientes por ahora.</p>
+        <p className="text-body text-fg-secondary">{t("Sin pendientes por ahora.")}</p>
       ) : (
         <ul className="flex flex-col gap-0.5">
           {notas.map((n) => (
@@ -62,7 +64,7 @@ export function NotasRapidas() {
                 {n.hecha && <Glifo nombre="exito" tam={11} />}
               </button>
               <span className={clsx("min-w-0 flex-1 truncate text-body", n.hecha ? "text-fg-tertiary line-through" : "text-fg")}>{n.texto}</span>
-              <IconButton label={`Quitar «${n.texto}»`} onClick={() => quitar(n.id)} className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
+              <IconButton label={t("Quitar «{texto}»", { texto: n.texto })} onClick={() => quitar(n.id)} className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
                 <Glifo nombre="cerrar" tam={9} />
               </IconButton>
             </li>

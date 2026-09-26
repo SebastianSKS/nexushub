@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, localeActual } from "@/lib/i18n";
 import { Card } from "@/components/fluent/Card";
 import { Glifo } from "@/components/fluent/Glifo";
 import { cuando, fechaLarga, mayuscula, proximoCumple } from "@/lib/calendario/fechas";
@@ -7,17 +8,18 @@ import type { Amigo } from "@/store/calendario-store";
 
 /** Los próximos cumpleaños, del más cercano al más lejano. Al pulsar uno se edita. */
 export function ProximosCumples({ amigos, onAmigo }: { amigos: Amigo[]; onAmigo: (a: Amigo) => void }) {
+  const t = useT();
   const hoy = new Date();
   const lista = amigos
     .map((a) => ({ a, p: proximoCumple(a, hoy) }))
-    .sort((x, y) => x.p.dias - y.p.dias || x.a.nombre.localeCompare(y.a.nombre, "es"))
+    .sort((x, y) => x.p.dias - y.p.dias || x.a.nombre.localeCompare(y.a.nombre, localeActual()))
     .slice(0, 6);
 
   return (
     <Card className="p-4">
-      <h2 className="mb-3 text-body font-semibold text-fg">Próximos cumpleaños</h2>
+      <h2 className="mb-3 text-body font-semibold text-fg">{t("Próximos cumpleaños")}</h2>
       {lista.length === 0 ? (
-        <p className="text-body text-fg-secondary">Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» arriba.</p>
+        <p className="text-body text-fg-secondary">{t("Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» arriba.")}</p>
       ) : (
         <ul className="flex flex-col gap-1">
           {lista.map(({ a, p }) => (
@@ -30,7 +32,7 @@ export function ProximosCumples({ amigos, onAmigo }: { amigos: Amigo[]; onAmigo:
                   <span className="block truncate text-body font-semibold text-fg">{a.nombre}</span>
                   <span className="block truncate text-caption text-fg-secondary">
                     {mayuscula(fechaLarga(p.fecha))}
-                    {p.edad ? ` · cumple ${p.edad}` : ""}
+                    {p.edad ? ` · ${t("cumple {edad}", { edad: p.edad })}` : ""}
                   </span>
                 </span>
                 <span className={p.dias <= 1 ? "shrink-0 text-caption font-semibold text-accent-text" : "shrink-0 text-caption text-fg-secondary"}>{cuando(p.dias)}</span>

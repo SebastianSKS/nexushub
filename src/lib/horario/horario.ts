@@ -1,3 +1,4 @@
+import { T, traducir } from "@/lib/i18n";
 /** Una clase del horario semanal: una materia, un día de la semana y un intervalo de horas. */
 export interface Clase {
   id: string;
@@ -15,7 +16,10 @@ export interface Clase {
   color: string;
 }
 
-export const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] as const;
+export const DIAS = [T("Lunes"), T("Martes"), T("Miércoles"), T("Jueves"), T("Viernes"), T("Sábado"), T("Domingo")] as const;
+
+/** Nombre del día (0 = lunes) en el idioma de ahora. */
+export const nombreDiaSemana = (i: number) => traducir(DIAS[i]!);
 
 /** Día de la semana de una fecha, con el lunes como 0 (el `getDay()` de JavaScript empieza en el domingo). */
 export const diaDeSemana = (f: Date) => (f.getDay() + 6) % 7;

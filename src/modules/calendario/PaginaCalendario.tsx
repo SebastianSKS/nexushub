@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, useIdioma, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/fluent/Button";
@@ -25,20 +26,21 @@ type Vista = "mes" | "semana";
 
 /** Frase corta con lo más importante de hoy o de lo que viene. */
 function resumen(amigos: Amigo[]): string {
-  if (amigos.length === 0) return "Añade los cumpleaños de tus amigos y te avisamos para que no se te pase ninguno.";
+  if (amigos.length === 0) return traducir("Añade los cumpleaños de tus amigos y te avisamos para que no se te pase ninguno.");
   const hoy = new Date();
   const deHoy = amigos.filter((a) => cumpleEn(a, hoy));
   if (deHoy.length > 0) {
     const nombres = deHoy.map((a) => a.nombre);
-    const lista = nombres.length === 1 ? nombres[0]! : `${nombres.slice(0, -1).join(", ")} y ${nombres[nombres.length - 1]}`;
-    return `Hoy ${deHoy.length === 1 ? "cumple años" : "cumplen años"} ${lista}. ¡A felicitar!`;
+    const lista = nombres.length === 1 ? nombres[0]! : traducir("{lista} y {ultimo}", { lista: nombres.slice(0, -1).join(", "), ultimo: nombres[nombres.length - 1]! });
+    return deHoy.length === 1 ? traducir("Hoy cumple años {lista}. ¡A felicitar!", { lista }) : traducir("Hoy cumplen años {lista}. ¡A felicitar!", { lista });
   }
   const [p] = amigos.map((a) => ({ a, p: proximoCumple(a, hoy) })).sort((x, y) => x.p.dias - y.p.dias);
-  return `Lo próximo: ${p!.a.nombre} cumple años ${cuando(p!.p.dias).toLowerCase()} (${fechaLarga(p!.p.fecha)}).`;
+  return traducir("Lo próximo: {nombre} cumple años {cuando} ({fecha}).", { nombre: p!.a.nombre, cuando: cuando(p!.p.dias).toLowerCase(), fecha: fechaLarga(p!.p.fecha) });
 }
 
 /** /calendario — los cumpleaños de tus amigos, con color, nombre y avisos. */
 export function PaginaCalendario() {
+  const t = useT();
   const amigos = useCalendarioStore((s) => s.amigos);
   const eventos = useCalendarioStore((s) => s.eventos);
   const nombre = usePerfilStore((s) => s.nombre);
@@ -59,7 +61,9 @@ export function PaginaCalendario() {
     usePerfilStore.getState().cargar();
   }, []);
 
-  const frase = useMemo(() => resumen(amigos), [amigos]);
+  const idioma = useIdioma();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `idioma` rehace la frase cuando cambia el idioma
+  const frase = useMemo(() => resumen(amigos), [amigos, idioma]);
 
   // Desde el buscador global: «?evento=<id>» o «?amigo=<id>» abre esa cosa para verla o editarla.
   const router = useRouter();
@@ -119,44 +123,44 @@ export function PaginaCalendario() {
     <>
       <PlantillaPagina
         migas={[{ etiqueta: "Calendario" }]}
-        titulo="Calendario"
-        descripcion="Tareas, exámenes, citas y los cumpleaños de tus amigos, cada cosa marcada con su color, y avisos para que no se te pase ninguna."
+        titulo={t("Calendario")}
+        descripcion={t("Tareas, exámenes, citas y los cumpleaños de tus amigos, cada cosa marcada con su color, y avisos para que no se te pase ninguna.")}
         accion={
           <div className="flex gap-2">
-            <Button onClick={() => abrir({ dia: hoy.getDate(), mes: hoy.getMonth() + 1 })}>Añadir cumpleaños</Button>
+            <Button onClick={() => abrir({ dia: hoy.getDate(), mes: hoy.getMonth() + 1 })}>{t("Añadir cumpleaños")}</Button>
             <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => abrirEvento({ dia: hoy.getDate(), mes: hoy.getMonth() + 1, anio: hoy.getFullYear() })}>
-              Añadir tarea o evento
+              {t("Añadir tarea o evento")}
             </Button>
           </div>
         }
         principal={
           <>
             <section
-              aria-label="Saludo"
+              aria-label={t("Saludo")}
               className="flex items-center gap-4 rounded-[8px] p-4 text-white shadow-card"
               style={{ backgroundImage: "linear-gradient(135deg, #0f6cbd 0%, #2b88d8 60%, #4aa8ee 100%)" }}
             >
               <Avatar nombre={nombre} foto={foto} tam={56} className="ring-2 ring-white/60" />
               <div className="min-w-0 flex-1">
-                <p className="text-subtitle">{nombre ? `${saludo(hoy.getHours())}, ${nombre}` : "¡Hola!"}</p>
+                <p className="text-subtitle">{nombre ? `${saludo(hoy.getHours())}, ${nombre}` : t("¡Hola!")}</p>
                 <p className="text-body opacity-95">{frase}</p>
                 <p className="mt-0.5 text-caption opacity-80">{mayuscula(fechaLarga(hoy))}</p>
               </div>
               {!nombre && (
                 <button type="button" onClick={() => setPerfil(true)} className="rounded-control h-8 shrink-0 border border-white/50 px-3 text-body text-white transition-colors duration-exit ease-fluent hover:bg-white/15">
-                  Crear mi perfil
+                  {t("Crear mi perfil")}
                 </button>
               )}
             </section>
 
             <div className="flex justify-end">
               <SegmentedControl<Vista>
-                label="Vista del calendario"
+                label={t("Vista del calendario")}
                 etiquetaVisible={false}
                 value={vista}
                 options={[
-                  { value: "mes", label: "Mes" },
-                  { value: "semana", label: "Semana" },
+                  { value: "mes", label: t("Mes") },
+                  { value: "semana", label: t("Semana") },
                 ]}
                 onChange={setVista}
               />

@@ -1,21 +1,22 @@
 "use client";
 
+import { traducir } from "@/lib/i18n";
 import { useEffect } from "react";
 import { notificarSistema } from "@/lib/notificar";
 import { claveFecha, fechaLarga, inicioDelDia, proximaOcurrenciaEvento, proximoCumple } from "@/lib/calendario/fechas";
 import { useCalendarioStore } from "@/store/calendario-store";
 
 export function textoAviso(nombre: string, dias: number, edad: number | null, fecha: Date): { titulo: string; texto: string } {
-  const cumple = edad ? ` y cumple ${edad}` : "";
-  if (dias === 0) return { titulo: `Hoy cumple años ${nombre}`, texto: `¡No olvides felicitarle!${edad ? ` Cumple ${edad}.` : ""}` };
-  if (dias === 1) return { titulo: `Mañana cumple años ${nombre}`, texto: `Es ${fechaLarga(fecha)}${cumple}.` };
-  return { titulo: `En ${dias} días cumple años ${nombre}`, texto: `Será el ${fechaLarga(fecha)}${cumple}.` };
+  const cumple = edad ? traducir(" y cumple {edad}", { edad }) : "";
+  if (dias === 0) return { titulo: traducir("Hoy cumple años {nombre}", { nombre }), texto: `${traducir("¡No olvides felicitarle!")}${edad ? ` ${traducir("Cumple {edad}.", { edad })}` : ""}` };
+  if (dias === 1) return { titulo: traducir("Mañana cumple años {nombre}", { nombre }), texto: traducir("Es {fecha}{cumple}.", { fecha: fechaLarga(fecha), cumple }) };
+  return { titulo: traducir("En {dias} días cumple años {nombre}", { dias, nombre }), texto: traducir("Será el {fecha}{cumple}.", { fecha: fechaLarga(fecha), cumple }) };
 }
 
 export function textoAvisoEvento(titulo: string, dias: number, fecha: Date): { titulo: string; texto: string } {
-  if (dias === 0) return { titulo: `Hoy: ${titulo}`, texto: `Es ${fechaLarga(fecha)}.` };
-  if (dias === 1) return { titulo: `Mañana: ${titulo}`, texto: `Es ${fechaLarga(fecha)}.` };
-  return { titulo: `En ${dias} días: ${titulo}`, texto: `Será el ${fechaLarga(fecha)}.` };
+  if (dias === 0) return { titulo: traducir("Hoy: {titulo}", { titulo }), texto: traducir("Es {fecha}.", { fecha: fechaLarga(fecha) }) };
+  if (dias === 1) return { titulo: traducir("Mañana: {titulo}", { titulo }), texto: traducir("Es {fecha}.", { fecha: fechaLarga(fecha) }) };
+  return { titulo: traducir("En {dias} días: {titulo}", { dias, titulo }), texto: traducir("Será el {fecha}.", { fecha: fechaLarga(fecha) }) };
 }
 
 /**

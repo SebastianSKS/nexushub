@@ -4,6 +4,7 @@
  * (RRULE:FREQ=YEARLY); los eventos generales, como una fecha suelta. Sin librerías: el formato es
  * texto plano línea por línea (RFC 5545), igual que el resto de los formatos de Documentos.
  */
+import { traducir } from "@/lib/i18n";
 import type { Amigo, Evento } from "@/store/calendario-store";
 import { COLORES_AMIGO } from "@/store/calendario-store";
 import { CATEGORIAS, esCategoria, type CategoriaEvento } from "./categorias";
@@ -41,7 +42,7 @@ export function generarIcs(amigos: Amigo[], eventos: Evento[]): string {
       `DTSTAMP:${marca}`,
       `DTSTART;VALUE=DATE:${anio}${pad2(a.mes)}${pad2(dia)}`,
       "RRULE:FREQ=YEARLY",
-      `SUMMARY:${escapar(`Cumpleaños de ${a.nombre}`)}`,
+      `SUMMARY:${escapar(traducir("Cumpleaños de {nombre}", { nombre: a.nombre }))}`,
     );
     if (a.nota) lineas.push(`DESCRIPTION:${escapar(a.nota)}`);
     lineas.push("END:VEVENT");
@@ -130,7 +131,7 @@ export function parsearIcs(texto: string): ResultadoImportacion {
     if (repeticion === "anual") {
       const anioRazonable = fecha.anio >= 1900 && fecha.anio <= new Date().getFullYear() && fecha.anio !== 2000;
       amigos.push({
-        nombre: resumen.replace(/^cumpleaños de /i, "").trim().slice(0, 40) || resumen,
+        nombre: resumen.replace(/^(cumpleaños de|birthday of) /i, "").trim().slice(0, 40) || resumen,
         dia: fecha.dia,
         mes: fecha.mes,
         anio: anioRazonable ? fecha.anio : null,

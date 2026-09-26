@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
@@ -10,7 +11,7 @@ import { Selector } from "@/components/fluent/Selector";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
 import { CATEGORIAS, infoCategoria, type CategoriaEvento } from "@/lib/calendario/categorias";
-import { claveFecha, diasEnMes, MESES, type Repeticion } from "@/lib/calendario/fechas";
+import { claveFecha, diasEnMes, nombreMes, type Repeticion } from "@/lib/calendario/fechas";
 import { COLORES_AMIGO, useCalendarioStore, type Evento } from "@/store/calendario-store";
 
 export type BorradorEvento = Partial<Evento> & { dia: number; mes: number; anio: number };
@@ -22,6 +23,7 @@ const CAMPO = "h-8 w-full rounded-input border border-stroke bg-layer-alt px-2 t
  * y eso lo marca con su nombre y color. «Cumpleaños» pasa a su propio formulario (`onCumple`).
  */
 export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abierto: boolean; inicial: BorradorEvento | null; onCerrar: () => void; onCumple?: (dia: number, mes: number, nombre: string) => void }) {
+  const t = useT();
   const idHora = useId();
   const idNota = useId();
   const campoTitulo = useRef<HTMLInputElement>(null);
@@ -57,8 +59,8 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
     setAvisar(inicial.avisar ?? true);
     setErrorTitulo(undefined);
     setConfirmarBorrado(false);
-    const t = setTimeout(() => campoTitulo.current?.focus(), 120);
-    return () => clearTimeout(t);
+    const espera = setTimeout(() => campoTitulo.current?.focus(), 120);
+    return () => clearTimeout(espera);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al abrir
   }, [abierto, inicial]);
 
@@ -70,7 +72,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
   const guardar = (e: FormEvent) => {
     e.preventDefault();
     if (!titulo.trim()) {
-      setErrorTitulo("Escribe de qué se trata.");
+      setErrorTitulo(t("Escribe de qué se trata."));
       return;
     }
     const fecha = claveFecha(new Date(anio, mes - 1, dia));
@@ -89,11 +91,11 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
   };
 
   return (
-    <Dialog open={abierto} onClose={onCerrar} title={editando ? "Editar" : "Añadir al calendario"} maxWidth={480}>
+    <Dialog open={abierto} onClose={onCerrar} title={editando ? t("Editar") : t("Añadir al calendario")} maxWidth={480}>
       <form onSubmit={guardar} className="flex flex-col gap-4">
         <fieldset>
-          <legend className="mb-1.5 text-caption text-fg-secondary">¿Qué es?</legend>
-          <div role="radiogroup" aria-label="Tipo" className="flex flex-wrap gap-2">
+          <legend className="mb-1.5 text-caption text-fg-secondary">{t("¿Qué es?")}</legend>
+          <div role="radiogroup" aria-label={t("Tipo")} className="flex flex-wrap gap-2">
             {CATEGORIAS.map((c) => {
               const activa = categoria === c.id;
               return (
@@ -108,7 +110,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
                   <span style={{ color: c.color }}>
                     <Glifo nombre={c.glifo} tam={14} />
                   </span>
-                  {c.nombre}
+                  {t(c.nombre)}
                 </button>
               );
             })}
@@ -124,63 +126,63 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
                 <span style={{ color: "#e5509f" }}>
                   <Glifo nombre="regalo" tam={14} />
                 </span>
-                Cumpleaños
+                {t("Cumpleaños")}
               </button>
             )}
           </div>
         </fieldset>
 
-        <TextInput ref={campoTitulo} label="Título" value={titulo} maxLength={60} autoComplete="off" placeholder={`Por ejemplo, ${infoCategoria(categoria).ejemplo}`} error={errorTitulo} onChange={(e) => { setTitulo(e.target.value); setErrorTitulo(undefined); }} />
+        <TextInput ref={campoTitulo} label={t("Título")} value={titulo} maxLength={60} autoComplete="off" placeholder={t("Por ejemplo, {ejemplo}", { ejemplo: t(infoCategoria(categoria).ejemplo) })} error={errorTitulo} onChange={(e) => { setTitulo(e.target.value); setErrorTitulo(undefined); }} />
 
         <div className="grid grid-cols-[80px_1fr_90px] gap-3">
           <div>
-            <label htmlFor="evento-dia" className="mb-1.5 block text-caption text-fg-secondary">{repetir === "no" ? "Día" : "Empieza el"}</label>
-            <Selector id="evento-dia" label="Día" value={dia} onChange={setDia} options={Array.from({ length: maxDia }, (_, i) => ({ value: i + 1, label: String(i + 1) }))} />
+            <label htmlFor="evento-dia" className="mb-1.5 block text-caption text-fg-secondary">{repetir === "no" ? t("Día") : t("Empieza el")}</label>
+            <Selector id="evento-dia" label={t("Día")} value={dia} onChange={setDia} options={Array.from({ length: maxDia }, (_, i) => ({ value: i + 1, label: String(i + 1) }))} />
           </div>
           <div>
-            <label htmlFor="evento-mes" className="mb-1.5 block text-caption text-fg-secondary">Mes</label>
-            <Selector id="evento-mes" label="Mes" value={mes} onChange={setMes} className="capitalize" options={MESES.map((m, i) => ({ value: i + 1, label: m }))} />
+            <label htmlFor="evento-mes" className="mb-1.5 block text-caption text-fg-secondary">{t("Mes")}</label>
+            <Selector id="evento-mes" label={t("Mes")} value={mes} onChange={setMes} className="capitalize" options={Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: nombreMes(i) }))} />
           </div>
           <div>
-            <label htmlFor="evento-anio" className="mb-1.5 block text-caption text-fg-secondary">Año</label>
+            <label htmlFor="evento-anio" className="mb-1.5 block text-caption text-fg-secondary">{t("Año")}</label>
             <input id="evento-anio" inputMode="numeric" value={anio} maxLength={4} onChange={(e) => { const v = e.target.value.replace(/\D/g, ""); if (v) setAnio(Number(v)); }} className={CAMPO} />
           </div>
         </div>
 
         <div>
-          <label htmlFor={idHora} className="mb-1.5 block text-caption text-fg-secondary">Hora (opcional)</label>
+          <label htmlFor={idHora} className="mb-1.5 block text-caption text-fg-secondary">{t("Hora (opcional)")}</label>
           <input id={idHora} type="time" value={hora} onChange={(e) => setHora(e.target.value)} className={clsx(CAMPO, "w-[140px]")} />
         </div>
 
         <div>
-          <span className="mb-1.5 block text-caption text-fg-secondary">Repetir</span>
+          <span className="mb-1.5 block text-caption text-fg-secondary">{t("Repetir")}</span>
           <SegmentedControl<Repeticion>
-            label="Repetir"
+            label={t("Repetir")}
             etiquetaVisible={false}
             value={repetir}
             options={[
-              { value: "no", label: "Nunca" },
-              { value: "semanal", label: "Cada semana" },
-              { value: "mensual", label: "Cada mes" },
+              { value: "no", label: t("Nunca") },
+              { value: "semanal", label: t("Cada semana") },
+              { value: "mensual", label: t("Cada mes") },
             ]}
             onChange={setRepetir}
           />
           {repetir === "mensual" && dia > 28 && (
-            <p className="mt-1.5 text-caption text-fg-tertiary">En los meses más cortos se marcará el último día del mes.</p>
+            <p className="mt-1.5 text-caption text-fg-tertiary">{t("En los meses más cortos se marcará el último día del mes.")}</p>
           )}
         </div>
 
         <fieldset>
-          <legend className="mb-1.5 text-caption text-fg-secondary">Color en el calendario</legend>
-          <div role="radiogroup" aria-label="Color en el calendario" className="flex flex-wrap gap-2">
+          <legend className="mb-1.5 text-caption text-fg-secondary">{t("Color en el calendario")}</legend>
+          <div role="radiogroup" aria-label={t("Color en el calendario")} className="flex flex-wrap gap-2">
             {COLORES_AMIGO.map((c) => (
               <button
                 key={c.valor}
                 type="button"
                 role="radio"
                 aria-checked={color === c.valor}
-                aria-label={c.nombre}
-                title={c.nombre}
+                aria-label={t(c.nombre)}
+                title={t(c.nombre)}
                 onClick={() => {
                   setColor(c.valor);
                   setColorManual(true);
@@ -195,32 +197,32 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
         </fieldset>
 
         <div>
-          <label htmlFor={idNota} className="mb-1.5 block text-caption text-fg-secondary">Nota (opcional)</label>
-          <input id={idNota} value={nota} maxLength={200} placeholder="Detalles…" onChange={(e) => setNota(e.target.value)} className={CAMPO} />
+          <label htmlFor={idNota} className="mb-1.5 block text-caption text-fg-secondary">{t("Nota (opcional)")}</label>
+          <input id={idNota} value={nota} maxLength={200} placeholder={t("Detalles…")} onChange={(e) => setNota(e.target.value)} className={CAMPO} />
         </div>
 
         <div className="flex items-center justify-between gap-4">
-          <span className="text-body text-fg">Avisarme de este evento</span>
-          <Switch checked={avisar} onChange={setAvisar} label="Avisarme de este evento" />
+          <span className="text-body text-fg">{t("Avisarme de este evento")}</span>
+          <Switch checked={avisar} onChange={setAvisar} label={t("Avisarme de este evento")} />
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
           {editando ? (
             confirmarBorrado ? (
               <span className="flex items-center gap-2">
-                <span className="text-caption text-fg-secondary">¿Eliminar «{inicial?.titulo}»?</span>
-                <Button type="button" onClick={borrar} className="h-7 bg-[var(--error)] text-black hover:bg-[var(--error)]">Sí, eliminar</Button>
-                <Button type="button" variant="subtle" className="h-7" onClick={() => setConfirmarBorrado(false)}>No</Button>
+                <span className="text-caption text-fg-secondary">{t("¿Eliminar «{titulo}»?", { titulo: inicial?.titulo ?? "" })}</span>
+                <Button type="button" onClick={borrar} className="h-7 bg-[var(--error)] text-black hover:bg-[var(--error)]">{t("Sí, eliminar")}</Button>
+                <Button type="button" variant="subtle" className="h-7" onClick={() => setConfirmarBorrado(false)}>{t("No")}</Button>
               </span>
             ) : (
-              <Button type="button" variant="subtle" onClick={() => setConfirmarBorrado(true)}>Eliminar</Button>
+              <Button type="button" variant="subtle" onClick={() => setConfirmarBorrado(true)}>{t("Eliminar")}</Button>
             )
           ) : (
             <span />
           )}
           <div className="flex gap-2">
-            <Button type="button" onClick={onCerrar}>Cancelar</Button>
-            <Button type="submit" variant="accent">Guardar</Button>
+            <Button type="button" onClick={onCerrar}>{t("Cancelar")}</Button>
+            <Button type="submit" variant="accent">{t("Guardar")}</Button>
           </div>
         </div>
       </form>

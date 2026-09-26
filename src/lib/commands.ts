@@ -1,4 +1,5 @@
 import { SECCIONES_PRINCIPALES } from "@/lib/rutas";
+import { traducir } from "@/lib/i18n";
 import { normalize } from "@/lib/text";
 import type { Command } from "@/types";
 
@@ -10,10 +11,10 @@ export function buildCommands(query: string, ir: (ruta: string) => void): Comman
 
   const navigation: Command[] = SECCIONES_PRINCIPALES.map((s) => ({
     id: `go-${s.id}`,
-    label: `Ir a ${s.etiqueta}`,
-    keywords: [s.etiqueta, s.id, "abrir", "navegar"],
+    label: traducir("Ir a {seccion}", { seccion: traducir(s.etiqueta) }),
+    keywords: [s.etiqueta, traducir(s.etiqueta), s.id, "abrir", "navegar", "open", "go"],
     shortcut: ["Ctrl", s.atajo!],
-    group: "Navegación",
+    group: traducir("Navegación"),
     run: () => ir(s.ruta),
   }));
 
@@ -23,10 +24,10 @@ export function buildCommands(query: string, ir: (ruta: string) => void): Comman
     ? [
         {
           id: "search-music",
-          label: `Buscar «${text}» en Música`,
+          label: traducir("Buscar «{texto}» en Música", { texto: text }),
           hint: "Spotify",
           keywords: [],
-          group: "Buscar",
+          group: traducir("Buscar"),
           run: () => ir(`/musica?q=${encodeURIComponent(text)}`),
         },
       ]
@@ -37,17 +38,17 @@ export function buildCommands(query: string, ir: (ruta: string) => void): Comman
     ...search,
     {
       id: "settings",
-      label: "Abrir Configuración",
-      keywords: ["ajustes", "tema", "apariencia", "acento", "configuracion"],
-      group: "Ayuda",
+      label: traducir("Abrir Configuración"),
+      keywords: ["ajustes", "tema", "apariencia", "acento", "configuracion", "settings", "theme", "language", "idioma"],
+      group: traducir("Ayuda"),
       run: () => ir("/configuracion"),
     },
     {
       id: "show-shortcuts",
-      label: "Mostrar atajos de teclado",
-      keywords: ["ayuda", "teclas", "atajos", "shortcuts"],
+      label: traducir("Mostrar atajos de teclado"),
+      keywords: ["ayuda", "teclas", "atajos", "shortcuts", "keyboard", "help"],
       shortcut: ["?"],
-      group: "Ayuda",
+      group: traducir("Ayuda"),
       run: () => ir("/atajos"),
     },
   ];

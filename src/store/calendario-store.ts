@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { T } from "@/lib/i18n";
 import { esCategoria, type CategoriaEvento } from "@/lib/calendario/categorias";
 import { diasEnMes } from "@/lib/calendario/fechas";
 
@@ -42,16 +43,16 @@ export interface ConfigAvisos {
 
 /** Colores para marcar a cada amigo. Los azules van primero. */
 export const COLORES_AMIGO: readonly { nombre: string; valor: string }[] = [
-  { nombre: "Azul", valor: "#2b7de9" },
-  { nombre: "Celeste", valor: "#3fb6f5" },
-  { nombre: "Turquesa", valor: "#14b8a6" },
-  { nombre: "Verde", valor: "#3fae5a" },
-  { nombre: "Amarillo", valor: "#e3b60f" },
-  { nombre: "Naranja", valor: "#f0812a" },
-  { nombre: "Rojo", valor: "#e5484d" },
-  { nombre: "Rosa", valor: "#e5509f" },
-  { nombre: "Violeta", valor: "#8b5cf6" },
-  { nombre: "Gris", valor: "#7c8794" },
+  { nombre: T("Azul"), valor: "#2b7de9" },
+  { nombre: T("Celeste"), valor: "#3fb6f5" },
+  { nombre: T("Turquesa"), valor: "#14b8a6" },
+  { nombre: T("Verde"), valor: "#3fae5a" },
+  { nombre: T("Amarillo"), valor: "#e3b60f" },
+  { nombre: T("Naranja"), valor: "#f0812a" },
+  { nombre: T("Rojo"), valor: "#e5484d" },
+  { nombre: T("Rosa"), valor: "#e5509f" },
+  { nombre: T("Violeta"), valor: "#8b5cf6" },
+  { nombre: T("Gris"), valor: "#7c8794" },
 ];
 
 const CLAVE_AMIGOS = "nexushub-cumples";

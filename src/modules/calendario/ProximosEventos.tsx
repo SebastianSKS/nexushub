@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, localeActual } from "@/lib/i18n";
 import { Card } from "@/components/fluent/Card";
 import { infoCategoria } from "@/lib/calendario/categorias";
 import { cuando, fechaLarga, mayuscula, proximaOcurrenciaEvento } from "@/lib/calendario/fechas";
@@ -7,18 +8,19 @@ import type { Evento } from "@/store/calendario-store";
 
 /** Los próximos eventos (hoy en adelante, con su próxima fecha si se repiten), del más cercano al más lejano. */
 export function ProximosEventos({ eventos, onEvento }: { eventos: Evento[]; onEvento: (e: Evento) => void }) {
+  const t = useT();
   const hoy = new Date();
   const lista = eventos
     .map((e) => ({ e, p: proximaOcurrenciaEvento(e.fecha, e.repetir, hoy) }))
     .filter((x): x is { e: Evento; p: NonNullable<typeof x.p> } => x.p !== null)
-    .sort((x, y) => x.p.dias - y.p.dias || x.e.titulo.localeCompare(y.e.titulo, "es"))
+    .sort((x, y) => x.p.dias - y.p.dias || x.e.titulo.localeCompare(y.e.titulo, localeActual()))
     .slice(0, 6);
 
   if (lista.length === 0) return null;
 
   return (
     <Card className="p-4">
-      <h2 className="mb-3 text-body font-semibold text-fg">Próximos eventos</h2>
+      <h2 className="mb-3 text-body font-semibold text-fg">{t("Próximos eventos")}</h2>
       <ul className="flex flex-col gap-1">
         {lista.map(({ e, p }) => (
           <li key={e.id}>
@@ -29,10 +31,10 @@ export function ProximosEventos({ eventos, onEvento }: { eventos: Evento[]; onEv
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-body font-semibold text-fg">{e.titulo}</span>
                 <span className="block truncate text-caption text-fg-secondary">
-                  {e.categoria !== "otro" && `${infoCategoria(e.categoria).nombre} · `}
+                  {e.categoria !== "otro" && `${t(infoCategoria(e.categoria).nombre)} · `}
                   {mayuscula(fechaLarga(p.fecha))}
                   {e.hora ? ` · ${e.hora}` : ""}
-                  {e.repetir !== "no" && ` · se repite ${e.repetir === "semanal" ? "cada semana" : "cada mes"}`}
+                  {e.repetir !== "no" && ` · ${e.repetir === "semanal" ? t("se repite cada semana") : t("se repite cada mes")}`}
                 </span>
               </span>
               <span className={p.dias <= 1 ? "shrink-0 text-caption font-semibold text-accent-text" : "shrink-0 text-caption text-fg-secondary"}>{cuando(p.dias)}</span>

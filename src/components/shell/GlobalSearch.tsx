@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, useIdioma } from "@/lib/i18n";
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
@@ -65,6 +66,8 @@ function Resaltado({ texto, palabras }: { texto: string; palabras?: string[] }) 
 }
 
 export function GlobalSearch() {
+  const t = useT();
+  const idioma = useIdioma();
   const router = useRouter();
   const open = useAppStore((s) => s.searchOpen);
   const setOpen = useAppStore((s) => s.setSearchOpen);
@@ -83,7 +86,7 @@ export function GlobalSearch() {
     const ir = (r: string) => router.push(r);
     return [...buscarContenido(query, ir), ...filterCommands(buildCommands(query, ir), query)];
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` fuerza a rehacer la búsqueda cuando cambian los datos
-  }, [query, router, version]);
+  }, [query, router, version, idioma]);
 
   // Ctrl+K abre el panel desde cualquier parte: enfocar el campo. Al abrirlo se leen los datos que se buscan.
   useEffect(() => {
@@ -170,12 +173,12 @@ export function GlobalSearch() {
           ref={inputRef}
           type="text"
           role="combobox"
-          aria-label="Buscador global"
+          aria-label={t("Buscador global")}
           aria-expanded={open}
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={open && results[activeIndex] ? optionId(activeIndex) : undefined}
-          placeholder="Buscar en Nexo"
+          placeholder={t("Buscar en Nexo")}
           value={query}
           onFocus={() => setOpen(true)}
           onChange={(e) => {
@@ -196,10 +199,10 @@ export function GlobalSearch() {
             exit={{ opacity: 0, transition: EXIT }}
             className="acrylic absolute left-0 right-0 top-full z-40 mt-2 max-h-[min(420px,60vh)] overflow-auto rounded-control p-1.5 shadow-flyout"
           >
-            <div id={listId} role="listbox" aria-label="Resultados">
+            <div id={listId} role="listbox" aria-label={t("Resultados")}>
               {groups.length === 0 && (
                 <p className="px-3 py-6 text-center text-body text-fg-secondary">
-                  No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus PDF.
+                  {t("No encontré nada para «{query}». Prueba con el nombre de una materia, una tarea, un canal, «documentos» o una palabra que esté dentro de tus PDF.", { query })}
                 </p>
               )}
               {groups.map(([group, items]) => (
@@ -246,7 +249,7 @@ export function GlobalSearch() {
             </div>
             {leyendo && (
               <p className="px-3 pb-1.5 pt-2 text-caption text-fg-tertiary" role="status">
-                Leyendo tus PDF para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.
+                {t("Leyendo tus PDF para buscar dentro de ellos ({hechos} de {total})… ya puedes seguir buscando.", { hechos, total })}
               </p>
             )}
           </motion.div>

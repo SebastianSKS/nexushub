@@ -1,10 +1,11 @@
 import { infoCategoria } from "@/lib/calendario/categorias";
-import { fechaLarga, fechaDesdeIso, MESES, mayuscula } from "@/lib/calendario/fechas";
+import { traducir } from "@/lib/i18n";
+import { fechaLarga, fechaDesdeIso, mayuscula, nombreMes } from "@/lib/calendario/fechas";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { leerCanales } from "@/lib/canales/almacen";
 import { TOOLS } from "@/lib/documents/tools";
 import { evaluar, formatear } from "@/lib/calculadora/evaluar";
-import { DIAS } from "@/lib/horario/horario";
+import { DIAS, nombreDiaSemana } from "@/lib/horario/horario";
 import { rutaCanal, rutaHerramienta, rutaVer } from "@/lib/rutas";
 import { normalize } from "@/lib/text";
 import { useAccesosStore } from "@/store/accesos-store";
@@ -62,9 +63,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
       const res = formatear(n);
       salida.push({
         id: "calc",
-        group: "Calculadora",
+        group: traducir("Calculadora"),
         label: `${q} = ${res}`,
-        hint: "Pulsa Enter para copiar el resultado",
+        hint: traducir("Pulsa Enter para copiar el resultado"),
         keywords: [],
         icon: "calculadora",
         run: () => void navigator.clipboard?.writeText(res).catch(() => {}),
@@ -77,7 +78,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
   // Tareas, exámenes, citas y demás eventos.
   const { eventos, amigos } = useCalendarioStore.getState();
   ordenar(
-    eventos.filter((e) => coincide(terminos, e.titulo, e.nota, infoCategoria(e.categoria).nombre)),
+    eventos.filter((e) => coincide(terminos, e.titulo, e.nota, infoCategoria(e.categoria).nombre, traducir(infoCategoria(e.categoria).nombre))),
     (e) => e.titulo,
     q,
   )
@@ -86,9 +87,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
       const f = fechaDesdeIso(e.fecha);
       salida.push({
         id: `ev-${e.id}`,
-        group: "Tareas y eventos",
+        group: traducir("Tareas y eventos"),
         label: e.titulo,
-        hint: `${infoCategoria(e.categoria).nombre} · ${mayuscula(fechaLarga(f))}${e.hora ? ` · ${e.hora}` : ""}`,
+        hint: `${traducir(infoCategoria(e.categoria).nombre)} · ${mayuscula(fechaLarga(f))}${e.hora ? ` · ${e.hora}` : ""}`,
         keywords: [],
         icon: infoCategoria(e.categoria).glifo,
         color: e.color,
@@ -99,7 +100,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
   // Clases del horario (también por día: «lunes» muestra las del lunes).
   const clases = useHorarioStore.getState().clases;
   ordenar(
-    clases.filter((c) => coincide(terminos, c.materia, c.codigo, c.docente, c.aula, DIAS[c.dia])),
+    clases.filter((c) => coincide(terminos, c.materia, c.codigo, c.docente, c.aula, DIAS[c.dia], nombreDiaSemana(c.dia))),
     (c) => c.materia,
     q,
   )
@@ -107,9 +108,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .forEach((c) =>
       salida.push({
         id: `clase-${c.id}`,
-        group: "Horario",
+        group: traducir("Horario"),
         label: c.materia,
-        hint: `${DIAS[c.dia]} ${c.inicio}–${c.fin}${c.docente ? ` · ${c.docente}` : ""}${c.aula ? ` · Aula ${c.aula}` : ""}`,
+        hint: `${nombreDiaSemana(c.dia)} ${c.inicio}–${c.fin}${c.docente ? ` · ${c.docente}` : ""}${c.aula ? ` · ${traducir("Aula {aula}", { aula: c.aula })}` : ""}`,
         keywords: [],
         icon: "reloj",
         color: c.color,
@@ -119,14 +120,14 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
 
   // Cumpleaños.
   amigos
-    .filter((a) => coincide(terminos, a.nombre, a.nota, "cumpleaños"))
+    .filter((a) => coincide(terminos, a.nombre, a.nota, "cumpleaños", "birthday"))
     .slice(0, POR_GRUPO)
     .forEach((a) =>
       salida.push({
         id: `amigo-${a.id}`,
-        group: "Cumpleaños",
+        group: traducir("Cumpleaños¦grupo"),
         label: a.nombre,
-        hint: `Cumpleaños · ${a.dia} de ${MESES[a.mes - 1]}`,
+        hint: traducir("Cumpleaños · {dia} de {mes}", { dia: a.dia, mes: nombreMes(a.mes - 1) }),
         keywords: [],
         icon: "regalo",
         color: a.color,
@@ -140,7 +141,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .notas.filter((n) => coincide(terminos, n.texto))
     .slice(0, POR_GRUPO)
     .forEach((n) =>
-      salida.push({ id: `nota-${n.id}`, group: "Apuntes", label: n.texto, hint: n.hecha ? "Hecho" : "Pendiente", keywords: [], icon: "tarea", run: () => ir("/calendario") }),
+      salida.push({ id: `nota-${n.id}`, group: traducir("Apuntes"), label: n.texto, hint: n.hecha ? traducir("Hecho") : traducir("Pendiente"), keywords: [], icon: "tarea", run: () => ir("/calendario") }),
     );
 
   // Dentro de tus PDF (el texto ya leído de las carpetas de materias): el archivo, la página y el trozo donde aparece.
@@ -150,9 +151,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
       .forEach((c) =>
         salida.push({
           id: `pdf-${c.carpeta}/${c.nombre}`,
-          group: "En tus PDF",
+          group: traducir("En tus PDF"),
           label: c.nombre,
-          hint: c.fragmento ? `${c.carpeta} · página ${c.pagina}${c.paginasConCoincidencia > 1 ? ` (y en ${c.paginasConCoincidencia - 1} más)` : ""}` : `${c.carpeta} · PDF`,
+          hint: c.fragmento ? `${traducir("{carpeta} · página {n}", { carpeta: c.carpeta, n: c.pagina })}${c.paginasConCoincidencia > 1 ? ` ${traducir("(y en {n} más)", { n: c.paginasConCoincidencia - 1 })}` : ""}` : `${c.carpeta} · PDF`,
           detalle: c.fragmento || undefined,
           resaltar: terminos,
           keywords: [],
@@ -169,7 +170,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
   lista
     .filter((c) => coincide(terminos, c.nombre))
     .slice(0, POR_GRUPO)
-    .forEach((c) => salida.push({ id: `canal-${c.id}`, group: "Canales", label: c.nombre, hint: c.tipo === "canal" ? "Canal de YouTube" : "Lista de YouTube", keywords: [], icon: "video", marca: "youtube", run: () => ir(rutaCanal(c.id)) }));
+    .forEach((c) => salida.push({ id: `canal-${c.id}`, group: traducir("Canales"), label: c.nombre, hint: c.tipo === "canal" ? traducir("Canal de YouTube") : traducir("Lista de YouTube"), keywords: [], icon: "video", marca: "youtube", run: () => ir(rutaCanal(c.id)) }));
 
   const vistos = new Set<string>();
   Object.values(useCanalesStore.getState().feeds)
@@ -178,7 +179,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .sort((a, b) => Date.parse(b.publicado) - Date.parse(a.publicado))
     .slice(0, 6)
     .forEach((v) =>
-      salida.push({ id: `video-${v.videoId}`, group: "Videos", label: v.titulo, hint: `${v.canalNombre} · ${fechaRelativa(v.publicado)}`, keywords: [], icon: "video", marca: "youtube", run: () => ir(rutaVer(v.videoId)) }),
+      salida.push({ id: `video-${v.videoId}`, group: traducir("Videos"), label: v.titulo, hint: `${v.canalNombre} · ${fechaRelativa(v.publicado)}`, keywords: [], icon: "video", marca: "youtube", run: () => ir(rutaVer(v.videoId)) }),
     );
 
   // Favoritos: música (suena al instante) y videos guardados.
@@ -189,9 +190,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .forEach((p) =>
       salida.push({
         id: `fav-${p.fuente}-${p.id}`,
-        group: "Favoritos",
+        group: traducir("Favoritos"),
         label: p.titulo,
-        hint: `${p.fuente === "spotify" ? "Canción" : "Video"} · ${p.artista}`,
+        hint: `${p.fuente === "spotify" ? traducir("Canción") : traducir("Video")} · ${p.artista}`,
         keywords: [],
         icon: "favoritoLleno",
         marca: p.fuente === "spotify" ? "spotify" : "youtube",
@@ -204,7 +205,7 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .getState()
     .accesos.filter((a) => coincide(terminos, a.nombre, a.url, a.app?.nombre))
     .slice(0, POR_GRUPO)
-    .forEach((a) => salida.push({ id: `acceso-${a.id}`, group: "Accesos directos", label: a.nombre, hint: a.app ? `Programa: ${a.app.nombre}` : a.url, keywords: [], icon: "externo", color: a.color, run: () => void abrirAcceso(a) }));
+    .forEach((a) => salida.push({ id: `acceso-${a.id}`, group: traducir("Accesos directos"), label: a.nombre, hint: a.app ? traducir("Programa: {nombre}", { nombre: a.app.nombre }) : a.url, keywords: [], icon: "externo", color: a.color, run: () => void abrirAcceso(a) }));
 
   // Herramientas de Documentos.
   TOOLS.filter((t) => coincide(terminos, t.name, t.description, t.action))

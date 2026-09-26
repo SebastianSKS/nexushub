@@ -6,7 +6,18 @@ import { esEscritorio } from "@/lib/entorno";
  * Un solo estado para todo: la revisión automática al abrir, el aviso «Actualizar ahora» y la tarjeta de Configuración.
  */
 
-export type EstadoActualizacion = "inactivo" | "buscando" | "al-dia" | "disponible" | "descargando" | "lista" | "error";
+/**
+ * «descargando» baja el instalador; «instalando» lo lanza (en Windows Nexo se cierra solo y el instalador lo vuelve a abrir);
+ * «lista» solo se ve donde el sistema no reabre la aplicación; «error» es que no se pudo COMPROBAR y «fallo» que se encontró
+ * la versión pero no se pudo bajar o instalar (se puede reintentar).
+ */
+export type EstadoActualizacion = "inactivo" | "buscando" | "al-dia" | "disponible" | "descargando" | "instalando" | "lista" | "error" | "fallo";
+
+/** Cuántas veces se intenta bajar el instalador antes de rendirse (una red que parpadea no debe costar la actualización). */
+const INTENTOS_DESCARGA = 2;
+/** Nombre del evento con el que se le pide al respaldo que guarde YA (lo escucha `useRespaldoLocal`). */
+export const EVENTO_GUARDAR_RESPALDO = "nexo-guardar-respaldo";
+const pausa = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 interface ActualizacionesState {
   estado: EstadoActualizacion;
@@ -24,6 +35,8 @@ interface ActualizacionesState {
   instalar: () => Promise<void>;
   reiniciar: () => Promise<void>;
   posponer: () => void;
+  /** Cierra el aviso de «no se pudo actualizar»: la versión sigue disponible desde Configuración. */
+  descartarFallo: () => void;
 }
 
 type Actualizacion = NonNullable<Awaited<ReturnType<(typeof import("@tauri-apps/plugin-updater"))["check"]>>>;
@@ -40,7 +53,7 @@ export const useActualizacionesStore = create<ActualizacionesState>((set, get) =
   buscar: async (silenciosa = false) => {
     if (!esEscritorio()) return;
     const ahora = get().estado;
-    if (ahora === "buscando" || ahora === "descargando" || ahora === "lista") return;
+    if (ahora === "buscando" || ahora === "descargando" || ahora === "instalando" || ahora === "lista") return;
     if (!silenciosa) set({ estado: "buscando" });
     try {
       const { check } = await import("@tauri-apps/plugin-updater");
@@ -58,21 +71,36 @@ export const useActualizacionesStore = create<ActualizacionesState>((set, get) =
   },
 
   instalar: async () => {
-    if (!encontrada) return;
+    const version = encontrada;
+    if (!version) return;
     set({ estado: "descargando", progreso: 0 });
     try {
-      let total = 0;
-      let bajado = 0;
-      await encontrada.downloadAndInstall((evento) => {
-        if (evento.event === "Started") total = evento.data.contentLength ?? 0;
-        else if (evento.event === "Progress") {
-          bajado += evento.data.chunkLength;
-          set({ progreso: total > 0 ? Math.min(100, Math.round((bajado / total) * 100)) : null });
+      for (let intento = 1; ; intento++) {
+        let total = 0;
+        let bajado = 0;
+        try {
+          await version.download((evento) => {
+            if (evento.event === "Started") total = evento.data.contentLength ?? 0;
+            else if (evento.event === "Progress") {
+              bajado += evento.data.chunkLength;
+              set({ progreso: total > 0 ? Math.min(100, Math.round((bajado / total) * 100)) : null });
+            }
+          });
+          break;
+        } catch (e) {
+          if (intento >= INTENTOS_DESCARGA) throw e;
+          set({ progreso: 0 });
+          await pausa(2500);
         }
-      });
+      }
+      // En Windows, instalar cierra Nexo: antes se guarda el respaldo al momento y se le da un instante al almacenamiento de la ventana.
+      set({ estado: "instalando", progreso: 100 });
+      window.dispatchEvent(new Event(EVENTO_GUARDAR_RESPALDO));
+      await pausa(1500);
+      await version.install();
       set({ estado: "lista", progreso: 100 });
     } catch {
-      set({ estado: "error", progreso: null });
+      set({ estado: "fallo", progreso: null });
     }
   },
 
@@ -82,4 +110,5 @@ export const useActualizacionesStore = create<ActualizacionesState>((set, get) =
   },
 
   posponer: () => set({ pospuesta: true }),
+  descartarFallo: () => set({ estado: "disponible", pospuesta: true, progreso: null }),
 }));

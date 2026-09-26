@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { esEscritorio } from "@/lib/entorno";
+import { EVENTO_GUARDAR_RESPALDO } from "@/store/actualizaciones-store";
 
 const PREFIJO = "nexushub-";
 const VERSION = 1;
@@ -96,9 +97,11 @@ export function useRespaldoLocal() {
       guardar();
       temporizador = setInterval(guardar, CADA_MS);
       window.addEventListener("pagehide", guardar);
+      window.addEventListener(EVENTO_GUARDAR_RESPALDO, guardar);
       document.addEventListener("visibilitychange", guardar);
       quitarEscuchas = () => {
         window.removeEventListener("pagehide", guardar);
+        window.removeEventListener(EVENTO_GUARDAR_RESPALDO, guardar);
         document.removeEventListener("visibilitychange", guardar);
       };
     })();

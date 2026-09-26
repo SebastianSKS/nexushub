@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { T } from "@/lib/i18n";
 import type { PreferenciaIdioma } from "@/lib/i18n/nucleo";
 
 export type PreferenciaTema = "claro" | "oscuro" | "sistema";
@@ -47,14 +48,14 @@ export const ACENTO_PREDETERMINADO = "#0078D4";
 
 /** Acentos de Windows 11 que ofrece la página de Configuración. */
 export const ACENTOS: readonly { nombre: string; valor: string }[] = [
-  { nombre: "Azul", valor: "#0078D4" },
-  { nombre: "Cian", valor: "#0099BC" },
-  { nombre: "Verde", valor: "#10893E" },
-  { nombre: "Naranja", valor: "#CA5010" },
-  { nombre: "Rojo", valor: "#C42B1C" },
-  { nombre: "Rosa", valor: "#C239B3" },
-  { nombre: "Violeta", valor: "#744DA9" },
-  { nombre: "Gris", valor: "#5D6870" },
+  { nombre: T("Azul"), valor: "#0078D4" },
+  { nombre: T("Cian"), valor: "#0099BC" },
+  { nombre: T("Verde"), valor: "#10893E" },
+  { nombre: T("Naranja"), valor: "#CA5010" },
+  { nombre: T("Rojo"), valor: "#C42B1C" },
+  { nombre: T("Rosa"), valor: "#C239B3" },
+  { nombre: T("Violeta"), valor: "#744DA9" },
+  { nombre: T("Gris"), valor: "#5D6870" },
 ];
 
 export const AJUSTES_PREDETERMINADOS: Ajustes = {

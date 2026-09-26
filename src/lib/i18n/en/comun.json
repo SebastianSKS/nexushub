@@ -37,5 +37,10 @@
   "Artista": "Artist",
   "Ir a Música": "Go to Music",
   "Cargando…": "Loading…",
-  "Inténtalo de nuevo en un momento.": "Try again in a moment."
+  "Inténtalo de nuevo en un momento.": "Try again in a moment.",
+  "Restaurar": "Restore",
+  "Exportar": "Export",
+  "Importar": "Import",
+  "canales": "channels",
+  "Nexo": "Nexo"
 }

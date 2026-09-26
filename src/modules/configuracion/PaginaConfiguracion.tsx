@@ -8,6 +8,7 @@ import { Dialog } from "@/components/fluent/Dialog";
 import { Glifo } from "@/components/fluent/Glifo";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { Selector } from "@/components/fluent/Selector";
+import { useT, type PreferenciaIdioma } from "@/lib/i18n";
 import { notificarSistema } from "@/lib/notificar";
 import { Slider } from "@/components/fluent/Slider";
 import { Switch } from "@/components/fluent/Switch";
@@ -37,6 +38,7 @@ function Seccion({ titulo, children }: { titulo: string; children: React.ReactNo
 /** /configuracion — hecha solo con SettingsCard y SettingsExpander, como la app Configuración de Windows. */
 export function PaginaConfiguracion() {
   const a = useAjustesStore();
+  const t = useT();
   const nombre = usePerfilStore((s) => s.nombre);
   const foto = usePerfilStore((s) => s.foto);
   const [perfil, setPerfil] = useState(false);
@@ -67,6 +69,18 @@ export function PaginaConfiguracion() {
             </Seccion>
 
             <Seccion titulo="Apariencia">
+              <TarjetaAjuste glifo="pantalla" titulo={t("Idioma")} descripcion={t("El idioma de todo Nexo: menús, guías, novedades y avisos. «Igual que Windows» usa el de tu sistema.")}>
+                <Selector<PreferenciaIdioma>
+                  label={t("Idioma")}
+                  value={a.idioma}
+                  options={[
+                    { value: "sistema", label: t("Igual que Windows") },
+                    { value: "es", label: "Español" },
+                    { value: "en", label: "English" },
+                  ]}
+                  onChange={(idioma) => a.cambiar({ idioma })}
+                />
+              </TarjetaAjuste>
               <TarjetaAjuste glifo="paleta" titulo="Tema" descripcion="Elige entre claro, oscuro o el mismo que usa Windows.">
                 <SegmentedControl<PreferenciaTema>
                   label="Tema"

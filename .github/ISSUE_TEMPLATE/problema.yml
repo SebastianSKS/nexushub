@@ -1,0 +1,28 @@
+name: Algo no funciona
+description: Cuéntanos qué pasó para poder arreglarlo
+title: "Problema: "
+labels: ["problema"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por avisar. Antes de escribir, mira si tu caso está en la [ayuda](https://github.com/SebastianSKS/nexushub/blob/main/AYUDA.md).
+  - type: textarea
+    id: que-paso
+    attributes:
+      label: ¿Qué pasó?
+      description: Lo que esperabas y lo que viste en su lugar. Si sale una captura de pantalla, ayuda mucho.
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: ¿Qué estabas haciendo?
+      description: Los pasos, en orden, para que podamos repetirlo.
+      placeholder: "1. Abrí Documentos\n2. Elegí «Unir PDF»\n3. …"
+  - type: textarea
+    id: info
+    attributes:
+      label: Información técnica
+      description: En Nexo, ve a Configuración › Acerca de › «Copiar información técnica» y pégalo aquí. No incluye tus archivos, calendario ni nombre.
+      render: text

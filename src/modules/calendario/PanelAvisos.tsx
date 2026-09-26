@@ -1,5 +1,6 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/fluent/Button";
@@ -25,6 +26,7 @@ function Fila({ etiqueta, valor, onChange }: { etiqueta: string; valor: boolean;
 /** Configuración de los avisos: cuándo avisar, a qué hora, y el permiso para notificaciones del sistema. */
 export function PanelAvisos() {
   const t = useT();
+  const { enPunto } = useHora();
   const avisos = useCalendarioStore((s) => s.avisos);
   const cambiar = useCalendarioStore((s) => s.cambiarAvisos);
   const [permiso, setPermiso] = useState<Permiso>("default");
@@ -54,13 +56,13 @@ export function PanelAvisos() {
 
       <div className="flex items-center justify-between gap-3 py-1.5">
         <label htmlFor="hora-aviso" className="text-body text-fg">{t("Avisar a partir de las")}</label>
-        <div className="w-[110px]">
+        <div className="w-[130px]">
           <Selector
             id="hora-aviso"
             label={t("Avisar a partir de las")}
             value={avisos.hora}
             onChange={(hora) => cambiar({ hora })}
-            options={Array.from({ length: 24 }, (_, h) => ({ value: h, label: `${String(h).padStart(2, "0")}:00` }))}
+            options={Array.from({ length: 24 }, (_, h) => ({ value: h, label: enPunto(h) }))}
           />
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { esEscritorio } from "@/lib/entorno";
 import { traducir, useIdioma } from "@/lib/i18n";
+import { caratulaParaBandeja, LADO_CARATULA_BANDEJA } from "@/services/caratula-bandeja";
 import { useReproductorStore } from "@/store/reproductor-store";
 
 /**
@@ -38,8 +39,20 @@ export function useBandeja() {
             siguiente: traducir("Siguiente"),
             mostrar: traducir("Mostrar Nexo"),
             salir: traducir("Salir"),
+            nada: traducir("Nada en reproducción"),
           },
         }).catch(() => {});
+        void ponerCaratula(s.pista?.caratula ?? "");
+      };
+
+      // La carátula tarda en llegar (se baja): si mientras tanto cambió la canción, la vieja ya no se pone.
+      let caratulaActual = "";
+      const ponerCaratula = async (url: string) => {
+        if (url === caratulaActual) return;
+        caratulaActual = url;
+        const rgba = url ? await caratulaParaBandeja(url) : null;
+        if (caratulaActual !== url || cancelado) return;
+        void invoke("bandeja_caratula", { rgba, lado: LADO_CARATULA_BANDEJA }).catch(() => {});
       };
 
       actualizar();

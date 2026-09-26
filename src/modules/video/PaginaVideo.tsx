@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Add20Regular } from "@fluentui/react-icons";
@@ -21,6 +22,7 @@ export const PanelDev =
 
 /** /video — Novedades de todos los canales que sigues. */
 export function PaginaVideo() {
+  const t = useT();
   const canales = useCanalesStore((s) => s.canales);
   const [dialogo, setDialogo] = useState(false);
   const [dev, setDev] = useState(false);
@@ -34,18 +36,18 @@ export function PaginaVideo() {
     <>
       <PlantillaPagina
         migas={[{ etiqueta: "Video" }]}
-        titulo="Video"
-        descripcion="Tu propio muro: las novedades de los canales de YouTube que sigues."
+        titulo={t("Video")}
+        descripcion={t("Tu propio muro: las novedades de los canales de YouTube que sigues.")}
         accion={
           <Button variant="accent" icon={<Add20Regular />} onClick={() => setDialogo(true)}>
-            Agregar canal
+            {t("Agregar canal")}
           </Button>
         }
         principal={
           <>
             <BuscadorVideos />
             <FavoritosVideo />
-            <MuroVideos ids={canales.map((c) => c.id)} titulo="Novedades de tus canales" />
+            <MuroVideos ids={canales.map((c) => c.id)} titulo={t("Novedades de tus canales")} />
           </>
         }
         lateral={<PanelCanales />}

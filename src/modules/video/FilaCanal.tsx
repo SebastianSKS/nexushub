@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -20,6 +21,7 @@ interface FilaCanalProps {
 
 /** Una fila de la barra de canales: avatar, nombre, cantidad de videos y menú (clic derecho o «⋯»). */
 export function FilaCanal({ canal, indice, total }: FilaCanalProps) {
+  const t = useT();
   const feed = useCanalesStore((s) => s.feeds[canal.id]);
   const enCanal = usePathname().replace(/\/$/, "") === "/video/canal";
   const idActual = useSearchParams().get("id");
@@ -29,18 +31,18 @@ export function FilaCanal({ canal, indice, total }: FilaCanalProps) {
   const cantidad = feed?.videos.length ?? 0;
   const detalle =
     feed?.estado === "cargando" && cantidad === 0
-      ? "Cargando…"
+      ? t("Cargando…")
       : feed?.estado === "error"
-        ? "No se pudo actualizar"
-        : `${cantidad} ${cantidad === 1 ? "video" : "videos"}`;
+        ? t("No se pudo actualizar")
+        : `${cantidad} ${cantidad === 1 ? t("video") : t("videos")}`;
 
   const acciones = useCanalesStore.getState();
   const items: MenuItem[] = [
-    { etiqueta: "Actualizar", onSelect: () => void acciones.cargarFeed(canal.id, { fresco: true }) },
-    ...(canal.sugerido ? [{ etiqueta: "Conservar (quitar «Sugerido»)", onSelect: () => acciones.conservarSugerido(canal.id) }] : []),
-    { etiqueta: "Subir", onSelect: () => acciones.moverCanal(canal.id, -1), deshabilitado: indice === 0 },
-    { etiqueta: "Bajar", onSelect: () => acciones.moverCanal(canal.id, 1), deshabilitado: indice === total - 1 },
-    { etiqueta: "Quitar", onSelect: () => acciones.quitarCanal(canal.id), peligro: true },
+    { etiqueta: t("Actualizar"), onSelect: () => void acciones.cargarFeed(canal.id, { fresco: true }) },
+    ...(canal.sugerido ? [{ etiqueta: t("Conservar (quitar «Sugerido»)"), onSelect: () => acciones.conservarSugerido(canal.id) }] : []),
+    { etiqueta: t("Subir"), onSelect: () => acciones.moverCanal(canal.id, -1), deshabilitado: indice === 0 },
+    { etiqueta: t("Bajar"), onSelect: () => acciones.moverCanal(canal.id, 1), deshabilitado: indice === total - 1 },
+    { etiqueta: t("Quitar"), onSelect: () => acciones.quitarCanal(canal.id), peligro: true },
   ];
 
   return (
@@ -57,7 +59,7 @@ export function FilaCanal({ canal, indice, total }: FilaCanalProps) {
       <Link
         href={rutaCanal(canal.id)}
         aria-current={seleccionado ? "page" : undefined}
-        aria-label={`${canal.nombre}, ${detalle}`}
+        aria-label={t("{nombre}, {detalle}", { nombre: canal.nombre, detalle })}
         className="flex min-w-0 flex-1 items-center gap-3 rounded-control py-2 pl-2 text-left"
       >
         <AvatarCanal nombre={canal.nombre} avatar={canal.avatar} tam={32} />
@@ -72,14 +74,14 @@ export function FilaCanal({ canal, indice, total }: FilaCanalProps) {
                 className="shrink-0 rounded-full px-1.5 text-caption text-fg"
                 style={{ backgroundColor: "color-mix(in srgb, var(--accent) 24%, transparent)" }}
               >
-                Sugerido
+                {t("Sugerido")}
               </span>
             )}
           </span>
         </span>
       </Link>
       <IconButton
-        label={`Opciones de ${canal.nombre}`}
+        label={t("Opciones de {nombre}", { nombre: canal.nombre })}
         aria-haspopup="menu"
         aria-expanded={menu !== null}
         className="h-7 w-7 opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
@@ -90,7 +92,7 @@ export function FilaCanal({ canal, indice, total }: FilaCanalProps) {
       >
         <MoreHorizontal20Regular />
       </IconButton>
-      <MenuFlyout abierto={menu !== null} x={menu?.x ?? 0} y={menu?.y ?? 0} items={items} etiqueta={`Opciones de ${canal.nombre}`} onCerrar={() => setMenu(null)} />
+      <MenuFlyout abierto={menu !== null} x={menu?.x ?? 0} y={menu?.y ?? 0} items={items} etiqueta={t("Opciones de {nombre}", { nombre: canal.nombre })} onCerrar={() => setMenu(null)} />
     </div>
   );
 }

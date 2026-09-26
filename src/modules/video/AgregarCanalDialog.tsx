@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/fluent/Button";
@@ -16,6 +17,7 @@ interface AgregarCanalDialogProps {
 
 /** Diálogo para suscribirse a un canal o lista pegando un enlace, @handle o ID. */
 export function AgregarCanalDialog({ abierto, onCerrar }: AgregarCanalDialogProps) {
+  const t = useT();
   const [texto, setTexto] = useState("");
   const [buscando, setBuscando] = useState(false);
   const [error, setError] = useState<ErrorFeed | null>(null);
@@ -27,8 +29,8 @@ export function AgregarCanalDialog({ abierto, onCerrar }: AgregarCanalDialogProp
     setTexto("");
     setError(null);
     setBuscando(false);
-    const t = setTimeout(() => inputRef.current?.focus(), 80);
-    return () => clearTimeout(t);
+    const espera = setTimeout(() => inputRef.current?.focus(), 80);
+    return () => clearTimeout(espera);
   }, [abierto]);
 
   const enviar = async (e: FormEvent) => {
@@ -47,22 +49,22 @@ export function AgregarCanalDialog({ abierto, onCerrar }: AgregarCanalDialogProp
   };
 
   return (
-    <Dialog open={abierto} onClose={onCerrar} title="Agregar canal" maxWidth={560}>
+    <Dialog open={abierto} onClose={onCerrar} title={t("Agregar canal")} maxWidth={560}>
       <form onSubmit={enviar} className="flex flex-col gap-4">
         <TextInput
           ref={inputRef}
-          label="Pega el enlace de un canal de YouTube"
-          placeholder="youtube.com/@canal, /channel/UC…, una lista o cualquier video"
+          label={t("Pega el enlace de un canal de YouTube")}
+          placeholder={t("youtube.com/@canal, /channel/UC…, una lista o cualquier video")}
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           autoComplete="off"
           spellCheck={false}
-          hint="También sirve un @nombre, el ID del canal (UC…) o el enlace de cualquier video del canal."
+          hint={t("También sirve un @nombre, el ID del canal (UC…) o el enlace de cualquier video del canal.")}
         />
 
         {buscando && (
           <p className="text-body text-fg-secondary" role="status">
-            Buscando el canal en YouTube…
+            {t("Buscando el canal en YouTube…")}
           </p>
         )}
         {error && (
@@ -73,10 +75,10 @@ export function AgregarCanalDialog({ abierto, onCerrar }: AgregarCanalDialogProp
 
         <div className="flex justify-end gap-2">
           <Button type="button" onClick={onCerrar}>
-            Cancelar
+            {t("Cancelar")}
           </Button>
           <Button type="submit" variant="accent" disabled={buscando || texto.trim().length === 0}>
-            {buscando ? "Buscando…" : "Agregar canal"}
+            {buscando ? t("Buscando…") : t("Agregar canal")}
           </Button>
         </div>
       </form>

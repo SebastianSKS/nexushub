@@ -1,5 +1,6 @@
 "use client";
 
+import { traducir } from "@/lib/i18n";
 import { useEffect } from "react";
 import { claveFecha } from "@/lib/calendario/fechas";
 import { itemsDelDia } from "@/lib/calendario/items";
@@ -47,8 +48,8 @@ export function useAvisosClases() {
         for (const c of clases) {
           const faltan = aMinutos(c.inicio) - minutos;
           if (faltan <= 0 || faltan > aj.avisoClaseMin) continue; // aún falta mucho, o ya empezó
-          const donde = [c.aula ? `Aula ${c.aula}` : "", c.docente].filter(Boolean).join(" · ");
-          avisar(`clase:${c.id}|${hoy}`, `${c.materia} empieza en ${faltan} min`, `${c.inicio}–${c.fin}${donde ? ` · ${donde}` : ""}`, { ruta: "/horario", etiqueta: "Abrir el horario", glifo: "reloj" });
+          const donde = [c.aula ? traducir("Aula {aula}", { aula: c.aula }) : "", c.docente].filter(Boolean).join(" · ");
+          avisar(`clase:${c.id}|${hoy}`, traducir("{materia} empieza en {faltan} min", { materia: c.materia, faltan }), `${c.inicio}–${c.fin}${donde ? ` · ${donde}` : ""}`, { ruta: "/horario", etiqueta: traducir("Abrir el horario"), glifo: "reloj" });
         }
       }
 
@@ -66,14 +67,17 @@ export function useAvisosClases() {
         const partes: string[] = [];
         if (clases.length > 0) {
           const c = clases[0]!;
-          partes.push(`Primera clase: ${c.inicio} ${c.materia}${c.aula ? ` (Aula ${c.aula})` : ""}.`);
+          partes.push(c.aula ? traducir("Primera clase: {inicio} {materia} (Aula {aula}).", { inicio: c.inicio, materia: c.materia, aula: c.aula }) : traducir("Primera clase: {inicio} {materia}.", { inicio: c.inicio, materia: c.materia }));
         }
         const eventos = items.filter((i) => i.tipo === "evento").map((i) => i.titulo);
         const cumples = items.filter((i) => i.tipo === "amigo").map((i) => i.titulo);
-        if (eventos.length > 0) partes.push(`Hoy: ${eventos.slice(0, 3).join(", ")}${eventos.length > 3 ? "…" : ""}.`);
-        if (cumples.length > 0) partes.push(`Cumpleaños: ${cumples.join(", ")}.`);
-        const titulo = `${nombre ? `${nombre}, hoy` : "Hoy"} tienes ${clases.length} ${clases.length === 1 ? "clase" : "clases"}${eventos.length > 0 ? ` y ${eventos.length} ${eventos.length === 1 ? "pendiente" : "pendientes"}` : ""}`;
-        avisar(clave, titulo, partes.join(" "), { ruta: "/inicio", etiqueta: "Ver mi día", glifo: "inicio" });
+        if (eventos.length > 0) partes.push(traducir("Hoy: {lista}.", { lista: `${eventos.slice(0, 3).join(", ")}${eventos.length > 3 ? "…" : ""}` }));
+        if (cumples.length > 0) partes.push(traducir("Cumpleaños: {lista}.", { lista: cumples.join(", ") }));
+        const nClases = clases.length === 1 ? traducir("1 clase") : traducir("{n} clases", { n: clases.length });
+        const nPendientes = eventos.length === 1 ? traducir("1 pendiente") : traducir("{n} pendientes", { n: eventos.length });
+        const cuenta = eventos.length > 0 ? traducir("{clases} y {pendientes}", { clases: nClases, pendientes: nPendientes }) : nClases;
+        const titulo = nombre ? traducir("{nombre}, hoy tienes {cuenta}", { nombre, cuenta }) : traducir("Hoy tienes {cuenta}", { cuenta });
+        avisar(clave, titulo, partes.join(" "), { ruta: "/inicio", etiqueta: traducir("Ver mi día"), glifo: "inicio" });
       }
     };
 

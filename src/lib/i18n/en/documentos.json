@@ -466,5 +466,7 @@
   "El PDF se genera dentro de Nexo a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar.": "The PDF is generated inside Nexo from the document's content: paragraphs, headings, bold, italics, lists, tables and images. Columns, text boxes, headers, footers and the original fonts may change.",
   "Se omitieron {skippedImages} imagen(es) en un formato que no se puede incrustar (solo PNG y JPEG).": "{skippedImages} image(s) in a format that can't be embedded were skipped (only PNG and JPEG).",
   "Algunos caracteres fuera del alfabeto latino (por ejemplo, emojis o escrituras no latinas) se sustituyeron por «?».": "Some characters outside the Latin alphabet (for example emojis or non-Latin scripts) were replaced with “?”.",
-  "Algunos estilos del documento no tienen equivalente y se aplicaron como texto normal.": "Some of the document's styles have no equivalent and were applied as normal text."
+  "Algunos estilos del documento no tienen equivalente y se aplicaron como texto normal.": "Some of the document's styles have no equivalent and were applied as normal text.",
+  "No se pudo abrir el PDF": "The PDF couldn't be opened",
+  "«{nombre}» ya no está en la carpeta {carpeta}.": "“{nombre}” is no longer in the folder {carpeta}."
 }

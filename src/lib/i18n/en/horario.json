@@ -66,5 +66,19 @@
   "Buscando a los docentes…": "Looking for the teachers…",
   "Clase sin nombre": "Unnamed class",
   "Encontré la tabla pero ninguna clase con un tamaño razonable.": "I found the table but no class with a reasonable size.",
-  "No se pudo preparar la imagen.": "The image could not be prepared."
+  "No se pudo preparar la imagen.": "The image could not be prepared.",
+  "Abrir el horario": "Open the schedule",
+  "Ver mi día": "See my day",
+  "{materia} empieza en {faltan} min": "{materia} starts in {faltan} min",
+  "Primera clase: {inicio} {materia} (Aula {aula}).": "First class: {inicio} {materia} (Room {aula}).",
+  "Primera clase: {inicio} {materia}.": "First class: {inicio} {materia}.",
+  "Hoy: {lista}.": "Today: {lista}.",
+  "Cumpleaños: {lista}.": "Birthdays: {lista}.",
+  "1 clase": "1 class",
+  "{n} clases": "{n} classes",
+  "1 pendiente": "1 to-do",
+  "{n} pendientes": "{n} to-dos",
+  "{clases} y {pendientes}": "{clases} and {pendientes}",
+  "{nombre}, hoy tienes {cuenta}": "{nombre}, today you have {cuenta}",
+  "Hoy tienes {cuenta}": "Today you have {cuenta}"
 }

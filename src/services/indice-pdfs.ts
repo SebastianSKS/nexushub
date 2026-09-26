@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { traducir } from "@/lib/i18n";
 import { esEscritorio } from "@/lib/entorno";
 import { plegar } from "@/lib/text";
 import { abrirEnSistema } from "@/services/carpetas";
@@ -326,7 +327,7 @@ export async function abrirPdfEnPagina(c: { carpeta: string; nombre: string; pag
   try {
     await abrirEnSistema(c.carpeta, c.nombre, c.pagina);
   } catch {
-    useCalendarioStore.getState().mostrarAviso({ titulo: "No se pudo abrir el PDF", texto: `«${c.nombre}» ya no está en la carpeta ${c.carpeta}.`, destino: null, autocerrar: 4000 });
+    useCalendarioStore.getState().mostrarAviso({ titulo: traducir("No se pudo abrir el PDF"), texto: traducir("«{nombre}» ya no está en la carpeta {carpeta}.", { nombre: c.nombre, carpeta: c.carpeta }), destino: null, autocerrar: 4000 });
     void sincronizarIndice();
   }
 }

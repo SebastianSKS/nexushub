@@ -225,7 +225,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         store.setConnection({ status: "error", message: traducir("Spotify no respondió con tu perfil."), hint: me.status === 0 ? traducir("No se pudo contactar con Spotify: comprueba tu internet o desactiva el bloqueador (en Brave, el escudo) para esta página.") : traducir("Cierra la sesión de Spotify en Nexo y conéctate de nuevo.") });
         return;
       }
-      const nombre = me.data.display_name || "tu cuenta";
+      const nombre = me.data.display_name || traducir("tu cuenta");
       useMusicStore.setState({ usuarioId: me.data.id ?? null });
       if (me.data.product !== "premium") {
         store.setConnection({ status: "not-premium", name: nombre });
@@ -340,7 +340,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
           hint: traducir("Spotify exige protección de contenido (DRM). Abre Nexo en Microsoft Edge, Chrome o Firefox. Los navegadores integrados en otras aplicaciones no la incluyen."),
         }),
       );
-      player.addListener("playback_error", (e) => useReproductorStore.getState().informar({ reproduciendo: false, error: `Spotify no pudo reproducir esta pista: ${e.message}` }));
+      player.addListener("playback_error", (e) => useReproductorStore.getState().informar({ reproduciendo: false, error: traducir("Spotify no pudo reproducir esta pista: {motivo}", { motivo: e.message }) }));
 
       const ok = await player.connect();
       if (!ok && !cancelado) {

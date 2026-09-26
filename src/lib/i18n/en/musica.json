@@ -266,5 +266,7 @@
   "Playlist · Éxitos": "Playlist · Hits",
   "Playlist · Rock": "Playlist · Rock",
   "Playlist · Electrónica": "Playlist · Electronic",
-  "Playlist · Chill": "Playlist · Chill"
+  "Playlist · Chill": "Playlist · Chill",
+  "tu cuenta": "your account",
+  "Spotify no pudo reproducir esta pista: {motivo}": "Spotify couldn't play this track: {motivo}"
 }

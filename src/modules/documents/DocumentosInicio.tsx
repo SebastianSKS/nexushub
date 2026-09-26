@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/fluent/Button";
@@ -15,6 +16,7 @@ import { ToolGrid } from "./ToolGrid";
 
 /** /documentos: zona de soltar, cola de archivos y la cuadrícula de herramientas. */
 export function DocumentosInicio() {
+  const t = useT();
   const files = useDocumentsStore((s) => s.files);
   const addFiles = useDocumentsStore((s) => s.addFiles);
   const removeFile = useDocumentsStore((s) => s.removeFile);
@@ -31,11 +33,11 @@ export function DocumentosInicio() {
   return (
     <PlantillaPagina
       migas={[{ etiqueta: "Documentos" }]}
-      titulo="Documentos"
-      descripcion="Convierte y manipula PDF, Word, Excel y PowerPoint. Todo se hace dentro de la aplicación: tus archivos no salen de tu equipo."
+      titulo={t("Documentos")}
+      descripcion={t("Convierte y manipula PDF, Word, Excel y PowerPoint. Todo se hace dentro de la aplicación: tus archivos no salen de tu equipo.")}
       accion={
         <Button variant="accent" onClick={abrir} icon={<Glifo nombre="agregar" />}>
-          Agregar archivos
+          {t("Agregar archivos")}
         </Button>
       }
       principal={
@@ -47,8 +49,8 @@ export function DocumentosInicio() {
               <Glifo nombre="carpeta" tam={20} />
             </span>
             <span className="min-w-0">
-              <span className="block text-body font-semibold text-fg">Mis tareas</span>
-              <span className="block text-caption text-fg-secondary">Una carpeta por materia para guardar tus tareas y trabajos. Se crean desde tu horario, y puedes añadir, renombrar o quitar las que quieras.</span>
+              <span className="block text-body font-semibold text-fg">{t("Mis tareas")}</span>
+              <span className="block text-caption text-fg-secondary">{t("Una carpeta por materia para guardar tus tareas y trabajos. Se crean desde tu horario, y puedes añadir, renombrar o quitar las que quieras.")}</span>
             </span>
           </Link>
           <DropZone onFiles={addFiles} count={files.length} />
@@ -59,15 +61,15 @@ export function DocumentosInicio() {
         <section aria-labelledby="cola-titulo" className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h2 id="cola-titulo" className="text-body font-semibold text-fg">
-              Archivos en la cola
+              {t("Archivos en la cola")}
             </h2>
             <Button variant="subtle" onClick={clearFiles} disabled={files.length === 0} className="h-7">
-              Quitar todos
+              {t("Quitar todos")}
             </Button>
           </div>
           {files.length === 0 ? (
             <p className="text-body text-fg-secondary">
-              Aún no hay archivos. Suéltalos en la zona de la izquierda, pégalos con Ctrl+V o usa «Agregar archivos».
+              {t("Aún no hay archivos. Suéltalos en la zona de la izquierda, pégalos con Ctrl+V o usa «Agregar archivos».")}
             </p>
           ) : (
             <FileList files={files} onReorder={reorderFiles} onRemove={removeFile} />

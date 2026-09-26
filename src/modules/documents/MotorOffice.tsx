@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { Glifo } from "@/components/fluent/Glifo";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
@@ -15,6 +16,7 @@ const PROGRAMA: Partial<Record<ToolId, string>> = { "word-to-pdf": "Word", "pdf-
  * Office) o con el motor básico de Nexo. Solo aparece en las conversiones de Office, en la aplicación de escritorio.
  */
 export function MotorOffice({ toolId }: { toolId: ToolId }) {
+  const t = useT();
   const escritorio = useEsEscritorio();
   const usarOffice = useAjustesStore((s) => s.usarOffice);
   const opciones = useDocumentsStore((s) => (toolId === "pdf-to-word" ? s.options.pdfToWord : undefined));
@@ -32,11 +34,11 @@ export function MotorOffice({ toolId }: { toolId: ToolId }) {
 
   if (toolId === "pdf-to-word" && opciones?.mode !== "word") return null; // aquí Office es una opción que se elige en el panel
   const [texto, bien] = usa
-    ? [`Se convertirá con Microsoft ${usa}: el resultado sale igual que guardarlo desde ${usa}.`, true]
+    ? [t("Se convertirá con Microsoft {programa}: el resultado sale igual que guardarlo desde {programa}.", { programa: usa }), true]
     : !usarOffice
-        ? ["Estás usando el motor básico de Nexo. Puedes activar Office en Configuración › Documentos."]
+        ? [t("Estás usando el motor básico de Nexo. Puedes activar Office en Configuración › Documentos.")]
         : hay === false
-          ? [`Microsoft ${programa} no está instalado: se usa el motor básico de Nexo. La calidad puede ser menor con documentos complejos.`]
+          ? [t("Microsoft {programa} no está instalado: se usa el motor básico de Nexo. La calidad puede ser menor con documentos complejos.", { programa })]
           : [];
   if (!texto) return null;
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { Reorder } from "framer-motion";
 import clsx from "clsx";
 import { ChevronDown20Regular, ChevronUp20Regular, Delete20Regular, ReOrderDotsVertical20Regular } from "@fluentui/react-icons";
@@ -32,6 +33,7 @@ interface RowProps {
 }
 
 function Row({ file, index, total, tool, reorderable, disabled, onMove, onRemove }: RowProps) {
+  const t = useT();
   const incompatible = !!tool && (!file.kind || !tool.accepts.includes(file.kind));
   return (
     <div
@@ -60,21 +62,21 @@ function Row({ file, index, total, tool, reorderable, disabled, onMove, onRemove
         </p>
         <p className={clsx("truncate text-caption", incompatible ? "text-danger-fg" : "text-fg-secondary")}>
           {incompatible
-            ? `Es un archivo ${file.kind ? KIND_LABEL[file.kind] : "desconocido"}: no corresponde a ${tool!.name}.`
-            : `${file.kind ? KIND_LABEL[file.kind] : ""} · ${formatBytes(file.file.size)}`}
+            ? t("Es un archivo {tipo}: no corresponde a {herramienta}.", { tipo: file.kind ? t(KIND_LABEL[file.kind]) : t("desconocido"), herramienta: t(tool!.name) })
+            : `${file.kind ? t(KIND_LABEL[file.kind]) : ""} · ${formatBytes(file.file.size)}`}
         </p>
       </div>
       {reorderable && (
         <>
-          <IconButton label={`Subir ${file.file.name}`} disabled={disabled || index === 0} onClick={() => onMove(-1)}>
+          <IconButton label={t("Subir {nombre}", { nombre: file.file.name })} disabled={disabled || index === 0} onClick={() => onMove(-1)}>
             <ChevronUp20Regular />
           </IconButton>
-          <IconButton label={`Bajar ${file.file.name}`} disabled={disabled || index === total - 1} onClick={() => onMove(1)}>
+          <IconButton label={t("Bajar {nombre}", { nombre: file.file.name })} disabled={disabled || index === total - 1} onClick={() => onMove(1)}>
             <ChevronDown20Regular />
           </IconButton>
         </>
       )}
-      <IconButton label={`Quitar ${file.file.name}`} disabled={disabled} onClick={onRemove}>
+      <IconButton label={t("Quitar {nombre}", { nombre: file.file.name })} disabled={disabled} onClick={onRemove}>
         <Delete20Regular />
       </IconButton>
     </div>
@@ -83,6 +85,7 @@ function Row({ file, index, total, tool, reorderable, disabled, onMove, onRemove
 
 /** Lista de archivos en cola. Con `reorderable` se ordena arrastrando o con los botones de flecha. */
 export function FileList({ files, tool, reorderable = false, disabled = false, onReorder, onRemove }: FileListProps) {
+  const t = useT();
   const move = (index: number, delta: -1 | 1) => {
     const next = [...files];
     const [item] = next.splice(index, 1);
@@ -96,7 +99,7 @@ export function FileList({ files, tool, reorderable = false, disabled = false, o
         axis="y"
         values={files}
         onReorder={onReorder}
-        aria-label="Archivos en cola, arrastra para reordenar"
+        aria-label={t("Archivos en cola, arrastra para reordenar")}
         className="flex flex-col gap-2"
       >
         {files.map((f, i) => (
@@ -118,7 +121,7 @@ export function FileList({ files, tool, reorderable = false, disabled = false, o
   }
 
   return (
-    <ul aria-label="Archivos en cola" className="flex flex-col gap-2">
+    <ul aria-label={t("Archivos en cola")} className="flex flex-col gap-2">
       {files.map((f, i) => (
         <li key={f.id}>
           <Row

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useRef, useState, type DragEvent, type KeyboardEvent } from "react";
 import clsx from "clsx";
 import { ArrowUpload24Regular } from "@fluentui/react-icons";
@@ -20,6 +21,7 @@ interface DropZoneProps {
 
 /** Zona de arrastrar y soltar: borde punteado que se ilumina en acento, con contador de archivos. */
 export function DropZone({ onFiles, accept, multiple = true, count = 0, compact = false, title }: DropZoneProps) {
+  const t = useT();
   const inputRef = useRef<HTMLInputElement>(null);
   const depth = useRef(0); // dragenter/leave se disparan por cada hijo: se cuenta la profundidad
   const [dragging, setDragging] = useState(false);
@@ -58,15 +60,15 @@ export function DropZone({ onFiles, accept, multiple = true, count = 0, compact 
 
   const headline = dragging
     ? incoming > 1
-      ? `Suelta los ${incoming} archivos aquí`
-      : "Suelta el archivo aquí"
-    : (title ?? (multiple ? "Arrastra tus archivos aquí" : "Arrastra tu archivo aquí"));
+      ? t("Suelta los {n} archivos aquí", { n: incoming })
+      : t("Suelta el archivo aquí")
+    : (title ? t(title) : multiple ? t("Arrastra tus archivos aquí") : t("Arrastra tu archivo aquí"));
 
   return (
     <div
       role="button"
       tabIndex={0}
-      aria-label={`${headline}. Pulsa Enter para elegir archivos desde tu equipo.`}
+      aria-label={t("{titulo}. Pulsa Enter para elegir archivos desde tu equipo.", { titulo: headline })}
       onClick={open}
       onKeyDown={onKeyDown}
       onDragEnter={onDragEnter}
@@ -88,12 +90,12 @@ export function DropZone({ onFiles, accept, multiple = true, count = 0, compact 
       </span>
       <p className={clsx("font-semibold text-fg", compact ? "text-body" : "text-subtitle")}>{headline}</p>
       <p className="text-body text-fg-secondary">
-        o <span className="text-accent-text underline underline-offset-2">elige desde tu equipo</span>
-        {!compact && " · también puedes pegar con Ctrl+V"}
+        {t("o")} <span className="text-accent-text underline underline-offset-2">{t("elige desde tu equipo")}</span>
+        {!compact && ` · ${t("también puedes pegar con Ctrl+V")}`}
       </p>
       {!compact && (
         <p className="text-caption text-fg-tertiary">
-          Hasta {MAX_FILES_PER_BATCH} archivos por lote, {formatBytes(MAX_FILE_BYTES)} cada uno
+          {t("Hasta {n} archivos por lote, {peso} cada uno", { n: MAX_FILES_PER_BATCH, peso: formatBytes(MAX_FILE_BYTES) })}
         </p>
       )}
       {count > 0 && (
@@ -102,7 +104,7 @@ export function DropZone({ onFiles, accept, multiple = true, count = 0, compact 
           style={{ backgroundColor: "color-mix(in srgb, var(--accent) 22%, var(--layer))" }}
           aria-live="polite"
         >
-          {count} {count === 1 ? "archivo en la cola" : "archivos en la cola"}
+          {count} {count === 1 ? t("archivo en la cola") : t("archivos en la cola")}
         </span>
       )}
       <input

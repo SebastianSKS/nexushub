@@ -26,7 +26,7 @@ async function archivos(dir) {
 }
 
 /** t("…"), traducir('…'), T(`…`): solo llamadas con el texto escrito ahí mismo (sin ${}). */
-const LLAMADA = /(?<![\w.$])(?:t|traducir|T)\(\s*(?:"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\$]|\\.|\$(?!\{))*)`)/g;
+const LLAMADA = /(?<![\w.$])(?:t|tr|traducir|T)\(\s*(?:"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\$]|\\.|\$(?!\{))*)`)/g;
 
 const desescapar = (s) => s.replace(/\\(n|t|"|'|`|\\|\$)/g, (_, c) => ({ n: "\n", t: "\t" })[c] ?? c);
 const marcadores = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(",");

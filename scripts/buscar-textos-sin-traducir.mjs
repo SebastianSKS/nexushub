@@ -49,7 +49,7 @@ for (const objetivo of objetivos) {
       if (suelta.startsWith("//") || suelta.startsWith("*")) return;
       const sinComentario = linea.replace(/\s\/\/.*$/, "").replace(/\{\/\*.*?\*\/\}/g, "");
       // Se quita lo que ya está marcado.
-      const sinMarcados = sinComentario.replace(/(?<![\w.$])(?:t|traducir|T)\(\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g, "");
+      const sinMarcados = sinComentario.replace(/(?<![\w.$])(?:t|tr|traducir|T)\(\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g, "");
       const candidatos = [];
       for (const m of sinMarcados.matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g)) candidatos.push(m[1] ?? m[2] ?? m[3]);
       // Texto suelto entre etiquetas: <p>Hola</p> o una línea de solo texto dentro de JSX.

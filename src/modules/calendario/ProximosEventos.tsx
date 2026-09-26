@@ -1,5 +1,6 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
 import { useT, localeActual } from "@/lib/i18n";
 import { Card } from "@/components/fluent/Card";
 import { infoCategoria } from "@/lib/calendario/categorias";
@@ -9,6 +10,7 @@ import type { Evento } from "@/store/calendario-store";
 /** Los próximos eventos (hoy en adelante, con su próxima fecha si se repiten), del más cercano al más lejano. */
 export function ProximosEventos({ eventos, onEvento }: { eventos: Evento[]; onEvento: (e: Evento) => void }) {
   const t = useT();
+  const { hora } = useHora();
   const hoy = new Date();
   const lista = eventos
     .map((e) => ({ e, p: proximaOcurrenciaEvento(e.fecha, e.repetir, hoy) }))
@@ -33,7 +35,7 @@ export function ProximosEventos({ eventos, onEvento }: { eventos: Evento[]; onEv
                 <span className="block truncate text-caption text-fg-secondary">
                   {e.categoria !== "otro" && `${t(infoCategoria(e.categoria).nombre)} · `}
                   {mayuscula(fechaLarga(p.fecha))}
-                  {e.hora ? ` · ${e.hora}` : ""}
+                  {e.hora ? ` · ${hora(e.hora)}` : ""}
                   {e.repetir !== "no" && ` · ${e.repetir === "semanal" ? t("se repite cada semana") : t("se repite cada mes")}`}
                 </span>
               </span>

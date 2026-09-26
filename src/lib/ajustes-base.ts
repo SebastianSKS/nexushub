@@ -47,6 +47,8 @@ export interface Ajustes {
   siguienteAutomatico: boolean;
   /** Minutos antes de cada clase para avisar (0 = no avisar). */
   avisoClaseMin: number;
+  /** Minutos antes de un evento con hora (un examen a las 8:30) para avisar (0 = no avisar). */
+  avisoEventoMin: number;
   /** Convertir Word, Excel, PowerPoint y PDF→Word con Microsoft Office si está instalado (mejor calidad). */
   usarOffice: boolean;
   /** Al descargar un resultado de Documentos, abrir «Guardar como» (empieza en la carpeta de las materias) en vez de guardar directo en Descargas. */
@@ -92,6 +94,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   seguirConSimilares: true,
   siguienteAutomatico: true,
   avisoClaseMin: 10,
+  avisoEventoMin: 30,
   usarOffice: true,
   preguntarDondeGuardar: true,
   resumenDia: true,
@@ -129,6 +132,7 @@ export function normalizarAjustes(crudo: unknown): Ajustes {
     seguirConSimilares: d.seguirConSimilares !== false,
     siguienteAutomatico: d.siguienteAutomatico !== false,
     avisoClaseMin: typeof d.avisoClaseMin === "number" && [0, 5, 10, 15, 30].includes(d.avisoClaseMin) ? d.avisoClaseMin : 10,
+    avisoEventoMin: typeof d.avisoEventoMin === "number" && [0, 10, 15, 30, 60, 120].includes(d.avisoEventoMin) ? d.avisoEventoMin : 30,
     resumenDia: d.resumenDia !== false,
     usarOffice: d.usarOffice !== false,
     buscarEnPdfs: d.buscarEnPdfs !== false,

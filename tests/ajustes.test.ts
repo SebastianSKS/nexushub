@@ -53,6 +53,12 @@ describe("normalizarAjustes", () => {
     assert.equal(normalizarAjustes({ zoomInterfaz: 300 }).zoomInterfaz, 100);
   });
 
+  it("el aviso de eventos con hora solo acepta los márgenes que ofrece la pantalla", () => {
+    assert.equal(normalizarAjustes({}).avisoEventoMin, 30);
+    for (const m of [0, 10, 15, 30, 60, 120]) assert.equal(normalizarAjustes({ avisoEventoMin: m }).avisoEventoMin, m);
+    for (const mal of [5, 45, -1, "30", null]) assert.equal(normalizarAjustes({ avisoEventoMin: mal }).avisoEventoMin, 30);
+  });
+
   it("las horas de silencio y del resumen tienen que ser horas de verdad", () => {
     const a = normalizarAjustes({ silencioDesde: 25, silencioHasta: -1, resumenHora: 20 });
     assert.equal(a.silencioDesde, AJUSTES_PREDETERMINADOS.silencioDesde);

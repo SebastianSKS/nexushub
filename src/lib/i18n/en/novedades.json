@@ -12,5 +12,9 @@
   "Busca dentro de tus PDF": "Search inside your PDFs",
   "Pulsa Ctrl + K y escribe una palabra: Nexo la encuentra dentro de los PDF de tus carpetas de materias y los abre justo en esa página.": "Press Ctrl + K and type a word: Nexo finds it inside the PDFs in your subject folders and opens them right on that page.",
   "Nuevo archivo en cada materia": "New file in each subject",
-  "En Mis tareas, dentro de una materia, crea un Word, Excel, PowerPoint o texto en blanco directamente ahí.": "In My assignments, inside a subject, create a blank Word, Excel, PowerPoint or text file right there."
+  "En Mis tareas, dentro de una materia, crea un Word, Excel, PowerPoint o texto en blanco directamente ahí.": "In My assignments, inside a subject, create a blank Word, Excel, PowerPoint or text file right there.",
+  "Nexo también en inglés": "Nexo now in English too",
+  "En Configuración › Apariencia › Idioma elige Español, English o «Igual que Windows». Cambia todo: menús, guías, novedades, avisos y hasta la bandeja del sistema.": "In Settings › Appearance › Language choose Español, English or “Same as Windows”. It changes everything: menus, guides, what's new, notices and even the system tray.",
+  "Más cuidado por dentro": "More care under the hood",
+  "Nexo ahora se revisa solo con pruebas automáticas cada vez que se cambia algo, para que las actualizaciones lleguen más estables.": "Nexo is now checked automatically with tests every time something changes, so updates arrive more stable."
 }

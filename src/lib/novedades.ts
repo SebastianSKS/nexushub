@@ -21,6 +21,13 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.1.4",
+    novedades: [
+      { glifo: "pantalla", titulo: T("Nexo también en inglés"), texto: T("En Configuración › Apariencia › Idioma elige Español, English o «Igual que Windows». Cambia todo: menús, guías, novedades, avisos y hasta la bandeja del sistema.") },
+      { glifo: "exito", titulo: T("Más cuidado por dentro"), texto: T("Nexo ahora se revisa solo con pruebas automáticas cada vez que se cambia algo, para que las actualizaciones lleguen más estables.") },
+    ],
+  },
+  {
     version: "0.1.3",
     novedades: [
       { glifo: "informacion", titulo: T("Guías en cada sección"), texto: T("Cada apartado te explica cómo funciona la primera vez que entras. Si se te olvida algo, pulsa «¿Cómo funciona?» junto al título y vuelve a salir.") },

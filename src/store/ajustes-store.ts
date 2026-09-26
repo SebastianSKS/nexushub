@@ -1,4 +1,4 @@
-import { colorDeTexto } from "@/lib/horario/horario";
+import { colorDeTexto } from "@/lib/color";
 import { create } from "zustand";
 
 import { ACENTO_PREDETERMINADO, AJUSTES_PREDETERMINADOS, normalizarAjustes, type Ajustes, type SeccionInicial } from "@/lib/ajustes-base";

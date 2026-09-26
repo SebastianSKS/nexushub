@@ -79,9 +79,7 @@
   "Cuentas desde la búsqueda": "Math from the search bar",
   "En la barra de arriba (Ctrl + K) escribe una cuenta como 25*4 y te da el resultado ahí mismo; con Enter lo copias.": "In the top bar (Ctrl + K) type a calculation like 25*4 and it gives you the result right there; press Enter to copy it.",
   "Configuración": "Settings",
-  "Elige tema claro u oscuro, el color de acento y el efecto de la ventana.": "Pick a light or dark theme, the accent color and the window effect.",
   "Avisos": "Notifications",
-  "Decide si te avisa antes de cada clase, si te hace un resumen del día y si te dice qué canción suena.": "Decide whether it notifies you before each class, gives you a daily summary and tells you which song is playing.",
   "Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.": "Converting with Microsoft Office, choosing where to save and searching inside your files are changed in the Documents section of this page.",
   "Actualizaciones": "Updates",
   "En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.": "In “About” you check for updates and can see the welcome again. Your data is stored only on this computer.",
@@ -89,5 +87,9 @@
   "Hazlo más rápido": "Do it faster",
   "Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 6 para saltar de sección.": "Here are all the shortcuts. The most useful ones: Ctrl + K to search and Ctrl + 1 to Ctrl + 6 to jump between sections.",
   "Busca dentro de tus archivos": "Search inside your files",
-  "Con Ctrl + K puedes buscar una palabra dentro de los PDF, Word, Excel y PowerPoint de tus materias. Los PDF se abren justo en esa página.": "With Ctrl + K you can search for a word inside the PDF, Word, Excel and PowerPoint files of your subjects. PDFs open right on that page."
+  "Con Ctrl + K puedes buscar una palabra dentro de los PDF, Word, Excel y PowerPoint de tus materias. Los PDF se abren justo en esa página.": "With Ctrl + K you can search for a word inside the PDF, Word, Excel and PowerPoint files of your subjects. PDFs open right on that page.",
+  "Elige tema claro u oscuro, cualquier color de acento, el tamaño de la interfaz, las animaciones y qué secciones ves en la barra lateral.": "Choose a light or dark theme, any accent color, the interface size, animations and which sections you see in the sidebar.",
+  "Decide si te avisa antes de cada clase o de un examen con hora, con qué sonido, y en qué horas no quieres que te moleste.": "Decide whether it notifies you before each class or a timed exam, with which sound, and at which hours you don't want to be disturbed.",
+  "Tus datos, a salvo": "Your data, safe",
+  "Guarda una copia de seguridad para pasar todo a otra computadora, o restáurala aquí. No incluye tu sesión de Spotify.": "Save a backup to move everything to another computer, or restore it here. It doesn't include your Spotify session."
 }

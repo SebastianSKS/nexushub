@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useMemo } from "react";
 import { Button } from "@/components/fluent/Button";
 import { PistaCard } from "@/components/reproductor/PistaCard";
@@ -10,14 +11,15 @@ import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 const GRID = "grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4";
 
 function Fila({ titulo, pistas, accion }: { titulo: string; pistas: Pista[]; accion?: React.ReactNode }) {
+  const t = useT();
   const currentId = useReproductorStore((s) => (s.fuente === "spotify" ? s.pista?.id : undefined));
   const favoritos = useFavoritosStore((s) => s.favoritos);
   const esFavorito = (p: Pista) => favoritos.some((f) => f.id === p.id && f.fuente === p.fuente);
 
   return (
-    <section aria-label={titulo}>
+    <section aria-label={t(titulo)}>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-subtitle text-fg">{titulo}</h2>
+        <h2 className="text-subtitle text-fg">{t(titulo)}</h2>
         {accion}
       </div>
       <div className={GRID}>
@@ -38,6 +40,7 @@ function Fila({ titulo, pistas, accion }: { titulo: string; pistas: Pista[]; acc
 
 /** Favoritos y reproducido recientemente de Spotify: solo se muestran cuando hay algo que enseñar. */
 export function FavoritosRecientes() {
+  const t = useT();
   // El filtro NO va dentro del selector: .filter() devuelve un array nuevo en cada lectura y eso
   // rompe useSyncExternalStore (bucle infinito). Se leen los arrays estables y se filtran aparte, memoizados.
   const todosFavoritos = useFavoritosStore((s) => s.favoritos);
@@ -58,7 +61,7 @@ export function FavoritosRecientes() {
           pistas={recientes}
           accion={
             <Button variant="subtle" onClick={() => useFavoritosStore.getState().limpiarRecientes()}>
-              Borrar historial
+              {t("Borrar historial")}
             </Button>
           }
         />

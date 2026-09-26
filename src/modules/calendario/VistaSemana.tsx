@@ -1,5 +1,6 @@
 "use client";
 
+import { useAjustesStore } from "@/store/ajustes-store";
 import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import clsx from "clsx";
@@ -25,7 +26,8 @@ export function VistaSemana({ fechaBase, amigos, eventos, onSemana, onHoy, onDia
   const t = useT();
   const { hora } = useHora();
   const hoy = inicioDelDia(new Date());
-  const dias = diasDeLaSemana(fechaBase);
+  const primer = useAjustesStore((s) => s.primerDiaSemana);
+  const dias = diasDeLaSemana(fechaBase, primer);
   const esEstaSemana = dias.some((d) => d.getTime() === hoy.getTime());
   const mismoMes = dias[0]!.getMonth() === dias[6]!.getMonth();
   const titulo = mismoMes

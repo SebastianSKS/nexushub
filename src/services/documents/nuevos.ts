@@ -1,10 +1,18 @@
 import JSZip from "jszip";
+import { T } from "../../lib/i18n/nucleo.ts";
 
 /**
  * Archivos en blanco para empezar a trabajar en una carpeta de materia: un Word, un Excel, un PowerPoint o un texto.
  * Se arman aquí mismo (un archivo de Office es un ZIP con XML dentro), sin plantillas ni internet, y se abren con el
  * programa que el usuario tenga para ese tipo de archivo.
  */
+
+/** Lo que depende del idioma en el archivo en blanco: el idioma del corrector y los textos de la primera diapositiva. */
+export interface OpcionesNuevo {
+  lang?: string;
+  tituloDiapositiva?: string;
+  subtituloDiapositiva?: string;
+}
 
 export type TipoNuevo = "word" | "excel" | "powerpoint" | "texto";
 
@@ -20,10 +28,10 @@ export interface InfoNuevo {
 }
 
 export const NUEVOS: readonly InfoNuevo[] = [
-  { tipo: "word", titulo: "Documento de Word", corto: "Word", descripcion: "Para escribir trabajos, informes y ensayos.", extension: ".docx", nombre: "Documento nuevo" },
-  { tipo: "excel", titulo: "Hoja de Excel", corto: "Excel", descripcion: "Para tablas, cuentas y gráficos.", extension: ".xlsx", nombre: "Hoja de cálculo nueva" },
-  { tipo: "powerpoint", titulo: "Presentación de PowerPoint", corto: "PowerPoint", descripcion: "Para exponer con diapositivas.", extension: ".pptx", nombre: "Presentación nueva" },
-  { tipo: "texto", titulo: "Archivo de texto", corto: "Texto", descripcion: "Notas rápidas, sin formato (.txt).", extension: ".txt", nombre: "Notas nuevas" },
+  { tipo: "word", titulo: T("Documento de Word"), corto: T("Word"), descripcion: T("Para escribir trabajos, informes y ensayos."), extension: ".docx", nombre: T("Documento nuevo") },
+  { tipo: "excel", titulo: T("Hoja de Excel"), corto: T("Excel"), descripcion: T("Para tablas, cuentas y gráficos."), extension: ".xlsx", nombre: T("Hoja de cálculo nueva") },
+  { tipo: "powerpoint", titulo: T("Presentación de PowerPoint"), corto: T("PowerPoint"), descripcion: T("Para exponer con diapositivas."), extension: ".pptx", nombre: T("Presentación nueva") },
+  { tipo: "texto", titulo: T("Archivo de texto"), corto: T("Texto"), descripcion: T("Notas rápidas, sin formato (.txt)."), extension: ".txt", nombre: T("Notas nuevas") },
 ];
 
 const XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
@@ -47,7 +55,7 @@ async function empaquetar(zip: JSZip): Promise<Blob> {
 
 // ─── Word ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-async function docx(): Promise<Blob> {
+async function docx(lang: string): Promise<Blob> {
   const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
   const zip = new JSZip();
   zip.file("[Content_Types].xml", tipos([["/word/document.xml", `${OFFICE}.wordprocessingml.document.main+xml`], ["/word/styles.xml", `${OFFICE}.wordprocessingml.styles+xml`]]));
@@ -60,7 +68,7 @@ async function docx(): Promise<Blob> {
   // Letra y espacios como los de un documento nuevo de Word (Calibri 11, 8 pt de espacio después de cada párrafo).
   zip.file(
     "word/styles.xml",
-    `${XML}<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="es-MX" w:eastAsia="en-US" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`,
+    `${XML}<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="${lang}" w:eastAsia="en-US" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`,
   );
   return empaquetar(zip);
 }
@@ -110,10 +118,10 @@ function tema(): string {
 }
 
 /** Un marcador de texto («Haga clic para agregar título»): hereda su lugar de la plantilla de la diapositiva. */
-const marcador = (id: number, nombre: string, ph: string) =>
-  `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="${nombre}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph ${ph}/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="es-MX"/></a:p></p:txBody></p:sp>`;
+const marcador = (id: number, nombre: string, ph: string, lang: string) =>
+  `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="${nombre}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph ${ph}/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="${lang}"/></a:p></p:txBody></p:sp>`;
 
-async function pptx(): Promise<Blob> {
+async function pptx(opc: Required<OpcionesNuevo>): Promise<Blob> {
   const zip = new JSZip();
   zip.file(
     "[Content_Types].xml",
@@ -142,14 +150,14 @@ async function pptx(): Promise<Blob> {
   zip.file(
     "ppt/slideLayouts/slideLayout1.xml",
     `${XML}<p:sldLayout xmlns:a="${A}" xmlns:r="${REL}" xmlns:p="${P}" type="title" preserve="1"><p:cSld name="Diapositiva de título"><p:spTree>${CABECERA_ARBOL}` +
-      `<p:sp><p:nvSpPr><p:cNvPr id="2" name="Título"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="ctrTitle"/></p:nvPr></p:nvSpPr>${lugar(1524000, 1122363, 9144000, 2387600)}<p:txBody><a:bodyPr anchor="b"/><a:lstStyle><a:lvl1pPr algn="ctr"><a:defRPr sz="6000"/></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="es-MX"/><a:t>Haga clic para agregar título</a:t></a:r></a:p></p:txBody></p:sp>` +
-      `<p:sp><p:nvSpPr><p:cNvPr id="3" name="Subtítulo"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="subTitle" idx="1"/></p:nvPr></p:nvSpPr>${lugar(1524000, 3602038, 9144000, 1655762)}<p:txBody><a:bodyPr/><a:lstStyle><a:lvl1pPr marL="0" indent="0" algn="ctr"><a:buNone/><a:defRPr sz="2400"/></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="es-MX"/><a:t>Haga clic para agregar subtítulo</a:t></a:r></a:p></p:txBody></p:sp>` +
+      `<p:sp><p:nvSpPr><p:cNvPr id="2" name="Título"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="ctrTitle"/></p:nvPr></p:nvSpPr>${lugar(1524000, 1122363, 9144000, 2387600)}<p:txBody><a:bodyPr anchor="b"/><a:lstStyle><a:lvl1pPr algn="ctr"><a:defRPr sz="6000"/></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="${opc.lang}"/><a:t>${opc.tituloDiapositiva}</a:t></a:r></a:p></p:txBody></p:sp>` +
+      `<p:sp><p:nvSpPr><p:cNvPr id="3" name="Subtítulo"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="subTitle" idx="1"/></p:nvPr></p:nvSpPr>${lugar(1524000, 3602038, 9144000, 1655762)}<p:txBody><a:bodyPr/><a:lstStyle><a:lvl1pPr marL="0" indent="0" algn="ctr"><a:buNone/><a:defRPr sz="2400"/></a:lvl1pPr></a:lstStyle><a:p><a:r><a:rPr lang="${opc.lang}"/><a:t>${opc.subtituloDiapositiva}</a:t></a:r></a:p></p:txBody></p:sp>` +
       `</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`,
   );
   zip.file("ppt/slideLayouts/_rels/slideLayout1.xml.rels", relaciones([{ id: "rId1", tipo: "slideMaster", destino: "../slideMasters/slideMaster1.xml" }]));
   zip.file(
     "ppt/slides/slide1.xml",
-    `${XML}<p:sld xmlns:a="${A}" xmlns:r="${REL}" xmlns:p="${P}"><p:cSld><p:spTree>${CABECERA_ARBOL}${marcador(2, "Título 1", 'type="ctrTitle"')}${marcador(3, "Subtítulo 2", 'type="subTitle" idx="1"')}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`,
+    `${XML}<p:sld xmlns:a="${A}" xmlns:r="${REL}" xmlns:p="${P}"><p:cSld><p:spTree>${CABECERA_ARBOL}${marcador(2, "Título 1", 'type="ctrTitle"', opc.lang)}${marcador(3, "Subtítulo 2", 'type="subTitle" idx="1"', opc.lang)}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`,
   );
   zip.file("ppt/slides/_rels/slide1.xml.rels", relaciones([{ id: "rId1", tipo: "slideLayout", destino: "../slideLayouts/slideLayout1.xml" }]));
   return empaquetar(zip);
@@ -164,7 +172,8 @@ export function nombreDeArchivoNuevo(tipo: TipoNuevo, nombre: string): string {
 }
 
 /** Un archivo en blanco del tipo pedido, con el nombre dado (la extensión se añade sola si falta). */
-export async function crearArchivoNuevo(tipo: TipoNuevo, nombre: string): Promise<File> {
-  const cuerpo = tipo === "word" ? await docx() : tipo === "excel" ? await xlsx() : tipo === "powerpoint" ? await pptx() : new Blob([""], { type: "text/plain" });
+export async function crearArchivoNuevo(tipo: TipoNuevo, nombre: string, opciones: OpcionesNuevo = {}): Promise<File> {
+  const opc: Required<OpcionesNuevo> = { lang: "es-MX", tituloDiapositiva: "Haga clic para agregar título", subtituloDiapositiva: "Haga clic para agregar subtítulo", ...opciones };
+  const cuerpo = tipo === "word" ? await docx(opc.lang) : tipo === "excel" ? await xlsx() : tipo === "powerpoint" ? await pptx(opc) : new Blob([""], { type: "text/plain" });
   return new File([cuerpo], nombreDeArchivoNuevo(tipo, nombre), { type: cuerpo.type });
 }

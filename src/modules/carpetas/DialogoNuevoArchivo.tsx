@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, localeActual } from "@/lib/i18n";
 import { useState, type FormEvent } from "react";
 import clsx from "clsx";
 import { Button } from "@/components/fluent/Button";
@@ -15,6 +16,7 @@ import { crearArchivoNuevo, NUEVOS, nombreDeArchivoNuevo, type TipoNuevo } from 
  * guardado justo ahí (nunca pisa otro con el mismo nombre) y, si se quiere, abierto al instante para empezar a escribir.
  */
 export function DialogoNuevoArchivo({ carpeta, ruta, onCerrar, onCreado }: { carpeta: string; ruta: string; onCerrar: () => void; onCreado: (nombre: string) => Promise<void> }) {
+  const t = useT();
   const [tipo, setTipo] = useState<TipoNuevo>("word");
   const [nombre, setNombre] = useState("");
   const [abrir, setAbrir] = useState(true);
@@ -22,27 +24,27 @@ export function DialogoNuevoArchivo({ carpeta, ruta, onCerrar, onCreado }: { car
   const [ocupado, setOcupado] = useState(false);
   const info = NUEVOS.find((n) => n.tipo === tipo)!;
   // Mientras no se escriba un nombre, se usa el que corresponde al tipo elegido («Documento nuevo», «Hoja de cálculo nueva»…).
-  const nombreFinal = nombre.trim() || info.nombre;
+  const nombreFinal = nombre.trim() || t(info.nombre);
 
   const crear = async (e: FormEvent) => {
     e.preventDefault();
     setOcupado(true);
     try {
-      const final = await guardarArchivo(carpeta, await crearArchivoNuevo(tipo, nombreFinal));
+      const final = await guardarArchivo(carpeta, await crearArchivoNuevo(tipo, nombreFinal, { lang: localeActual(), tituloDiapositiva: t("Haga clic para agregar título"), subtituloDiapositiva: t("Haga clic para agregar subtítulo") }));
       await onCreado(final);
       onCerrar();
       if (abrir) await abrirEnSistema(carpeta, final).catch(() => {});
     } catch (err) {
-      setError(err instanceof ErrorCarpetas ? err.message : "No se pudo crear el archivo.");
+      setError(err instanceof ErrorCarpetas ? err.message : t("No se pudo crear el archivo."));
     } finally {
       setOcupado(false);
     }
   };
 
   return (
-    <Dialog open onClose={onCerrar} title="Nuevo archivo" maxWidth={480}>
+    <Dialog open onClose={onCerrar} title={t("Nuevo archivo")} maxWidth={480}>
       <form onSubmit={crear} className="flex flex-col gap-4">
-        <div role="radiogroup" aria-label="Tipo de archivo" className="grid grid-cols-2 gap-2">
+        <div role="radiogroup" aria-label={t("Tipo de archivo")} className="grid grid-cols-2 gap-2">
           {NUEVOS.map((n) => (
             <button
               key={n.tipo}
@@ -54,18 +56,18 @@ export function DialogoNuevoArchivo({ carpeta, ruta, onCerrar, onCreado }: { car
             >
               <LogoPrograma programa={n.tipo} tam={36} />
               <span className="min-w-0">
-                <span className="block truncate text-body font-semibold text-fg">{n.corto}</span>
+                <span className="block truncate text-body font-semibold text-fg">{t(n.corto)}</span>
                 <span className="block text-caption text-fg-secondary">{n.extension}</span>
               </span>
             </button>
           ))}
         </div>
-        <p className="-mt-2 text-caption text-fg-secondary">{info.descripcion}</p>
+        <p className="-mt-2 text-caption text-fg-secondary">{t(info.descripcion)}</p>
 
         <TextInput
-          label="Nombre"
+          label={t("Nombre")}
           value={nombre}
-          placeholder={info.nombre}
+          placeholder={t(info.nombre)}
           maxLength={100}
           autoFocus
           autoComplete="off"
@@ -76,17 +78,17 @@ export function DialogoNuevoArchivo({ carpeta, ruta, onCerrar, onCreado }: { car
           }}
         />
         <p className="-mt-2 break-words text-caption text-fg-tertiary">
-          Se guardará como «{nombreDeArchivoNuevo(tipo, nombre)}» en {ruta ? `${ruta}\\${carpeta}` : carpeta}
+          {t("Se guardará como «{archivo}» en {donde}", { archivo: nombreDeArchivoNuevo(tipo, nombreFinal), donde: ruta ? `${ruta}\\${carpeta}` : carpeta })}
         </p>
 
         <div className="flex items-center justify-between gap-3">
-          <span className="text-body text-fg">Abrirlo al crearlo</span>
-          <Switch checked={abrir} onChange={setAbrir} label="Abrirlo al crearlo" />
+          <span className="text-body text-fg">{t("Abrirlo al crearlo")}</span>
+          <Switch checked={abrir} onChange={setAbrir} label={t("Abrirlo al crearlo")} />
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button type="button" onClick={onCerrar}>Cancelar</Button>
-          <Button type="submit" variant="accent" disabled={ocupado}>Crear</Button>
+          <Button type="button" onClick={onCerrar}>{t("Cancelar")}</Button>
+          <Button type="submit" variant="accent" disabled={ocupado}>{t("Crear")}</Button>
         </div>
       </form>
     </Dialog>

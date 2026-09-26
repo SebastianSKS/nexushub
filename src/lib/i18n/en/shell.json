@@ -135,5 +135,7 @@
   "Copiar detalles": "Copy details",
   "Avisar del problema": "Report the problem",
   "No encontramos esa página": "We couldn't find that page",
-  "Puede que el enlace sea viejo o que la sección haya cambiado de lugar. Usa la barra lateral o la búsqueda (Ctrl+K) para llegar a lo que buscas.": "The link may be old or the section may have moved. Use the sidebar or search (Ctrl+K) to get to what you're looking for."
+  "Puede que el enlace sea viejo o que la sección haya cambiado de lugar. Usa la barra lateral o la búsqueda (Ctrl+K) para llegar a lo que buscas.": "The link may be old or the section may have moved. Use the sidebar or search (Ctrl+K) to get to what you're looking for.",
+  "Sin conexión": "Offline",
+  "Video y Música necesitan internet; el resto de Nexo funciona igual.": "Video and Music need internet; the rest of Nexo works the same."
 }

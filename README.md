@@ -23,6 +23,9 @@
 | **Calendario** | Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase nada. Exporta a `.ics`. |
 | **Horario** | Tus clases de la semana. Escanea la imagen que te mandaron y se llena sola. Avisa antes de cada clase. |
 | **Calculadora** | Estándar y científica, con historial y teclado. |
+| **Avisos a tu manera** | Notificaciones de Nexo (con su nombre e icono) antes de cada clase, de un examen con hora y de un cumpleaños; con cinco sonidos propios o los de Windows, y un «No molestar» por horas. |
+| **Hazlo tuyo** | Tema claro u oscuro, cualquier color de acento, tamaño de la interfaz, horas de 12 o 24 horas, semana que empieza en lunes o domingo, menos animaciones y secciones que puedes esconder. |
+| **Copia de seguridad** | Guarda todos tus datos en un archivo y pásalos a otra computadora. No incluye tu sesión de Spotify. |
 | **Guías y novedades** | Cada sección te explica cómo funciona la primera vez (y con «¿Cómo funciona?» cuando quieras). Tras actualizar, un cuadro te cuenta qué cambió. |
 | **Español e inglés** | Todo traducido, se cambia en *Configuración › Apariencia › Idioma* (o sigue el de Windows). |
 | **Actualizaciones** | Nexo revisa solo al abrir y te avisa con un botón «Actualizar ahora». Tus datos se conservan. |
@@ -43,9 +46,9 @@
 ## Instalar
 
 1. Descarga el instalador `Nexo_…_x64-setup.exe` de la [última versión](https://github.com/SebastianSKS/nexushub/releases/latest).
-2. Ejecútalo. Después Nexo se actualiza solo.
+2. Ejecútalo. Si Windows muestra «Windows protegió su PC», pulsa *Más información › Ejecutar de todas formas* (es normal en programas nuevos). Después Nexo se actualiza solo.
 
-Pensado para Windows 11.
+Pensado para Windows 11. ¿Dudas o algo no funciona? Mira la [ayuda](AYUDA.md) o [avisa de un problema](https://github.com/SebastianSKS/nexushub/issues/new/choose).
 
 ## Privacidad
 

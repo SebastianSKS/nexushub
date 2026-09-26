@@ -37,7 +37,7 @@ export function PanelAvisos() {
   const pedirPermiso = async () => setPermiso(await pedirPermisoNotificaciones());
 
   const probar = async () => {
-    const ok = await notificarSistema("Nexo", t("Así se verán tus avisos de cumpleaños."), "prueba", "/calendario");
+    const ok = await notificarSistema("Nexo", t("Así se verán tus avisos de cumpleaños."), "prueba", "/calendario", { ignorarSilencio: true });
     setPrueba(ok ? t("Enviamos una notificación de prueba: debería aparecer en la esquina de tu pantalla.") : t("No se pudo enviar la notificación de prueba."));
   };
 

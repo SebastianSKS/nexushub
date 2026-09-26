@@ -25,6 +25,9 @@ Settings › Notifications › *Notification sound*: five Nexo sounds, five Wind
 **Spotify music doesn't play.**
 To play inside Nexo, Spotify requires a **Premium** account. If you just connected it and it doesn't respond, sign out of Spotify in Settings and connect again.
 
+**Spotify says my account isn't authorized.**
+Spotify limits new apps to a handful of accounts their creator authorizes by hand (a Spotify rule, not Nexo's). Ask whoever gave you Nexo to add your Spotify account's email; meanwhile Video, Documents, Calendar, Schedule and Calculator work as usual.
+
 **Videos or music are slow to load.**
 Both sections use YouTube and Spotify and need internet. If your browser or antivirus blocks their servers, Nexo can't show them.
 

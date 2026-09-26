@@ -1,5 +1,6 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -47,6 +48,7 @@ export function PaginaConfiguracion() {
   const [restablecer, setRestablecer] = useState(false);
   const [escritorio, setEscritorio] = useState(false);
   const [version, setVersion] = useState("");
+  const { enPunto } = useHora();
 
   useEffect(() => usePerfilStore.getState().cargar(), []);
   useEffect(() => setEscritorio(esEscritorio()), []);
@@ -177,7 +179,7 @@ export function PaginaConfiguracion() {
                     <Selector<number>
                       label={t("Hora del resumen")}
                       value={a.resumenHora}
-                      options={Array.from({ length: 14 }, (_, h) => ({ value: h, label: `${String(h).padStart(2, "0")}:00` }))}
+                      options={Array.from({ length: 14 }, (_, h) => ({ value: h, label: enPunto(h) }))}
                       onChange={(resumenHora) => a.cambiar({ resumenHora })}
                     />
                   )}

@@ -17,6 +17,7 @@ import { useRecientesMusica } from "@/hooks/useRecientesMusica";
 import { useRevealHighlight } from "@/hooks/useRevealHighlight";
 import { useActualizacionAutomatica } from "@/hooks/useActualizacionAutomatica";
 import { useGuiasAutomaticas } from "@/hooks/useGuiasAutomaticas";
+import { useNovedades } from "@/hooks/useNovedades";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useAppStore } from "@/store/app-store";
 import { BarraReproduccion } from "@/components/reproductor/BarraReproduccion";
@@ -31,6 +32,7 @@ import { PanelNavegacion } from "./PanelNavegacion";
 import { StatusBar } from "./StatusBar";
 import { AvisoActualizacion } from "./AvisoActualizacion";
 import { Guias } from "./Guias";
+import { Novedades } from "./Novedades";
 
 /** Por debajo de este ancho de ventana el panel de navegación se colapsa solo. */
 const ANCHO_COLAPSO = 1000;
@@ -58,6 +60,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useDropGlobal();
   useGuiasAutomaticas();
   useActualizacionAutomatica();
+  useNovedades();
 
   useEffect(() => {
     cargarAjustes();
@@ -113,6 +116,7 @@ export function Ventana({ children }: { children: ReactNode }) {
       <MemoriaSesion />
       <AvisoActualizacion />
       <Guias />
+      <Novedades />
     </MotionConfig>
   );
 }

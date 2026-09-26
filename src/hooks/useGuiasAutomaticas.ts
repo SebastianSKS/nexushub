@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { guiaDeRuta } from "@/lib/guias";
 import { useGuiasStore } from "@/store/guias-store";
+import { useNovedadesStore } from "@/store/novedades-store";
 
 /**
  * Muestra las guías solas, una sola vez cada una:
@@ -16,6 +17,7 @@ export function useGuiasAutomaticas() {
   const cargado = useGuiasStore((s) => s.cargado);
   const vistas = useGuiasStore((s) => s.vistas);
   const abierta = useGuiasStore((s) => s.abierta);
+  const hayNovedades = useNovedadesStore((s) => s.abiertas !== null);
   /** La pantalla en la que se acaba de cerrar la bienvenida: ahí no se apila otra guía encima. */
   const silenciada = useRef<string | null>(null);
   const habiaBienvenida = useRef(false);
@@ -31,7 +33,7 @@ export function useGuiasAutomaticas() {
   }, [abierta, ruta]);
 
   useEffect(() => {
-    if (!cargado || abierta) return;
+    if (!cargado || abierta || hayNovedades) return;
     const { abrir } = useGuiasStore.getState();
     // Un instante para que la pantalla termine de dibujarse antes de poner la guía encima.
     if (!vistas.includes("bienvenida")) {
@@ -42,5 +44,5 @@ export function useGuiasAutomaticas() {
     if (!id || id === "bienvenida" || vistas.includes(id) || silenciada.current === ruta) return;
     const t = setTimeout(() => abrir(id), 250);
     return () => clearTimeout(t);
-  }, [cargado, vistas, abierta, ruta]);
+  }, [cargado, vistas, abierta, hayNovedades, ruta]);
 }

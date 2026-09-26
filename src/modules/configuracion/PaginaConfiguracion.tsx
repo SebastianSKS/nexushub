@@ -17,6 +17,7 @@ import { DialogoPerfil } from "@/components/shell/DialogoPerfil";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { esEscritorio } from "@/lib/entorno";
 import { useGuiasStore } from "@/store/guias-store";
+import { novedadesRecientes, useNovedadesStore } from "@/store/novedades-store";
 import { ACENTOS, useAjustesStore, type AlTerminar, type EfectoVentana, type PreferenciaTema, type SeccionInicial } from "@/store/ajustes-store";
 import { usePerfilStore } from "@/store/perfil-store";
 import { AjusteActualizaciones } from "./AjusteActualizaciones";
@@ -237,6 +238,20 @@ export function PaginaConfiguracion() {
                 <Button onClick={() => useGuiasStore.getState().abrir("bienvenida")}>Ver de nuevo</Button>
               </TarjetaAjuste>
               <AjusteActualizaciones />
+              {escritorio && (
+                <TarjetaAjuste glifo="informacion" titulo="Novedades" descripcion="Qué trajeron las últimas versiones de Nexo.">
+                  <Button
+                    onClick={() =>
+                      void import("@tauri-apps/api/app").then(async ({ getVersion }) => {
+                        const v = await getVersion();
+                        useNovedadesStore.getState().abrir(novedadesRecientes(v), v);
+                      })
+                    }
+                  >
+                    Ver novedades
+                  </Button>
+                </TarjetaAjuste>
+              )}
               <ExpansorAjuste
                 glifo="informacion"
                 titulo="Nexo"

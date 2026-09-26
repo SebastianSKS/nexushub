@@ -99,5 +99,22 @@
   "Ir a {seccion}": "Go to {seccion}",
   "Buscar «{texto}» en Música": "Search “{texto}” in Music",
   "Abrir Configuración": "Open Settings",
-  "Mostrar atajos de teclado": "Show keyboard shortcuts"
+  "Mostrar atajos de teclado": "Show keyboard shortcuts",
+  "Todo se puede hacer sin quitar las manos del teclado.": "Everything can be done without taking your hands off the keyboard.",
+  "Lista de atajos": "List of shortcuts",
+  "Atrás (historial)": "Back (history)",
+  "Adelante (historial)": "Forward (history)",
+  "Botón 4 del mouse": "Mouse button 4",
+  "Botón 5 del mouse": "Mouse button 5",
+  "Adelante": "Forward",
+  "Subir un nivel en la jerarquía (la miga anterior)": "Go up one level (the previous breadcrumb)",
+  "Ir a Inicio": "Go to Home",
+  "Ir a Documentos": "Go to Documents",
+  "Ir a Calendario": "Go to Calendar",
+  "Ir a Horario": "Go to Schedule",
+  "Ir a Calculadora": "Go to Calculator",
+  "Abrir el buscador global": "Open global search",
+  "Espacio": "Space",
+  "Reproducir o pausar (si el foco no está en un campo)": "Play or pause (if the focus isn't in a text field)",
+  "Mostrar esta página de atajos": "Show this shortcuts page"
 }

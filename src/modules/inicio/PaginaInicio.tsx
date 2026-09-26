@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, T, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,23 +20,24 @@ import { ClasesDeHoy } from "./ClasesDeHoy";
 
 /** Lo que hace cada sección, en una línea, para quien abre Nexo por primera vez. */
 const DESCRIPCION: Record<string, string> = {
-  video: "Los videos nuevos de los canales de YouTube que sigues, en un solo muro.",
-  musica: "Tu música de Spotify, con favoritos, recientes y reproductor grande.",
-  documentos: "Unir, dividir, comprimir, convertir y proteger PDF, sin subir nada a internet.",
-  calendario: "Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase ninguno.",
-  horario: "Tus clases de la semana. Escanea la imagen del horario y se llena sola.",
-  calculadora: "Normal y científica, con historial.",
+  video: T("Los videos nuevos de los canales de YouTube que sigues, en un solo muro."),
+  musica: T("Tu música de Spotify, con favoritos, recientes y reproductor grande."),
+  documentos: T("Unir, dividir, comprimir, convertir y proteger PDF, sin subir nada a internet."),
+  calendario: T("Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase ninguno."),
+  horario: T("Tus clases de la semana. Escanea la imagen del horario y se llena sola."),
+  calculadora: T("Normal y científica, con historial."),
 };
 
 /** Frase sobre lo que pasa hoy en el calendario. */
 function frase(titulos: string[]): string {
-  if (titulos.length === 0) return "Hoy no tienes nada en el calendario. ¿Qué quieres hacer?";
-  if (titulos.length === 1) return `Hoy en tu calendario: ${titulos[0]}.`;
-  return `Hoy tienes ${titulos.length} cosas en el calendario: ${titulos.slice(0, 2).join(", ")}${titulos.length > 2 ? "…" : ""}.`;
+  if (titulos.length === 0) return traducir("Hoy no tienes nada en el calendario. ¿Qué quieres hacer?");
+  if (titulos.length === 1) return traducir("Hoy en tu calendario: {titulo}.", { titulo: titulos[0]! });
+  return traducir("Hoy tienes {n} cosas en el calendario: {lista}{mas}.", { n: titulos.length, lista: titulos.slice(0, 2).join(", "), mas: titulos.length > 2 ? "…" : "" });
 }
 
 /** Pantalla de bienvenida: saludo con el nombre del perfil, accesos a las secciones y lo próximo del calendario. */
 export function PaginaInicio() {
+  const tr = useT();
   const router = useRouter();
   const nombre = usePerfilStore((s) => s.nombre);
   const foto = usePerfilStore((s) => s.foto);
@@ -59,24 +61,24 @@ export function PaginaInicio() {
     <>
       <PlantillaPagina
         migas={[{ etiqueta: "Inicio" }]}
-        titulo="Inicio"
-        descripcion="Video, Música, Documentos, Calendario, Horario y Calculadora, a un clic."
+        titulo={tr("Inicio")}
+        descripcion={tr("Video, Música, Documentos, Calendario, Horario y Calculadora, a un clic.")}
         principal={
           <>
             <section
-              aria-label="Bienvenida"
+              aria-label={tr("Bienvenida")}
               className="flex items-center gap-4 rounded-[8px] p-5 text-white shadow-card"
               style={{ backgroundImage: "linear-gradient(135deg, #0f6cbd 0%, #2b88d8 60%, #4aa8ee 100%)" }}
             >
               <Avatar nombre={nombre} foto={foto} tam={64} className="ring-2 ring-white/60" />
               <div className="min-w-0 flex-1">
-                <p className="text-title">{nombre ? `${hoy ? saludo(hoy.getHours()) : "Hola"}, ${nombre}` : "Te damos la bienvenida a Nexo"}</p>
+                <p className="text-title">{nombre ? `${hoy ? saludo(hoy.getHours()) : tr("Hola")}, ${nombre}` : tr("Te damos la bienvenida a Nexo")}</p>
                 <p className="mt-1 text-body opacity-95">{hoy ? frase(deHoy) : " "}</p>
                 <p className="mt-0.5 text-caption opacity-80">{hoy ? mayuscula(fechaLarga(hoy)) : " "}</p>
               </div>
               {!nombre && (
                 <button type="button" onClick={() => setPerfil(true)} className="rounded-control h-8 shrink-0 border border-white/50 px-3 text-body text-white transition-colors duration-exit ease-fluent hover:bg-white/15">
-                  Poner mi nombre
+                  {tr("Poner mi nombre")}
                 </button>
               )}
             </section>
@@ -85,7 +87,7 @@ export function PaginaInicio() {
 
             <AccesosDirectos />
 
-            <ul className="grid gap-3 min-[700px]:grid-cols-2" aria-label="Secciones">
+            <ul className="grid gap-3 min-[700px]:grid-cols-2" aria-label={tr("Secciones")}>
               {secciones.map((s) => (
                 <li key={s.id}>
                   <Link href={s.ruta} className="reveal rounded-control flex h-full items-start gap-4 border border-stroke bg-layer p-4 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt">
@@ -93,8 +95,8 @@ export function PaginaInicio() {
                       <Glifo nombre={s.glifo} tam={20} />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-body font-semibold text-fg">{s.etiqueta}</span>
-                      <span className="mt-0.5 block text-caption text-fg-secondary">{DESCRIPCION[s.id]}</span>
+                      <span className="block text-body font-semibold text-fg">{tr(s.etiqueta)}</span>
+                      <span className="mt-0.5 block text-caption text-fg-secondary">{tr(DESCRIPCION[s.id]!)}</span>
                     </span>
                   </Link>
                 </li>
@@ -105,7 +107,7 @@ export function PaginaInicio() {
               <ProximosEventos eventos={eventos} onEvento={() => router.push("/calendario")} />
             ) : (
               <Card className="p-4">
-                <p className="text-body text-fg-secondary">Cuando añadas eventos en el Calendario, los próximos aparecerán aquí.</p>
+                <p className="text-body text-fg-secondary">{tr("Cuando añadas eventos en el Calendario, los próximos aparecerán aquí.")}</p>
               </Card>
             )}
           </>

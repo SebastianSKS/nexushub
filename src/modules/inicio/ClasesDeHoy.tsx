@@ -1,14 +1,16 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { Card } from "@/components/fluent/Card";
-import { DIAS, diaDeSemana, estadoDelDia, proximoDiaConClases } from "@/lib/horario/horario";
+import { diaDeSemana, estadoDelDia, nombreDiaSemana, proximoDiaConClases } from "@/lib/horario/horario";
 import { useHorarioStore } from "@/store/horario-store";
 
 /** «Lo que sigue hoy»: las clases del día con la que está en curso y la que viene marcadas. */
 export function ClasesDeHoy() {
+  const tr = useT();
   const clases = useHorarioStore((s) => s.clases);
   // Null hasta montar en el navegador: la hora no puede calcularse al generar la página (ver PaginaInicio).
   const [ahora, setAhora] = useState<Date | null>(null);
@@ -25,9 +27,9 @@ export function ClasesDeHoy() {
   if (clases.length === 0) {
     return (
       <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
-        <p className="text-body text-fg-secondary">¿Tienes tu horario de clases en una imagen? Nexo lo lee y te dice qué clase sigue.</p>
+        <p className="text-body text-fg-secondary">{tr("¿Tienes tu horario de clases en una imagen? Nexo lo lee y te dice qué clase sigue.")}</p>
         <Link href="/horario" className="rounded-control inline-flex h-8 items-center border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer">
-          Escanear mi horario
+          {tr("Escanear mi horario")}
         </Link>
       </Card>
     );
@@ -40,21 +42,21 @@ export function ClasesDeHoy() {
   const mostrar = quedan ? delDia : proximo ? estadoDelDia(clases, proximo.dia, ahora).map((x) => ({ ...x, estado: "despues" as const })) : delDia;
 
   const titulo = quedan
-    ? "Lo que sigue hoy"
+    ? tr("Lo que sigue hoy")
     : proximo
-      ? `Hoy ya no tienes clases · ${proximo.faltan === 1 ? "Mañana" : DIAS[proximo.dia]}`
+      ? tr("Hoy ya no tienes clases · {cuando}", { cuando: proximo.faltan === 1 ? tr("Mañana") : nombreDiaSemana(proximo.dia) })
       : delDia.length > 0
-        ? "Hoy ya terminaste tus clases"
-        : "Hoy no tienes clases";
+        ? tr("Hoy ya terminaste tus clases")
+        : tr("Hoy no tienes clases");
 
   return (
     <Card className="p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="text-body font-semibold text-fg">{titulo}</h2>
-        <Link href="/horario" className="text-caption text-accent-text hover:underline">Ver horario</Link>
+        <Link href="/horario" className="text-caption text-accent-text hover:underline">{tr("Ver horario")}</Link>
       </div>
       {mostrar.length === 0 ? (
-        <p className="text-body text-fg-secondary">Disfruta el día libre.</p>
+        <p className="text-body text-fg-secondary">{tr("Disfruta el día libre.")}</p>
       ) : (
         <ul className="flex flex-col gap-1">
           {mostrar.map(({ clase, estado }) => (
@@ -64,13 +66,13 @@ export function ClasesDeHoy() {
                 <span className="block truncate text-body font-semibold text-fg">{clase.materia}</span>
                 <span className="block truncate text-caption text-fg-secondary">
                   {clase.inicio} – {clase.fin}
-                  {clase.aula && ` · Aula ${clase.aula}`}
+                  {clase.aula && ` · ${tr("Aula {aula}", { aula: clase.aula })}`}
                   {clase.docente && ` · ${clase.docente}`}
                 </span>
               </span>
-              {estado === "ahora" && <span className="shrink-0 text-caption font-semibold text-accent-text">Ahora</span>}
-              {estado === "siguiente" && <span className="shrink-0 text-caption font-semibold text-accent-text">Sigue</span>}
-              {estado === "terminada" && <span className="shrink-0 text-caption text-fg-tertiary">Terminó</span>}
+              {estado === "ahora" && <span className="shrink-0 text-caption font-semibold text-accent-text">{tr("Ahora")}</span>}
+              {estado === "siguiente" && <span className="shrink-0 text-caption font-semibold text-accent-text">{tr("Sigue")}</span>}
+              {estado === "terminada" && <span className="shrink-0 text-caption text-fg-tertiary">{tr("Terminó")}</span>}
             </li>
           ))}
         </ul>

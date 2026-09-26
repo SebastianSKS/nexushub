@@ -1,6 +1,6 @@
 {
   "name": "nexushub",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "Video, música y documentos en una sola ventana con el lenguaje de diseño Fluent de Windows 11.",
   "scripts": {

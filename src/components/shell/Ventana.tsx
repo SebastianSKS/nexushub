@@ -15,6 +15,7 @@ import { useEfectoVentana } from "@/hooks/useEfectoVentana";
 import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { useRecientesMusica } from "@/hooks/useRecientesMusica";
 import { useRevealHighlight } from "@/hooks/useRevealHighlight";
+import { useActualizacionAutomatica } from "@/hooks/useActualizacionAutomatica";
 import { useGuiasAutomaticas } from "@/hooks/useGuiasAutomaticas";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useAppStore } from "@/store/app-store";
@@ -28,6 +29,7 @@ import { BarraTitulo } from "./BarraTitulo";
 import { MemoriaSesion } from "./MemoriaSesion";
 import { PanelNavegacion } from "./PanelNavegacion";
 import { StatusBar } from "./StatusBar";
+import { AvisoActualizacion } from "./AvisoActualizacion";
 import { Guias } from "./Guias";
 
 /** Por debajo de este ancho de ventana el panel de navegación se colapsa solo. */
@@ -55,6 +57,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   useCerrarABandeja();
   useDropGlobal();
   useGuiasAutomaticas();
+  useActualizacionAutomatica();
 
   useEffect(() => {
     cargarAjustes();
@@ -108,6 +111,7 @@ export function Ventana({ children }: { children: ReactNode }) {
       <DialogoPermisos />
       <AvisosCumple />
       <MemoriaSesion />
+      <AvisoActualizacion />
       <Guias />
     </MotionConfig>
   );

@@ -1,57 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button } from "@/components/fluent/Button";
 import { TarjetaAjuste } from "@/components/fluent/TarjetaAjuste";
-import { esEscritorio } from "@/lib/entorno";
+import { useEsEscritorio } from "@/hooks/useEsEscritorio";
+import { useActualizacionesStore, type EstadoActualizacion } from "@/store/actualizaciones-store";
 
-type Estado = "inactivo" | "buscando" | "sin-novedades" | "descargando" | "lista" | "error";
-
-const TEXTOS: Record<Estado, string> = {
-  inactivo: "Comprueba si hay una versión más nueva de Nexo.",
-  buscando: "Buscando actualizaciones…",
-  "sin-novedades": "Ya tienes la última versión.",
-  descargando: "Descargando la actualización…",
-  lista: "Instalada. Reinicia para terminar.",
-  error: "No se pudo comprobar. Revisa tu conexión a internet.",
+const texto = (estado: EstadoActualizacion, version: string | null, progreso: number | null): string => {
+  switch (estado) {
+    case "buscando":
+      return "Buscando actualizaciones…";
+    case "al-dia":
+      return "Ya tienes la última versión.";
+    case "disponible":
+      return `Hay una versión nueva: Nexo ${version}.`;
+    case "descargando":
+      return progreso !== null ? `Descargando la actualización… ${progreso} %` : "Descargando la actualización…";
+    case "lista":
+      return "Instalada. Reinicia para terminar.";
+    case "error":
+      return "No se pudo comprobar. Revisa tu conexión a internet.";
+    default:
+      return "Nexo busca solo al abrir. También puedes comprobarlo ahora.";
+  }
 };
 
-/** Busca, descarga e instala actualizaciones desde el repositorio configurado en tauri.conf.json. */
+/** Busca, descarga e instala actualizaciones desde el repositorio configurado en tauri.conf.json. Comparte estado con el aviso «Actualizar ahora». */
 export function AjusteActualizaciones() {
-  const [disponible, setDisponible] = useState(false);
-  const [estado, setEstado] = useState<Estado>("inactivo");
+  const escritorio = useEsEscritorio();
+  const { estado, version, progreso } = useActualizacionesStore();
+  const buscar = useActualizacionesStore((s) => s.buscar);
+  const instalar = useActualizacionesStore((s) => s.instalar);
+  const reiniciar = useActualizacionesStore((s) => s.reiniciar);
 
-  useEffect(() => setDisponible(esEscritorio()), []);
-
-  const buscar = async () => {
-    setEstado("buscando");
-    try {
-      const { check } = await import("@tauri-apps/plugin-updater");
-      const actualizacion = await check();
-      if (!actualizacion) {
-        setEstado("sin-novedades");
-        return;
-      }
-      setEstado("descargando");
-      await actualizacion.downloadAndInstall();
-      setEstado("lista");
-    } catch {
-      setEstado("error");
-    }
-  };
-
-  const reiniciar = async () => {
-    const { relaunch } = await import("@tauri-apps/plugin-process");
-    await relaunch();
-  };
-
-  if (!disponible) return null;
+  if (!escritorio) return null;
 
   return (
-    <TarjetaAjuste glifo="actualizar" titulo="Actualizaciones" descripcion={TEXTOS[estado]}>
+    <TarjetaAjuste glifo="actualizar" titulo="Actualizaciones" descripcion={texto(estado, version, progreso)}>
       {estado === "lista" ? (
         <Button variant="accent" onClick={() => void reiniciar()}>
           Reiniciar ahora
+        </Button>
+      ) : estado === "disponible" ? (
+        <Button variant="accent" onClick={() => void instalar()}>
+          Actualizar ahora
         </Button>
       ) : (
         <Button onClick={() => void buscar()} disabled={estado === "buscando" || estado === "descargando"}>

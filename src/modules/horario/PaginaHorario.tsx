@@ -1,5 +1,6 @@
 "use client";
 
+import { useT, localeActual } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +9,7 @@ import { Button } from "@/components/fluent/Button";
 import { Card } from "@/components/fluent/Card";
 import { Glifo } from "@/components/fluent/Glifo";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
-import { DIAS, aMinutos, colorDeTexto, diaDeSemana, type Clase } from "@/lib/horario/horario";
+import { aMinutos, colorDeTexto, diaDeSemana, nombreDiaSemana, type Clase } from "@/lib/horario/horario";
 import { useHorarioStore } from "@/store/horario-store";
 import { DialogoClase, type BorradorClase } from "./DialogoClase";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
@@ -41,6 +42,7 @@ function carriles(clases: Clase[]): { clase: Clase; carril: number; de: number }
 
 /** /horario — el horario semanal de clases, escaneado desde una imagen o escrito a mano. */
 export function PaginaHorario() {
+  const t = useT();
   const clases = useHorarioStore((s) => s.clases);
   const [escaneo, setEscaneo] = useState(false);
   const [dialogo, setDialogo] = useState(false);
@@ -78,7 +80,7 @@ export function PaginaHorario() {
   const materias = useMemo(() => {
     const mapa = new Map<string, Clase>();
     for (const c of clases) if (!mapa.has(c.materia)) mapa.set(c.materia, c);
-    return [...mapa.values()].sort((a, b) => a.materia.localeCompare(b.materia, "es"));
+    return [...mapa.values()].sort((a, b) => a.materia.localeCompare(b.materia, localeActual()));
   }, [clases]);
 
   const alto = (minFin - minIni) * PX_POR_MINUTO;
@@ -88,13 +90,13 @@ export function PaginaHorario() {
     <>
       <PlantillaPagina
         migas={[{ etiqueta: "Horario" }]}
-        titulo="Horario"
-        descripcion="Tus clases de la semana. Escanea la imagen que te mandaron y se llena sola."
+        titulo={t("Horario")}
+        descripcion={t("Tus clases de la semana. Escanea la imagen que te mandaron y se llena sola.")}
         accion={
           <div className="flex gap-2">
-            <Button onClick={() => abrir({ dia: Math.min(hoy, 4) })}>Añadir clase</Button>
-            {escritorio && <Link href="/documentos/carpetas" className="rounded-control inline-flex h-8 items-center gap-2 border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer"><Glifo nombre="carpeta" tam={14} />Mis tareas</Link>}
-            <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>Escanear imagen</Button>
+            <Button onClick={() => abrir({ dia: Math.min(hoy, 4) })}>{t("Añadir clase")}</Button>
+            {escritorio && <Link href="/documentos/carpetas" className="rounded-control inline-flex h-8 items-center gap-2 border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer"><Glifo nombre="carpeta" tam={14} />{t("Mis tareas")}</Link>}
+            <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>{t("Escanear imagen")}</Button>
           </div>
         }
         principal={
@@ -102,21 +104,21 @@ export function PaginaHorario() {
             <Card className="flex flex-col items-center gap-4 px-6 py-14 text-center">
               <Glifo nombre="camara" tam={36} className="text-accent-text" />
               <div>
-                <p className="text-subtitle text-fg">Aún no tienes horario</p>
-                <p className="mx-auto mt-1 max-w-[440px] text-body text-fg-secondary">Sube la imagen del horario que te dieron (una captura o una foto) y Nexo saca las materias, los días y las horas. Después puedes corregir lo que haga falta.</p>
+                <p className="text-subtitle text-fg">{t("Aún no tienes horario")}</p>
+                <p className="mx-auto mt-1 max-w-[440px] text-body text-fg-secondary">{t("Sube la imagen del horario que te dieron (una captura o una foto) y Nexo saca las materias, los días y las horas. Después puedes corregir lo que haga falta.")}</p>
               </div>
               <div className="flex gap-2">
-                <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>Escanear imagen</Button>
-                <Button onClick={() => abrir({ dia: 0 })}>Añadirlo a mano</Button>
+                <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>{t("Escanear imagen")}</Button>
+                <Button onClick={() => abrir({ dia: 0 })}>{t("Añadirlo a mano")}</Button>
               </div>
             </Card>
           ) : (
-            <section aria-label="Horario semanal" className="overflow-x-auto rounded-[8px] border border-stroke bg-layer shadow-card">
+            <section aria-label={t("Horario semanal")} className="overflow-x-auto rounded-[8px] border border-stroke bg-layer shadow-card">
               <div className="min-w-[640px]">
                 <div className="grid border-b border-stroke" style={{ gridTemplateColumns: `56px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
                   <div />
-                  {DIAS.slice(0, diasVisibles).map((d, i) => (
-                    <div key={d} className={clsx("py-2.5 text-center text-body font-semibold", i === hoy ? "text-accent-text" : "text-fg")}>{d}</div>
+                  {Array.from({ length: diasVisibles }, (_, i) => (
+                    <div key={i} className={clsx("py-2.5 text-center text-body font-semibold", i === hoy ? "text-accent-text" : "text-fg")}>{nombreDiaSemana(i)}</div>
                   ))}
                 </div>
                 <div className="grid" style={{ gridTemplateColumns: `56px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
@@ -141,8 +143,8 @@ export function PaginaHorario() {
                             key={clase.id}
                             type="button"
                             onClick={() => abrir(clase)}
-                            aria-label={`Editar ${clase.materia}, ${DIAS[clase.dia]} de ${clase.inicio} a ${clase.fin}`}
-                            title={`${clase.materia}${clase.codigo ? ` (${clase.codigo})` : ""}\n${clase.inicio} – ${clase.fin}${clase.docente ? `\n${clase.docente}` : ""}${clase.aula ? `\nAula ${clase.aula}` : ""}`}
+                            aria-label={t("Editar {materia}, {dia} de {inicio} a {fin}", { materia: clase.materia, dia: nombreDiaSemana(clase.dia), inicio: clase.inicio, fin: clase.fin })}
+                            title={`${clase.materia}${clase.codigo ? ` (${clase.codigo})` : ""}\n${clase.inicio} – ${clase.fin}${clase.docente ? `\n${clase.docente}` : ""}${clase.aula ? `\n${t("Aula {aula}", { aula: clase.aula })}` : ""}`}
                             className="absolute overflow-hidden rounded-[4px] px-1.5 py-1 text-left shadow-card transition-[filter] duration-exit hover:brightness-110"
                             style={{ top: top + 1, height: altura - 2, left: `calc(${(carril / de) * 100}% + 2px)`, width: `calc(${100 / de}% - 4px)`, backgroundColor: clase.color, color: colorDeTexto(clase.color) }}
                           >
@@ -162,14 +164,14 @@ export function PaginaHorario() {
         lateral={
           materias.length > 0 ? (
             <Card className="p-4">
-              <h2 className="mb-3 text-body font-semibold text-fg">Materias</h2>
+              <h2 className="mb-3 text-body font-semibold text-fg">{t("Materias")}</h2>
               <ul className="flex flex-col gap-2">
                 {materias.map((m) => (
                   <li key={m.materia} className="flex items-start gap-2.5">
                     <span aria-hidden className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: m.color }} />
                     <span className="min-w-0">
                       <span className="block text-body text-fg">{m.materia}</span>
-                      <span className="block text-caption text-fg-secondary">{[m.codigo, m.docente].filter(Boolean).join(" · ") || "Sin docente"}</span>
+                      <span className="block text-caption text-fg-secondary">{[m.codigo, m.docente].filter(Boolean).join(" · ") || t("Sin docente")}</span>
                     </span>
                   </li>
                 ))}

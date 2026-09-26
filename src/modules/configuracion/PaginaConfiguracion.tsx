@@ -194,6 +194,21 @@ export function PaginaConfiguracion() {
                   onChange={(avisoClaseMin) => a.cambiar({ avisoClaseMin })}
                 />
               </TarjetaAjuste>
+              <TarjetaAjuste glifo="calendario" titulo={t("Avisar antes de un evento con hora")} descripcion={t("Para un examen a las 8:30 o una cita a las 4: una notificación unos minutos antes de que empiece.")}>
+                <Selector<number>
+                  label={t("Avisar antes de un evento con hora")}
+                  value={a.avisoEventoMin}
+                  options={[
+                    { value: 0, label: t("No avisar") },
+                    { value: 10, label: t("10 minutos antes") },
+                    { value: 15, label: t("15 minutos antes") },
+                    { value: 30, label: t("30 minutos antes") },
+                    { value: 60, label: t("1 hora antes") },
+                    { value: 120, label: t("2 horas antes") },
+                  ]}
+                  onChange={(avisoEventoMin) => a.cambiar({ avisoEventoMin })}
+                />
+              </TarjetaAjuste>
               <TarjetaAjuste glifo="calendario" titulo={t("Resumen del día")} descripcion={t("Al empezar el día, una notificación con tus clases, tareas y cumpleaños de hoy.")}>
                 <div className="flex items-center gap-3">
                   {a.resumenDia && (

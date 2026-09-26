@@ -80,5 +80,7 @@
   "{n} pendientes": "{n} to-dos",
   "{clases} y {pendientes}": "{clases} and {pendientes}",
   "{nombre}, hoy tienes {cuenta}": "{nombre}, today you have {cuenta}",
-  "Hoy tienes {cuenta}": "Today you have {cuenta}"
+  "Hoy tienes {cuenta}": "Today you have {cuenta}",
+  "En {n} min: {titulo}": "In {n} min: {titulo}",
+  "Empieza a las {hora}.": "Starts at {hora}."
 }

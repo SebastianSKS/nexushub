@@ -1,4 +1,5 @@
 import type { NombreGlifo } from "@/lib/glifos";
+import { T } from "@/lib/i18n";
 import type { ToolId } from "@/types/documents";
 
 /**
@@ -19,15 +20,15 @@ export interface Seccion {
 }
 
 export const SECCIONES: readonly Seccion[] = [
-  { id: "inicio", etiqueta: "Inicio", ruta: "/inicio", glifo: "inicio", atajo: "0" },
-  { id: "video", etiqueta: "Video", ruta: "/video", glifo: "video", atajo: "1" },
-  { id: "musica", etiqueta: "Música", ruta: "/musica", glifo: "musica", atajo: "2" },
-  { id: "documentos", etiqueta: "Documentos", ruta: "/documentos", glifo: "documentos", atajo: "3" },
-  { id: "calendario", etiqueta: "Calendario", ruta: "/calendario", glifo: "calendario", atajo: "4" },
-  { id: "horario", etiqueta: "Horario", ruta: "/horario", glifo: "reloj", atajo: "5" },
-  { id: "calculadora", etiqueta: "Calculadora", ruta: "/calculadora", glifo: "calculadora", atajo: "6" },
-  { id: "configuracion", etiqueta: "Configuración", ruta: "/configuracion", glifo: "configuracion" },
-  { id: "atajos", etiqueta: "Atajos de teclado", ruta: "/atajos", glifo: "atajos" },
+  { id: "inicio", etiqueta: T("Inicio"), ruta: "/inicio", glifo: "inicio", atajo: "0" },
+  { id: "video", etiqueta: T("Video"), ruta: "/video", glifo: "video", atajo: "1" },
+  { id: "musica", etiqueta: T("Música"), ruta: "/musica", glifo: "musica", atajo: "2" },
+  { id: "documentos", etiqueta: T("Documentos"), ruta: "/documentos", glifo: "documentos", atajo: "3" },
+  { id: "calendario", etiqueta: T("Calendario"), ruta: "/calendario", glifo: "calendario", atajo: "4" },
+  { id: "horario", etiqueta: T("Horario"), ruta: "/horario", glifo: "reloj", atajo: "5" },
+  { id: "calculadora", etiqueta: T("Calculadora"), ruta: "/calculadora", glifo: "calculadora", atajo: "6" },
+  { id: "configuracion", etiqueta: T("Configuración"), ruta: "/configuracion", glifo: "configuracion" },
+  { id: "atajos", etiqueta: T("Atajos de teclado"), ruta: "/atajos", glifo: "atajos" },
 ];
 
 export const SECCIONES_PRINCIPALES = SECCIONES.filter((s) => s.atajo);

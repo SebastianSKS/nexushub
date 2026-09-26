@@ -1,4 +1,5 @@
 import type { NombreGlifo } from "@/lib/glifos";
+import { T } from "./i18n/nucleo.ts";
 
 /**
  * Lo que cambió en cada versión de Nexo, escrito para quien lo usa (no para quien lo programa). Cuando alguien actualiza,
@@ -22,21 +23,21 @@ export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
     version: "0.1.3",
     novedades: [
-      { glifo: "informacion", titulo: "Guías en cada sección", texto: "Cada apartado te explica cómo funciona la primera vez que entras. Si se te olvida algo, pulsa «¿Cómo funciona?» junto al título y vuelve a salir." },
-      { glifo: "actualizar", titulo: "Actualizaciones sin buscarlas", texto: "Nexo revisa solo al abrir y, si hay una versión nueva, te avisa con un botón «Actualizar ahora». Tus datos se conservan." },
-      { glifo: "documentos", titulo: "Logos de verdad", texto: "Los PDF, Word, Excel, PowerPoint y Bloc de notas muestran el logo real de su programa, y también Spotify y YouTube en la búsqueda." },
-      { glifo: "ojo", titulo: "Este cuadro de novedades", texto: "Después de cada actualización verás aquí qué cambió. Puedes volver a abrirlo desde Configuración › Acerca de." },
+      { glifo: "informacion", titulo: T("Guías en cada sección"), texto: T("Cada apartado te explica cómo funciona la primera vez que entras. Si se te olvida algo, pulsa «¿Cómo funciona?» junto al título y vuelve a salir.") },
+      { glifo: "actualizar", titulo: T("Actualizaciones sin buscarlas"), texto: T("Nexo revisa solo al abrir y, si hay una versión nueva, te avisa con un botón «Actualizar ahora». Tus datos se conservan.") },
+      { glifo: "documentos", titulo: T("Logos de verdad"), texto: T("Los PDF, Word, Excel, PowerPoint y Bloc de notas muestran el logo real de su programa, y también Spotify y YouTube en la búsqueda.") },
+      { glifo: "ojo", titulo: T("Este cuadro de novedades"), texto: T("Después de cada actualización verás aquí qué cambió. Puedes volver a abrirlo desde Configuración › Acerca de.") },
     ],
   },
   {
     version: "0.1.2",
-    novedades: [{ glifo: "documentos", titulo: "Logos originales de Office", texto: "«Nuevo archivo», las herramientas de Documentos y las carpetas de tus materias usan los logos reales de Word, Excel, PowerPoint y Bloc de notas." }],
+    novedades: [{ glifo: "documentos", titulo: T("Logos originales de Office"), texto: T("«Nuevo archivo», las herramientas de Documentos y las carpetas de tus materias usan los logos reales de Word, Excel, PowerPoint y Bloc de notas.") }],
   },
   {
     version: "0.1.1",
     novedades: [
-      { glifo: "buscar", titulo: "Busca dentro de tus PDF", texto: "Pulsa Ctrl + K y escribe una palabra: Nexo la encuentra dentro de los PDF de tus carpetas de materias y los abre justo en esa página." },
-      { glifo: "agregar", titulo: "Nuevo archivo en cada materia", texto: "En Mis tareas, dentro de una materia, crea un Word, Excel, PowerPoint o texto en blanco directamente ahí." },
+      { glifo: "buscar", titulo: T("Busca dentro de tus PDF"), texto: T("Pulsa Ctrl + K y escribe una palabra: Nexo la encuentra dentro de los PDF de tus carpetas de materias y los abre justo en esa página.") },
+      { glifo: "agregar", titulo: T("Nuevo archivo en cada materia"), texto: T("En Mis tareas, dentro de una materia, crea un Word, Excel, PowerPoint o texto en blanco directamente ahí.") },
     ],
   },
 ];

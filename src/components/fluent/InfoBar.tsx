@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import {
@@ -58,6 +59,7 @@ export function InfoBar({
   floating = false,
   className,
 }: InfoBarProps) {
+  const t = useT();
   const s = STYLES[severity];
   return (
     <div
@@ -78,7 +80,7 @@ export function InfoBar({
       </div>
       {action && <div className="shrink-0 max-sm:basis-full max-sm:pl-8">{action}</div>}
       {onClose && (
-        <IconButton label="Cerrar notificación" onClick={onClose} className="-my-1 -mr-2 h-7 w-7">
+        <IconButton label={t("Cerrar notificación")} onClick={onClose} className="-my-1 -mr-2 h-7 w-7">
           <Dismiss16Regular />
         </IconButton>
       )}

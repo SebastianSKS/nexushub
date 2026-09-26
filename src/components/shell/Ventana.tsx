@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef, type ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
 import { useAvisoCancion } from "@/hooks/useAvisoCancion";
@@ -42,6 +43,7 @@ const ANCHO_COLAPSO = 1000;
  * cambia. Eso es lo que permitirá que la música siga sonando mientras se cambia de sección.
  */
 export function Ventana({ children }: { children: ReactNode }) {
+  const t = useT();
   const cargarAjustes = useAjustesStore((s) => s.cargar);
   const colapsadoAuto = useRef(false);
 
@@ -90,7 +92,7 @@ export function Ventana({ children }: { children: ReactNode }) {
         href="#contenido"
         className="rounded-control absolute left-3 top-3 z-[60] -translate-y-[200%] bg-accent px-4 py-2 text-body text-accent-on focus:translate-y-0"
       >
-        Saltar al contenido
+        {t("Saltar al contenido")}
       </a>
       <div className="mica flex h-screen w-screen flex-col overflow-hidden rounded-window border border-stroke">
         <BarraTitulo />

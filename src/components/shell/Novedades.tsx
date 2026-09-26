@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/fluent/Button";
@@ -11,6 +12,7 @@ import { useNovedadesStore } from "@/store/novedades-store";
 
 /** «Novedades»: lo que cambió desde la versión que tenías. Sale una sola vez después de actualizar. */
 export function Novedades() {
+  const t = useT();
   const abiertas = useNovedadesStore((s) => s.abiertas);
   const version = useNovedadesStore((s) => s.version);
   const cerrar = useNovedadesStore((s) => s.cerrar);
@@ -28,7 +30,7 @@ export function Novedades() {
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label={`Novedades de Nexo ${version}`}
+          aria-label={t("Novedades de Nexo {version}", { version: version ?? "" })}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: ENTER }}
           exit={{ opacity: 0, transition: EXIT }}
@@ -44,26 +46,26 @@ export function Novedades() {
           >
             <div className="flex items-center justify-between">
               <NexusMark size={18} />
-              <IconButton label="Cerrar las novedades" onClick={cerrar} className="-mr-2">
+              <IconButton label={t("Cerrar las novedades")} onClick={cerrar} className="-mr-2">
                 <Glifo nombre="cerrar" tam={12} />
               </IconButton>
             </div>
             <div>
-              <h2 className="text-subtitle text-fg">Novedades de Nexo {version}</h2>
-              <p className="mt-1 text-body text-fg-secondary">Esto es lo que cambió desde la última vez que lo abriste.</p>
+              <h2 className="text-subtitle text-fg">{t("Novedades de Nexo {version}", { version: version ?? "" })}</h2>
+              <p className="mt-1 text-body text-fg-secondary">{t("Esto es lo que cambió desde la última vez que lo abriste.")}</p>
             </div>
             <div className="-mr-2 flex min-h-0 flex-col gap-4 overflow-y-auto pr-2">
               {abiertas.map((v) => (
-                <section key={v.version} aria-label={`Versión ${v.version}`} className="flex flex-col gap-3">
-                  {abiertas.length > 1 && <h3 className="text-caption font-semibold text-fg-tertiary">Versión {v.version}</h3>}
+                <section key={v.version} aria-label={t("Versión {v}", { v: v.version })} className="flex flex-col gap-3">
+                  {abiertas.length > 1 && <h3 className="text-caption font-semibold text-fg-tertiary">{t("Versión {v}", { v: v.version })}</h3>}
                   {v.novedades.map((n) => (
                     <div key={n.titulo} className="flex items-start gap-3">
                       <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white" style={{ backgroundImage: "linear-gradient(135deg, #0f6cbd, #3fb6f5)" }} aria-hidden>
                         <Glifo nombre={n.glifo} tam={14} />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-body font-semibold text-fg">{n.titulo}</p>
-                        <p className="text-caption text-fg-secondary">{n.texto}</p>
+                        <p className="text-body font-semibold text-fg">{t(n.titulo)}</p>
+                        <p className="text-caption text-fg-secondary">{t(n.texto)}</p>
                       </div>
                     </div>
                   ))}
@@ -72,7 +74,7 @@ export function Novedades() {
             </div>
             <div className="flex justify-end">
               <Button variant="accent" onClick={cerrar}>
-                Entendido
+                {t("Entendido")}
               </Button>
             </div>
           </motion.div>

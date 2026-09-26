@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Tooltip } from "@/components/fluent/Tooltip";
@@ -9,6 +10,7 @@ import { DialogoPerfil } from "./DialogoPerfil";
 
 /** Fila de perfil al pie de la barra lateral: foto y nombre, o «Iniciar sesión (opcional)». */
 export function BotonPerfil({ colapsado }: { colapsado: boolean }) {
+  const t = useT();
   const cargar = usePerfilStore((s) => s.cargar);
   const nombre = usePerfilStore((s) => s.nombre);
   const foto = usePerfilStore((s) => s.foto);
@@ -16,7 +18,7 @@ export function BotonPerfil({ colapsado }: { colapsado: boolean }) {
 
   useEffect(() => cargar(), [cargar]);
 
-  const etiqueta = nombre ? `Perfil de ${nombre}` : "Iniciar sesión (opcional)";
+  const etiqueta = nombre ? t("Perfil de {nombre}", { nombre }) : t("Iniciar sesión (opcional)");
   return (
     <>
       <Tooltip text={etiqueta} enabled={colapsado}>
@@ -28,8 +30,8 @@ export function BotonPerfil({ colapsado }: { colapsado: boolean }) {
         >
           <Avatar nombre={nombre} foto={foto} tam={32} />
           <span className={clsx("min-w-0 transition-opacity duration-exit ease-fluent", colapsado ? "opacity-0" : "opacity-100")} aria-hidden>
-            <span className="block truncate text-body font-semibold text-fg">{nombre ?? "Iniciar sesión"}</span>
-            <span className="block truncate text-caption text-fg-secondary">{nombre ? "Ver o cambiar mi perfil" : "Opcional · añade tu foto"}</span>
+            <span className="block truncate text-body font-semibold text-fg">{nombre ?? t("Iniciar sesión")}</span>
+            <span className="block truncate text-caption text-fg-secondary">{nombre ? t("Ver o cambiar mi perfil") : t("Opcional · añade tu foto")}</span>
           </span>
         </button>
       </Tooltip>

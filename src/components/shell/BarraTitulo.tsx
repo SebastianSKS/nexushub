@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { QuestionCircle16Regular } from "@fluentui/react-icons";
@@ -49,16 +50,17 @@ function BotonVentana({ etiqueta, glifo, peligro, onClick }: BotonVentanaProps) 
  * (en Inicio, la bienvenida). Así, si a alguien se le olvida algo, lo repasa cuando quiera.
  */
 function BotonAyuda() {
+  const t = useT();
   const ruta = usePathname();
   const id = guiaDeRuta(ruta);
   if (!id) return null;
-  const nombre = id === "bienvenida" ? "la bienvenida" : `«${GUIAS[id].nombre}»`;
+  const nombre = id === "bienvenida" ? t("la bienvenida") : t("«{nombre}»", { nombre: t(GUIAS[id].nombre) });
   return (
     <button
       type="button"
       onClick={() => useGuiasStore.getState().abrir(id)}
-      aria-label={`Ayuda: cómo funciona ${nombre}`}
-      title={`Ayuda: cómo funciona ${nombre}`}
+      aria-label={t("Ayuda: cómo funciona {nombre}", { nombre })}
+      title={t("Ayuda: cómo funciona {nombre}", { nombre })}
       className="flex h-8 w-10 items-center justify-center text-fg transition-colors duration-exit ease-fluent hover:bg-[rgba(128,128,128,0.06)]"
     >
       <QuestionCircle16Regular />
@@ -71,6 +73,7 @@ function BotonAyuda() {
  * El «atrás» vive AQUÍ (patrón de Windows) y es HISTORIAL: router.back(). Se atenúa cuando no hay a dónde regresar.
  */
 export function BarraTitulo() {
+  const t = useT();
   const router = useRouter();
   const { puedeAtras } = useHistorial();
   const [escritorio, setEscritorio] = useState(false);
@@ -99,8 +102,8 @@ export function BarraTitulo() {
           type="button"
           onClick={() => router.back()}
           disabled={!puedeAtras}
-          aria-label="Atrás"
-          title="Atrás (Alt + ←)"
+          aria-label={t("Atrás")}
+          title={t("Atrás (Alt + ←)")}
           className="flex h-8 w-10 shrink-0 items-center justify-center text-fg transition-colors duration-exit ease-fluent hover:bg-[rgba(128,128,128,0.06)] disabled:pointer-events-none disabled:opacity-40"
         >
           <Glifo nombre="atras" tam={14} />
@@ -119,13 +122,13 @@ export function BarraTitulo() {
         <BotonAyuda />
         {escritorio && (
           <>
-            <BotonVentana etiqueta="Minimizar" glifo="minimizar" onClick={() => void ventana().then((w) => w.minimize())} />
+            <BotonVentana etiqueta={t("Minimizar")} glifo="minimizar" onClick={() => void ventana().then((w) => w.minimize())} />
             <BotonVentana
-              etiqueta={maximizada ? "Restaurar" : "Maximizar"}
+              etiqueta={maximizada ? t("Restaurar") : t("Maximizar")}
               glifo={maximizada ? "restaurar" : "maximizar"}
               onClick={() => void ventana().then((w) => w.toggleMaximize())}
             />
-            <BotonVentana etiqueta="Cerrar" glifo="cerrar" peligro onClick={() => void ventana().then((w) => w.close())} />
+            <BotonVentana etiqueta={t("Cerrar")} glifo="cerrar" peligro onClick={() => void ventana().then((w) => w.close())} />
           </>
         )}
       </div>

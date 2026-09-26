@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dismiss20Regular } from "@fluentui/react-icons";
@@ -17,6 +18,7 @@ interface DialogProps {
 
 /** Diálogo modal Fluent: Acrylic, trampa de foco, Esc y clic en el fondo para cerrar. */
 export function Dialog({ open, onClose, title, children, maxWidth = 520 }: DialogProps) {
+  const t = useT();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -87,7 +89,7 @@ export function Dialog({ open, onClose, title, children, maxWidth = 520 }: Dialo
               <h2 id={titleId} className="text-subtitle text-fg">
                 {title}
               </h2>
-              <IconButton ref={closeRef} label="Cerrar" onClick={onClose}>
+              <IconButton ref={closeRef} label={t("Cerrar")} onClick={onClose}>
                 <Dismiss20Regular />
               </IconButton>
             </div>

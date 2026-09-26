@@ -1,1 +1,16 @@
-{}
+{
+  "Guías en cada sección": "Guides in every section",
+  "Cada apartado te explica cómo funciona la primera vez que entras. Si se te olvida algo, pulsa «¿Cómo funciona?» junto al título y vuelve a salir.": "Each section explains how it works the first time you enter. If you forget something, press “How does it work?” next to the title and it shows up again.",
+  "Actualizaciones sin buscarlas": "Updates without looking for them",
+  "Nexo revisa solo al abrir y, si hay una versión nueva, te avisa con un botón «Actualizar ahora». Tus datos se conservan.": "Nexo checks on its own when it opens and, if there's a new version, lets you know with an “Update now” button. Your data is kept.",
+  "Logos de verdad": "Real logos",
+  "Los PDF, Word, Excel, PowerPoint y Bloc de notas muestran el logo real de su programa, y también Spotify y YouTube en la búsqueda.": "PDF, Word, Excel, PowerPoint and Notepad show their program's real logo, and so do Spotify and YouTube in search.",
+  "Este cuadro de novedades": "This what's-new window",
+  "Después de cada actualización verás aquí qué cambió. Puedes volver a abrirlo desde Configuración › Acerca de.": "After each update you'll see here what changed. You can open it again from Settings › About.",
+  "Logos originales de Office": "Original Office logos",
+  "«Nuevo archivo», las herramientas de Documentos y las carpetas de tus materias usan los logos reales de Word, Excel, PowerPoint y Bloc de notas.": "“New file”, the Documents tools and your subjects' folders use the real logos of Word, Excel, PowerPoint and Notepad.",
+  "Busca dentro de tus PDF": "Search inside your PDFs",
+  "Pulsa Ctrl + K y escribe una palabra: Nexo la encuentra dentro de los PDF de tus carpetas de materias y los abre justo en esa página.": "Press Ctrl + K and type a word: Nexo finds it inside the PDFs in your subject folders and opens them right on that page.",
+  "Nuevo archivo en cada materia": "New file in each subject",
+  "En Mis tareas, dentro de una materia, crea un Word, Excel, PowerPoint o texto en blanco directamente ahí.": "In My assignments, inside a subject, create a blank Word, Excel, PowerPoint or text file right there."
+}

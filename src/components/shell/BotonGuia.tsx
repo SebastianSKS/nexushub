@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { usePathname } from "next/navigation";
 import { QuestionCircle16Regular } from "@fluentui/react-icons";
 import { GUIAS, guiaDeRuta } from "@/lib/guias";
@@ -11,19 +12,20 @@ import { useGuiasStore } from "@/store/guias-store";
  * la barra de arriba hace lo mismo.
  */
 export function BotonGuia() {
+  const t = useT();
   const ruta = usePathname();
   const id = guiaDeRuta(ruta);
   if (!id) return null;
-  const nombre = id === "bienvenida" ? "la bienvenida" : `«${GUIAS[id].nombre}»`;
+  const nombre = id === "bienvenida" ? t("la bienvenida") : t("«{nombre}»", { nombre: t(GUIAS[id].nombre) });
   return (
     <button
       type="button"
       onClick={() => useGuiasStore.getState().abrir(id)}
-      title={`Ver la guía: cómo funciona ${nombre}`}
+      title={t("Ver la guía: cómo funciona {nombre}", { nombre })}
       className="rounded-control inline-flex h-7 shrink-0 items-center gap-1.5 border border-stroke bg-layer px-2.5 text-caption text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer-alt hover:text-fg"
     >
       <QuestionCircle16Regular className="text-accent-text" />
-      ¿Cómo funciona?
+      {t("¿Cómo funciona?")}
     </button>
   );
 }

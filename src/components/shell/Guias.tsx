@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
@@ -13,6 +14,7 @@ import { useGuiasStore } from "@/store/guias-store";
 
 /** El cuadro de una guía: pasos cortos con «Siguiente», «Atrás» y «Omitir». Sirve igual para la bienvenida y para cada sección. */
 function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
+  const t = useT();
   const [paso, setPaso] = useState(0);
   const ultimo = paso === guia.pasos.length - 1;
   const p = guia.pasos[paso]!;
@@ -31,7 +33,7 @@ function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label={guia.id === "bienvenida" ? "Bienvenida a Nexo" : `Guía: ${guia.nombre}`}
+      aria-label={guia.id === "bienvenida" ? t("Bienvenida a Nexo") : t("Guía: {nombre}", { nombre: t(guia.nombre) })}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: ENTER }}
       exit={{ opacity: 0, transition: EXIT }}
@@ -48,9 +50,9 @@ function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
         <div className="flex w-full items-center justify-between">
           <span className="flex items-center gap-2">
             <NexusMark size={18} />
-            {guia.id !== "bienvenida" && <span className="text-caption text-fg-secondary">Guía · {guia.nombre}</span>}
+            {guia.id !== "bienvenida" && <span className="text-caption text-fg-secondary">{t("Guía")} · {t(guia.nombre)}</span>}
           </span>
-          <IconButton label={guia.id === "bienvenida" ? "Omitir la bienvenida" : "Cerrar la guía"} onClick={onCerrar} className="-mr-2">
+          <IconButton label={guia.id === "bienvenida" ? t("Omitir la bienvenida") : t("Cerrar la guía")} onClick={onCerrar} className="-mr-2">
             <Glifo nombre="cerrar" tam={12} />
           </IconButton>
         </div>
@@ -60,8 +62,8 @@ function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
         </span>
 
         <div>
-          <h2 className="text-subtitle text-fg">{p.titulo}</h2>
-          <p className="mt-2 text-body text-fg-secondary">{p.texto}</p>
+          <h2 className="text-subtitle text-fg">{t(p.titulo)}</h2>
+          <p className="mt-2 text-body text-fg-secondary">{t(p.texto)}</p>
         </div>
 
         {guia.pasos.length > 1 && (
@@ -72,7 +74,7 @@ function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
                 type="button"
                 role="tab"
                 aria-selected={i === paso}
-                aria-label={`Paso ${i + 1} de ${guia.pasos.length}`}
+                aria-label={t("Paso {i} de {n}", { i: i + 1, n: guia.pasos.length })}
                 onClick={() => setPaso(i)}
                 className={clsx("h-1.5 rounded-full transition-[width,background-color] duration-exit ease-fluent", i === paso ? "w-5 bg-accent" : "w-1.5 bg-stroke-strong hover:bg-fg-tertiary")}
               />
@@ -83,15 +85,15 @@ function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
         <div className="flex w-full items-center justify-between gap-2">
           {guia.pasos.length > 1 && !ultimo ? (
             <Button variant="subtle" onClick={onCerrar}>
-              Omitir
+              {t("Omitir")}
             </Button>
           ) : (
             <span />
           )}
           <div className="flex gap-2">
-            {paso > 0 && <Button onClick={() => setPaso((x) => x - 1)}>Atrás</Button>}
+            {paso > 0 && <Button onClick={() => setPaso((x) => x - 1)}>{t("Atrás")}</Button>}
             <Button variant="accent" onClick={() => (ultimo ? onCerrar() : setPaso((x) => x + 1))}>
-              {ultimo ? guia.final : "Siguiente"}
+              {ultimo ? t(guia.final) : t("Siguiente")}
             </Button>
           </div>
         </div>

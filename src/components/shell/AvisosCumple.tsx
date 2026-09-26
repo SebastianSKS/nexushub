@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -9,6 +10,7 @@ import { useCalendarioStore } from "@/store/calendario-store";
 
 /** Avisos de cumpleaños dentro de la aplicación, arriba a la derecha. Se cierran con la «x». */
 export function AvisosCumple() {
+  const t = useT();
   const pendientes = useCalendarioStore((s) => s.pendientes);
   const cerrar = useCalendarioStore((s) => s.cerrarAviso);
 
@@ -33,11 +35,11 @@ export function AvisosCumple() {
               {a.texto && <p className="text-caption text-fg-secondary">{a.texto}</p>}
               {a.destino !== null && (
                 <Link href={a.destino?.ruta ?? "/calendario"} onClick={() => cerrar(a.id)} className="mt-1 inline-block text-caption font-semibold text-accent-text hover:underline">
-                  {a.destino?.etiqueta ?? "Abrir el calendario"}
+                  {a.destino?.etiqueta ?? t("Abrir el calendario")}
                 </Link>
               )}
             </div>
-            <IconButton label="Cerrar aviso" onClick={() => cerrar(a.id)} className="h-7 w-7">
+            <IconButton label={t("Cerrar aviso")} onClick={() => cerrar(a.id)} className="h-7 w-7">
               <Glifo nombre="cerrar" tam={10} />
             </IconButton>
           </motion.div>

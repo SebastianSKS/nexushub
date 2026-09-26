@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { rutaLista, seccionDe } from "@/lib/rutas";
@@ -8,6 +9,7 @@ import { useAppStore } from "@/store/app-store";
 
 /** Playlists del usuario conectado con Spotify, dentro de la barra lateral (solo en Música). */
 export function PlaylistsNav() {
+  const t = useT();
   const activo = seccionDe(usePathname()) === "musica";
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const connection = useMusicStore((s) => s.connection);
@@ -17,8 +19,8 @@ export function PlaylistsNav() {
   if (!activo || collapsed || connection.status !== "connected" || playlists.length === 0) return null;
 
   return (
-    <div className="mt-3 flex min-h-0 flex-1 flex-col border-t border-stroke pt-3" aria-label="Tus playlists de Spotify" role="group">
-      <p className="mb-1 px-3 text-caption font-semibold text-fg-tertiary">Tus playlists</p>
+    <div className="mt-3 flex min-h-0 flex-1 flex-col border-t border-stroke pt-3" aria-label={t("Tus playlists de Spotify")} role="group">
+      <p className="mb-1 px-3 text-caption font-semibold text-fg-tertiary">{t("Tus playlists")}</p>
       <ul className="min-h-0 flex-1 overflow-y-auto pr-1">
         {playlists.map((p) => (
           <li key={p.id}>

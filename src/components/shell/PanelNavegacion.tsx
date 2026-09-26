@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { Suspense, useRef, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,13 +21,15 @@ const COLAPSADO = 48;
 
 /** Ítem de navegación: un <Link> real (clic con rueda, menú contextual) con la píldora de selección deslizante. */
 function Item({ seccion, activa, colapsado, insignia = 0 }: { seccion: Seccion; activa: boolean; colapsado: boolean; insignia?: number }) {
+  const t = useT();
+  const etiqueta = t(seccion.etiqueta);
   return (
-    <Tooltip text={seccion.etiqueta} enabled={colapsado}>
+    <Tooltip text={etiqueta} enabled={colapsado}>
       <Link
         href={seccion.ruta}
         data-nav-item
         aria-current={activa ? "page" : undefined}
-        aria-label={seccion.etiqueta}
+        aria-label={etiqueta}
         className={clsx(
           "rounded-control reveal relative flex h-10 w-full items-center gap-4 pl-[15px] pr-3 text-body transition-colors duration-exit ease-fluent",
           activa ? "bg-layer-alt text-fg" : "text-fg-secondary hover:bg-layer hover:text-fg active:bg-layer-alt",
@@ -43,13 +46,13 @@ function Item({ seccion, activa, colapsado, insignia = 0 }: { seccion: Seccion; 
         )}
         <Glifo nombre={seccion.glifo} tam={16} className={activa ? "text-accent-text" : undefined} />
         <span className={clsx("truncate transition-opacity duration-exit ease-fluent", colapsado ? "opacity-0" : "opacity-100", activa && "font-semibold")} aria-hidden>
-          {seccion.etiqueta}
+          {etiqueta}
         </span>
         {insignia > 0 && (
           <span
             className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-caption font-semibold text-accent-on"
             style={colapsado ? { position: "absolute", right: 4, top: 4, height: 16, minWidth: 16, fontSize: 10, padding: "0 3px" } : undefined}
-            aria-label={insignia === 1 ? "1 cumpleaños hoy" : `${insignia} cumpleaños hoy`}
+            aria-label={insignia === 1 ? t("1 cumpleaños hoy") : t("{n} cumpleaños hoy", { n: insignia })}
           >
             {insignia}
           </span>
@@ -65,6 +68,7 @@ function Item({ seccion, activa, colapsado, insignia = 0 }: { seccion: Seccion; 
  * entre ítems: es el mismo elemento (layoutId), nunca aparece y desaparece.
  */
 export function PanelNavegacion() {
+  const t = useT();
   const pathname = usePathname();
   const activa = seccionDe(pathname);
   const colapsado = useAppStore((s) => s.sidebarCollapsed);
@@ -89,7 +93,7 @@ export function PanelNavegacion() {
   return (
     <motion.nav
       ref={ref}
-      aria-label="Navegación principal"
+      aria-label={t("Navegación principal")}
       initial={false}
       animate={{ width: colapsado ? COLAPSADO : EXPANDIDO }}
       transition={ENTER}
@@ -100,8 +104,8 @@ export function PanelNavegacion() {
         type="button"
         onClick={alternar}
         aria-expanded={!colapsado}
-        aria-label={colapsado ? "Expandir barra lateral" : "Contraer barra lateral"}
-        title={colapsado ? "Expandir" : "Contraer"}
+        aria-label={colapsado ? t("Expandir barra lateral") : t("Contraer barra lateral")}
+        title={colapsado ? t("Expandir") : t("Contraer")}
         className="rounded-control mb-1 flex h-10 w-10 shrink-0 items-center justify-center text-fg transition-colors duration-exit ease-fluent hover:bg-layer"
       >
         <Glifo nombre="menu" tam={16} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import {
   CheckmarkCircle16Regular,
   DocumentPdf16Regular,
@@ -10,6 +11,7 @@ import { useAppStore } from "@/store/app-store";
 
 /** Barra de estado de 28px: operación en curso, reproducción actual y archivos procesados. */
 export function StatusBar() {
+  const t = useT();
   const operation = useAppStore((s) => s.operation);
   const nowPlaying = useAppStore((s) => s.nowPlaying);
   const filesProcessed = useAppStore((s) => s.filesProcessed);
@@ -42,7 +44,7 @@ export function StatusBar() {
         ) : (
           <>
             <CheckmarkCircle16Regular className="shrink-0 text-success-fg" aria-hidden />
-            <span>Listo</span>
+            <span>{t("Listo")}</span>
           </>
         )}
       </div>
@@ -61,14 +63,14 @@ export function StatusBar() {
             </span>
           </>
         ) : (
-          <span className="text-fg-tertiary">Nada en reproducción</span>
+          <span className="text-fg-tertiary">{t("Nada en reproducción")}</span>
         )}
       </div>
 
       <div className="flex items-center justify-end gap-2">
         <DocumentPdf16Regular className="shrink-0" aria-hidden />
         <span className="tabular">
-          {filesProcessed} {filesProcessed === 1 ? "archivo procesado" : "archivos procesados"}
+          {filesProcessed} {filesProcessed === 1 ? t("archivo procesado") : t("archivos procesados")}
         </span>
       </div>
     </footer>

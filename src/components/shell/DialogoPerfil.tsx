@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/fluent/Button";
 import { Dialog } from "@/components/fluent/Dialog";
@@ -24,6 +25,7 @@ async function fotoACuadrado(file: File): Promise<string> {
 
 /** Inicio de sesión pequeño y opcional: un nombre y, si quieres, una foto. Todo se queda en este equipo. */
 export function DialogoPerfil({ abierto, onCerrar }: { abierto: boolean; onCerrar: () => void }) {
+  const t = useT();
   const nombreActual = usePerfilStore((s) => s.nombre);
   const fotoActual = usePerfilStore((s) => s.foto);
   const [nombre, setNombre] = useState("");
@@ -39,25 +41,25 @@ export function DialogoPerfil({ abierto, onCerrar }: { abierto: boolean; onCerra
     setFoto(fotoActual);
     setError(null);
     setErrorNombre(undefined);
-    const t = setTimeout(() => campo.current?.focus(), 120);
-    return () => clearTimeout(t);
+    const espera = setTimeout(() => campo.current?.focus(), 120);
+    return () => clearTimeout(espera);
   }, [abierto, nombreActual, fotoActual]);
 
   const elegirFoto = async (file: File | undefined) => {
     if (!file) return;
     setError(null);
-    if (!file.type.startsWith("image/")) return setError("Ese archivo no es una imagen. Elige una foto JPG, PNG o WebP.");
-    if (file.size > MAX_BYTES) return setError("Esa foto pesa demasiado (más de 12 MB). Elige una más pequeña.");
+    if (!file.type.startsWith("image/")) return setError(t("Ese archivo no es una imagen. Elige una foto JPG, PNG o WebP."));
+    if (file.size > MAX_BYTES) return setError(t("Esa foto pesa demasiado (más de 12 MB). Elige una más pequeña."));
     try {
       setFoto(await fotoACuadrado(file));
     } catch {
-      setError("No se pudo leer esa imagen. Prueba con otra foto.");
+      setError(t("No se pudo leer esa imagen. Prueba con otra foto."));
     }
   };
 
   const guardar = (e: FormEvent) => {
     e.preventDefault();
-    if (!nombre.trim()) return setErrorNombre("Escribe cómo quieres que te llamemos.");
+    if (!nombre.trim()) return setErrorNombre(t("Escribe cómo quieres que te llamemos."));
     usePerfilStore.getState().iniciarSesion(nombre, foto);
     onCerrar();
   };
@@ -65,32 +67,32 @@ export function DialogoPerfil({ abierto, onCerrar }: { abierto: boolean; onCerra
   const conSesion = nombreActual !== null;
 
   return (
-    <Dialog open={abierto} onClose={onCerrar} title={conSesion ? "Tu perfil" : "Iniciar sesión"} maxWidth={440}>
+    <Dialog open={abierto} onClose={onCerrar} title={conSesion ? t("Tu perfil") : t("Iniciar sesión")} maxWidth={440}>
       <form onSubmit={guardar} className="flex flex-col gap-4">
         <p className="text-body text-fg-secondary">
-          {conSesion ? "Cambia tu nombre o tu foto cuando quieras." : "Es opcional: sirve para saludarte por tu nombre. Nexo funciona igual sin perfil."}
+          {conSesion ? t("Cambia tu nombre o tu foto cuando quieras.") : t("Es opcional: sirve para saludarte por tu nombre. Nexo funciona igual sin perfil.")}
         </p>
 
         <div className="flex items-center gap-4">
           <Avatar nombre={nombre || null} foto={foto} tam={72} />
           <div className="flex flex-wrap gap-2">
             <Button type="button" icon={<Glifo nombre="camara" />} onClick={() => entrada.current?.click()}>
-              {foto ? "Cambiar foto" : "Añadir foto"}
+              {foto ? t("Cambiar foto") : t("Añadir foto")}
             </Button>
             {foto && (
               <Button type="button" variant="subtle" onClick={() => setFoto(null)}>
-                Quitar foto
+                {t("Quitar foto")}
               </Button>
             )}
           </div>
-          <input ref={entrada} type="file" accept="image/*" className="hidden" aria-label="Elegir foto de perfil" onChange={(e) => { void elegirFoto(e.target.files?.[0]); e.target.value = ""; }} />
+          <input ref={entrada} type="file" accept="image/*" className="hidden" aria-label={t("Elegir foto de perfil")} onChange={(e) => { void elegirFoto(e.target.files?.[0]); e.target.value = ""; }} />
         </div>
 
-        <TextInput ref={campo} label="Tu nombre" value={nombre} maxLength={30} autoComplete="off" onChange={(e) => { setNombre(e.target.value); setErrorNombre(undefined); }} error={errorNombre} placeholder="Por ejemplo, Sebastián" />
+        <TextInput ref={campo} label={t("Tu nombre")} value={nombre} maxLength={30} autoComplete="off" onChange={(e) => { setNombre(e.target.value); setErrorNombre(undefined); }} error={errorNombre} placeholder={t("Por ejemplo, Sebastián")} />
 
         {error && <InfoBar severity="error" title={error} />}
 
-        <p className="text-caption text-fg-tertiary">Tu nombre y tu foto se guardan solo en este equipo. No se envían a ningún servidor.</p>
+        <p className="text-caption text-fg-tertiary">{t("Tu nombre y tu foto se guardan solo en este equipo. No se envían a ningún servidor.")}</p>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
           {conSesion ? (
@@ -102,17 +104,17 @@ export function DialogoPerfil({ abierto, onCerrar }: { abierto: boolean; onCerra
                 onCerrar();
               }}
             >
-              Cerrar sesión
+              {t("Cerrar sesión")}
             </Button>
           ) : (
             <span />
           )}
           <div className="flex gap-2">
             <Button type="button" onClick={onCerrar}>
-              Cancelar
+              {t("Cancelar")}
             </Button>
             <Button type="submit" variant="accent">
-              {conSesion ? "Guardar" : "Entrar"}
+              {conSesion ? t("Guardar") : t("Entrar")}
             </Button>
           </div>
         </div>

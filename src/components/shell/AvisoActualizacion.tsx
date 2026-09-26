@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/fluent/Button";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -13,6 +14,7 @@ import { useActualizacionesStore } from "@/store/actualizaciones-store";
  * Si se pospone, no vuelve a salir hasta la próxima vez que se abra Nexo.
  */
 export function AvisoActualizacion() {
+  const t = useT();
   const { estado, version, progreso, pospuesta } = useActualizacionesStore();
   const instalar = useActualizacionesStore((s) => s.instalar);
   const reiniciar = useActualizacionesStore((s) => s.reiniciar);
@@ -35,27 +37,27 @@ export function AvisoActualizacion() {
               <Glifo nombre="actualizar" tam={14} />
             </span>
             <div className="min-w-0">
-              <p className="text-body font-semibold text-fg">{estado === "lista" ? "Actualización lista" : estado === "descargando" ? "Descargando la actualización…" : `Nexo ${version} está disponible`}</p>
+              <p className="text-body font-semibold text-fg">{estado === "lista" ? t("Actualización lista") : estado === "descargando" ? t("Descargando la actualización…") : t("Nexo {version} está disponible", { version: version ?? "" })}</p>
               <p className="text-caption text-fg-secondary">
-                {estado === "lista" ? "Reinicia Nexo para terminar. Tus datos se conservan." : estado === "descargando" ? "Puedes seguir usando Nexo mientras baja." : "Trae cosas nuevas y mejoras. Se instala en un momento y tus datos se conservan."}
+                {estado === "lista" ? t("Reinicia Nexo para terminar. Tus datos se conservan.") : estado === "descargando" ? t("Puedes seguir usando Nexo mientras baja.") : t("Trae cosas nuevas y mejoras. Se instala en un momento y tus datos se conservan.")}
               </p>
             </div>
           </div>
-          {estado === "descargando" && <ProgressBar value={progreso ?? 8} label="Progreso de la descarga" />}
+          {estado === "descargando" && <ProgressBar value={progreso ?? 8} label={t("Progreso de la descarga")} />}
           {estado === "disponible" && (
             <div className="flex justify-end gap-2">
               <Button variant="subtle" onClick={posponer}>
-                Más tarde
+                {t("Más tarde")}
               </Button>
               <Button variant="accent" onClick={() => void instalar()}>
-                Actualizar ahora
+                {t("Actualizar ahora")}
               </Button>
             </div>
           )}
           {estado === "lista" && (
             <div className="flex justify-end">
               <Button variant="accent" onClick={() => void reiniciar()}>
-                Reiniciar ahora
+                {t("Reiniciar ahora")}
               </Button>
             </div>
           )}

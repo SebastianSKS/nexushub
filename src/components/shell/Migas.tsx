@@ -1,3 +1,4 @@
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 
 export interface Miga {
@@ -13,13 +14,14 @@ export interface Miga {
  * abierto directamente.
  */
 export function Migas({ migas }: { migas: Miga[] }) {
+  const t = useT();
   return (
-    <nav aria-label="Ruta de navegación" className="flex h-8 items-center">
+    <nav aria-label={t("Ruta de navegación")} className="flex h-8 items-center">
       <ol className="flex min-w-0 items-center gap-1 text-body">
         {migas.map((m, i) => {
           const ultima = i === migas.length - 1;
           return (
-            <li key={`${m.etiqueta}-${i}`} className="flex min-w-0 items-center gap-1">
+            <li key={`${t(m.etiqueta)}-${i}`} className="flex min-w-0 items-center gap-1">
               {i > 0 && (
                 <span aria-hidden className="text-fg-tertiary">
                   ›
@@ -27,14 +29,14 @@ export function Migas({ migas }: { migas: Miga[] }) {
               )}
               {ultima || !m.href ? (
                 <span aria-current="page" className="truncate font-semibold text-fg">
-                  {m.etiqueta}
+                  {t(m.etiqueta)}
                 </span>
               ) : (
                 <Link
                   href={m.href}
                   className="rounded-input truncate px-1.5 py-0.5 text-fg-secondary transition-colors duration-exit ease-fluent hover:bg-layer hover:text-fg"
                 >
-                  {m.etiqueta}
+                  {t(m.etiqueta)}
                 </Link>
               )}
             </li>

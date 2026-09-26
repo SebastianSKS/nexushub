@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import type { PreferenciaIdioma } from "@/lib/i18n/nucleo";
+
 export type PreferenciaTema = "claro" | "oscuro" | "sistema";
 export type EfectoVentana = "mica" | "acrilico" | "ninguno";
 export type AlTerminar = "nada" | "descargar" | "abrir-carpeta";
@@ -37,6 +39,8 @@ export interface Ajustes {
   seccionInicial: SeccionInicial;
   /** Leer el texto de los PDF de tus carpetas de materias (en este equipo) para poder buscar dentro de ellos con Ctrl+K. */
   buscarEnPdfs: boolean;
+  /** El idioma de Nexo: «sistema» (el mismo que Windows), español o inglés. */
+  idioma: PreferenciaIdioma;
 }
 
 export const ACENTO_PREDETERMINADO = "#0078D4";
@@ -72,6 +76,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   resumenHora: 6,
   seccionInicial: "inicio",
   buscarEnPdfs: true,
+  idioma: "sistema",
 };
 
 export const CLAVE_AJUSTES = "nexushub-ajustes";
@@ -98,6 +103,7 @@ function leer(): Ajustes {
       resumenDia: d.resumenDia !== false,
       usarOffice: d.usarOffice !== false,
       buscarEnPdfs: d.buscarEnPdfs !== false,
+      idioma: d.idioma === "es" || d.idioma === "en" ? d.idioma : "sistema",
       preguntarDondeGuardar: d.preguntarDondeGuardar !== false,
       resumenHora: typeof d.resumenHora === "number" && Number.isInteger(d.resumenHora) && d.resumenHora >= 0 && d.resumenHora <= 13 ? d.resumenHora : 6,
       seccionInicial: d.seccionInicial === "ultima" || d.seccionInicial === "video" || d.seccionInicial === "musica" || d.seccionInicial === "documentos" || d.seccionInicial === "calendario" ? d.seccionInicial : "inicio",

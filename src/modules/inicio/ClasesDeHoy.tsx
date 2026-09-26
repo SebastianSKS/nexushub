@@ -1,5 +1,6 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import { useHorarioStore } from "@/store/horario-store";
 /** «Lo que sigue hoy»: las clases del día con la que está en curso y la que viene marcadas. */
 export function ClasesDeHoy() {
   const tr = useT();
+  const { hora } = useHora();
   const clases = useHorarioStore((s) => s.clases);
   // Null hasta montar en el navegador: la hora no puede calcularse al generar la página (ver PaginaInicio).
   const [ahora, setAhora] = useState<Date | null>(null);
@@ -65,7 +67,7 @@ export function ClasesDeHoy() {
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-body font-semibold text-fg">{clase.materia}</span>
                 <span className="block truncate text-caption text-fg-secondary">
-                  {clase.inicio} – {clase.fin}
+                  {hora(clase.inicio)} – {hora(clase.fin)}
                   {clase.aula && ` · ${tr("Aula {aula}", { aula: clase.aula })}`}
                   {clase.docente && ` · ${clase.docente}`}
                 </span>

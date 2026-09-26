@@ -1,5 +1,6 @@
 "use client";
 
+import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import clsx from "clsx";
 import { infoCategoria } from "@/lib/calendario/categorias";
@@ -22,6 +23,7 @@ interface Props {
 /** Agenda de la semana: un día por fila, con todo lo que cae ahí (cumpleaños y eventos, con su hora). */
 export function VistaSemana({ fechaBase, amigos, eventos, onSemana, onHoy, onDia, onAmigo, onEvento }: Props) {
   const t = useT();
+  const { hora } = useHora();
   const hoy = inicioDelDia(new Date());
   const dias = diasDeLaSemana(fechaBase);
   const esEstaSemana = dias.some((d) => d.getTime() === hoy.getTime());
@@ -82,7 +84,7 @@ export function VistaSemana({ fechaBase, amigos, eventos, onSemana, onHoy, onDia
                               {t(infoCategoria((it.ref as Evento).categoria).nombre)}
                             </span>
                           )}
-                          {it.hora && <span className="shrink-0 text-caption text-fg-secondary">{it.hora}</span>}
+                          {it.hora && <span className="shrink-0 text-caption text-fg-secondary">{hora(it.hora)}</span>}
                         </button>
                       </li>
                     ))}

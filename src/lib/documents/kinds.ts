@@ -1,4 +1,5 @@
 import type { InputKind } from "@/types/documents";
+import { T } from "@/lib/i18n";
 import { extensionOf } from "./format";
 
 /** Extensiones que el usuario puede soltar, agrupadas por familia. */
@@ -23,7 +24,7 @@ export const KIND_LABEL: Record<InputKind, string> = {
   excel: "Excel",
   powerpoint: "PowerPoint",
   pdf: "PDF",
-  image: "Imagen",
+  image: T("Imagen"),
 };
 
 export const KIND_EXTENSIONS: Record<InputKind, string[]> = {

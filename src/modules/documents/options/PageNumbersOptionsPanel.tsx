@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { Switch } from "@/components/fluent/Switch";
 import { TextInput } from "@/components/fluent/TextInput";
@@ -7,6 +8,7 @@ import { useDocumentsStore } from "@/store/documents-store";
 import type { NumberPosition } from "@/types/documents";
 
 export function PageNumbersOptionsPanel() {
+  const t = useT();
   const o = useDocumentsStore((s) => s.options.pageNumbers);
   const setOption = useDocumentsStore((s) => s.setOption);
   const cambiar = (parcial: Partial<typeof o>) => setOption("pageNumbers", { ...useDocumentsStore.getState().options.pageNumbers, ...parcial });
@@ -15,37 +17,37 @@ export function PageNumbersOptionsPanel() {
   return (
     <div className="flex flex-col gap-3">
       <SegmentedControl
-        label="Lugar"
+        label={t("Lugar")}
         value={vertical}
         options={[
-          { value: "bottom", label: "Abajo" },
-          { value: "top", label: "Arriba" },
+          { value: "bottom", label: t("Abajo") },
+          { value: "top", label: t("Arriba") },
         ]}
         onChange={(v) => poner(v, horizontal)}
       />
       <SegmentedControl
-        label="Alineación"
+        label={t("Alineación")}
         etiquetaVisible={false}
         value={horizontal}
         options={[
-          { value: "left", label: "Izquierda" },
-          { value: "center", label: "Centro" },
-          { value: "right", label: "Derecha" },
+          { value: "left", label: t("Izquierda") },
+          { value: "center", label: t("Centro") },
+          { value: "right", label: t("Derecha") },
         ]}
         onChange={(h) => poner(vertical, h)}
       />
       <SegmentedControl
-        label="Formato"
+        label={t("Formato")}
         value={o.format}
         options={[
           { value: "n", label: "3" },
-          { value: "of-total", label: "3 de 12" },
-          { value: "page", label: "Página 3" },
+          { value: "of-total", label: t("3 de 12") },
+          { value: "page", label: t("Página 3") },
         ]}
         onChange={(format) => cambiar({ format })}
       />
       <TextInput
-        label="Empezar a contar desde"
+        label={t("Empezar a contar desde")}
         type="number"
         inputMode="numeric"
         min={0}
@@ -54,8 +56,8 @@ export function PageNumbersOptionsPanel() {
         onChange={(e) => cambiar({ start: e.target.value === "" ? 1 : Number(e.target.value) })}
       />
       <div className="flex items-center justify-between gap-3">
-        <span className="text-body text-fg-secondary">No numerar la primera página (portada)</span>
-        <Switch label="No numerar la primera página" checked={o.skipFirst} onChange={(skipFirst) => cambiar({ skipFirst })} />
+        <span className="text-body text-fg-secondary">{t("No numerar la primera página (portada)")}</span>
+        <Switch label={t("No numerar la primera página")} checked={o.skipFirst} onChange={(skipFirst) => cambiar({ skipFirst })} />
       </div>
     </div>
   );

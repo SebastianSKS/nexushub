@@ -1,11 +1,13 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { TextInput } from "@/components/fluent/TextInput";
 import { parseRanges, rangesToPages } from "@/lib/documents/ranges";
 import { useDocumentsStore } from "@/store/documents-store";
 
 export function SplitOptionsPanel() {
+  const t = useT();
   const o = useDocumentsStore((s) => s.options.split);
   const pageCount = useDocumentsStore((s) => s.pageCount);
   const setOption = useDocumentsStore((s) => s.setOption);
@@ -16,9 +18,9 @@ export function SplitOptionsPanel() {
   return (
     <div className="flex flex-col gap-4">
       <TextInput
-        label="Páginas o rangos"
+        label={t("Páginas o rangos")}
         value={o.ranges}
-        placeholder="Ej. 1-3, 5, 7-9"
+        placeholder={t("Ej. 1-3, 5, 7-9")}
         error={parsed?.error}
         hint={
           selectedCount > 0
@@ -30,11 +32,11 @@ export function SplitOptionsPanel() {
         spellCheck={false}
       />
       <SegmentedControl
-        label="Resultado"
+        label={t("Resultado")}
         value={o.mode}
         options={[
-          { value: "single", label: "Un solo PDF" },
-          { value: "separate", label: "Uno por rango" },
+          { value: "single", label: t("Un solo PDF") },
+          { value: "separate", label: t("Uno por rango") },
         ]}
         onChange={(mode) => setOption("split", { ...o, mode })}
       />

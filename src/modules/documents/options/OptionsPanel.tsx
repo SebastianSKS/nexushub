@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { Card } from "@/components/fluent/Card";
 import type { ToolId } from "@/types/documents";
 import { CompressOptionsPanel } from "./CompressOptionsPanel";
@@ -17,6 +18,7 @@ import { UnlockOptionsPanel } from "./UnlockOptionsPanel";
 
 /** Panel de opciones de la herramienta activa; las conversiones simples no tienen opciones. */
 export function OptionsPanel({ toolId }: { toolId: ToolId }) {
+  const t = useT();
   let body: React.ReactNode = null;
   switch (toolId) {
     case "compress":
@@ -60,7 +62,7 @@ export function OptionsPanel({ toolId }: { toolId: ToolId }) {
   }
   return (
     <Card className="p-4">
-      <h3 className="mb-3 text-body font-semibold text-fg">Opciones</h3>
+      <h3 className="mb-3 text-body font-semibold text-fg">{t("Opciones")}</h3>
       {body}
     </Card>
   );

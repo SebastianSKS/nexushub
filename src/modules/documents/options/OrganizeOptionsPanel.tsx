@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import { ArrowReset20Regular, ArrowDown20Regular, ArrowUp20Regular, Delete20Regular } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
 import { useDocumentsStore } from "@/store/documents-store";
@@ -18,6 +19,7 @@ export function moverSeleccion(orden: readonly number[], elegidas: ReadonlySet<n
 }
 
 export function OrganizeOptionsPanel() {
+  const t = useT();
   const order = useDocumentsStore((s) => s.options.organize.order);
   const selected = useDocumentsStore((s) => s.selectedPages);
   const pageCount = useDocumentsStore((s) => s.pageCount);
@@ -40,23 +42,23 @@ export function OrganizeOptionsPanel() {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-body text-fg-secondary">{hay ? (selected.length === 1 ? "Página seleccionada." : `${selected.length} páginas seleccionadas.`) : "Elige páginas en las miniaturas para moverlas o quitarlas."}</p>
+      <p className="text-body text-fg-secondary">{hay ? (selected.length === 1 ? t("Página seleccionada.") : t("{n} páginas seleccionadas.", { n: selected.length })) : t("Elige páginas en las miniaturas para moverlas o quitarlas.")}</p>
       <div className="grid grid-cols-2 gap-2">
         <Button onClick={() => poner(moverSeleccion(order, elegidas, -1))} disabled={!hay} icon={<ArrowUp20Regular />}>
-          Antes
+          {t("Antes")}
         </Button>
         <Button onClick={() => poner(moverSeleccion(order, elegidas, 1))} disabled={!hay} icon={<ArrowDown20Regular />}>
-          Después
+          {t("Después")}
         </Button>
         <Button onClick={() => alBorde(true)} disabled={!hay}>
-          Al principio
+          {t("Al principio")}
         </Button>
         <Button onClick={() => alBorde(false)} disabled={!hay}>
-          Al final
+          {t("Al final")}
         </Button>
       </div>
       <Button onClick={quitar} disabled={!hay || order.length - selected.filter((p) => order.includes(p)).length < 1} icon={<Delete20Regular />}>
-        Eliminar seleccionadas
+        {t("Eliminar seleccionadas")}
       </Button>
       <Button
         variant="subtle"
@@ -67,9 +69,9 @@ export function OrganizeOptionsPanel() {
         disabled={!pageCount}
         icon={<ArrowReset20Regular />}
       >
-        Restablecer
+        {t("Restablecer")}
       </Button>
-      <p className="text-caption text-fg-tertiary">Tu archivo original no cambia: se guarda una copia con el nuevo orden.</p>
+      <p className="text-caption text-fg-tertiary">{t("Tu archivo original no cambia: se guarda una copia con el nuevo orden.")}</p>
     </div>
   );
 }

@@ -208,9 +208,9 @@ export function buscarContenido(query: string, ir: (ruta: string) => void): Comm
     .forEach((a) => salida.push({ id: `acceso-${a.id}`, group: traducir("Accesos directos"), label: a.nombre, hint: a.app ? traducir("Programa: {nombre}", { nombre: a.app.nombre }) : a.url, keywords: [], icon: "externo", color: a.color, run: () => void abrirAcceso(a) }));
 
   // Herramientas de Documentos.
-  TOOLS.filter((t) => coincide(terminos, t.name, t.description, t.action))
+  TOOLS.filter((t) => coincide(terminos, t.name, t.description, t.action, traducir(t.name), traducir(t.description), traducir(t.action)))
     .slice(0, POR_GRUPO)
-    .forEach((t) => salida.push({ id: `tool-${t.id}`, group: "Documentos", label: t.name, hint: t.description, keywords: [], icon: "documentos", run: () => ir(rutaHerramienta(t.id)) }));
+    .forEach((t) => salida.push({ id: `tool-${t.id}`, group: traducir("Documentos"), label: traducir(t.name), hint: traducir(t.description), keywords: [], icon: "documentos", run: () => ir(rutaHerramienta(t.id)) }));
 
   return salida;
 }

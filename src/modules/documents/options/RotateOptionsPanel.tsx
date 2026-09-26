@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
 import {
   ArrowReset20Regular,
   ArrowRotateClockwise20Regular,
@@ -19,6 +20,7 @@ function addRotation(current: RotateOptions["rotations"], page: number, delta: n
 }
 
 export function RotateOptionsPanel() {
+  const t = useT();
   const rotations = useDocumentsStore((s) => s.options.rotate.rotations);
   const selected = useDocumentsStore((s) => s.selectedPages);
   const pageCount = useDocumentsStore((s) => s.pageCount);
@@ -44,10 +46,10 @@ export function RotateOptionsPanel() {
       </p>
       <div className="grid grid-cols-2 gap-2">
         <Button onClick={() => rotate(270)} disabled={targets.length === 0} icon={<ArrowRotateCounterclockwise20Regular />}>
-          Izquierda
+          {t("Izquierda")}
         </Button>
         <Button onClick={() => rotate(90)} disabled={targets.length === 0} icon={<ArrowRotateClockwise20Regular />}>
-          Derecha
+          {t("Derecha")}
         </Button>
       </div>
       <Button onClick={() => rotate(180)} disabled={targets.length === 0}>
@@ -59,7 +61,7 @@ export function RotateOptionsPanel() {
         disabled={rotatedCount === 0}
         icon={<ArrowReset20Regular />}
       >
-        Restablecer giros
+        {t("Restablecer giros")}
       </Button>
       <p className="text-caption text-fg-tertiary">
         {rotatedCount === 0

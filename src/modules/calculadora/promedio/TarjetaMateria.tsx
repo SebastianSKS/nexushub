@@ -53,7 +53,7 @@ export function TarjetaMateria({ materia, escala }: { materia: Materia; escala: 
 
       <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
         <p className="text-body text-fg">
-          {parcial === null ? t("Todavía no hay calificaciones.") : t("Vas en {n}", { n: escribirNumero(parcial) })}
+          {parcial === null ? t("Todavía no hay calificaciones.") : t("Vas en {n}", { n: escribirNumero(parcial, 2) })}
         </p>
         <label className="ml-auto flex items-center gap-2 text-caption text-fg-secondary">
           {t("Créditos")}

@@ -34,6 +34,9 @@ Both sections use YouTube and Spotify and need internet. If your browser or anti
 **A Word, Excel or PowerPoint conversion isn't what I expected.**
 If you have Microsoft Office installed, Nexo uses it so the result matches saving from Office (you can turn it off in Settings › Documents). Without Office it uses its own engine, which covers the usual cases; each result tells you what isn't preserved.
 
+**Can I send my schedule to a classmate?**
+Yes. In *Schedule* press **Share**: you save your schedule to a file or copy a short code to paste into a message. Your classmate opens *Share* in their Nexo, pastes the code (or chooses the file) and adds it to their schedule or replaces it. Only the schedule travels: nothing from your profile, calendar or notes.
+
 **How do I keep track of my average?**
 In *Calculator* there's an **Average** tab. Add your subjects (or bring them in from your schedule), enter how much each assessment is worth and the grade you already got. Nexo tells you how you're doing in each subject and how much you need on what's left to pass. Choose your school's scale (0 to 10 or 0 to 100) and the passing mark. Everything is kept on your computer and included in the backup.
 

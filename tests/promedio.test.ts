@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -36,5 +36,14 @@ describe("pesoEvaluado y pesoPendiente", () => {
   it("con todo calificado no falta nada, y nunca sale negativo", () => {
     assert.equal(pesoPendiente([ev(60, 7), ev(40, 9)]), 0);
     assert.equal(pesoPendiente([ev(70, 7), ev(50, 9)]), 0);
+  });
+});
+
+describe("puntosGanados", () => {
+  it("cada calificación cuenta por su peso", () => {
+    assert.equal(redondear(puntosGanados([ev(30, 8), ev(20, 10)]), 2), 4.4);
+  });
+  it("lo que no está calificado no suma", () => {
+    assert.equal(puntosGanados([ev(50, null)]), 0);
   });
 });

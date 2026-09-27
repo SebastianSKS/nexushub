@@ -38,3 +38,8 @@ export function pesoEvaluado(evaluaciones: readonly Evaluacion[]): number {
 export function pesoPendiente(evaluaciones: readonly Evaluacion[]): number {
   return Math.max(0, 100 - pesoEvaluado(evaluaciones));
 }
+
+/** Lo que ya sumaste en la escala de la materia: cada calificación por su peso (8 en un 30 % suma 2.4). */
+export function puntosGanados(evaluaciones: readonly Evaluacion[]): number {
+  return evaluaciones.reduce((s, e) => (e.calificacion === null ? s : s + (e.calificacion * e.peso) / 100), 0);
+}

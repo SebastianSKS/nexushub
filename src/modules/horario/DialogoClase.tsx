@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsejosStore } from "@/store/consejos-store";
 import { useT } from "@/lib/i18n";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import clsx from "clsx";
@@ -57,6 +58,7 @@ export function DialogoClase({ abierto, inicial, onCerrar }: { abierto: boolean;
     if (!PATRON_HORA.test(inicio) || !PATRON_HORA.test(fin)) return setError(t("Elige la hora de inicio y la de fin."));
     if (aMinutos(fin) <= aMinutos(inicio)) return setError(t("La clase debe terminar después de empezar."));
     useHorarioStore.getState().guardarClase({ id: inicial?.id, materia: materia.trim(), codigo: codigo.trim(), docente: docente.trim(), aula: aula.trim(), dia, inicio, fin, color });
+    useConsejosStore.getState().ofrecer("primera-clase");
     onCerrar();
   };
 

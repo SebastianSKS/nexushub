@@ -1,3 +1,4 @@
+import { useConsejosStore } from "@/store/consejos-store";
 import { notificarSistema } from "@/lib/notificar";
 import { traducir } from "@/lib/i18n";
 import { rutaHerramienta } from "@/lib/rutas";
@@ -96,6 +97,7 @@ export async function startRun(): Promise<void> {
     // Solo en desarrollo: deja el último resultado a mano para inspeccionarlo desde la consola.
     if (process.env.NODE_ENV !== "production") (window as unknown as { __resultadoDocs?: unknown }).__resultadoDocs = outcome;
     store.finishRun(outcome.results, outcome.warnings);
+    if (outcome.results.length > 0) useConsejosStore.getState().ofrecer("primer-resultado");
     // Ajuste «Al terminar una conversión → Descargar solo»: un archivo se guarda tal cual; varios, en un ZIP.
     if (useAjustesStore.getState().alTerminar === "descargar" && outcome.results.length > 0) {
       try {

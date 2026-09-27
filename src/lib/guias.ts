@@ -113,6 +113,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "reloj", titulo: T("Tus clases de la semana"), texto: T("Ve tus clases de cada día, con su aula y su docente. Nexo te avisa unos minutos antes de cada una.") },
       { glifo: "camara", titulo: T("Escanéalo en vez de escribirlo"), texto: T("Si te mandaron el horario como imagen, pulsa «Escanear imagen» y se llena solo; revisa y corrige lo que haga falta. También puedes usar «Añadir clase» a mano.") },
       { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Con tu horario, Nexo puede crear las carpetas de tus materias en Mis tareas para que guardes ahí tus trabajos.") },
+      { glifo: "compartir", titulo: T("Compártelo con un compañero"), texto: T("Con «Compartir» guardas tu horario en un archivo o copias un código para pegarlo en un mensaje. Tu compañero lo importa y no tiene que escanearlo ni escribirlo.") },
     ],
   },
   calculadora: {

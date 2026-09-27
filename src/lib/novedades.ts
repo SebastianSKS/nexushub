@@ -21,6 +21,14 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.2.2",
+    novedades: [
+      { glifo: "reloj", titulo: T("Tu día de un vistazo"), texto: T("En Inicio, una tarjeta con la clase que sigue (y cuánto falta), lo que entregas esta semana y lo pendiente de tus notas.") },
+      { glifo: "energia", titulo: T("Modo de bajo consumo"), texto: T("Si tu computadora es modesta, Nexo se pone más ligero solo: sin transparencia, menos animaciones y la búsqueda en archivos más pausada. Se puede cambiar en Configuración.") },
+      { glifo: "actualizar", titulo: T("Abre más rápido"), texto: T("Nexo carga menos cosas al arrancar y descansa cuando la ventana está en la bandeja.") },
+    ],
+  },
+  {
     version: "0.2.1",
     novedades: [
       { glifo: "exito", titulo: T("Primeros pasos en Inicio"), texto: T("Una lista corta (tu nombre, tu horario, las carpetas de tus materias, un examen y la búsqueda) que se marca sola. Se puede ocultar y no se mete con las guías.") },

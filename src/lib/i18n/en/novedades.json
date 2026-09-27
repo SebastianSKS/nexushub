@@ -39,5 +39,11 @@
   "Pantallas vacías que enseñan": "Empty screens that teach",
   "Si el Horario, el Calendario, Mis tareas o Video todavía no tienen nada, ahora te explican cómo empezar en tres pasos, con el botón listo.": "If Schedule, Calendar, My assignments or Video don't have anything yet, they now explain how to start in three steps, with the button ready.",
   "Consejos justo a tiempo": "Tips just in time",
-  "La primera vez que guardas una clase, un evento con hora o una carpeta, un aviso breve te cuenta qué pasa a continuación. Se pueden apagar en Configuración.": "The first time you save a class, an event with a time or a folder, a short notice tells you what happens next. They can be turned off in Settings."
+  "La primera vez que guardas una clase, un evento con hora o una carpeta, un aviso breve te cuenta qué pasa a continuación. Se pueden apagar en Configuración.": "The first time you save a class, an event with a time or a folder, a short notice tells you what happens next. They can be turned off in Settings.",
+  "Tu día de un vistazo": "Your day at a glance",
+  "En Inicio, una tarjeta con la clase que sigue (y cuánto falta), lo que entregas esta semana y lo pendiente de tus notas.": "On Home, a card with your next class (and how long until it starts), what's due this week and what's pending in your notes.",
+  "Modo de bajo consumo": "Low-power mode",
+  "Si tu computadora es modesta, Nexo se pone más ligero solo: sin transparencia, menos animaciones y la búsqueda en archivos más pausada. Se puede cambiar en Configuración.": "If your computer is modest, Nexo lightens up on its own: no transparency, fewer animations and a gentler file search. You can change it in Settings.",
+  "Abre más rápido": "Opens faster",
+  "Nexo carga menos cosas al arrancar y descansa cuando la ventana está en la bandeja.": "Nexo loads less at startup and rests while the window is in the tray."
 }

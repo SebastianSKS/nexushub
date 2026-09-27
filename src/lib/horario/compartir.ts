@@ -101,3 +101,49 @@ export function fusionarClases(actuales: readonly Clase[], nuevas: readonly Clas
   }
   return { clases: [...actuales, ...agregadas], agregadas: agregadas.length, repetidas };
 }
+
+/** Todo código de horario empieza así (la «1» es la versión del formato). */
+export const PREFIJO_CODIGO = "NEXO-H1:";
+
+function aBase64Url(texto: string): string {
+  let binario = "";
+  for (const b of new TextEncoder().encode(texto)) binario += String.fromCharCode(b);
+  return btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function deBase64Url(b64: string): string {
+  const normal = b64.replace(/-/g, "+").replace(/_/g, "/");
+  const binario = atob(normal + "=".repeat((4 - (normal.length % 4)) % 4));
+  return new TextDecoder("utf-8", { fatal: true }).decode(Uint8Array.from(binario, (c) => c.charCodeAt(0)));
+}
+
+/** El horario como un texto corto para pegar en un mensaje: «NEXO-H1:» y las clases en filas, en base64. */
+export function codigoDeHorario(clases: readonly Clase[]): string {
+  const filas = clases.map((c) => [c.materia, c.codigo, c.docente, c.aula, c.dia, c.inicio, c.fin, c.color]);
+  return PREFIJO_CODIGO + aBase64Url(JSON.stringify(filas));
+}
+
+/** Lee un código de horario (aunque venga con saltos de línea o espacios de más, como lo parte un mensaje). */
+export function leerCodigoDeHorario(codigo: string, nuevoId: () => string): LecturaHorario {
+  const limpio = codigo.replace(/\s+/g, "");
+  if (!limpio.startsWith(PREFIJO_CODIGO)) return { ok: false, motivo: T("Ese texto no es un código de horario de Nexo.") };
+  if (limpio.length > MAX_BYTES_HORARIO) return { ok: false, motivo: T("El código es demasiado largo para ser un horario de Nexo.") };
+  let filas: unknown;
+  try {
+    filas = JSON.parse(deBase64Url(limpio.slice(PREFIJO_CODIGO.length)));
+  } catch {
+    return { ok: false, motivo: T("El código está incompleto o dañado. Cópialo de nuevo, completo.") };
+  }
+  if (!Array.isArray(filas)) return { ok: false, motivo: T("El código está incompleto o dañado. Cópialo de nuevo, completo.") };
+  const clases: Clase[] = [];
+  let descartadas = 0;
+  for (const f of filas.slice(0, MAX_CLASES_HORARIO)) {
+    const a = Array.isArray(f) ? f : [];
+    const c = claseValida({ id: nuevoId(), materia: a[0], codigo: a[1], docente: a[2], aula: a[3], dia: a[4], inicio: a[5], fin: a[6], color: a[7] });
+    if (c) clases.push(c);
+    else descartadas++;
+  }
+  descartadas += Math.max(0, filas.length - MAX_CLASES_HORARIO);
+  if (clases.length === 0) return { ok: false, motivo: T("El horario del código no trae ninguna clase válida.") };
+  return { ok: true, clases, descartadas };
+}

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { Clase } from "../src/lib/horario/horario.ts";
-import { crearHorarioCompartido, FORMATO_HORARIO, fusionarClases, leerHorarioCompartido, MAX_BYTES_HORARIO, MAX_CLASES_HORARIO, nombreDeArchivoHorario, textoDeHorario, VERSION_HORARIO } from "../src/lib/horario/compartir.ts";
+import { codigoDeHorario, crearHorarioCompartido, FORMATO_HORARIO, fusionarClases, leerCodigoDeHorario, PREFIJO_CODIGO, leerHorarioCompartido, MAX_BYTES_HORARIO, MAX_CLASES_HORARIO, nombreDeArchivoHorario, textoDeHorario, VERSION_HORARIO } from "../src/lib/horario/compartir.ts";
 
 const clase = (p: Partial<Clase> = {}): Clase => ({ id: "c1", materia: "Cálculo", codigo: "MAT-1010", docente: "Dra. Ríos", aula: "A-12", dia: 0, inicio: "08:00", fin: "09:40", color: "#4f8cff", ...p });
 const ahora = new Date(2026, 8, 27, 10, 30);
@@ -120,5 +120,53 @@ describe("fusionarClases", () => {
     const actuales = [mia];
     fusionarClases(actuales, [clase()], "anadir");
     assert.equal(actuales.length, 1);
+  });
+});
+
+describe("código de horario", () => {
+  const varias = [clase(), clase({ id: "c2", materia: "Programación", dia: 2, inicio: "10:00", fin: "11:40", color: "#2ec4a6" }), clase({ id: "c3", materia: "Inglés técnico ñ", docente: "Mtra. Cruz", dia: 4 })];
+  const sinId = (c: Clase) => {
+    const { id, ...resto } = c;
+    void id;
+    return resto;
+  };
+
+  it("empieza con el prefijo y solo lleva letras seguras para un mensaje", () => {
+    const c = codigoDeHorario(varias);
+    assert.ok(c.startsWith(PREFIJO_CODIGO));
+    assert.match(c.slice(PREFIJO_CODIGO.length), /^[A-Za-z0-9_-]+$/);
+  });
+  it("ida y vuelta: las clases (con acentos y ñ) vuelven iguales, con ids nuevos", () => {
+    const r = leerCodigoDeHorario(codigoDeHorario(varias), ids());
+    assert.equal(r.ok, true);
+    if (r.ok) {
+      assert.deepEqual(r.clases.map(sinId), varias.map(sinId));
+      assert.deepEqual(r.clases.map((c) => c.id), ["nuevo1", "nuevo2", "nuevo3"]);
+    }
+  });
+  it("tolera saltos de línea y espacios que meten los mensajes", () => {
+    const c = codigoDeHorario(varias);
+    const partido = c.slice(0, 20) + "\n  " + c.slice(20, 40) + " \r\n" + c.slice(40);
+    assert.equal(leerCodigoDeHorario(partido, ids()).ok, true);
+  });
+  it("un texto cualquiera no es un código", () => {
+    const r = leerCodigoDeHorario("hola, este es mi horario", ids());
+    assert.equal(!r.ok && r.motivo, "Ese texto no es un código de horario de Nexo.");
+  });
+  it("un código cortado o dañado da un motivo claro", () => {
+    const c = codigoDeHorario(varias);
+    for (const malo of [c.slice(0, 30), PREFIJO_CODIGO + "###", PREFIJO_CODIGO + "e30"]) {
+      assert.equal(leerCodigoDeHorario(malo, ids()).ok, false, malo);
+    }
+  });
+  it("las filas dañadas se descartan y las buenas se conservan", () => {
+    const filas = [["Álgebra", "", "", "", 0, "08:00", "09:00", "#111111"], ["mal"], [null], ["Otra", "", "", "", 9, "08:00", "09:00", "#111111"]];
+    const codigo = PREFIJO_CODIGO + Buffer.from(JSON.stringify(filas)).toString("base64url");
+    const r = leerCodigoDeHorario(codigo, ids());
+    assert.equal(r.ok && r.clases.length, 1);
+    assert.equal(r.ok && r.descartadas, 3);
+  });
+  it("un horario vacío da un código que no se puede importar", () => {
+    assert.equal(leerCodigoDeHorario(codigoDeHorario([]), ids()).ok, false);
   });
 });

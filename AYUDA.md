@@ -34,6 +34,9 @@ Ambas secciones usan YouTube y Spotify y necesitan internet. Si tu navegador o t
 **No convierte un Word, Excel o PowerPoint como esperaba.**
 Si tienes Microsoft Office instalado, Nexo lo usa para que el resultado salga igual que guardarlo desde Office (se puede apagar en Configuración › Documentos). Sin Office usa su propio motor, que cubre lo habitual; en cada resultado te avisa qué cosas no se conservan.
 
+**¿Puedo pasarle mi horario a un compañero?**
+Sí. En *Horario* pulsa **Compartir**: guardas tu horario en un archivo o copias un código corto para pegarlo en un mensaje. Tu compañero abre *Compartir* en su Nexo, pega el código (o elige el archivo) y lo añade a su horario o lo reemplaza. Solo viaja el horario: nada de tu perfil, tu calendario ni tus notas.
+
 **¿Cómo llevo mi promedio?**
 En *Calculadora* hay una pestaña **Promedio**. Añade tus materias (o tráelas desde tu horario), pon cuánto vale cada evaluación y la calificación que ya sacaste. Nexo te dice cómo vas en cada materia y cuánto necesitas sacar en lo que falta para aprobar. Elige la escala de tu escuela (0 a 10 o 0 a 100) y con cuánto se aprueba. Todo se guarda en tu computadora y entra en la copia de seguridad.
 

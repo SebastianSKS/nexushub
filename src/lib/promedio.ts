@@ -139,3 +139,65 @@ export function evaluacionesIniciales(nuevoId: () => string, nombres: readonly [
   const pesos = [30, 30, 20, 20];
   return nombres.map((nombre, i) => ({ id: nuevoId(), nombre, peso: pesos[i]!, calificacion: null }));
 }
+
+/** Lo que se guarda en el equipo. */
+export interface DatosPromedio {
+  escala: Escala;
+  materias: Materia[];
+}
+
+export const MAX_MATERIAS = 40;
+export const MAX_EVALUACIONES = 20;
+
+const numero = (x: unknown): number | null => (typeof x === "number" && Number.isFinite(x) ? x : null);
+const acotar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+
+/**
+ * Lee lo guardado (cualquier cosa: un archivo dañado, una versión vieja, un valor cambiado a mano) y deja solo datos válidos:
+ * nombres cortos, pesos entre 0 y 100, calificaciones dentro de la escala, sin ids repetidos y con un máximo razonable de
+ * materias y evaluaciones. Lo que no se entiende se descarta en vez de romper la pantalla.
+ */
+export function normalizarPromedio(crudo: unknown): DatosPromedio {
+  const raiz = (crudo && typeof crudo === "object" ? crudo : {}) as Record<string, unknown>;
+  const e = (raiz.escala && typeof raiz.escala === "object" ? raiz.escala : {}) as Record<string, unknown>;
+  const maximo = acotar(numero(e.maximo) ?? ESCALA_DIEZ.maximo, 1, 1000);
+  const escala: Escala = { maximo, minimoAprobatorio: acotar(numero(e.minimoAprobatorio) ?? (maximo === 100 ? 70 : 6), 0, maximo) };
+
+  const ids = new Set<string>();
+  const unico = (id: unknown, respaldo: string): string => {
+    let candidato = typeof id === "string" && id.trim() ? id.trim().slice(0, 40) : respaldo;
+    while (ids.has(candidato)) candidato += "_";
+    ids.add(candidato);
+    return candidato;
+  };
+
+  const materias: Materia[] = [];
+  for (const m of Array.isArray(raiz.materias) ? raiz.materias : []) {
+    if (materias.length >= MAX_MATERIAS) break;
+    if (!m || typeof m !== "object") continue;
+    const mm = m as Record<string, unknown>;
+    if (typeof mm.nombre !== "string" || !mm.nombre.trim()) continue;
+    const evaluaciones: Evaluacion[] = [];
+    for (const ev of Array.isArray(mm.evaluaciones) ? mm.evaluaciones : []) {
+      if (evaluaciones.length >= MAX_EVALUACIONES) break;
+      if (!ev || typeof ev !== "object") continue;
+      const x = ev as Record<string, unknown>;
+      const peso = numero(x.peso);
+      if (peso === null) continue;
+      const cal = numero(x.calificacion);
+      evaluaciones.push({
+        id: unico(x.id, `e${ids.size}`),
+        nombre: typeof x.nombre === "string" ? x.nombre.slice(0, 60) : "",
+        peso: acotar(peso, 0, 100),
+        calificacion: cal === null ? null : acotar(cal, 0, escala.maximo),
+      });
+    }
+    materias.push({
+      id: unico(mm.id, `m${materias.length}`),
+      nombre: mm.nombre.trim().slice(0, 60),
+      creditos: acotar(numero(mm.creditos) ?? 1, 1, 20),
+      evaluaciones,
+    });
+  }
+  return { escala, materias };
+}

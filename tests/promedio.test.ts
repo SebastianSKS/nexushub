@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calificacionFinal, evaluacionesIniciales, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { MAX_EVALUACIONES, MAX_MATERIAS, normalizarPromedio, calificacionFinal, evaluacionesIniciales, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -174,5 +174,45 @@ describe("evaluacionesIniciales", () => {
     assert.equal(lista.reduce((s, e) => s + e.peso, 0), 100);
     assert.ok(lista.every((e) => e.calificacion === null));
     assert.equal(new Set(lista.map((e) => e.id)).size, 4);
+  });
+});
+
+describe("normalizarPromedio", () => {
+  it("cualquier cosa se convierte en datos válidos (escala de 10 y sin materias)", () => {
+    for (const malo of [null, undefined, "x", 5, [], { materias: 3 }]) {
+      const d = normalizarPromedio(malo);
+      assert.deepEqual(d.escala, ESCALA_DIEZ);
+      assert.deepEqual(d.materias, []);
+    }
+  });
+  it("conserva lo válido", () => {
+    const d = normalizarPromedio({ escala: ESCALA_CIEN, materias: [{ id: "a", nombre: "Cálculo", creditos: 5, evaluaciones: [{ id: "e1", nombre: "Parcial", peso: 40, calificacion: 85 }] }] });
+    assert.equal(d.escala.maximo, 100);
+    assert.equal(d.materias[0]!.evaluaciones[0]!.calificacion, 85);
+    assert.equal(d.materias[0]!.creditos, 5);
+  });
+  it("acota pesos y calificaciones, y descarta lo que no sirve", () => {
+    const d = normalizarPromedio({ materias: [
+      { nombre: "  Física  ", evaluaciones: [{ peso: 150, calificacion: 14 }, { peso: "x" }, null, { peso: -5, calificacion: -2 }] },
+      { nombre: "" },
+      "basura",
+    ] });
+    assert.equal(d.materias.length, 1);
+    assert.equal(d.materias[0]!.nombre, "Física");
+    assert.deepEqual(d.materias[0]!.evaluaciones.map((e) => [e.peso, e.calificacion]), [[100, 10], [0, 0]]);
+  });
+  it("los ids no se repiten", () => {
+    const d = normalizarPromedio({ materias: [{ id: "a", nombre: "A" }, { id: "a", nombre: "B" }] });
+    assert.notEqual(d.materias[0]!.id, d.materias[1]!.id);
+  });
+  it("respeta los máximos de materias y evaluaciones", () => {
+    const muchas = Array.from({ length: 100 }, (_, i) => ({ nombre: `M${i}`, evaluaciones: Array.from({ length: 50 }, () => ({ peso: 1 })) }));
+    const d = normalizarPromedio({ materias: muchas });
+    assert.equal(d.materias.length, MAX_MATERIAS);
+    assert.equal(d.materias[0]!.evaluaciones.length, MAX_EVALUACIONES);
+  });
+  it("el mínimo aprobatorio nunca pasa del máximo, y sin dato se adapta a la escala", () => {
+    assert.equal(normalizarPromedio({ escala: { maximo: 10, minimoAprobatorio: 50 } }).escala.minimoAprobatorio, 10);
+    assert.equal(normalizarPromedio({ escala: { maximo: 100 } }).escala.minimoAprobatorio, 70);
   });
 });

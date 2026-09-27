@@ -55,6 +55,7 @@ export const GLIFOS = {
   campana: 0xea8f,
   regalo: 0xe719,
   reloj: 0xe823,
+  compartir: 0xe72d,
   calculadora: 0xe8ef,
   tarea: 0xe73a,
   examen: 0xe7be,

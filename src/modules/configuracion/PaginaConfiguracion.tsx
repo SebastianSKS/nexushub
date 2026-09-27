@@ -1,5 +1,6 @@
 "use client";
 
+import { AjusteBajoConsumo } from "./AjusteBajoConsumo";
 import { AjusteConsejos } from "./AjusteConsejos";
 import { AjustePrimerosPasos } from "./AjustePrimerosPasos";
 import { AjusteAyuda } from "./AjusteAyuda";
@@ -146,6 +147,7 @@ export function PaginaConfiguracion() {
                 </div>
               </TarjetaAjuste>
               <AjusteZoomInterfaz />
+              <AjusteBajoConsumo />
               <AjusteMovimiento />
               <AjusteBarraLateral />
               <TarjetaAjuste glifo="pantalla" titulo={t("Efecto de ventana")} descripcion={t("Material del fondo de la ventana.")}>

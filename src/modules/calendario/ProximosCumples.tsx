@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/fluent/Button";
 import { useT, localeActual } from "@/lib/i18n";
 import { Card } from "@/components/fluent/Card";
 import { Glifo } from "@/components/fluent/Glifo";
@@ -7,7 +8,7 @@ import { cuando, fechaLarga, mayuscula, proximoCumple } from "@/lib/calendario/f
 import type { Amigo } from "@/store/calendario-store";
 
 /** Los próximos cumpleaños, del más cercano al más lejano. Al pulsar uno se edita. */
-export function ProximosCumples({ amigos, onAmigo }: { amigos: Amigo[]; onAmigo: (a: Amigo) => void }) {
+export function ProximosCumples({ amigos, onAmigo, onNuevo }: { amigos: Amigo[]; onAmigo: (a: Amigo) => void; onNuevo?: () => void }) {
   const t = useT();
   const hoy = new Date();
   const lista = amigos
@@ -19,7 +20,10 @@ export function ProximosCumples({ amigos, onAmigo }: { amigos: Amigo[]; onAmigo:
     <Card className="p-4">
       <h2 className="mb-3 text-body font-semibold text-fg">{t("Próximos cumpleaños")}</h2>
       {lista.length === 0 ? (
-        <p className="text-body text-fg-secondary">{t("Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» arriba.")}</p>
+        <div className="flex flex-col items-start gap-2">
+          <p className="text-body text-fg-secondary">{t("Añade los cumpleaños de tus amigos y Nexo te avisa para que no se te pase ninguno.")}</p>
+          {onNuevo && <Button onClick={onNuevo}>{t("Añadir cumpleaños")}</Button>}
+        </div>
       ) : (
         <ul className="flex flex-col gap-1">
           {lista.map(({ a, p }) => (

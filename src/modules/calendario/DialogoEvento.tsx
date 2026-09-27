@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsejosStore } from "@/store/consejos-store";
 import { useT } from "@/lib/i18n";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import clsx from "clsx";
@@ -77,6 +78,7 @@ export function DialogoEvento({ abierto, inicial, onCerrar, onCumple }: { abiert
     }
     const fecha = claveFecha(new Date(anio, mes - 1, dia));
     useCalendarioStore.getState().guardarEvento({ id: inicial?.id, titulo: titulo.trim(), categoria, fecha, hora: hora || null, color, nota: nota.trim(), avisar, repetir });
+    if (hora && avisar) useConsejosStore.getState().ofrecer("primer-evento-con-hora");
     onCerrar();
   };
 

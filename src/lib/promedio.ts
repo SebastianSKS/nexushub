@@ -78,3 +78,18 @@ export function necesarioParaAprobar(evaluaciones: readonly Evaluacion[], escala
   if (necesario > escala.maximo + 1e-9) return { tipo: "imposible", maxima: ganados + (escala.maximo * falta) / 100 };
   return { tipo: "necesitas", calificacion: necesario };
 }
+
+/** Cómo va una materia, en una palabra (para el color y el texto de la tarjeta). */
+export type EstadoMateria = "sin-datos" | "en-curso" | "en-riesgo" | "asegurada" | "perdida" | "aprobada" | "reprobada";
+
+/** «En riesgo»: lo que necesitas en lo que falta es casi la calificación máxima. */
+const UMBRAL_RIESGO = 0.9;
+
+export function estadoMateria(evaluaciones: readonly Evaluacion[], escala: Escala): EstadoMateria {
+  if (pesoEvaluado(evaluaciones) <= 0) return "sin-datos";
+  const n = necesarioParaAprobar(evaluaciones, escala);
+  if (n.tipo === "terminada") return n.aprobada ? "aprobada" : "reprobada";
+  if (n.tipo === "aprobada") return "asegurada";
+  if (n.tipo === "imposible") return "perdida";
+  return n.calificacion >= escala.maximo * UMBRAL_RIESGO ? "en-riesgo" : "en-curso";
+}

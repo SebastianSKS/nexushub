@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calificacionFinal, ESCALA_CIEN, ESCALA_DIEZ, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { calificacionFinal, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -100,5 +100,25 @@ describe("necesarioParaAprobar", () => {
   });
   it("con el mínimo justo en el puntaje, cuenta como aprobada", () => {
     assert.deepEqual(necesarioParaAprobar([ev(60, 10), ev(40, null)], ESCALA_DIEZ), { tipo: "aprobada" });
+  });
+});
+
+describe("estadoMateria", () => {
+  it("sin calificaciones no hay estado", () => {
+    assert.equal(estadoMateria([ev(100, null)], ESCALA_DIEZ), "sin-datos");
+  });
+  it("terminada: aprobada o reprobada", () => {
+    assert.equal(estadoMateria([ev(100, 8)], ESCALA_DIEZ), "aprobada");
+    assert.equal(estadoMateria([ev(100, 5)], ESCALA_DIEZ), "reprobada");
+  });
+  it("asegurada cuando ya no necesitas nada más", () => {
+    assert.equal(estadoMateria([ev(70, 9), ev(30, null)], ESCALA_DIEZ), "asegurada");
+  });
+  it("perdida cuando ni con el máximo llegas", () => {
+    assert.equal(estadoMateria([ev(80, 2), ev(20, null)], ESCALA_DIEZ), "perdida");
+  });
+  it("en riesgo cuando necesitas casi la máxima; en curso si hay margen", () => {
+    assert.equal(estadoMateria([ev(50, 3), ev(50, null)], ESCALA_DIEZ), "en-riesgo"); // necesitas 9
+    assert.equal(estadoMateria([ev(50, 8), ev(50, null)], ESCALA_DIEZ), "en-curso"); // necesitas 4
   });
 });

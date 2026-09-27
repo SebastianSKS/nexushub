@@ -93,3 +93,28 @@ export function estadoMateria(evaluaciones: readonly Evaluacion[], escala: Escal
   if (n.tipo === "imposible") return "perdida";
   return n.calificacion >= escala.maximo * UMBRAL_RIESGO ? "en-riesgo" : "en-curso";
 }
+
+/** Una materia con sus evaluaciones. Los créditos son opcionales: si tu escuela promedia por créditos, pesan más las que tienen más. */
+export interface Materia {
+  id: string;
+  nombre: string;
+  creditos: number;
+  evaluaciones: Evaluacion[];
+}
+
+/**
+ * El promedio de todas tus materias. Si una todavía no termina se usa cómo va hasta ahora (su promedio parcial), a menos que pidas
+ * solo las terminadas. Cada materia pesa por sus créditos (1 si no se puso). Null si no hay ninguna que cuente.
+ */
+export function promedioGeneral(materias: readonly Materia[], soloTerminadas = false): number | null {
+  let suma = 0;
+  let pesos = 0;
+  for (const m of materias) {
+    const nota = soloTerminadas ? calificacionFinal(m.evaluaciones) : (calificacionFinal(m.evaluaciones) ?? promedioParcial(m.evaluaciones));
+    if (nota === null) continue;
+    const peso = m.creditos > 0 ? m.creditos : 1;
+    suma += nota * peso;
+    pesos += peso;
+  }
+  return pesos > 0 ? suma / pesos : null;
+}

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calificacionFinal, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { calificacionFinal, promedioGeneral, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -120,5 +120,30 @@ describe("estadoMateria", () => {
   it("en riesgo cuando necesitas casi la máxima; en curso si hay margen", () => {
     assert.equal(estadoMateria([ev(50, 3), ev(50, null)], ESCALA_DIEZ), "en-riesgo"); // necesitas 9
     assert.equal(estadoMateria([ev(50, 8), ev(50, null)], ESCALA_DIEZ), "en-curso"); // necesitas 4
+  });
+});
+
+const materia = (nombre: string, evaluaciones: Evaluacion[], creditos = 1): Materia => ({ id: nombre, nombre, creditos, evaluaciones });
+
+describe("promedioGeneral", () => {
+  it("promedia las materias (usa el promedio parcial de las que aún no terminan)", () => {
+    const m = [materia("A", [ev(100, 9)]), materia("B", [ev(50, 7), ev(50, null)])];
+    assert.equal(promedioGeneral(m), 8);
+  });
+  it("puede tomar solo las terminadas", () => {
+    const m = [materia("A", [ev(100, 9)]), materia("B", [ev(50, 7), ev(50, null)])];
+    assert.equal(promedioGeneral(m, true), 9);
+  });
+  it("pesa por créditos", () => {
+    const m = [materia("A", [ev(100, 10)], 4), materia("B", [ev(100, 6)], 1)];
+    assert.equal(promedioGeneral(m), 9.2);
+  });
+  it("sin materias que cuenten no hay promedio", () => {
+    assert.equal(promedioGeneral([]), null);
+    assert.equal(promedioGeneral([materia("A", [ev(100, null)])]), null);
+  });
+  it("créditos que no son válidos cuentan como 1", () => {
+    const m = [materia("A", [ev(100, 10)], 0), materia("B", [ev(100, 8)], -3)];
+    assert.equal(promedioGeneral(m), 9);
   });
 });

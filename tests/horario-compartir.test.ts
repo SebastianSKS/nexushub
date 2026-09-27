@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { Clase } from "../src/lib/horario/horario.ts";
-import { crearHorarioCompartido, FORMATO_HORARIO, leerHorarioCompartido, MAX_BYTES_HORARIO, MAX_CLASES_HORARIO, nombreDeArchivoHorario, textoDeHorario, VERSION_HORARIO } from "../src/lib/horario/compartir.ts";
+import { crearHorarioCompartido, FORMATO_HORARIO, fusionarClases, leerHorarioCompartido, MAX_BYTES_HORARIO, MAX_CLASES_HORARIO, nombreDeArchivoHorario, textoDeHorario, VERSION_HORARIO } from "../src/lib/horario/compartir.ts";
 
 const clase = (p: Partial<Clase> = {}): Clase => ({ id: "c1", materia: "Cálculo", codigo: "MAT-1010", docente: "Dra. Ríos", aula: "A-12", dia: 0, inicio: "08:00", fin: "09:40", color: "#4f8cff", ...p });
 const ahora = new Date(2026, 8, 27, 10, 30);
@@ -85,5 +85,40 @@ describe("leerHorarioCompartido", () => {
     const r = leerHorarioCompartido(JSON.stringify({ formato: FORMATO_HORARIO, version: 1, clases: muchas }), ids());
     assert.equal(r.ok && r.clases.length, MAX_CLASES_HORARIO);
     assert.equal(r.ok && r.descartadas, 10);
+  });
+});
+
+describe("fusionarClases", () => {
+  const mia = clase({ id: "a", materia: "Física", dia: 1 });
+  it("al añadir, suma solo lo que no tenías", () => {
+    const r = fusionarClases([mia], [clase({ id: "n1" }), clase({ id: "n2", materia: "Química", dia: 4 })], "anadir");
+    assert.equal(r.agregadas, 2);
+    assert.equal(r.repetidas, 0);
+    assert.deepEqual(r.clases.map((c) => c.id), ["a", "n1", "n2"]);
+  });
+  it("no repite una clase que ya tienes (misma materia, día y hora, sin importar mayúsculas)", () => {
+    const r = fusionarClases([mia], [clase({ id: "n1", materia: " FÍSICA ", dia: 1 }), clase({ id: "n2", materia: "física", dia: 1 })], "anadir");
+    assert.equal(r.agregadas, 0);
+    assert.equal(r.repetidas, 2);
+    assert.equal(r.clases.length, 1);
+  });
+  it("la misma materia en otro día u otra hora sí es otra clase", () => {
+    const r = fusionarClases([mia], [clase({ materia: "Física", dia: 3 }), clase({ id: "x", materia: "Física", dia: 1, inicio: "10:00", fin: "11:00" })], "anadir");
+    assert.equal(r.agregadas, 2);
+  });
+  it("lo repetido dentro de lo importado también se cuenta una sola vez", () => {
+    const r = fusionarClases([], [clase({ id: "1" }), clase({ id: "2" })], "anadir");
+    assert.equal(r.agregadas, 1);
+    assert.equal(r.repetidas, 1);
+  });
+  it("al reemplazar, queda solo lo importado", () => {
+    const r = fusionarClases([mia], [clase({ id: "n1" })], "reemplazar");
+    assert.deepEqual(r.clases.map((c) => c.id), ["n1"]);
+    assert.equal(r.agregadas, 1);
+  });
+  it("no modifica las listas originales", () => {
+    const actuales = [mia];
+    fusionarClases(actuales, [clase()], "anadir");
+    assert.equal(actuales.length, 1);
   });
 });

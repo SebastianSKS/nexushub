@@ -70,3 +70,34 @@ export function leerHorarioCompartido(texto: string, nuevoId: () => string): Lec
   if (clases.length === 0) return { ok: false, motivo: T("El horario del archivo no trae ninguna clase válida.") };
   return { ok: true, clases, descartadas };
 }
+
+/** Cómo se junta lo importado con lo que ya tienes: añadirlo (sin repetir) o reemplazar todo el horario. */
+export type ModoImportar = "anadir" | "reemplazar";
+
+/** La misma clase es la misma materia, el mismo día y a la misma hora (sin importar mayúsculas ni espacios de más). */
+const claveDeClase = (c: Clase): string => `${c.materia.trim().toLowerCase()}|${c.dia}|${c.inicio}|${c.fin}`;
+
+export interface ResultadoImportar {
+  clases: Clase[];
+  /** Cuántas clases nuevas quedaron en el horario. */
+  agregadas: number;
+  /** Cuántas ya estaban y no se repitieron. */
+  repetidas: number;
+}
+
+/** Junta el horario importado con el actual. Al reemplazar, el resultado es solo lo importado. */
+export function fusionarClases(actuales: readonly Clase[], nuevas: readonly Clase[], modo: ModoImportar): ResultadoImportar {
+  if (modo === "reemplazar") return { clases: nuevas.map((c) => ({ ...c })), agregadas: nuevas.length, repetidas: 0 };
+  const vistas = new Set(actuales.map(claveDeClase));
+  const agregadas: Clase[] = [];
+  let repetidas = 0;
+  for (const c of nuevas) {
+    const k = claveDeClase(c);
+    if (vistas.has(k)) repetidas++;
+    else {
+      vistas.add(k);
+      agregadas.push({ ...c });
+    }
+  }
+  return { clases: [...actuales, ...agregadas], agregadas: agregadas.length, repetidas };
+}

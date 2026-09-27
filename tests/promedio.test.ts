@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calificacionFinal, ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { calificacionFinal, ESCALA_CIEN, ESCALA_DIEZ, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -72,5 +72,33 @@ describe("calificacionFinal", () => {
   });
   it("tolera pesos con decimales que suman 100", () => {
     assert.notEqual(calificacionFinal([ev(33.3, 9), ev(33.3, 9), ev(33.4, 9)]), null);
+  });
+});
+
+describe("necesarioParaAprobar", () => {
+  it("dice cuánto necesitas en lo que falta", () => {
+    // Llevas 8 con peso 50 (4 puntos); para llegar a 6 faltan 2 puntos en el 50 % restante: 4.
+    const n = necesarioParaAprobar([ev(50, 8), ev(50, null)], ESCALA_DIEZ);
+    assert.equal(n.tipo, "necesitas");
+    assert.equal(n.tipo === "necesitas" && redondear(n.calificacion, 2), 4);
+  });
+  it("si ya llegaste al mínimo, ya aprobaste", () => {
+    assert.deepEqual(necesarioParaAprobar([ev(70, 9), ev(30, null)], ESCALA_DIEZ), { tipo: "aprobada" });
+  });
+  it("si no queda nada por calificar, dice cómo terminó", () => {
+    assert.deepEqual(necesarioParaAprobar([ev(100, 7)], ESCALA_DIEZ), { tipo: "terminada", aprobada: true });
+    assert.deepEqual(necesarioParaAprobar([ev(100, 5)], ESCALA_DIEZ), { tipo: "terminada", aprobada: false });
+  });
+  it("si ni con el máximo alcanza, es imposible y dice hasta dónde llegarías", () => {
+    const n = necesarioParaAprobar([ev(80, 2), ev(20, null)], ESCALA_DIEZ);
+    assert.equal(n.tipo, "imposible");
+    assert.equal(n.tipo === "imposible" && redondear(n.maxima, 2), 3.6);
+  });
+  it("sin nada calificado necesitas el mínimo en todo", () => {
+    const n = necesarioParaAprobar([ev(100, null)], ESCALA_CIEN);
+    assert.equal(n.tipo === "necesitas" && n.calificacion, 70);
+  });
+  it("con el mínimo justo en el puntaje, cuenta como aprobada", () => {
+    assert.deepEqual(necesarioParaAprobar([ev(60, 10), ev(40, null)], ESCALA_DIEZ), { tipo: "aprobada" });
   });
 });

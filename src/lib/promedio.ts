@@ -56,3 +56,25 @@ export function calificacionFinal(evaluaciones: readonly Evaluacion[]): number |
   if (pesoPendiente(evaluaciones) > 0.001) return null;
   return puntosGanados(evaluaciones);
 }
+
+/** Qué te queda por hacer para aprobar. */
+export type Necesario =
+  /** Ya alcanzaste el mínimo aunque saques 0 en lo que falta. */
+  | { tipo: "aprobada" }
+  /** Ya no queda nada por calificar. */
+  | { tipo: "terminada"; aprobada: boolean }
+  /** Necesitas al menos esta calificación promedio en lo que falta. */
+  | { tipo: "necesitas"; calificacion: number }
+  /** Ni con la calificación máxima en lo que falta llegas al mínimo. */
+  | { tipo: "imposible"; maxima: number };
+
+/** ¿Cuánto necesitas sacar, en promedio, en lo que falta por calificar para llegar al mínimo aprobatorio? */
+export function necesarioParaAprobar(evaluaciones: readonly Evaluacion[], escala: Escala): Necesario {
+  const falta = pesoPendiente(evaluaciones);
+  const ganados = puntosGanados(evaluaciones);
+  if (falta <= 0.001) return { tipo: "terminada", aprobada: ganados + 1e-9 >= escala.minimoAprobatorio };
+  if (ganados + 1e-9 >= escala.minimoAprobatorio) return { tipo: "aprobada" };
+  const necesario = ((escala.minimoAprobatorio - ganados) * 100) / falta;
+  if (necesario > escala.maximo + 1e-9) return { tipo: "imposible", maxima: ganados + (escala.maximo * falta) / 100 };
+  return { tipo: "necesitas", calificacion: necesario };
+}

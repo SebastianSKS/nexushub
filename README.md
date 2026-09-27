@@ -20,11 +20,13 @@
 | **Documentos** | 17 herramientas que funcionan sin internet: Word/Excel/PowerPoint a PDF, PDF a Word, unir, dividir, comprimir, rotar, organizar, marca de agua, numerar páginas, proteger y quitar contraseña, comparar dos PDF, imágenes a PDF y viceversa, y OCR. Si tienes Microsoft Office, lo usa para que el resultado salga idéntico. |
 | **Mis tareas** | Una carpeta por materia (se crean desde tu horario), con «Nuevo archivo» para crear un Word, Excel, PowerPoint o texto en blanco ahí mismo. |
 | **Buscador global** (`Ctrl + K`) | Encuentra secciones, herramientas, eventos, clases, canales… y **texto dentro de tus PDF**, abriéndolos en la página exacta. |
+| **Tu día de un vistazo** | En Inicio, la clase que sigue con cuenta regresiva, lo que entregas esta semana y lo pendiente de tus notas. |
 | **Calendario** | Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase nada. Exporta a `.ics`. |
 | **Horario** | Tus clases de la semana. Escanea la imagen que te mandaron y se llena sola. Avisa antes de cada clase. |
 | **Calculadora** | Estándar y científica, con historial y teclado. |
 | **Avisos a tu manera** | Notificaciones de Nexo (con su nombre e icono) antes de cada clase, de un examen con hora y de un cumpleaños; con cinco sonidos propios o los de Windows, y un «No molestar» por horas. |
 | **Hazlo tuyo** | Tema claro u oscuro, cualquier color de acento, tamaño de la interfaz, horas de 12 o 24 horas, semana que empieza en lunes o domingo, menos animaciones y secciones que puedes esconder. |
+| **Ligero en equipos modestos** | El modo de bajo consumo (automático) quita la transparencia, baja las animaciones y hace la búsqueda en archivos más pausada. |
 | **Copia de seguridad** | Guarda todos tus datos en un archivo y pásalos a otra computadora. No incluye tu sesión de Spotify. |
 | **Guías y novedades** | Cada sección te explica cómo funciona la primera vez (y con «¿Cómo funciona?» cuando quieras). Tras actualizar, un cuadro te cuenta qué cambió. |
 | **Español e inglés** | Todo traducido, se cambia en *Configuración › Apariencia › Idioma* (o sigue el de Windows). |

@@ -20,11 +20,13 @@
 | **Documents** | 17 tools that work offline: Word/Excel/PowerPoint to PDF, PDF to Word, merge, split, compress, rotate, organize, watermark, page numbers, protect and unlock, compare two PDFs, images to PDF and back, and OCR. If you have Microsoft Office, it uses it so the result comes out identical. |
 | **My assignments** | One folder per subject (created from your schedule), with “New file” to make a blank Word, Excel, PowerPoint or text file right there. |
 | **Global search** (`Ctrl + K`) | Finds sections, tools, events, classes, channels… and **text inside your PDFs**, opening them on the exact page. |
+| **Your day at a glance** | On Home, your next class with a countdown, what's due this week and what's pending in your notes. |
 | **Calendar** | Tasks, exams, appointments and birthdays, with reminders. Exports to `.ics`. |
 | **Schedule** | Your weekly classes. Scan the picture you were sent and it fills itself in. Warns you before each class. |
 | **Calculator** | Standard and scientific, with history and keyboard support. |
 | **Notifications your way** | Nexo notifications (with its name and icon) before each class, a timed exam and a birthday; with five sounds of its own or Windows', and an hour-based “Do not disturb”. |
 | **Make it yours** | Light or dark theme, any accent color, interface size, 12- or 24-hour times, a week that starts on Monday or Sunday, fewer animations and sections you can hide. |
+| **Light on modest computers** | Low-power mode (automatic) removes transparency, lowers animations and makes the file search gentler. |
 | **Backup** | Save all your data in a file and move it to another computer. It doesn't include your Spotify session. |
 | **Guides and what's new** | Each section explains itself the first time (and with “How does it work?” whenever you want). After an update, a dialog tells you what changed. |
 | **Spanish and English** | Fully translated; change it in *Settings › Appearance › Language* (or follow Windows). |

@@ -29,25 +29,18 @@ export interface VistaPrimerosPasos {
 }
 
 /**
- * Junta lo que hace falta para la lista de primeros pasos de Inicio: qué se hizo ya (mirando los datos de verdad: nombre,
- * horario, eventos, carpetas y lo que se anotó al probar la búsqueda), y si toca mostrarla sin pisar la guía de bienvenida,
- * otras guías ni las novedades. A quien ya lo tenía todo hecho no se la muestra nunca.
+ * Qué pasos están hechos y cuánto falta, mirando los datos de verdad (nombre, horario, eventos, carpetas y lo anotado al probar
+ * la búsqueda). Sin efectos raros: se puede usar en cualquier pantalla (Inicio, Configuración).
  */
-export function usePrimerosPasos(): VistaPrimerosPasos {
+export function useEstadoPasos() {
   const escritorio = useEsEscritorio() === true;
   const nombre = usePerfilStore((s) => s.nombre);
   const clases = useHorarioStore((s) => s.clases.length);
   const eventos = useCalendarioStore((s) => s.eventos.length);
   const guardado = usePrimerosPasosStore();
-  const guiasCargadas = useGuiasStore((s) => s.cargado);
-  const bienvenidaVista = useGuiasStore((s) => s.vistas.includes("bienvenida"));
-  const guiaAbierta = useGuiasStore((s) => s.abierta !== null);
-  const novedadesAbiertas = useNovedadesStore((s) => s.abiertas !== null);
-  const [celebrando, setCelebrando] = useState(false);
 
   useEffect(() => {
     usePrimerosPasosStore.getState().cargar();
-    useGuiasStore.getState().cargar();
     usePerfilStore.getState().cargar();
     useHorarioStore.getState().cargar();
     useCalendarioStore.getState().cargar();
@@ -62,7 +55,26 @@ export function usePrimerosPasos(): VistaPrimerosPasos {
   }, [escritorio, guardado.carpetas]);
 
   const estado: EstadoPasos = { nombre: Boolean(nombre), horario: clases > 0, carpetas: guardado.carpetas, examen: eventos > 0, buscador: guardado.buscador };
-  const progreso = progresoDe(estado, escritorio);
+  return { escritorio, estado, progreso: progresoDe(estado, escritorio), guardado };
+}
+
+/**
+ * Junta lo que hace falta para la lista de primeros pasos de Inicio: qué se hizo ya (mirando los datos de verdad: nombre,
+ * horario, eventos, carpetas y lo que se anotó al probar la búsqueda), y si toca mostrarla sin pisar la guía de bienvenida,
+ * otras guías ni las novedades. A quien ya lo tenía todo hecho no se la muestra nunca.
+ */
+export function usePrimerosPasos(): VistaPrimerosPasos {
+  const { escritorio, estado, progreso, guardado } = useEstadoPasos();
+  const guiasCargadas = useGuiasStore((s) => s.cargado);
+  const bienvenidaVista = useGuiasStore((s) => s.vistas.includes("bienvenida"));
+  const guiaAbierta = useGuiasStore((s) => s.abierta !== null);
+  const novedadesAbiertas = useNovedadesStore((s) => s.abiertas !== null);
+  const [celebrando, setCelebrando] = useState(false);
+
+  useEffect(() => {
+    useGuiasStore.getState().cargar();
+  }, []);
+
   const cargado = guardado.cargado && guiasCargadas;
   const mostrar = debeMostrarse({ guardado, progreso, cargado, bienvenidaVista, algoAbierto: guiaAbierta || novedadesAbiertas });
   useEffect(() => {

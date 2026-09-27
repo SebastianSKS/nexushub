@@ -137,5 +137,18 @@
   "No encontramos esa página": "We couldn't find that page",
   "Puede que el enlace sea viejo o que la sección haya cambiado de lugar. Usa la barra lateral o la búsqueda (Ctrl+K) para llegar a lo que buscas.": "The link may be old or the section may have moved. Use the sidebar or search (Ctrl+K) to get to what you're looking for.",
   "Sin conexión": "Offline",
-  "Video y Música necesitan internet; el resto de Nexo funciona igual.": "Video and Music need internet; the rest of Nexo works the same."
+  "Video y Música necesitan internet; el resto de Nexo funciona igual.": "Video and Music need internet; the rest of Nexo works the same.",
+  "Tu horario ya está en Nexo": "Your schedule is now in Nexo",
+  "Te avisaremos {n} minutos antes de cada clase. Lo cambias en Configuración › Avisos.": "We'll notify you {n} minutes before each class. You can change it in Settings › Notifications.",
+  "Los avisos de clase están apagados; puedes encenderlos en Configuración › Avisos.": "Class notifications are off; you can turn them on in Settings › Notifications.",
+  "Ir a Configuración": "Go to Settings",
+  "Listo, ya tienes un evento con hora": "Done, you have an event with a time",
+  "Te avisaremos {n} minutos antes de que empiece. Lo cambias en Configuración › Avisos.": "We'll notify you {n} minutes before it starts. You can change it in Settings › Notifications.",
+  "El aviso antes de los eventos con hora está apagado; puedes encenderlo en Configuración › Avisos.": "The notice before events with a time is off; you can turn it on in Settings › Notifications.",
+  "Tus materias ya tienen carpeta": "Your subjects now have a folder",
+  "Guarda ahí tus tareas. Con Ctrl+K puedes buscar una palabra dentro de sus PDF, Word, Excel y PowerPoint.": "Keep your assignments there. With Ctrl+K you can search for a word inside their PDF, Word, Excel and PowerPoint files.",
+  "Tu primer archivo está listo": "Your first file is ready",
+  "Todo se hizo en tu computadora: tus archivos no salieron a internet.": "Everything was done on your computer: your files never went to the internet.",
+  "Todo se hizo en tu navegador: tus archivos no salieron a internet.": "Everything was done in your browser: your files never went to the internet.",
+  "Ver más herramientas": "See more tools"
 }

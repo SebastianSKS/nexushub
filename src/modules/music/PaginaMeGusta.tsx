@@ -1,5 +1,6 @@
 "use client";
 
+import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { useT, T } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
@@ -91,11 +92,12 @@ export function PaginaMeGusta() {
           <>
             {cargando && pistas.length === 0 && <p className="text-body text-fg-secondary" role="status">{t("Cargando tus canciones…")}</p>}
             {!cargando && pistas.length === 0 && (
-              <Card className="p-6">
-                <p className="text-body text-fg">{t("Aún no has guardado canciones.")}</p>
-                <p className="mt-1 text-body text-fg-secondary">{t("Pulsa el corazón de una canción mientras suena, o usa «Guardar en Me gusta» en su menú (los tres puntos).")}</p>
-                <BotonEnlace href="/musica">{t("Ir a Música")}</BotonEnlace>
-              </Card>
+              <EstadoVacio
+                glifo="musica"
+                titulo={t("Aún no has guardado canciones.")}
+                texto={t("Pulsa el corazón de una canción mientras suena, o usa «Guardar en Me gusta» en su menú (los tres puntos).")}
+                acciones={<BotonEnlace href="/musica">{t("Ir a Música")}</BotonEnlace>}
+              />
             )}
             {pistas.length > 0 && (
               <Card className="overflow-hidden p-0">

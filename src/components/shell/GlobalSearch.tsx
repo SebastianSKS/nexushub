@@ -1,5 +1,6 @@
 "use client";
 
+import { usePrimerosPasosStore } from "@/store/primeros-pasos-store";
 import { useT, useIdioma } from "@/lib/i18n";
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -185,6 +186,8 @@ export function GlobalSearch() {
             setQuery(e.target.value);
             setActiveIndex(0);
             setOpen(true);
+            // Para la lista de «primeros pasos» de Inicio: ya probó la búsqueda.
+            if (e.target.value.trim().length >= 2) usePrimerosPasosStore.getState().marcar("buscador");
           }}
           onKeyDown={onKeyDown}
           className="min-w-0 flex-1 bg-transparent text-body text-fg placeholder:text-fg-tertiary focus-visible:outline-none"

@@ -26,6 +26,14 @@ describe("datosDeDemo", () => {
     assert.equal(JSON.parse(d["nexushub-notas"]!).length, 3);
   });
 
+  it("trae un promedio de ejemplo que el propio almacén acepta sin cambiarlo", async () => {
+    const { normalizarPromedio, estadoMateria } = await import("../src/lib/promedio.ts");
+    const crudo = JSON.parse(datosDeDemo(lunesPorLaManana)["nexushub-promedio"]!);
+    const limpio = normalizarPromedio(crudo);
+    assert.deepEqual(limpio, crudo);
+    assert.deepEqual(limpio.materias.map((m) => estadoMateria(m.evaluaciones, limpio.escala)), ["en-curso", "en-curso", "aprobada"]);
+  });
+
   it("hoy hay una clase que empieza en unos 45 minutos (para que «Tu día» tenga cuenta regresiva)", () => {
     const clases = JSON.parse(datosDeDemo(lunesPorLaManana)["nexushub-horario"]!) as { dia: number; inicio: string; fin: string }[];
     const deHoy = clases.filter((c) => c.dia === 0);

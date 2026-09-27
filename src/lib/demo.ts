@@ -64,6 +64,16 @@ export function datosDeDemo(ahora: Date): Record<string, string> {
     { id: "demo-n1", texto: "Leer el capítulo 4 de física", hecha: false },
     { id: "demo-n2", texto: "Imprimir el reporte de laboratorio", hecha: false },
   ];
+  // Un promedio de ejemplo: una materia ya terminada, una en curso y una sin calificar todavía.
+  const evaluacion = (id: string, nombre: string, peso: number, calificacion: number | null) => ({ id, nombre, peso, calificacion });
+  const promedio = {
+    escala: { maximo: 10, minimoAprobatorio: 6 },
+    materias: [
+      { id: "demo-p0", nombre: "Cálculo diferencial", creditos: 5, evaluaciones: [evaluacion("demo-p0a", "Parcial 1", 30, 7), evaluacion("demo-p0b", "Parcial 2", 30, 6.5), evaluacion("demo-p0c", "Tareas", 20, 8), evaluacion("demo-p0d", "Proyecto", 20, null)] },
+      { id: "demo-p1", nombre: "Física", creditos: 4, evaluaciones: [evaluacion("demo-p1a", "Parcial 1", 40, 6), evaluacion("demo-p1b", "Laboratorio", 30, 8), evaluacion("demo-p1c", "Examen final", 30, null)] },
+      { id: "demo-p2", nombre: "Programación", creditos: 5, evaluaciones: [evaluacion("demo-p2a", "Proyecto 1", 50, 9.5), evaluacion("demo-p2b", "Proyecto 2", 50, 9)] },
+    ],
+  };
   const guias = ["bienvenida", "video", "musica", "documentos", "herramienta", "carpetas", "calendario", "horario", "calculadora", "configuracion", "atajos"];
 
   return {
@@ -74,6 +84,7 @@ export function datosDeDemo(ahora: Date): Record<string, string> {
     "nexushub-horario": JSON.stringify(horario),
     "nexushub-eventos": JSON.stringify(eventos),
     "nexushub-notas": JSON.stringify(notas),
+    "nexushub-promedio": JSON.stringify(promedio),
   };
 }
 

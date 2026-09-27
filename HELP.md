@@ -45,6 +45,9 @@ Settings › Backup › *Save backup*. On the other computer, install Nexo and u
 **Something failed and an error screen appeared.**
 Your data is safe. Press **Try again** or **Go to Home**; if it keeps happening, use **Report the problem**: it opens a GitHub report with the version and your system already filled in (never your files, calendar or name).
 
+**Nexo is slow on my computer.**
+Settings › Appearance › *Low-power mode*. On *Automatic* (the default) it turns on by itself if your computer has few cores or little memory: it removes the window transparency, lowers the animations and makes the search inside your files gentler so you don't notice it. You can set it to *Always on*. If it's still slow, tell us about your computer with *Report the problem*.
+
 **Uninstall.**
 Windows Settings › Apps › Nexo › Uninstall. Your `Documents\Nexo\Tareas` folders aren't deleted.
 

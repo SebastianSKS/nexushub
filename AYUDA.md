@@ -45,6 +45,9 @@ Configuración › Copia de seguridad › *Guardar copia*. En la otra computador
 **Algo falló y salió una pantalla de error.**
 Tus datos están a salvo. Pulsa **Reintentar** o **Ir al Inicio**; si se repite, usa **Avisar del problema**: abre un reporte en GitHub con la versión y tu sistema ya escritos (nunca tus archivos, calendario ni nombre).
 
+**Nexo va lento en mi computadora.**
+Configuración › Apariencia › *Modo de bajo consumo*. En *Automático* (lo normal) se enciende solo si tu equipo tiene pocos núcleos o poca memoria: quita la transparencia de la ventana, baja las animaciones y hace la búsqueda dentro de tus archivos más pausada para que no se note. Puedes ponerlo en *Siempre encendido*. Si aun así va lento, dinos tu equipo con *Avisar del problema*.
+
 **Desinstalar.**
 Configuración de Windows › Aplicaciones › Nexo › Desinstalar. Tus carpetas de `Documentos\Nexo\Tareas` no se borran.
 

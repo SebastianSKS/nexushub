@@ -1,4 +1,3 @@
-import JSZip from "jszip";
 import { traducir } from "@/lib/i18n";
 import { esEscritorio } from "@/lib/entorno";
 import { useAjustesStore } from "@/store/ajustes-store";
@@ -19,6 +18,8 @@ export function saveBlob(blob: Blob, name: string): void {
 
 /** Empaqueta varios resultados en un único ZIP (nombres repetidos se numeran). */
 export async function zipResults(results: ResultItem[]): Promise<Blob> {
+  // JSZip solo se carga al empaquetar varios resultados: no forma parte del arranque.
+  const { default: JSZip } = await import("jszip");
   const zip = new JSZip();
   const used = new Set<string>();
   for (const r of results) {

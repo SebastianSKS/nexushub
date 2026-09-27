@@ -1,5 +1,6 @@
 "use client";
 
+import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { useT, localeActual } from "@/lib/i18n";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent } from "react";
 import clsx from "clsx";
@@ -211,12 +212,18 @@ export function PaginaCarpetas() {
                 carpetas === null ? (
                   <p className="text-body text-fg-secondary">{t("Cargando…")}</p>
                 ) : carpetas.length === 0 ? (
-                  <Card className="flex flex-col items-center gap-3 px-6 py-12 text-center">
-                    <Glifo nombre="carpeta" tam={36} className="text-accent-text" />
-                    <p className="text-subtitle text-fg">{t("Aún no tienes carpetas")}</p>
-                    <p className="max-w-[420px] text-body text-fg-secondary">{t("Crea una por materia (o deja que Nexo las cree desde tu horario) y guarda ahí tus tareas.")}</p>
-                    <Button variant="accent" onClick={() => setDialogo({ tipo: "nueva" })}>{t("Nueva carpeta")}</Button>
-                  </Card>
+                  <EstadoVacio
+                    glifo="carpeta"
+                    titulo={t("Aún no tienes carpetas")}
+                    texto={t("Una carpeta por materia, en tu computadora, para guardar tus tareas y trabajos.")}
+                    pasos={[t("Créalas con «Nueva carpeta», o deja que Nexo las cree desde tu horario."), t("Arrastra ahí tus archivos, o crea un Word, Excel o PowerPoint en blanco."), t("Con Ctrl+K puedes buscar dentro de esos PDF y documentos.")]}
+                    acciones={
+                      <>
+                        <Button variant="accent" onClick={() => setDialogo({ tipo: "nueva" })}>{t("Nueva carpeta")}</Button>
+                        {materiasSinCarpeta.length > 0 && <Button onClick={() => setCrearDeHorario(true)}>{t("Crear desde mi horario")}</Button>}
+                      </>
+                    }
+                  />
                 ) : (
                   <ul className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3" aria-label={t("Carpetas")}>
                     {carpetas.map((c) => (
@@ -255,7 +262,18 @@ export function PaginaCarpetas() {
                     <p className="text-body text-fg-secondary">{t("Arrastra aquí tus archivos, o usa «Añadir archivos». Si ya existe uno con el mismo nombre, no se reemplaza: se guarda como «(2)».")}</p>
                   </div>
                   {archivos.length === 0 ? (
-                    <p className="text-body text-fg-secondary">{t("Esta carpeta está vacía.")}</p>
+                    <EstadoVacio
+                      compacto
+                      glifo="documentos"
+                      titulo={t("Esta carpeta está vacía")}
+                      texto={t("Arrastra aquí tus archivos o crea uno nuevo: se guardan en tu computadora, en una carpeta de verdad.")}
+                      acciones={
+                        <>
+                          <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => entrada.current?.click()}>{t("Añadir archivos")}</Button>
+                          <Button onClick={() => setDialogo({ tipo: "nuevo-archivo" })}>{t("Nuevo archivo")}</Button>
+                        </>
+                      }
+                    />
                   ) : (
                     <ul className="flex flex-col gap-1.5" aria-label={t("Archivos")}>
                       {archivos.map((a) => (

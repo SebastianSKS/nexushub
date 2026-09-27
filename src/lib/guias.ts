@@ -33,6 +33,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     pasos: [
       { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Horario y Calculadora, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
       { glifo: "buscar", titulo: T("Encuentra lo que sea"), texto: T("Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF, Word, Excel y PowerPoint. También resuelve cuentas: escribe 25*4 y te da el resultado.") },
+      { glifo: "exito", titulo: T("Tus primeros pasos"), texto: T("En Inicio hay una lista corta (nombre, horario, carpetas, un examen y la búsqueda) que se marca sola. Si no la quieres, tiene un botón para ocultarla.") },
       { glifo: "informacion", titulo: T("Ayuda en cada sección"), texto: T("En la barra de arriba hay un signo de interrogación (?). Púlsalo en cualquier sección para ver otra vez su explicación, cuando quieras.") },
       { glifo: "carpeta", titulo: T("Tus materias, ordenadas"), texto: T("Horario, Calendario y Documentos trabajan juntos: cada materia tiene su carpeta en Documentos › Nexo › Tareas, y Nexo te avisa antes de cada clase.") },
       { glifo: "configuracion", titulo: T("Hazlo tuyo"), texto: T("En Configuración eliges el tema, el color, los avisos y más. Todo se guarda solo en este equipo.") },

@@ -28,3 +28,13 @@ export function redondear(n: number, decimales = 1): number {
   const f = 10 ** decimales;
   return Math.round((n + Number.EPSILON) * f) / f;
 }
+
+/** Suma de los pesos de las evaluaciones que ya tienen calificación. */
+export function pesoEvaluado(evaluaciones: readonly Evaluacion[]): number {
+  return evaluaciones.reduce((s, e) => (e.calificacion === null ? s : s + e.peso), 0);
+}
+
+/** Lo que todavía falta para llegar al 100 %: evaluaciones sin calificar y porcentaje que aún no se ha repartido. */
+export function pesoPendiente(evaluaciones: readonly Evaluacion[]): number {
+  return Math.max(0, 100 - pesoEvaluado(evaluaciones));
+}

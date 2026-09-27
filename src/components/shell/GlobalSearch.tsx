@@ -93,6 +93,8 @@ export function GlobalSearch() {
   useEffect(() => {
     if (!open) return;
     if (document.activeElement !== inputRef.current) inputRef.current?.focus();
+    // Para la lista de «primeros pasos»: abrir el buscador ya cuenta como probarlo (quien lo usó antes de que existiera la lista también).
+    usePrimerosPasosStore.getState().marcar("buscador");
     prepararBusqueda();
     void cargarIconosProgramas(["pdf", "word", "excel", "powerpoint"]);
     void sincronizarIndice(30_000); // archivos nuevos que hayas guardado desde la última vez

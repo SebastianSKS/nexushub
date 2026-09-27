@@ -1,3 +1,4 @@
+import { conBase } from "@/lib/base";
 import { PDFDocument } from "pdf-lib";
 import { traducir } from "@/lib/i18n";
 import { baseName, safeFileName } from "@/lib/documents/format";
@@ -19,7 +20,7 @@ type Trabajador = Awaited<ReturnType<(typeof import("tesseract.js"))["createWork
 
 async function crearTrabajador(): Promise<Trabajador> {
   const { createWorker } = await import("tesseract.js");
-  return createWorker("spa", 1, { workerPath: "/tesseract/worker.min.js", corePath: "/tesseract/core", langPath: "/tesseract/lang", gzip: true });
+  return createWorker("spa", 1, { workerPath: conBase("/tesseract/worker.min.js"), corePath: conBase("/tesseract/core"), langPath: conBase("/tesseract/lang"), gzip: true });
 }
 
 function lienzo(w: number, h: number): HTMLCanvasElement {

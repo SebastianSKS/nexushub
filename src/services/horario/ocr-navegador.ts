@@ -1,3 +1,4 @@
+import { conBase } from "@/lib/base";
 import type { PSM } from "tesseract.js";
 import { traducir } from "@/lib/i18n";
 import type { ImagenRgba } from "./imagen";
@@ -36,7 +37,7 @@ function obtenerTrabajador(): Promise<Trabajador> {
     trabajador = import("tesseract.js")
       .then(({ createWorker }) =>
         // Todo sale de la propia aplicación (public/tesseract): no se descarga nada de internet.
-        createWorker("spa", 1, { workerPath: "/tesseract/worker.min.js", corePath: "/tesseract/core", langPath: "/tesseract/lang", gzip: true }),
+        createWorker("spa", 1, { workerPath: conBase("/tesseract/worker.min.js"), corePath: conBase("/tesseract/core"), langPath: conBase("/tesseract/lang"), gzip: true }),
       )
       .catch((e) => {
         trabajador = null; // que se pueda reintentar

@@ -118,3 +118,18 @@ export function promedioGeneral(materias: readonly Materia[], soloTerminadas = f
   }
   return pesos > 0 ? suma / pesos : null;
 }
+
+/** Reparte el 100 % en partes iguales (con un decimal): 3 evaluaciones → 33.3, 33.3 y 33.4, para que sumen justo 100. */
+export function repartirPesos(cuantas: number): number[] {
+  if (cuantas <= 0) return [];
+  const base = Math.floor((1000 / cuantas)) / 10;
+  const pesos = Array.from({ length: cuantas }, () => base);
+  pesos[cuantas - 1] = redondear(100 - base * (cuantas - 1), 1);
+  return pesos;
+}
+
+/** El porcentaje que todavía no se ha repartido entre las evaluaciones (para sugerirlo al añadir una nueva). */
+export function pesoSinRepartir(evaluaciones: readonly Evaluacion[]): number {
+  const repartido = evaluaciones.reduce((s, e) => s + e.peso, 0);
+  return Math.max(0, redondear(100 - repartido, 1));
+}

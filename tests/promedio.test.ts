@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calificacionFinal, promedioGeneral, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { calificacionFinal, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -145,5 +145,23 @@ describe("promedioGeneral", () => {
   it("créditos que no son válidos cuentan como 1", () => {
     const m = [materia("A", [ev(100, 10)], 0), materia("B", [ev(100, 8)], -3)];
     assert.equal(promedioGeneral(m), 9);
+  });
+});
+
+describe("repartirPesos y pesoSinRepartir", () => {
+  it("reparte en partes iguales y suma 100", () => {
+    assert.deepEqual(repartirPesos(4), [25, 25, 25, 25]);
+    const tres = repartirPesos(3);
+    assert.deepEqual(tres, [33.3, 33.3, 33.4]);
+    assert.equal(redondear(tres.reduce((a, b) => a + b, 0), 1), 100);
+  });
+  it("con cero o una evaluación", () => {
+    assert.deepEqual(repartirPesos(0), []);
+    assert.deepEqual(repartirPesos(1), [100]);
+  });
+  it("lo que no se ha repartido, sin pasarse de 0", () => {
+    assert.equal(pesoSinRepartir([ev(30, null), ev(20, 8)]), 50);
+    assert.equal(pesoSinRepartir([ev(70, null), ev(50, null)]), 0);
+    assert.equal(pesoSinRepartir([]), 100);
   });
 });

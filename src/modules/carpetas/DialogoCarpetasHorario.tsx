@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsejosStore } from "@/store/consejos-store";
 import { useT } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -46,6 +47,7 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
     for (const m of faltan.filter((x) => elegidas.has(x))) {
       try {
         await crearCarpeta(nombreCarpetaDe(m));
+        useConsejosStore.getState().ofrecer("primera-carpeta");
         hechas++;
       } catch {
         fallos.push(m);

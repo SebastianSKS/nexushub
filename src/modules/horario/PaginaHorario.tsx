@@ -17,6 +17,7 @@ import { useHorarioStore } from "@/store/horario-store";
 import { DialogoClase, type BorradorClase } from "./DialogoClase";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
 import { DialogoCarpetasHorario } from "../carpetas/DialogoCarpetasHorario";
+import { DialogoCompartir } from "./DialogoCompartir";
 import { DialogoEscaneo } from "./DialogoEscaneo";
 
 const PX_POR_MINUTO = 1.15;
@@ -50,6 +51,7 @@ export function PaginaHorario() {
   const anchoRiel = useAjustesStore((s) => s.formatoHora) === "12h" ? 84 : 56;
   const clases = useHorarioStore((s) => s.clases);
   const [escaneo, setEscaneo] = useState(false);
+  const [compartir, setCompartir] = useState(false);
   const [dialogo, setDialogo] = useState(false);
   const [borrador, setBorrador] = useState<BorradorClase | null>(null);
   const [hoy] = useState(() => diaDeSemana(new Date()));
@@ -100,6 +102,7 @@ export function PaginaHorario() {
         accion={
           <div className="flex gap-2">
             <Button onClick={() => abrir({ dia: Math.min(hoy, 4) })}>{t("Añadir clase")}</Button>
+            <Button onClick={() => setCompartir(true)}>{t("Compartir")}</Button>
             {escritorio && <Link href="/documentos/carpetas" className="rounded-control inline-flex h-8 items-center gap-2 border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer"><Glifo nombre="carpeta" tam={14} />{t("Mis tareas")}</Link>}
             <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>{t("Escanear imagen")}</Button>
           </div>
@@ -186,6 +189,7 @@ export function PaginaHorario() {
           ) : undefined
         }
       />
+      <DialogoCompartir abierto={compartir} alCerrar={() => setCompartir(false)} />
       <DialogoEscaneo
         abierto={escaneo}
         onCerrar={() => setEscaneo(false)}

@@ -1,4 +1,4 @@
-import { XMLParser } from "fast-xml-parser";
+import type { XMLParser } from "fast-xml-parser";
 import { traducir } from "@/lib/i18n";
 import { ID_VIDEO } from "@/lib/canales/ids";
 import type { TipoCanal, VideoCanal } from "@/types/canal";
@@ -17,12 +17,20 @@ interface FeedParseado {
 /** Caché en memoria de esta pestaña: dura mientras Nexo esté abierto. */
 const cache = new Map<string, { at: number; value: FeedParseado }>();
 
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: "@_",
-  parseTagValue: false, // "2024" como título debe seguir siendo texto
-  trimValues: true,
-});
+/** El lector de XML (unos 100 KB) se carga la primera vez que hace falta, no al abrir Nexo. */
+let parser: XMLParser | null = null;
+async function lectorXml(): Promise<XMLParser> {
+  if (!parser) {
+    const { XMLParser: Lector } = await import("fast-xml-parser");
+    parser = new Lector({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_",
+      parseTagValue: false, // "2024" como título debe seguir siendo texto
+      trimValues: true,
+    });
+  }
+  return parser;
+}
 
 const arreglo = <T>(v: T | T[] | undefined): T[] => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
 const texto = (v: unknown): string =>
@@ -34,8 +42,8 @@ export function urlFeed(id: string, tipo: TipoCanal): string {
 }
 
 /** Atom de YouTube → nombre + videos normalizados. */
-export function parsearFeed(xml: string): FeedParseado {
-  const doc = parser.parse(xml) as { feed?: Record<string, unknown> };
+export async function parsearFeed(xml: string): Promise<FeedParseado> {
+  const doc = (await lectorXml()).parse(xml) as { feed?: Record<string, unknown> };
   const feed = doc.feed;
   if (!feed) throw new ErrorApi(traducir("YouTube devolvió un feed que no se pudo leer."), undefined, "FEED_INVALIDO");
 
@@ -70,7 +78,7 @@ async function feedDesdeRss(id: string, tipo: TipoCanal): Promise<FeedParseado> 
   if (res.status !== 200) {
     throw new ErrorApi(traducir("YouTube no pudo entregar los videos de este canal."), traducir("Inténtalo de nuevo en unos minutos."), "FEED_ERROR");
   }
-  return parsearFeed(res.text);
+  return await parsearFeed(res.text);
 }
 
 /** Mientras dure, el RSS se da por roto y se va directo a la página del canal. */

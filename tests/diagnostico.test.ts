@@ -15,6 +15,11 @@ describe("armarDiagnostico", () => {
     assert.doesNotMatch(t, /Error:/);
   });
 
+  it("incluye lo que se sabe del equipo, si se da", () => {
+    assert.match(armarDiagnostico({ ...base, equipo: "4 núcleos, 8 GB, bajo consumo: sí" }), /Equipo: 4 núcleos, 8 GB, bajo consumo: sí/);
+    assert.doesNotMatch(armarDiagnostico(base), /Equipo:/);
+  });
+
   it("con error: nombre, mensaje, código y pila", () => {
     const t = armarDiagnostico({ ...base, error: { nombre: "TypeError", mensaje: "x is undefined", digest: "abc123", pila: "at foo (bundle.js:1:2)" } });
     assert.match(t, /Error: TypeError: x is undefined/);

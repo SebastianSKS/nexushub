@@ -13,6 +13,8 @@ export interface DatosDiagnostico {
   ruta?: string;
   /** El texto de «navigator.userAgent» (dice la versión de Windows y del motor de la ventana). */
   agente?: string;
+  /** Lo que se sabe del equipo («4 núcleos, 8 GB, bajo consumo: no»): ayuda a entender quejas de lentitud. */
+  equipo?: string;
   error?: { nombre?: string; mensaje?: string; pila?: string; digest?: string };
   fecha?: Date;
 }
@@ -39,6 +41,7 @@ export function armarDiagnostico(d: DatosDiagnostico): string {
   ];
   if (d.ruta) lineas.push(`Pantalla: ${d.ruta}`);
   if (d.agente) lineas.push(`Sistema: ${sinRutasDeUsuario(d.agente)}`);
+  if (d.equipo) lineas.push(`Equipo: ${d.equipo}`);
   lineas.push(`Fecha: ${(d.fecha ?? new Date()).toISOString()}`);
   if (d.error) {
     const e = d.error;

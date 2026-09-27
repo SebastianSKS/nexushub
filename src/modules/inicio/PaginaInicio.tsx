@@ -109,8 +109,11 @@ export function PaginaInicio() {
             {eventos.length > 0 ? (
               <ProximosEventos eventos={eventos} onEvento={() => router.push("/calendario")} />
             ) : (
-              <Card className="p-4">
+              <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <p className="text-body text-fg-secondary">{tr("Cuando añadas eventos en el Calendario, los próximos aparecerán aquí.")}</p>
+                <Link href="/calendario" className="rounded-control inline-flex h-8 items-center border border-stroke bg-layer-alt px-4 text-body text-fg shadow-card transition-colors duration-exit ease-fluent hover:bg-layer">
+                  {tr("Añadir un examen o tarea")}
+                </Link>
               </Card>
             )}
           </>

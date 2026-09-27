@@ -75,6 +75,8 @@ export interface Ajustes {
   /** Tamaño de toda la interfaz, en %. */
   zoomInterfaz: number;
   reducirMovimiento: ReducirMovimiento;
+  /** Consejos breves la primera vez que haces algo (guardar tu primera clase, tu primera carpeta…). */
+  consejos: boolean;
   /** Secciones escondidas de la barra lateral (siguen ahí: se llega con Ctrl+K o el teclado). */
   seccionesOcultas: SeccionOcultable[];
 }
@@ -111,6 +113,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   primerDiaSemana: "lunes",
   zoomInterfaz: 100,
   reducirMovimiento: "sistema",
+  consejos: true,
   seccionesOcultas: [],
 };
 
@@ -149,6 +152,7 @@ export function normalizarAjustes(crudo: unknown): Ajustes {
     primerDiaSemana: d.primerDiaSemana === "domingo" ? "domingo" : "lunes",
     zoomInterfaz: (ZOOMS_INTERFAZ as readonly number[]).includes(d.zoomInterfaz as number) ? (d.zoomInterfaz as number) : 100,
     reducirMovimiento: d.reducirMovimiento === "si" || d.reducirMovimiento === "no" ? d.reducirMovimiento : "sistema",
+    consejos: d.consejos !== false,
     seccionesOcultas: Array.isArray(d.seccionesOcultas) ? [...new Set(d.seccionesOcultas.filter((x): x is SeccionOcultable => (SECCIONES_OCULTABLES as readonly unknown[]).includes(x)))] : [],
   };
 }

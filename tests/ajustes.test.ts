@@ -46,6 +46,12 @@ describe("normalizarAjustes", () => {
     assert.deepEqual([b.usarOffice, b.buscarEnPdfs, b.segundoPlano, b.silencioActivo], [false, false, true, true]);
   });
 
+  it("los consejos están activos salvo que se apaguen a propósito", () => {
+    assert.equal(normalizarAjustes({}).consejos, true);
+    assert.equal(normalizarAjustes({ consejos: false }).consejos, false);
+    assert.equal(normalizarAjustes({ consejos: 0 }).consejos, true);
+  });
+
   it("solo se aceptan los avisos de clase y los zooms que ofrece la pantalla", () => {
     assert.equal(normalizarAjustes({ avisoClaseMin: 7 }).avisoClaseMin, 10);
     assert.equal(normalizarAjustes({ avisoClaseMin: 30 }).avisoClaseMin, 30);

@@ -1,4 +1,5 @@
-import JSZip from "jszip";
+// JSZip pesa unos 100 KB: se carga solo cuando hay un archivo de Office que leer (no al abrir Nexo).
+import type JSZip from "jszip";
 
 /**
  * El texto de un documento de Office nuevo (.docx, .xlsx, .pptx), para poder buscar dentro. Son ZIP con XML: aquí solo se
@@ -158,7 +159,8 @@ export async function textoDePowerPoint(zip: JSZip): Promise<string[]> {
 
 /** El texto de un .docx/.xlsx/.pptx. Lanza si el ZIP no se puede abrir (dañado o con contraseña). */
 export async function textoDeOffice(bytes: ArrayBuffer | Uint8Array, tipo: TipoOffice): Promise<TextoOffice> {
-  const zip = await JSZip.loadAsync(bytes);
+  const { default: Zip } = await import("jszip");
+  const zip = await Zip.loadAsync(bytes);
   if (tipo === "excel") return { tipo, ...(await textoDeExcel(zip)) };
   return { tipo, unidades: tipo === "word" ? await textoDeWord(zip) : await textoDePowerPoint(zip) };
 }

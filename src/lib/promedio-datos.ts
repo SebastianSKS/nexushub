@@ -15,3 +15,30 @@ export function conEscala(datos: DatosPromedio, escala: Escala): DatosPromedio {
     })),
   };
 }
+
+/** Añade una materia al final. Si ya hay el máximo permitido, no añade nada. */
+export function conMateriaNueva(datos: DatosPromedio, materia: Materia): DatosPromedio {
+  if (datos.materias.length >= MAX_MATERIAS) return datos;
+  return { ...datos, materias: [...datos.materias, materia] };
+}
+
+/** Quita una materia y todas sus evaluaciones. */
+export function sinMateria(datos: DatosPromedio, id: string): DatosPromedio {
+  return { ...datos, materias: datos.materias.filter((m) => m.id !== id) };
+}
+
+/** Cambia el nombre o los créditos de una materia (lo demás no se toca desde aquí). */
+export function conMateriaCambiada(datos: DatosPromedio, id: string, cambios: Partial<Pick<Materia, "nombre" | "creditos">>): DatosPromedio {
+  return {
+    ...datos,
+    materias: datos.materias.map((m) =>
+      m.id !== id
+        ? m
+        : {
+            ...m,
+            nombre: cambios.nombre !== undefined ? cambios.nombre.slice(0, 60) : m.nombre,
+            creditos: cambios.creditos !== undefined ? Math.min(20, Math.max(1, Math.round(cambios.creditos) || 1)) : m.creditos,
+          },
+    ),
+  };
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { PrimerosPasos } from "./PrimerosPasos";
 import { useT, T, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -82,6 +83,8 @@ export function PaginaInicio() {
                 </button>
               )}
             </section>
+
+            <PrimerosPasos onNombre={() => setPerfil(true)} />
 
             <ClasesDeHoy />
 

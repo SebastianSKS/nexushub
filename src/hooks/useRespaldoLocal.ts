@@ -95,7 +95,10 @@ export function useRespaldoLocal() {
         });
       };
       guardar();
-      temporizador = setInterval(guardar, CADA_MS);
+      // Con la ventana oculta no se recorre el almacenamiento cada vuelta: al ocultarla ya se guardó (visibilitychange).
+      temporizador = setInterval(() => {
+        if (document.visibilityState === "visible") guardar();
+      }, CADA_MS);
       window.addEventListener("pagehide", guardar);
       window.addEventListener(EVENTO_GUARDAR_RESPALDO, guardar);
       document.addEventListener("visibilitychange", guardar);

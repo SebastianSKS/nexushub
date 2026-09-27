@@ -1,4 +1,5 @@
-import JSZip from "jszip";
+// JSZip se carga solo al crear un archivo nuevo: no forma parte del arranque.
+import type JSZip from "jszip";
 import { T } from "../../lib/i18n/nucleo.ts";
 
 /**
@@ -55,9 +56,15 @@ async function empaquetar(zip: JSZip): Promise<Blob> {
 
 // ─── Word ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
+/** Un ZIP vacío (carga JSZip la primera vez). */
+async function nuevoZip(): Promise<JSZip> {
+  const { default: Zip } = await import("jszip");
+  return new Zip();
+}
+
 async function docx(lang: string): Promise<Blob> {
   const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-  const zip = new JSZip();
+  const zip = await nuevoZip();
   zip.file("[Content_Types].xml", tipos([["/word/document.xml", `${OFFICE}.wordprocessingml.document.main+xml`], ["/word/styles.xml", `${OFFICE}.wordprocessingml.styles+xml`]]));
   zip.file("_rels/.rels", relaciones([{ id: "rId1", tipo: "officeDocument", destino: "word/document.xml" }]));
   zip.file("word/_rels/document.xml.rels", relaciones([{ id: "rId1", tipo: "styles", destino: "styles.xml" }]));
@@ -77,7 +84,7 @@ async function docx(lang: string): Promise<Blob> {
 
 async function xlsx(): Promise<Blob> {
   const S = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-  const zip = new JSZip();
+  const zip = await nuevoZip();
   zip.file(
     "[Content_Types].xml",
     tipos([
@@ -122,7 +129,7 @@ const marcador = (id: number, nombre: string, ph: string, lang: string) =>
   `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="${nombre}"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph ${ph}/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="${lang}"/></a:p></p:txBody></p:sp>`;
 
 async function pptx(opc: Required<OpcionesNuevo>): Promise<Blob> {
-  const zip = new JSZip();
+  const zip = await nuevoZip();
   zip.file(
     "[Content_Types].xml",
     tipos([

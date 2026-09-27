@@ -149,6 +149,13 @@ export interface DatosPromedio {
 export const MAX_MATERIAS = 40;
 export const MAX_EVALUACIONES = 20;
 
+/** Una escala con valores que tengan sentido: máximo positivo y mínimo aprobatorio entre 0 y el máximo. */
+export function acotarEscala(e: Escala): Escala {
+  const maximo = Math.min(1000, Math.max(1, Number.isFinite(e.maximo) ? e.maximo : ESCALA_DIEZ.maximo));
+  const minimo = Number.isFinite(e.minimoAprobatorio) ? e.minimoAprobatorio : maximo === 100 ? 70 : 6;
+  return { maximo, minimoAprobatorio: Math.min(maximo, Math.max(0, minimo)) };
+}
+
 const numero = (x: unknown): number | null => (typeof x === "number" && Number.isFinite(x) ? x : null);
 const acotar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 

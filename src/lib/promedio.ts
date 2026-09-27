@@ -208,3 +208,20 @@ export function normalizarPromedio(crudo: unknown): DatosPromedio {
   }
   return { escala, materias };
 }
+
+/**
+ * Lee un número escrito por una persona: acepta coma o punto decimal («8,5» y «8.5»). Un campo vacío es null («sin calificar»)
+ * y algo que no es un número es NaN (para marcarlo como error sin perder lo que se escribió).
+ */
+export function leerNumeroEscrito(texto: string): number | null {
+  const t = texto.trim().replace(",", ".");
+  if (t === "") return null;
+  if (!/^-?\d*\.?\d+$|^-?\d+\.$/.test(t)) return Number.NaN;
+  return Number(t);
+}
+
+/** Un número para mostrarlo en un campo o en una frase: sin ceros de más («8», «8.5») y con el punto o la coma que use el idioma. */
+export function escribirNumero(n: number, decimales = 1, coma = false): string {
+  const s = String(redondear(n, decimales));
+  return coma ? s.replace(".", ",") : s;
+}

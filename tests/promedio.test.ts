@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { MAX_EVALUACIONES, MAX_MATERIAS, normalizarPromedio, calificacionFinal, evaluacionesIniciales, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { escribirNumero, leerNumeroEscrito, MAX_EVALUACIONES, MAX_MATERIAS, normalizarPromedio, calificacionFinal, evaluacionesIniciales, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -214,5 +214,25 @@ describe("normalizarPromedio", () => {
   it("el mínimo aprobatorio nunca pasa del máximo, y sin dato se adapta a la escala", () => {
     assert.equal(normalizarPromedio({ escala: { maximo: 10, minimoAprobatorio: 50 } }).escala.minimoAprobatorio, 10);
     assert.equal(normalizarPromedio({ escala: { maximo: 100 } }).escala.minimoAprobatorio, 70);
+  });
+});
+
+describe("leerNumeroEscrito y escribirNumero", () => {
+  it("acepta punto y coma decimal", () => {
+    assert.equal(leerNumeroEscrito("8.5"), 8.5);
+    assert.equal(leerNumeroEscrito(" 8,5 "), 8.5);
+    assert.equal(leerNumeroEscrito("10"), 10);
+    assert.equal(leerNumeroEscrito(".5"), 0.5);
+  });
+  it("vacío es «sin calificar» y lo que no es número es NaN", () => {
+    assert.equal(leerNumeroEscrito(""), null);
+    assert.equal(leerNumeroEscrito("   "), null);
+    for (const malo of ["abc", "8.5.1", "8,5,1", "--3", "1e3", "8 5"]) assert.ok(Number.isNaN(leerNumeroEscrito(malo)), malo);
+  });
+  it("escribe sin ceros de más y con la coma del idioma", () => {
+    assert.equal(escribirNumero(8), "8");
+    assert.equal(escribirNumero(8.46), "8.5");
+    assert.equal(escribirNumero(8.46, 1, true), "8,5");
+    assert.equal(escribirNumero(7.123, 2), "7.12");
   });
 });

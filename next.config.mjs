@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
+// Para publicar la demo en una subcarpeta (p. ej. /nexo-web/demo) se compila con NEXT_PUBLIC_BASE_PATH=/nexo-web/demo. La
+// aplicación de escritorio no lo define: sus rutas parten de la raíz, como siempre.
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const nextConfig = {
+  ...(base ? { basePath: base, assetPrefix: base } : {}),
   reactStrictMode: true,
   poweredByHeader: false,
   // next/image necesita un servidor para redimensionar imágenes; aquí no hay ninguno.

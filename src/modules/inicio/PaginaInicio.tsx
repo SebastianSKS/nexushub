@@ -1,5 +1,6 @@
 "use client";
 
+import { ResumenDelDia } from "./ResumenDelDia";
 import { PrimerosPasos } from "./PrimerosPasos";
 import { useT, T, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
@@ -85,6 +86,8 @@ export function PaginaInicio() {
             </section>
 
             <PrimerosPasos onNombre={() => setPerfil(true)} />
+
+            <ResumenDelDia />
 
             <ClasesDeHoy />
 

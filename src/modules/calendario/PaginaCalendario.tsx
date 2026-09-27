@@ -212,7 +212,7 @@ export function PaginaCalendario() {
         }
         lateral={
           <>
-            <ProximosCumples amigos={amigos} onAmigo={(a) => abrir(a)} />
+            <ProximosCumples amigos={amigos} onAmigo={(a) => abrir(a)} onNuevo={() => abrir({ dia: hoy.getDate(), mes: hoy.getMonth() + 1 })} />
             <ProximosEventos eventos={eventos} onEvento={editarEvento} />
             <NotasRapidas />
             <PanelAvisos />

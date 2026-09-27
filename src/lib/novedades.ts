@@ -21,6 +21,14 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.2.1",
+    novedades: [
+      { glifo: "exito", titulo: T("Primeros pasos en Inicio"), texto: T("Una lista corta (tu nombre, tu horario, las carpetas de tus materias, un examen y la búsqueda) que se marca sola. Se puede ocultar y no se mete con las guías.") },
+      { glifo: "informacion", titulo: T("Pantallas vacías que enseñan"), texto: T("Si el Horario, el Calendario, Mis tareas o Video todavía no tienen nada, ahora te explican cómo empezar en tres pasos, con el botón listo.") },
+      { glifo: "campana", titulo: T("Consejos justo a tiempo"), texto: T("La primera vez que guardas una clase, un evento con hora o una carpeta, un aviso breve te cuenta qué pasa a continuación. Se pueden apagar en Configuración.") },
+    ],
+  },
+  {
     version: "0.2.0",
     novedades: [
       { glifo: "campana", titulo: T("Avisos con tu sonido"), texto: T("Elige cómo suenan (cinco sonidos de Nexo o los de Windows) y activa «No molestar» en las horas que quieras. Ahora los avisos salen como «Nexo», con su icono.") },

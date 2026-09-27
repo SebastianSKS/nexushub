@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsejosStore } from "@/store/consejos-store";
 import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import { useEffect, useRef, useState, type DragEvent } from "react";
@@ -61,6 +62,7 @@ export function DialogoEscaneo({ abierto, onCerrar, onGuardado }: { abierto: boo
     else useHorarioStore.getState().agregar(datos);
     onCerrar();
     onGuardado?.(datos.map((c) => c.materia));
+    if (datos.length > 0) useConsejosStore.getState().ofrecer("primera-clase");
   };
 
   const quitar = (i: number) => fase.tipo === "revisar" && setFase({ tipo: "revisar", clases: fase.clases.filter((_, k) => k !== i) });

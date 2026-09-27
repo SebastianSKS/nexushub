@@ -120,7 +120,7 @@ export function PaginaHorario() {
             />
           ) : (
             <section aria-label={t("Horario semanal")} className="overflow-x-auto rounded-[8px] border border-stroke bg-layer shadow-card">
-              <div className="min-w-[640px]">
+              <div className="min-w-[520px]">
                 <div className="grid border-b border-stroke" style={{ gridTemplateColumns: `${anchoRiel}px repeat(${diasVisibles}, minmax(0, 1fr))` }}>
                   <div />
                   {Array.from({ length: diasVisibles }, (_, i) => (

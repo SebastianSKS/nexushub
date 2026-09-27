@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { calificacionFinal, ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -59,5 +59,18 @@ describe("promedioParcial", () => {
   });
   it("con una sola calificación, es esa", () => {
     assert.equal(promedioParcial([ev(15, 7.5)]), 7.5);
+  });
+});
+
+describe("calificacionFinal", () => {
+  it("con todo calificado es la suma ponderada", () => {
+    assert.equal(redondear(calificacionFinal([ev(60, 8), ev(40, 9)])!, 2), 8.4);
+  });
+  it("mientras falte algo por calificar no hay final", () => {
+    assert.equal(calificacionFinal([ev(60, 8), ev(40, null)]), null);
+    assert.equal(calificacionFinal([ev(60, 8)]), null);
+  });
+  it("tolera pesos con decimales que suman 100", () => {
+    assert.notEqual(calificacionFinal([ev(33.3, 9), ev(33.3, 9), ev(33.4, 9)]), null);
   });
 });

@@ -50,3 +50,9 @@ export function promedioParcial(evaluaciones: readonly Evaluacion[]): number | n
   if (peso <= 0) return null;
   return (puntosGanados(evaluaciones) * 100) / peso;
 }
+
+/** La calificación final de la materia, solo cuando ya está calificado el 100 % (con un margen para los decimales de los pesos). Si no, null. */
+export function calificacionFinal(evaluaciones: readonly Evaluacion[]): number | null {
+  if (pesoPendiente(evaluaciones) > 0.001) return null;
+  return puntosGanados(evaluaciones);
+}

@@ -1,3 +1,4 @@
+import { ahorroActivo, efectoEfectivo, movimientoEfectivo, pistasDelEquipo, type ModoAhorro } from "@/lib/rendimiento";
 import { colorDeTexto } from "@/lib/color";
 import { create } from "zustand";
 
@@ -44,6 +45,9 @@ function leer(): Ajustes {
   }
 }
 
+/** ¿Está en marcha el bajo consumo, con el modo elegido y lo que se sabe del equipo? */
+export const ahorroDeAhora = (modo: ModoAhorro): boolean => ahorroActivo(modo, pistasDelEquipo());
+
 /** Lectura suelta del ajuste: la pantalla de arranque decide adónde ir antes de que el store se cargue. */
 export function leerSeccionInicial(): SeccionInicial {
   return leer().seccionInicial;
@@ -63,9 +67,13 @@ export function aplicarAjustes(a: Ajustes) {
   const oscuroSistema = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const resuelto = a.tema === "sistema" ? (oscuroSistema ? "dark" : "light") : a.tema === "claro" ? "light" : "dark";
   root.dataset.theme = resuelto;
-  root.dataset.efecto = a.efecto;
+  // En bajo consumo no hay transparencia de ventana y el movimiento baja (salvo que se pidieran todas las animaciones a propósito).
+  const ahorro = ahorroDeAhora(a.modoAhorro);
+  root.dataset.efecto = efectoEfectivo(a.efecto, ahorro, "ninguno");
+  root.dataset.ahorro = ahorro ? "true" : "false";
   // «sistema» = lo que pida Windows; «reducido» y «normal» mandan sobre Windows.
-  root.dataset.movimiento = a.reducirMovimiento === "si" ? "reducido" : a.reducirMovimiento === "no" ? "normal" : "sistema";
+  const movimiento = movimientoEfectivo(a.reducirMovimiento, ahorro);
+  root.dataset.movimiento = movimiento === "si" ? "reducido" : movimiento === "no" ? "normal" : "sistema";
 
   if (a.acento.toLowerCase() === ACENTO_PREDETERMINADO.toLowerCase()) {
     // Acento de Windows por defecto: valores exactos del sistema de diseño.

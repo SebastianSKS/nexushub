@@ -1,5 +1,6 @@
 "use client";
 
+import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { useHora } from "@/hooks/useHora";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useT, localeActual } from "@/lib/i18n";
@@ -105,17 +106,18 @@ export function PaginaHorario() {
         }
         principal={
           clases.length === 0 ? (
-            <Card className="flex flex-col items-center gap-4 px-6 py-14 text-center">
-              <Glifo nombre="camara" tam={36} className="text-accent-text" />
-              <div>
-                <p className="text-subtitle text-fg">{t("Aún no tienes horario")}</p>
-                <p className="mx-auto mt-1 max-w-[440px] text-body text-fg-secondary">{t("Sube la imagen del horario que te dieron (una captura o una foto) y Nexo saca las materias, los días y las horas. Después puedes corregir lo que haga falta.")}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>{t("Escanear imagen")}</Button>
-                <Button onClick={() => abrir({ dia: 0 })}>{t("Añadirlo a mano")}</Button>
-              </div>
-            </Card>
+            <EstadoVacio
+              glifo="camara"
+              titulo={t("Aún no tienes horario")}
+              texto={t("Toma una foto de tu horario y Nexo lo llena solo: saca las materias, los días y las horas.")}
+              pasos={[t("Toma una captura o una foto del horario que te dieron."), t("Pulsa «Escanear imagen» y elígela."), t("Revisa las clases y guarda: Nexo te avisará antes de cada una.")]}
+              acciones={
+                <>
+                  <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>{t("Escanear imagen")}</Button>
+                  <Button onClick={() => abrir({ dia: 0 })}>{t("Añadirlo a mano")}</Button>
+                </>
+              }
+            />
           ) : (
             <section aria-label={t("Horario semanal")} className="overflow-x-auto rounded-[8px] border border-stroke bg-layer shadow-card">
               <div className="min-w-[640px]">

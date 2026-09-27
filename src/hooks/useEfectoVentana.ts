@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { esEscritorio } from "@/lib/entorno";
-import { useAjustesStore } from "@/store/ajustes-store";
+import { efectoEfectivo } from "@/lib/rendimiento";
+import { ahorroDeAhora, useAjustesStore } from "@/store/ajustes-store";
 
 /**
  * Aplica el «Efecto de ventana» elegido en Configuración al material NATIVO de la ventana (el que
@@ -10,7 +11,10 @@ import { useAjustesStore } from "@/store/ajustes-store";
  * CSS: la ventana seguiría mostrando Mica de verdad por debajo, viniera lo que viniera elegido.
  */
 export function useEfectoVentana() {
-  const efecto = useAjustesStore((s) => s.efecto);
+  const elegido = useAjustesStore((s) => s.efecto);
+  const modoAhorro = useAjustesStore((s) => s.modoAhorro);
+  // En bajo consumo la ventana se dibuja opaca: la transparencia (Mica, Acrílico) es lo que más pesa en un equipo modesto.
+  const efecto = efectoEfectivo(elegido, ahorroDeAhora(modoAhorro), "ninguno");
 
   useEffect(() => {
     if (!esEscritorio()) return;

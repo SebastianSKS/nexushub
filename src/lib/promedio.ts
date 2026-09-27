@@ -43,3 +43,10 @@ export function pesoPendiente(evaluaciones: readonly Evaluacion[]): number {
 export function puntosGanados(evaluaciones: readonly Evaluacion[]): number {
   return evaluaciones.reduce((s, e) => (e.calificacion === null ? s : s + (e.calificacion * e.peso) / 100), 0);
 }
+
+/** Cómo vas hasta ahora: el promedio de lo ya calificado, tomando cada evaluación por su peso. Null si todavía no hay ninguna calificación. */
+export function promedioParcial(evaluaciones: readonly Evaluacion[]): number | null {
+  const peso = pesoEvaluado(evaluaciones);
+  if (peso <= 0) return null;
+  return (puntosGanados(evaluaciones) * 100) / peso;
+}

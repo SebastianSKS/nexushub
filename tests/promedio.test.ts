@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { ESCALA_CIEN, ESCALA_DIEZ, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -45,5 +45,19 @@ describe("puntosGanados", () => {
   });
   it("lo que no está calificado no suma", () => {
     assert.equal(puntosGanados([ev(50, null)]), 0);
+  });
+});
+
+describe("promedioParcial", () => {
+  it("es el promedio de lo calificado, ponderado", () => {
+    // 8 con peso 30 y 10 con peso 20: (2.4 + 2) / 0.5 = 8.8
+    assert.equal(redondear(promedioParcial([ev(30, 8), ev(20, 10), ev(50, null)])!, 2), 8.8);
+  });
+  it("sin calificaciones no hay promedio", () => {
+    assert.equal(promedioParcial([]), null);
+    assert.equal(promedioParcial([ev(40, null)]), null);
+  });
+  it("con una sola calificación, es esa", () => {
+    assert.equal(promedioParcial([ev(15, 7.5)]), 7.5);
   });
 });

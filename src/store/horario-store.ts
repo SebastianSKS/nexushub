@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Clase } from "@/lib/horario/horario";
+import { fusionarClases } from "@/lib/horario/compartir";
 import { claseValida } from "@/lib/horario/validar";
 
 const CLAVE = "nexushub-horario";
@@ -30,7 +31,7 @@ interface HorarioState {
   quitarClase: (id: string) => void;
   /** Sustituye todo el horario (por ejemplo, al escanear uno nuevo). */
   reemplazar: (clases: Omit<Clase, "id">[]) => void;
-  /** Añade clases a las que ya hay, sin repetir una que coincida en materia, día y hora. */
+  /** Añade clases a las que ya hay, sin repetir una que coincida en materia, día y hora (sin importar mayúsculas). */
   agregar: (clases: Omit<Clase, "id">[]) => number;
 }
 
@@ -64,11 +65,9 @@ export const useHorarioStore = create<HorarioState>((set, get) => ({
   },
 
   agregar: (nuevas) => {
-    const actuales = get().clases;
-    const utiles = nuevas.filter((n) => !actuales.some((c) => c.dia === n.dia && c.inicio === n.inicio && c.materia === n.materia));
-    const clases = [...actuales, ...utiles.map((c) => ({ ...c, id: crypto.randomUUID() }))];
-    set({ clases });
-    escribir(clases);
-    return utiles.length;
+    const r = fusionarClases(get().clases, nuevas.map((c) => ({ ...c, id: crypto.randomUUID() })), "anadir");
+    set({ clases: r.clases });
+    escribir(r.clases);
+    return r.agregadas;
   },
 }));

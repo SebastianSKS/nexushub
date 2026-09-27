@@ -1,8 +1,9 @@
 "use client";
 
+import { useAhora } from "@/hooks/useAhora";
 import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { Card } from "@/components/fluent/Card";
@@ -15,13 +16,11 @@ export function ClasesDeHoy() {
   const { hora } = useHora();
   const clases = useHorarioStore((s) => s.clases);
   // Null hasta montar en el navegador: la hora no puede calcularse al generar la página (ver PaginaInicio).
-  const [ahora, setAhora] = useState<Date | null>(null);
+  // Se detiene sola con la ventana oculta.
+  const ahora = useAhora();
 
   useEffect(() => {
     useHorarioStore.getState().cargar();
-    setAhora(new Date());
-    const t = setInterval(() => setAhora(new Date()), 30_000);
-    return () => clearInterval(t);
   }, []);
 
   if (!ahora) return null;

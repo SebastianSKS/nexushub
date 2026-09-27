@@ -5,7 +5,8 @@ import { textoDeOffice, tipoDeArchivo, type TipoOffice } from "@/lib/office-text
 import { plegar } from "@/lib/text";
 import { abrirEnSistema } from "@/services/carpetas";
 import { getPdfjs } from "@/services/documents/pdfjs";
-import { useAjustesStore } from "@/store/ajustes-store";
+import { planDeIndexado } from "@/lib/rendimiento";
+import { ahorroDeAhora, useAjustesStore } from "@/store/ajustes-store";
 import { useCalendarioStore } from "@/store/calendario-store";
 
 /**
@@ -213,7 +214,8 @@ async function leerPdf(p: PdfEnDisco): Promise<Registro> {
   }
 }
 
-const respirar = () => new Promise<void>((r) => setTimeout(r, 0));
+/** Un respiro entre archivo y archivo: en bajo consumo es más largo, para que la interfaz no se note ocupada. */
+const respirar = () => new Promise<void>((r) => setTimeout(r, planDeIndexado(ahorroDeAhora(useAjustesStore.getState().modoAhorro)).pausaEntreArchivosMs));
 const activo = () => useAjustesStore.getState().buscarEnPdfs;
 
 /**

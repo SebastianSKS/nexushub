@@ -92,17 +92,33 @@ function publicar(parcial: Partial<EstadoIndice> = {}) {
 
 // ─── Base de datos del navegador (IndexedDB), con las fallas tratadas: si no hay, el índice vive solo en memoria ───
 
-function abrirBd(): Promise<IDBDatabase | null> {
+/** Abre la base con la versión dada; `onupgradeneeded` crea el almacén si falta. */
+function abrirVersion(version?: number): Promise<IDBDatabase | null> {
   return new Promise((resolver) => {
     try {
-      const pet = indexedDB.open(BD, 1);
-      pet.onupgradeneeded = () => pet.result.createObjectStore(ALMACEN, { keyPath: "clave" });
+      const pet = version === undefined ? indexedDB.open(BD) : indexedDB.open(BD, version);
+      pet.onupgradeneeded = () => {
+        if (!pet.result.objectStoreNames.contains(ALMACEN)) pet.result.createObjectStore(ALMACEN, { keyPath: "clave" });
+      };
       pet.onsuccess = () => resolver(pet.result);
       pet.onerror = () => resolver(null);
+      pet.onblocked = () => resolver(null);
     } catch {
       resolver(null);
     }
   });
+}
+
+/**
+ * La base del índice, con su almacén. Si la base existe pero sin almacén (una copia a medias, o algo que la abrió antes de tiempo),
+ * se sube de versión para crearlo: si no, cada lectura fallaría en silencio y el índice viviría solo en memoria, releyendo todo en cada sesión.
+ */
+async function abrirBd(): Promise<IDBDatabase | null> {
+  const bd = await abrirVersion(); // sin versión: abre la que haya (o crea la 1); pedir la 1 fallaría si ya se subió
+  if (!bd || bd.objectStoreNames.contains(ALMACEN)) return bd;
+  const siguiente = bd.version + 1;
+  bd.close();
+  return abrirVersion(siguiente);
 }
 
 async function transaccion<T>(modo: IDBTransactionMode, hacer: (a: IDBObjectStore) => IDBRequest<T> | void): Promise<T | undefined> {

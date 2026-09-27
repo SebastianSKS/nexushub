@@ -468,5 +468,12 @@
   "Algunos caracteres fuera del alfabeto latino (por ejemplo, emojis o escrituras no latinas) se sustituyeron por «?».": "Some characters outside the Latin alphabet (for example emojis or non-Latin scripts) were replaced with “?”.",
   "Algunos estilos del documento no tienen equivalente y se aplicaron como texto normal.": "Some of the document's styles have no equivalent and were applied as normal text.",
   "No se pudo abrir el PDF": "The PDF couldn't be opened",
-  "«{nombre}» ya no está en la carpeta {carpeta}.": "“{nombre}” is no longer in the folder {carpeta}."
+  "«{nombre}» ya no está en la carpeta {carpeta}.": "“{nombre}” is no longer in the folder {carpeta}.",
+  "Una carpeta por materia, en tu computadora, para guardar tus tareas y trabajos.": "One folder per subject, on your computer, to keep your assignments and work.",
+  "Créalas con «Nueva carpeta», o deja que Nexo las cree desde tu horario.": "Create them with “New folder”, or let Nexo create them from your schedule.",
+  "Arrastra ahí tus archivos, o crea un Word, Excel o PowerPoint en blanco.": "Drag your files there, or create a blank Word, Excel or PowerPoint.",
+  "Con Ctrl+K puedes buscar dentro de esos PDF y documentos.": "With Ctrl+K you can search inside those PDFs and documents.",
+  "Crear desde mi horario": "Create from my schedule",
+  "Esta carpeta está vacía": "This folder is empty",
+  "Arrastra aquí tus archivos o crea uno nuevo: se guardan en tu computadora, en una carpeta de verdad.": "Drag your files here or create a new one: they're saved on your computer, in a real folder."
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { traducir } from "@/lib/i18n";
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
+import { usePathname } from "next/navigation";
 import { registrarControlador } from "@/services/reproductor/controladores";
 import { fetchMyPlaylists, spotifyApi } from "@/services/music/api";
 import { obtenerAccessToken, permisosFaltantes } from "@/services/music/oauth";
@@ -212,9 +213,18 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
     });
   }, []);
 
+  // El reproductor de Spotify (un proceso más del navegador, unos 60 MB y su red) solo se crea cuando hace falta: al entrar a Música,
+  // al volver del inicio de sesión o cuando algo pide sonar con Spotify. Quien solo usa Horario o Documentos no lo paga.
+  const pathname = usePathname();
+  const hacenFalta = pathname.startsWith("/musica") || pathname.startsWith("/api/spotify") || fuente === "spotify";
+  const [activo, setActivo] = useState(false);
+  useEffect(() => {
+    if (hacenFalta) setActivo(true); // una vez activado no se vuelve a apagar: cambiar de sección no debe cortar la música
+  }, [hacenFalta]);
+
   // 2) Conectando: verifica Premium y crea el reproductor.
   useEffect(() => {
-    if (estado !== "connecting") return;
+    if (estado !== "connecting" || !activo) return;
     let cancelado = false;
 
     (async () => {
@@ -356,7 +366,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
     return () => {
       cancelado = true;
     };
-  }, [estado]);
+  }, [estado, activo]);
 
   // 3) Al pedir una pista estando conectado, se reproduce en este dispositivo.
   useEffect(() => {

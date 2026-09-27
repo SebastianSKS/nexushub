@@ -1,5 +1,6 @@
 import type { PreferenciaIdioma } from "./i18n/nucleo.ts";
 import { esSonidoAviso, SONIDO_PREDETERMINADO, VOLUMEN_AVISOS_PREDETERMINADO, type SonidoAviso } from "./sonidos.ts";
+import { normalizarModoAhorro, type ModoAhorro } from "./rendimiento.ts";
 import { horaValida, SILENCIO_PREDETERMINADO } from "./silencio.ts";
 
 /**
@@ -75,6 +76,8 @@ export interface Ajustes {
   /** Tamaño de toda la interfaz, en %. */
   zoomInterfaz: number;
   reducirMovimiento: ReducirMovimiento;
+  /** Modo de bajo consumo: sin transparencia de ventana, menos animaciones y un indexado más pausado. «auto» lo enciende solo en equipos modestos. */
+  modoAhorro: ModoAhorro;
   /** Consejos breves la primera vez que haces algo (guardar tu primera clase, tu primera carpeta…). */
   consejos: boolean;
   /** Secciones escondidas de la barra lateral (siguen ahí: se llega con Ctrl+K o el teclado). */
@@ -113,6 +116,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   primerDiaSemana: "lunes",
   zoomInterfaz: 100,
   reducirMovimiento: "sistema",
+  modoAhorro: "auto",
   consejos: true,
   seccionesOcultas: [],
 };
@@ -152,6 +156,7 @@ export function normalizarAjustes(crudo: unknown): Ajustes {
     primerDiaSemana: d.primerDiaSemana === "domingo" ? "domingo" : "lunes",
     zoomInterfaz: (ZOOMS_INTERFAZ as readonly number[]).includes(d.zoomInterfaz as number) ? (d.zoomInterfaz as number) : 100,
     reducirMovimiento: d.reducirMovimiento === "si" || d.reducirMovimiento === "no" ? d.reducirMovimiento : "sistema",
+    modoAhorro: normalizarModoAhorro(d.modoAhorro),
     consejos: d.consejos !== false,
     seccionesOcultas: Array.isArray(d.seccionesOcultas) ? [...new Set(d.seccionesOcultas.filter((x): x is SeccionOcultable => (SECCIONES_OCULTABLES as readonly unknown[]).includes(x)))] : [],
   };

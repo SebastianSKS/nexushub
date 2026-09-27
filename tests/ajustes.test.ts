@@ -46,6 +46,13 @@ describe("normalizarAjustes", () => {
     assert.deepEqual([b.usarOffice, b.buscarEnPdfs, b.segundoPlano, b.silencioActivo], [false, false, true, true]);
   });
 
+  it("el modo de bajo consumo es «auto» salvo que se elija «si» o «no»", () => {
+    assert.equal(normalizarAjustes({}).modoAhorro, "auto");
+    assert.equal(normalizarAjustes({ modoAhorro: "si" }).modoAhorro, "si");
+    assert.equal(normalizarAjustes({ modoAhorro: "no" }).modoAhorro, "no");
+    for (const mal of ["SI", 1, null, "otro"]) assert.equal(normalizarAjustes({ modoAhorro: mal }).modoAhorro, "auto");
+  });
+
   it("los consejos están activos salvo que se apaguen a propósito", () => {
     assert.equal(normalizarAjustes({}).consejos, true);
     assert.equal(normalizarAjustes({ consejos: false }).consejos, false);

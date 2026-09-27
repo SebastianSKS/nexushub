@@ -82,5 +82,9 @@
   "{nombre}, hoy tienes {cuenta}": "{nombre}, today you have {cuenta}",
   "Hoy tienes {cuenta}": "Today you have {cuenta}",
   "En {n} min: {titulo}": "In {n} min: {titulo}",
-  "Empieza a las {hora}.": "Starts at {hora}."
+  "Empieza a las {hora}.": "Starts at {hora}.",
+  "Toma una foto de tu horario y Nexo lo llena solo: saca las materias, los días y las horas.": "Take a photo of your schedule and Nexo fills it in by itself: it picks out the subjects, days and times.",
+  "Toma una captura o una foto del horario que te dieron.": "Take a screenshot or a photo of the schedule you were given.",
+  "Pulsa «Escanear imagen» y elígela.": "Press “Scan image” and choose it.",
+  "Revisa las clases y guarda: Nexo te avisará antes de cada una.": "Check the classes and save: Nexo will notify you before each one."
 }

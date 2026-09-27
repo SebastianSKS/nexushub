@@ -22,6 +22,9 @@ function guardar(g: PasosGuardados) {
 
 interface PrimerosPasosState extends PasosGuardados {
   cargado: boolean;
+  /** Solo de esta sesión (no se guarda): la lista ya se le mostró a la persona, así que si la termina en otra sección, al volver se celebra en vez de esfumarse. */
+  vistaEnSesion: boolean;
+  marcarVista: () => void;
   cargar: () => void;
   /** Anota algo que no se puede saber mirando los datos: que ya se probó la búsqueda o que ya se crearon carpetas. */
   marcar: (paso: "buscador" | "carpetas") => void;
@@ -38,6 +41,11 @@ const datos = (s: PasosGuardados): PasosGuardados => ({ buscador: s.buscador, ca
 export const usePrimerosPasosStore = create<PrimerosPasosState>((set, get) => ({
   ...PASOS_GUARDADOS_INICIAL,
   cargado: false,
+  vistaEnSesion: false,
+
+  marcarVista: () => {
+    if (!get().vistaEnSesion) set({ vistaEnSesion: true });
+  },
 
   cargar: () => {
     if (get().cargado) return;

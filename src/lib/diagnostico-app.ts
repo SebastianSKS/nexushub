@@ -1,9 +1,20 @@
 import { armarDiagnostico, direccionDeReporte } from "@/lib/diagnostico";
 import { abrirExterno, esEscritorio } from "@/lib/entorno";
 import { useIdiomaStore } from "@/lib/i18n";
+import { ahorroActivo, pistasDelEquipo } from "@/lib/rendimiento";
+import { useAjustesStore } from "@/store/ajustes-store";
 
 /** El repositorio donde se abren los reportes. */
 export const REPOSITORIO = "SebastianSKS/nexushub";
+
+/** «4 núcleos, 8 GB, bajo consumo: sí»: lo que el navegador sabe del equipo y si el modo de bajo consumo está en marcha. */
+function descripcionDelEquipo(): string {
+  const p = pistasDelEquipo();
+  const partes = [p.nucleos ? `${p.nucleos} núcleos` : "", p.memoriaGB ? `${p.memoriaGB} GB` : ""].filter(Boolean);
+  const modo = useAjustesStore.getState().modoAhorro;
+  partes.push(`bajo consumo: ${ahorroActivo(modo, p) ? "sí" : "no"} (${modo})`);
+  return partes.join(", ");
+}
 
 async function versionDeLaApp(): Promise<string> {
   if (!esEscritorio()) return "web";
@@ -21,6 +32,7 @@ export async function diagnosticoDeAhora(error?: (Error & { digest?: string }) |
     version: await versionDeLaApp(),
     entorno: esEscritorio() ? "escritorio" : "web",
     idioma: useIdiomaStore.getState().idioma,
+    equipo: descripcionDelEquipo(),
     ruta: typeof location === "undefined" ? undefined : location.pathname,
     agente: typeof navigator === "undefined" ? undefined : navigator.userAgent,
     error: error ? { nombre: error.name, mensaje: error.message, pila: error.stack, digest: error.digest } : undefined,

@@ -123,6 +123,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "calculadora", titulo: T("Normal y científica"), texto: T("Pulsa los botones o escribe con el teclado. Cambia entre la calculadora normal y la científica (con grados o radianes) cuando lo necesites.") },
       { glifo: "reloj", titulo: T("Historial"), texto: T("Tus cuentas quedan en el historial. Toca un resultado para usarlo en la siguiente cuenta.") },
       { glifo: "buscar", titulo: T("Cuentas desde la búsqueda"), texto: T("En la barra de arriba (Ctrl + K) escribe una cuenta como 25*4 y te da el resultado ahí mismo; con Enter lo copias.") },
+      { glifo: "calculadora", titulo: T("Promedio de tus materias"), texto: T("En la pestaña «Promedio» apuntas cuánto vale cada evaluación y la calificación que sacaste. Nexo te dice cómo vas y cuánto necesitas en lo que falta para aprobar.") },
     ],
   },
   configuracion: {

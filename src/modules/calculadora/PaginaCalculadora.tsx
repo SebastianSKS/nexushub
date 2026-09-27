@@ -8,8 +8,11 @@ import { Card } from "@/components/fluent/Card";
 import { SegmentedControl } from "@/components/fluent/SegmentedControl";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { ErrorCalculo, evaluar, formatear } from "@/lib/calculadora/evaluar";
+import { PanelPromedio } from "./promedio/PanelPromedio";
 
 type Modo = "normal" | "cientifica";
+/** La calculadora de siempre o el promedio de calificaciones. */
+type Pestana = "calculadora" | "promedio";
 
 interface Tecla {
   /** Lo que se ve en el botón. */
@@ -53,6 +56,7 @@ const ESTILO_TECLA: Record<NonNullable<Tecla["tipo"]>, string> = {
 /** /calculadora — normal y científica, con historial. Se puede escribir con el teclado o pulsar los botones. */
 export function PaginaCalculadora() {
   const tr = useT();
+  const [pestana, setPestana] = useState<Pestana>("calculadora");
   const [modo, setModo] = useState<Modo>("normal");
   const [grados, setGrados] = useState(true);
   const [expr, setExpr] = useState("");
@@ -170,21 +174,36 @@ export function PaginaCalculadora() {
   return (
     <PlantillaPagina
       migas={[{ etiqueta: "Calculadora" }]}
-      titulo={tr("Calculadora")}
-      descripcion={tr("Normal y científica. Puedes pulsar los botones o escribir con el teclado.")}
+      titulo={pestana === "promedio" ? tr("Promedio") : tr("Calculadora")}
+      descripcion={pestana === "promedio" ? tr("Apunta tus calificaciones y mira cómo vas y cuánto necesitas sacar en lo que falta.") : tr("Normal y científica. Puedes pulsar los botones o escribir con el teclado.")}
       accion={
-        <SegmentedControl<Modo>
-          label={tr("Tipo de calculadora")}
-          etiquetaVisible={false}
-          value={modo}
-          options={[
-            { value: "normal", label: tr("Normal") },
-            { value: "cientifica", label: tr("Científica") },
-          ]}
-          onChange={setModo}
-        />
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <SegmentedControl<Pestana>
+            label={tr("Qué quieres usar")}
+            etiquetaVisible={false}
+            value={pestana}
+            options={[
+              { value: "calculadora", label: tr("Calculadora") },
+              { value: "promedio", label: tr("Promedio") },
+            ]}
+            onChange={setPestana}
+          />
+          {pestana === "calculadora" && (
+            <SegmentedControl<Modo>
+              label={tr("Tipo de calculadora")}
+              etiquetaVisible={false}
+              value={modo}
+              options={[
+                { value: "normal", label: tr("Normal") },
+                { value: "cientifica", label: tr("Científica") },
+              ]}
+              onChange={setModo}
+            />
+          )}
+        </div>
       }
       principal={
+        pestana === "promedio" ? <PanelPromedio /> : (
         <Card className={clsx("mx-auto w-full overflow-hidden", modo === "cientifica" ? "max-w-[820px]" : "max-w-[420px]")}>
           {/* Pantalla: la cuenta arriba, en pequeño, y debajo el resultado en grande (como la calculadora de Windows). */}
           <div className="px-5 pb-3 pt-4" style={{ backgroundImage: "linear-gradient(to bottom, color-mix(in srgb, var(--accent) 14%, transparent), transparent)" }}>
@@ -242,8 +261,10 @@ export function PaginaCalculadora() {
             <div className="grid grid-cols-4 gap-1.5">{NUMERICAS.flat().map(boton)}</div>
           </div>
         </Card>
+        )
       }
       lateral={
+        pestana === "promedio" ? undefined : (
         <Card className="p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-body font-semibold text-fg">{tr("Historial")}</h2>
@@ -266,6 +287,7 @@ export function PaginaCalculadora() {
             </ul>
           )}
         </Card>
+        )
       }
     />
   );

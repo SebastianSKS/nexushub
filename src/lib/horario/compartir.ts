@@ -2,7 +2,9 @@
  * Compartir el horario con un compañero: se guarda en un archivo (o en un código de texto corto para pegarlo en un mensaje) y
  * la otra persona lo importa. Solo viaja el horario: nada de tu perfil, tu calendario ni tus notas.
  */
+import { T } from "@/lib/i18n/nucleo";
 import type { Clase } from "./horario";
+import { claseValida } from "./validar";
 
 export const FORMATO_HORARIO = "nexo-horario";
 export const VERSION_HORARIO = 1;
@@ -30,4 +32,41 @@ export function textoDeHorario(clases: readonly Clase[], ahora: Date = new Date(
 export function nombreDeArchivoHorario(ahora: Date = new Date()): string {
   const dos = (n: number) => String(n).padStart(2, "0");
   return `Nexo-horario-${ahora.getFullYear()}-${dos(ahora.getMonth() + 1)}-${dos(ahora.getDate())}.json`;
+}
+
+/** Un horario de verdad tiene unas pocas decenas de clases: un archivo más grande que esto no es un horario. */
+export const MAX_BYTES_HORARIO = 200 * 1024;
+export const MAX_CLASES_HORARIO = 80;
+
+export type LecturaHorario = { ok: true; clases: Clase[]; descartadas: number } | { ok: false; motivo: string };
+
+/**
+ * Lee el texto de un horario compartido. Cada clase se valida como si viniera del almacenamiento (una clase dañada se descarta,
+ * el resto se conserva) y recibe un id nuevo: así importar nunca pisa una clase que ya tienes. `motivo` va sin traducir (con T).
+ */
+export function leerHorarioCompartido(texto: string, nuevoId: () => string): LecturaHorario {
+  if (texto.length > MAX_BYTES_HORARIO) return { ok: false, motivo: T("El archivo es demasiado grande para ser un horario de Nexo.") };
+  let crudo: unknown;
+  try {
+    crudo = JSON.parse(texto);
+  } catch {
+    return { ok: false, motivo: T("El archivo no se pudo leer: no es un horario de Nexo.") };
+  }
+  const raiz = crudo && typeof crudo === "object" ? (crudo as Record<string, unknown>) : null;
+  if (!raiz || raiz.formato !== FORMATO_HORARIO) return { ok: false, motivo: T("Ese archivo no es un horario de Nexo.") };
+  if (typeof raiz.version === "number" && raiz.version > VERSION_HORARIO) {
+    return { ok: false, motivo: T("Ese horario se guardó con una versión más nueva de Nexo. Actualiza Nexo para poder importarlo.") };
+  }
+  if (!Array.isArray(raiz.clases)) return { ok: false, motivo: T("El horario del archivo no trae clases.") };
+
+  const clases: Clase[] = [];
+  let descartadas = 0;
+  for (const x of raiz.clases.slice(0, MAX_CLASES_HORARIO)) {
+    const c = claseValida(x);
+    if (c) clases.push({ ...c, id: nuevoId() });
+    else descartadas++;
+  }
+  descartadas += Math.max(0, raiz.clases.length - MAX_CLASES_HORARIO);
+  if (clases.length === 0) return { ok: false, motivo: T("El horario del archivo no trae ninguna clase válida.") };
+  return { ok: true, clases, descartadas };
 }

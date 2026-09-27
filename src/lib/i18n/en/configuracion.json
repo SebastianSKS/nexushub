@@ -216,5 +216,14 @@
   "Ya completaste todos los pasos. ¡Buen trabajo!": "You've completed all the steps. Nice work!",
   "La lista de Inicio que te lleva por lo básico de Nexo. Si la ocultaste, puedes verla otra vez.": "The Home list that walks you through Nexo's basics. If you hid it, you can see it again.",
   "Consejos al empezar": "Tips as you start",
-  "Un aviso breve la primera vez que haces algo (guardar tu primera clase, tu primera carpeta…) para explicar qué pasa a continuación.": "A short notice the first time you do something (save your first class, your first folder…) to explain what happens next."
+  "Un aviso breve la primera vez que haces algo (guardar tu primera clase, tu primera carpeta…) para explicar qué pasa a continuación.": "A short notice the first time you do something (save your first class, your first folder…) to explain what happens next.",
+  "Modo de bajo consumo": "Low-power mode",
+  "Para equipos modestos: ventana sin transparencia, menos animaciones y búsqueda en archivos más pausada.": "For modest computers: window without transparency, fewer animations and a gentler file search.",
+  "Este equipo parece modesto ({nucleos} núcleos), así que está encendido.": "This computer looks modest ({nucleos} cores), so it's on.",
+  "Este equipo va sobrado ({nucleos} núcleos), así que está apagado.": "This computer has plenty of power ({nucleos} cores), so it's off.",
+  "Ahora: encendido.": "Now: on.",
+  "Ahora: apagado.": "Now: off.",
+  "Automático": "Automatic",
+  "Siempre encendido": "Always on",
+  "Apagado": "Off"
 }

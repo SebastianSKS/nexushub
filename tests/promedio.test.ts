@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { calificacionFinal, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
+import { calificacionFinal, evaluacionesIniciales, promedioGeneral, pesoSinRepartir, repartirPesos, type Materia, ESCALA_CIEN, ESCALA_DIEZ, estadoMateria, necesarioParaAprobar, pesoEvaluado, pesoPendiente, promedioParcial, puntosGanados, redondear, type Evaluacion } from "../src/lib/promedio.ts";
 
 describe("escalas", () => {
   it("la de 10 aprueba con 6 y la de 100 con 70", () => {
@@ -163,5 +163,16 @@ describe("repartirPesos y pesoSinRepartir", () => {
     assert.equal(pesoSinRepartir([ev(30, null), ev(20, 8)]), 50);
     assert.equal(pesoSinRepartir([ev(70, null), ev(50, null)]), 0);
     assert.equal(pesoSinRepartir([]), 100);
+  });
+});
+
+describe("evaluacionesIniciales", () => {
+  it("cuatro evaluaciones que suman 100 y sin calificar", () => {
+    let n = 0;
+    const lista = evaluacionesIniciales(() => `id${++n}`, ["Parcial 1", "Parcial 2", "Tareas", "Proyecto"]);
+    assert.equal(lista.length, 4);
+    assert.equal(lista.reduce((s, e) => s + e.peso, 0), 100);
+    assert.ok(lista.every((e) => e.calificacion === null));
+    assert.equal(new Set(lista.map((e) => e.id)).size, 4);
   });
 });

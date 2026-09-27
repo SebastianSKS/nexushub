@@ -133,3 +133,9 @@ export function pesoSinRepartir(evaluaciones: readonly Evaluacion[]): number {
   const repartido = evaluaciones.reduce((s, e) => s + e.peso, 0);
   return Math.max(0, redondear(100 - repartido, 1));
 }
+
+/** Las evaluaciones con las que arranca una materia nueva (se pueden cambiar): dos parciales, tareas y un proyecto. */
+export function evaluacionesIniciales(nuevoId: () => string, nombres: readonly [string, string, string, string]): Evaluacion[] {
+  const pesos = [30, 30, 20, 20];
+  return nombres.map((nombre, i) => ({ id: nuevoId(), nombre, peso: pesos[i]!, calificacion: null }));
+}

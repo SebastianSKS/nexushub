@@ -23,6 +23,16 @@ async function recorrer(dir) {
       /* esta carpeta no es una ruta con RSC (p. ej. _next): se ignora */
     }
     copiados += await recorrer(carpeta);
+    // Lo mismo con los trozos de cada ruta: el cliente los pide como «__next.<ruta>.<trozo>.txt» (con puntos) y se exportan
+    // anidados («__next.<ruta>/<trozo>.txt»). Sin estas copias cada precarga da 404 y la navegación cae a una recarga completa.
+    if (entrada.name.startsWith("__next.")) {
+      for (const trozo of await readdir(carpeta, { withFileTypes: true })) {
+        if (trozo.isFile() && trozo.name.endsWith(".txt")) {
+          await copyFile(path.join(carpeta, trozo.name), path.join(dir, `${entrada.name}.${trozo.name}`));
+          copiados++;
+        }
+      }
+    }
   }
   return copiados;
 }

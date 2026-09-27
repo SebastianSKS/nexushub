@@ -76,6 +76,7 @@ export function AjusteCopiaSeguridad() {
         r.canales > 0 && t("{n} canales", { n: r.canales }),
         r.favoritos > 0 && t("{n} favoritos de música", { n: r.favoritos }),
         r.notas > 0 && t("{n} apuntes", { n: r.notas }),
+        r.materiasPromedio > 0 && t("{n} materias del promedio", { n: r.materiasPromedio }),
         r.tienePerfil && t("tu perfil"),
       ].filter(Boolean)
     : [];

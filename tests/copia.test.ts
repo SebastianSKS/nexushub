@@ -105,10 +105,21 @@ describe("leerCopia", () => {
   });
 });
 
+describe("resumirCopia con promedio", () => {
+  it("cuenta las materias del promedio (que se guardan como un objeto, no como lista)", () => {
+    const c = crearCopia({ length: 1, key: () => "nexushub-promedio", setItem: () => undefined, getItem: () => JSON.stringify({ escala: { maximo: 10, minimoAprobatorio: 6 }, materias: [{}, {}, {}] }) }, "1.0.0");
+    assert.equal(resumirCopia(c).materiasPromedio, 3);
+  });
+  it("un promedio dañado cuenta como cero", () => {
+    const c = crearCopia({ length: 1, key: () => "nexushub-promedio", setItem: () => undefined, getItem: () => "{roto" }, "1.0.0");
+    assert.equal(resumirCopia(c).materiasPromedio, 0);
+  });
+});
+
 describe("resumirCopia", () => {
   it("cuenta lo que trae cada parte", () => {
     const c = crearCopia(lleno(), "0.2.0", ahora);
-    assert.deepEqual(resumirCopia(c), { eventos: 2, clases: 1, canales: 3, cumpleanos: 0, notas: 0, favoritos: 0, tienePerfil: true });
+    assert.deepEqual(resumirCopia(c), { eventos: 2, clases: 1, canales: 3, cumpleanos: 0, notas: 0, favoritos: 0, materiasPromedio: 0, tienePerfil: true });
   });
   it("con datos rotos cuenta cero en vez de fallar", () => {
     const c = crearCopia(new AlmacenFalso({ "nexushub-eventos": "{no es json", "nexushub-horario": '"texto"' }), "1", ahora);

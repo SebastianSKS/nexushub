@@ -225,5 +225,6 @@
   "Ahora: apagado.": "Now: off.",
   "Automático": "Automatic",
   "Siempre encendido": "Always on",
-  "Apagado": "Off"
+  "Apagado": "Off",
+  "{n} materias del promedio": "{n} subjects in your average"
 }

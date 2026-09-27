@@ -100,6 +100,8 @@ export interface ResumenCopia {
   cumpleanos: number;
   notas: number;
   favoritos: number;
+  /** Materias del promedio de calificaciones. */
+  materiasPromedio: number;
   tienePerfil: boolean;
 }
 
@@ -108,6 +110,17 @@ function contar(v: string | undefined): number {
   try {
     const x = JSON.parse(v) as unknown;
     return Array.isArray(x) ? x.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** Cuántas materias trae el promedio guardado (el dato es un objeto {escala, materias}, no una lista). */
+function contarMaterias(v: string | undefined): number {
+  if (!v) return 0;
+  try {
+    const x = JSON.parse(v) as { materias?: unknown };
+    return Array.isArray(x?.materias) ? x.materias.length : 0;
   } catch {
     return 0;
   }
@@ -122,6 +135,7 @@ export function resumirCopia(c: CopiaDatos): ResumenCopia {
     cumpleanos: contar(d["nexushub-cumples"]),
     notas: contar(d["nexushub-notas"]),
     favoritos: contar(d["nexushub-musica-favoritos"]),
+    materiasPromedio: contarMaterias(d["nexushub-promedio"]),
     tienePerfil: Boolean(d["nexushub-perfil"]),
   };
 }

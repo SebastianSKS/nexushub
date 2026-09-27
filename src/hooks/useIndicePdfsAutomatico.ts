@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { esEscritorio } from "@/lib/entorno";
 import { borrarIndice, sincronizarIndice } from "@/services/indice-pdfs";
-import { useAjustesStore } from "@/store/ajustes-store";
+import { planDeIndexado } from "@/lib/rendimiento";
+import { ahorroDeAhora, useAjustesStore } from "@/store/ajustes-store";
 
 /**
  * Mantiene al día el índice de los PDF de tus carpetas (para buscar dentro de ellos con Ctrl+K): unos segundos después de
@@ -23,7 +24,9 @@ export function useIndicePdfsAutomatico() {
       if (estabaActivo) void borrarIndice();
       return;
     }
-    const espera = window.setTimeout(() => void sincronizarIndice(), estabaActivo === null ? 8000 : 500);
+    // Al abrir Nexo se espera un rato (más en un equipo modesto) para no competir con el arranque.
+    const inicial = planDeIndexado(ahorroDeAhora(useAjustesStore.getState().modoAhorro)).esperaInicialMs;
+    const espera = window.setTimeout(() => void sincronizarIndice(), estabaActivo === null ? inicial : 500);
     const alVolver = () => void sincronizarIndice(120_000);
     window.addEventListener("focus", alVolver);
     return () => {

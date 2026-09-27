@@ -208,5 +208,9 @@
   "Avisar antes de un evento con hora": "Notify before an event with a time",
   "Para un examen a las 8:30 o una cita a las 4: una notificación unos minutos antes de que empiece.": "For an exam at 8:30 or an appointment at 4: a notification a few minutes before it starts.",
   "1 hora antes": "1 hour before",
-  "2 horas antes": "2 hours before"
+  "2 horas antes": "2 hours before",
+  "Primeros pasos": "First steps",
+  "La lista de Inicio que te lleva por lo básico de Nexo. Si la ocultaste o la terminaste, puedes verla otra vez.": "The Home list that walks you through Nexo's basics. If you hid it or finished it, you can see it again.",
+  "Mostrarla otra vez": "Show it again",
+  "Verla en Inicio": "See it on Home"
 }

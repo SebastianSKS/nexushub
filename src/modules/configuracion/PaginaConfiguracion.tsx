@@ -1,5 +1,6 @@
 "use client";
 
+import { AjustePrimerosPasos } from "./AjustePrimerosPasos";
 import { AjusteAyuda } from "./AjusteAyuda";
 import { AjusteCopiaSeguridad } from "./AjusteCopiaSeguridad";
 import { AjusteZoomInterfaz } from "./AjusteZoomInterfaz";
@@ -300,6 +301,7 @@ export function PaginaConfiguracion() {
 
             <Seccion titulo={t("Acerca de")}>
               <AjusteAyuda />
+              <AjustePrimerosPasos />
               <TarjetaAjuste glifo="informacion" titulo={t("Bienvenida y guías")} descripcion={t("Vuelve a ver la bienvenida. Cada sección tiene además su propia guía: pulsa el signo de interrogación (?) de la barra de arriba.")}>
                 <Button onClick={() => useGuiasStore.getState().abrir("bienvenida")}>{t("Ver de nuevo")}</Button>
               </TarjetaAjuste>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useEsEscritorio } from "@/hooks/useEsEscritorio";
 import { debeMostrarse, pasosDe, progresoDe, type EstadoPasos, type PasoDef, type PasoId, type Progreso } from "@/lib/primeros-pasos";
 import { listarCarpetas } from "@/services/carpetas";
@@ -44,7 +44,6 @@ export function usePrimerosPasos(): VistaPrimerosPasos {
   const guiaAbierta = useGuiasStore((s) => s.abierta !== null);
   const novedadesAbiertas = useNovedadesStore((s) => s.abiertas !== null);
   const [celebrando, setCelebrando] = useState(false);
-  const vistaAntes = useRef(false);
 
   useEffect(() => {
     usePrimerosPasosStore.getState().cargar();
@@ -66,12 +65,14 @@ export function usePrimerosPasos(): VistaPrimerosPasos {
   const progreso = progresoDe(estado, escritorio);
   const cargado = guardado.cargado && guiasCargadas;
   const mostrar = debeMostrarse({ guardado, progreso, cargado, bienvenidaVista, algoAbierto: guiaAbierta || novedadesAbiertas });
-  if (mostrar) vistaAntes.current = true;
+  useEffect(() => {
+    if (mostrar) usePrimerosPasosStore.getState().marcarVista();
+  }, [mostrar]);
 
   // Al completar el último paso: si la tarjeta estaba a la vista, se celebra un momento; si ya estaba todo hecho, ni sale.
   useEffect(() => {
     if (!cargado || !progreso.completo || guardado.completado) return;
-    if (!vistaAntes.current) {
+    if (!guardado.vistaEnSesion) {
       usePrimerosPasosStore.getState().completar();
       return;
     }
@@ -81,7 +82,7 @@ export function usePrimerosPasos(): VistaPrimerosPasos {
       usePrimerosPasosStore.getState().completar();
     }, MS_CELEBRACION);
     return () => window.clearTimeout(fin);
-  }, [cargado, progreso.completo, guardado.completado]);
+  }, [cargado, progreso.completo, guardado.completado, guardado.vistaEnSesion]);
 
   const pasos = pasosDe(escritorio).map((p) => ({ ...p, hecho: estado[p.id as PasoId] }));
   return { visible: mostrar || celebrando, celebrando, pasos, progreso, descartar: () => usePrimerosPasosStore.getState().descartar() };

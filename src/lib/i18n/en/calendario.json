@@ -162,5 +162,10 @@
   "Mañana: {titulo}": "Tomorrow: {titulo}",
   "En {dias} días: {titulo}": "In {dias} days: {titulo}",
   "Es {fecha}.": "It's {fecha}.",
-  "Será el {fecha}.": "It will be {fecha}."
+  "Será el {fecha}.": "It will be {fecha}.",
+  "Tu calendario está vacío": "Your calendar is empty",
+  "Aquí van tus tareas, exámenes, citas y los cumpleaños de tus amigos, cada uno con su color y su aviso.": "This is where your tasks, exams, appointments and your friends' birthdays go, each with its color and its notice.",
+  "Pulsa «Añadir tarea o evento» y ponle fecha (y hora, si tiene).": "Press “Add task or event” and give it a date (and a time, if it has one).",
+  "Nexo te avisa antes: ese día, un día antes o una semana antes, como elijas.": "Nexo notifies you beforehand: that day, a day before or a week before, as you choose.",
+  "Los cumpleaños se añaden aparte y se repiten cada año.": "Birthdays are added separately and repeat every year."
 }

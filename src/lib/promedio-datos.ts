@@ -42,3 +42,35 @@ export function conMateriaCambiada(datos: DatosPromedio, id: string, cambios: Pa
     ),
   };
 }
+
+const cambiarMateria = (datos: DatosPromedio, id: string, f: (m: Materia) => Materia): DatosPromedio => ({
+  ...datos,
+  materias: datos.materias.map((m) => (m.id === id ? f(m) : m)),
+});
+
+/** Añade una evaluación a una materia. Si ya tiene el máximo permitido, no añade nada. */
+export function conEvaluacionNueva(datos: DatosPromedio, materiaId: string, evaluacion: Evaluacion): DatosPromedio {
+  return cambiarMateria(datos, materiaId, (m) => (m.evaluaciones.length >= MAX_EVALUACIONES ? m : { ...m, evaluaciones: [...m.evaluaciones, evaluacion] }));
+}
+
+/** Quita una evaluación de una materia. */
+export function sinEvaluacion(datos: DatosPromedio, materiaId: string, evaluacionId: string): DatosPromedio {
+  return cambiarMateria(datos, materiaId, (m) => ({ ...m, evaluaciones: m.evaluaciones.filter((e) => e.id !== evaluacionId) }));
+}
+
+/** Cambia el nombre, el peso o la calificación de una evaluación. El peso se acota entre 0 y 100 y la calificación entre 0 y el máximo de la escala. */
+export function conEvaluacionCambiada(datos: DatosPromedio, materiaId: string, evaluacionId: string, cambios: Partial<Pick<Evaluacion, "nombre" | "peso" | "calificacion">>): DatosPromedio {
+  return cambiarMateria(datos, materiaId, (m) => ({
+    ...m,
+    evaluaciones: m.evaluaciones.map((e) => {
+      if (e.id !== evaluacionId) return e;
+      const siguiente = { ...e };
+      if (cambios.nombre !== undefined) siguiente.nombre = cambios.nombre.slice(0, 60);
+      if (cambios.peso !== undefined) siguiente.peso = Number.isFinite(cambios.peso) ? Math.min(100, Math.max(0, cambios.peso)) : e.peso;
+      if (cambios.calificacion !== undefined) {
+        siguiente.calificacion = cambios.calificacion === null || !Number.isFinite(cambios.calificacion) ? null : Math.min(datos.escala.maximo, Math.max(0, cambios.calificacion));
+      }
+      return siguiente;
+    }),
+  }));
+}

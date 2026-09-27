@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { restaurarRespaldo } from "@/hooks/useRespaldoLocal";
+import { ES_DEMO, sembrarDemo } from "@/lib/demo";
 import { useIdiomaStore } from "@/lib/i18n";
 
 /**
@@ -12,6 +13,7 @@ import { useIdiomaStore } from "@/lib/i18n";
 export function RespaldoPrimero({ children }: { children: ReactNode }) {
   const [listo, setListo] = useState(false);
   useEffect(() => {
+    if (ES_DEMO) sembrarDemo(window.localStorage); // la demo se llena con datos de ejemplo antes de que nada los lea
     let vivo = true;
     // Por si la recuperación tardara demasiado, la aplicación abre igual a los 3 segundos.
     const limite = setTimeout(() => {

@@ -34,6 +34,9 @@ Ambas secciones usan YouTube y Spotify y necesitan internet. Si tu navegador o t
 **No convierte un Word, Excel o PowerPoint como esperaba.**
 Si tienes Microsoft Office instalado, Nexo lo usa para que el resultado salga igual que guardarlo desde Office (se puede apagar en Configuración › Documentos). Sin Office usa su propio motor, que cubre lo habitual; en cada resultado te avisa qué cosas no se conservan.
 
+**¿Cómo llevo mi promedio?**
+En *Calculadora* hay una pestaña **Promedio**. Añade tus materias (o tráelas desde tu horario), pon cuánto vale cada evaluación y la calificación que ya sacaste. Nexo te dice cómo vas en cada materia y cuánto necesitas sacar en lo que falta para aprobar. Elige la escala de tu escuela (0 a 10 o 0 a 100) y con cuánto se aprueba. Todo se guarda en tu computadora y entra en la copia de seguridad.
+
 **¿Dónde guarda Nexo mis cosas?**
 Todo está en tu computadora, nada se sube a internet:
 - Ajustes, perfil, horario, calendario, canales y favoritos: en los datos de la aplicación (`%LOCALAPPDATA%\com.nexushub.app`), con una copia automática en `%APPDATA%\NexusHub`.

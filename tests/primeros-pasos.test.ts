@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { SECCIONES } from "../src/lib/rutas.ts";
 import { debeMostrarse, normalizarPasosGuardados, PASOS, PASOS_GUARDADOS_INICIAL, pasosDe, progresoDe, type EstadoPasos } from "../src/lib/primeros-pasos.ts";
 
 const nada: EstadoPasos = { nombre: false, horario: false, carpetas: false, examen: false, buscador: false };
@@ -14,6 +15,15 @@ describe("los pasos", () => {
 
   it("las rutas son de Nexo", () => {
     for (const p of PASOS) if (p.ruta) assert.match(p.ruta, /^\/[a-z]/, p.id);
+  });
+
+  it("cada ruta lleva a una sección que existe", () => {
+    const rutas = new Set(SECCIONES.map((s) => s.ruta));
+    for (const p of PASOS) if (p.ruta) assert.ok(rutas.has(p.ruta) || p.ruta === "/documentos/carpetas", `${p.id}: ${p.ruta}`);
+  });
+
+  it("los pasos sin ruta (nombre y búsqueda) los resuelve la propia tarjeta", () => {
+    assert.deepEqual(PASOS.filter((p) => !p.ruta).map((p) => p.id), ["nombre", "buscador"]);
   });
 
   it("en la versión web no está el paso de las carpetas (solo existen en escritorio)", () => {

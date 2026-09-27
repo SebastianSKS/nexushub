@@ -14,6 +14,14 @@ const MARGENES: Record<MarginOption, number> = { none: 0, small: 24, large: 48 }
  * etiqueta que indica cómo mostrarlas. Devuelve 1 (sin giro) si no hay EXIF o no se puede leer.
  */
 export function leerOrientacionJpeg(bytes: Uint8Array): number {
+  try {
+    return leerOrientacion(bytes);
+  } catch {
+    return 1; // un EXIF cortado o dañado no debe impedir usar la foto
+  }
+}
+
+function leerOrientacion(bytes: Uint8Array): number {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   if (bytes.length < 4 || view.getUint16(0) !== 0xffd8) return 1;
   let offset = 2;

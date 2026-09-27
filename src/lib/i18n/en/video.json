@@ -121,5 +121,9 @@
   "Ya sigues a «{nombre}».": "You already follow “{nombre}”.",
   "Está en la lista de la izquierda.": "It's in the list on the left.",
   "Llegaste al máximo de 40 canales.": "You've reached the maximum of 40 channels.",
-  "Quita alguno para poder agregar otro.": "Remove one to be able to add another."
+  "Quita alguno para poder agregar otro.": "Remove one to be able to add another.",
+  "Aquí verás los videos nuevos de tus canales de YouTube, todos juntos en un solo muro.": "Here you'll see the new videos from your YouTube channels, all together on a single wall.",
+  "Abre un canal en YouTube y copia su enlace.": "Open a channel on YouTube and copy its link.",
+  "Pulsa «Agregar canal» (arriba a la derecha) y pégalo.": "Press “Add channel” (top right) and paste it.",
+  "Listo: sus videos nuevos aparecen aquí.": "Done: its new videos appear here."
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { useT, useIdioma, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -152,6 +153,23 @@ export function PaginaCalendario() {
                 </button>
               )}
             </section>
+
+            {amigos.length === 0 && eventos.length === 0 && (
+              <EstadoVacio
+                glifo="calendario"
+                titulo={t("Tu calendario está vacío")}
+                texto={t("Aquí van tus tareas, exámenes, citas y los cumpleaños de tus amigos, cada uno con su color y su aviso.")}
+                pasos={[t("Pulsa «Añadir tarea o evento» y ponle fecha (y hora, si tiene)."), t("Nexo te avisa antes: ese día, un día antes o una semana antes, como elijas."), t("Los cumpleaños se añaden aparte y se repiten cada año.")]}
+                acciones={
+                  <>
+                    <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => abrirEvento({ dia: hoy.getDate(), mes: hoy.getMonth() + 1, anio: hoy.getFullYear() })}>
+                      {t("Añadir tarea o evento")}
+                    </Button>
+                    <Button onClick={() => abrir({ dia: hoy.getDate(), mes: hoy.getMonth() + 1 })}>{t("Añadir cumpleaños")}</Button>
+                  </>
+                }
+              />
+            )}
 
             <div className="flex justify-end">
               <SegmentedControl<Vista>

@@ -22,7 +22,7 @@
 | **Global search** (`Ctrl + K`) | Finds sections, tools, events, classes, channels… and **text inside your PDFs**, opening them on the exact page. |
 | **Your day at a glance** | On Home, your next class with a countdown, what's due this week and what's pending in your notes. |
 | **Calendar** | Tasks, exams, appointments and birthdays, with reminders. Exports to `.ics`. |
-| **Schedule** | Your weekly classes. Scan the picture you were sent and it fills itself in. Warns you before each class. |
+| **Schedule** | Your weekly classes. Scan the picture you were sent and it fills itself in, or import a classmate's with a code. Warns you before each class. |
 | **Calculator and average** | Standard and scientific, with history and keyboard support. And an average tab: you write down your grades and Nexo tells you how you are doing and how much you need on what is left to pass. |
 | **Notifications your way** | Nexo notifications (with its name and icon) before each class, a timed exam and a birthday; with five sounds of its own or Windows', and an hour-based “Do not disturb”. |
 | **Make it yours** | Light or dark theme, any accent color, interface size, 12- or 24-hour times, a week that starts on Monday or Sunday, fewer animations and sections you can hide. |

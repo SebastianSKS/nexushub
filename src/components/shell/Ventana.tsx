@@ -33,6 +33,7 @@ import { MemoriaSesion } from "./MemoriaSesion";
 import { PanelNavegacion } from "./PanelNavegacion";
 import { StatusBar } from "./StatusBar";
 import { AvisoActualizacion } from "./AvisoActualizacion";
+import { BannerDemo } from "./BannerDemo";
 import { Guias } from "./Guias";
 import { Novedades } from "./Novedades";
 
@@ -99,6 +100,7 @@ export function Ventana({ children }: { children: ReactNode }) {
       </a>
       <div className="mica flex h-screen w-screen flex-col overflow-hidden rounded-window border border-stroke">
         <BarraTitulo />
+        <BannerDemo />
         <div className="flex min-h-0 flex-1">
           <PanelNavegacion />
           <main

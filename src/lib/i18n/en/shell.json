@@ -150,5 +150,9 @@
   "Tu primer archivo está listo": "Your first file is ready",
   "Todo se hizo en tu computadora: tus archivos no salieron a internet.": "Everything was done on your computer: your files never went to the internet.",
   "Todo se hizo en tu navegador: tus archivos no salieron a internet.": "Everything was done in your browser: your files never went to the internet.",
-  "Ver más herramientas": "See more tools"
+  "Ver más herramientas": "See more tools",
+  "Estás probando Nexo en el navegador, con datos de ejemplo.": "You're trying Nexo in the browser, with sample data.",
+  "Los avisos del sistema, las carpetas de tus materias y la búsqueda dentro de tus archivos solo existen en la aplicación para Windows.": "System notifications, your subject folders and search inside your files only exist in the Windows app.",
+  "Descargar Nexo": "Download Nexo",
+  "Restablecer datos": "Reset data"
 }

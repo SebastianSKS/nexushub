@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsejosStore } from "@/store/consejos-store";
 import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { useT, localeActual } from "@/lib/i18n";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent } from "react";
@@ -301,7 +302,7 @@ export function PaginaCarpetas() {
       />
 
       {dialogo?.tipo === "nueva" && (
-        <DialogoNombre titulo={t("Nueva carpeta")} etiqueta={t("Nombre de la materia")} inicial="" accion={t("Crear")} onCerrar={cerrarDialogo} onGuardar={async (n) => { await crearCarpeta(n); await recargar(); }} />
+        <DialogoNombre titulo={t("Nueva carpeta")} etiqueta={t("Nombre de la materia")} inicial="" accion={t("Crear")} onCerrar={cerrarDialogo} onGuardar={async (n) => { await crearCarpeta(n); useConsejosStore.getState().ofrecer("primera-carpeta"); await recargar(); }} />
       )}
       {dialogo?.tipo === "nuevo-archivo" && abierta && (
         <DialogoNuevoArchivo

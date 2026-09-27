@@ -1,5 +1,6 @@
 "use client";
 
+import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { useT } from "@/lib/i18n";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -69,11 +70,13 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
 
   if (iniciado && canales.length === 0) {
     return (
-      <Card className="flex flex-col items-start gap-3 p-6">
-        <h2 className="text-subtitle text-fg">{t("Aún no sigues ningún canal")}</h2>
-        <p className="text-body text-fg-secondary">{t("Usa «Agregar canal» (arriba a la derecha) y pega el enlace de un canal de YouTube, o recupera los canales sugeridos.")}</p>
-        <Button onClick={restaurarSugeridos}>{t("Restaurar canales sugeridos")}</Button>
-      </Card>
+      <EstadoVacio
+        glifo="video"
+        titulo={t("Aún no sigues ningún canal")}
+        texto={t("Aquí verás los videos nuevos de tus canales de YouTube, todos juntos en un solo muro.")}
+        pasos={[t("Abre un canal en YouTube y copia su enlace."), t("Pulsa «Agregar canal» (arriba a la derecha) y pégalo."), t("Listo: sus videos nuevos aparecen aquí.")]}
+        acciones={<Button onClick={restaurarSugeridos}>{t("Restaurar canales sugeridos")}</Button>}
+      />
     );
   }
 

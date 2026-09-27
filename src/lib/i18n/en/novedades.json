@@ -45,5 +45,10 @@
   "Modo de bajo consumo": "Low-power mode",
   "Si tu computadora es modesta, Nexo se pone más ligero solo: sin transparencia, menos animaciones y la búsqueda en archivos más pausada. Se puede cambiar en Configuración.": "If your computer is modest, Nexo lightens up on its own: no transparency, fewer animations and a gentler file search. You can change it in Settings.",
   "Abre más rápido": "Opens faster",
-  "Nexo carga menos cosas al arrancar y descansa cuando la ventana está en la bandeja.": "Nexo loads less at startup and rests while the window is in the tray."
+  "Nexo carga menos cosas al arrancar y descansa cuando la ventana está en la bandeja.": "Nexo loads less at startup and rests while the window is in the tray.",
+  "Promedio de calificaciones": "Grade average",
+  "En Calculadora hay una pestaña Promedio: añade tus materias (o tráelas de tu horario), pon el peso de cada evaluación y mira cómo vas y cuánto necesitas para aprobar.": "There's an Average tab in Calculator: add your subjects (or bring them in from your schedule), enter how much each assessment is worth, and see how you're doing and how much you need to pass.",
+  "Comparte tu horario": "Share your schedule",
+  "Con «Compartir», en Horario, mandas tu horario como archivo o como un código para pegar en un mensaje. Tu compañero lo importa sin escanearlo ni escribirlo.": "With “Share”, in Schedule, you send your schedule as a file or as a code to paste into a message. Your classmate imports it without scanning or typing it.",
+  "Más pruebas automáticas en documentos: unir, dividir, girar, proteger con contraseña e imágenes a PDF, para que salgan bien la primera vez.": "More automated tests for documents: merge, split, rotate, password-protect and images to PDF, so they work right the first time."
 }

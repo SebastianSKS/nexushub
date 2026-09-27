@@ -21,6 +21,14 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.2.3",
+    novedades: [
+      { glifo: "calculadora", titulo: T("Promedio de calificaciones"), texto: T("En Calculadora hay una pestaña Promedio: añade tus materias (o tráelas de tu horario), pon el peso de cada evaluación y mira cómo vas y cuánto necesitas para aprobar.") },
+      { glifo: "compartir", titulo: T("Comparte tu horario"), texto: T("Con «Compartir», en Horario, mandas tu horario como archivo o como un código para pegar en un mensaje. Tu compañero lo importa sin escanearlo ni escribirlo.") },
+      { glifo: "documentos", titulo: T("Más cuidado por dentro"), texto: T("Más pruebas automáticas en documentos: unir, dividir, girar, proteger con contraseña e imágenes a PDF, para que salgan bien la primera vez.") },
+    ],
+  },
+  {
     version: "0.2.2",
     novedades: [
       { glifo: "reloj", titulo: T("Tu día de un vistazo"), texto: T("En Inicio, una tarjeta con la clase que sigue (y cuánto falta), lo que entregas esta semana y lo pendiente de tus notas.") },

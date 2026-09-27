@@ -1,3 +1,4 @@
+import type { NombreGlifo } from "@/lib/glifos";
 import { create } from "zustand";
 import { T } from "@/lib/i18n";
 import { esCategoria, type CategoriaEvento } from "@/lib/calendario/categorias";
@@ -126,7 +127,7 @@ export interface AvisoPantalla {
   titulo: string;
   texto: string;
   /** A dónde lleva el aviso al pulsarlo; por defecto, el Calendario. `null` = sin enlace (un aviso breve). */
-  destino?: { ruta: string; etiqueta: string; glifo: "calendario" | "reloj" | "inicio" | "musica" } | null;
+  destino?: { ruta: string; etiqueta: string; glifo: NombreGlifo } | null;
   /** Milisegundos tras los que se cierra solo; sin él, se queda hasta que se cierre. */
   autocerrar?: number;
 }

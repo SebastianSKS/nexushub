@@ -21,6 +21,12 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.2.4",
+    novedades: [
+      { glifo: "exito", titulo: T("Se siente más de escritorio"), texto: T("Ya no aparece el menú del navegador (Copiar, Imprimir…) al hacer clic derecho, ni se selecciona toda la pantalla al arrastrar el ratón. Sigue funcionando donde hace falta: en el buscador, tus notas y los demás campos de texto.") },
+    ],
+  },
+  {
     version: "0.2.3",
     novedades: [
       { glifo: "calculadora", titulo: T("Promedio de calificaciones"), texto: T("En Calculadora hay una pestaña Promedio: añade tus materias (o tráelas de tu horario), pon el peso de cada evaluación y mira cómo vas y cuánto necesitas para aprobar.") },

@@ -27,6 +27,20 @@
     font: inherit;
     color: inherit;
   }
+  /* Solo en la aplicación de escritorio: sin esto, un clic y arrastre selecciona la interfaz entera como si fuera
+     una página web (queda pintada del color de acento). Copiar sigue funcionando: siempre hay un botón «Copiar»
+     donde hace falta (el diagnóstico, un código para compartir…), así que no hace falta seleccionar texto a mano.
+     Los campos de texto (buscador, notas, nombres…) quedan fuera: ahí seleccionar y arrastrar sigue sirviendo. */
+  html[data-escritorio] body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  html[data-escritorio] input,
+  html[data-escritorio] textarea,
+  html[data-escritorio] [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 @layer utilities {

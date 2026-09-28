@@ -17,6 +17,7 @@ import { useEfectoVentana } from "@/hooks/useEfectoVentana";
 import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { useRecientesMusica } from "@/hooks/useRecientesMusica";
 import { useRevealHighlight } from "@/hooks/useRevealHighlight";
+import { useSinMenuDeNavegador } from "@/hooks/useSinMenuDeNavegador";
 import { useActualizacionAutomatica } from "@/hooks/useActualizacionAutomatica";
 import { useGuiasAutomaticas } from "@/hooks/useGuiasAutomaticas";
 import { useNovedades } from "@/hooks/useNovedades";
@@ -51,6 +52,7 @@ export function Ventana({ children }: { children: ReactNode }) {
   const colapsadoAuto = useRef(false);
 
   useGlobalShortcuts();
+  useSinMenuDeNavegador();
   useRevealHighlight();
   useAvisosCumples();
   useAvisosClases();

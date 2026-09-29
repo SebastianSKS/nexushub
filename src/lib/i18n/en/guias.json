@@ -80,7 +80,6 @@
   "En la barra de arriba (Ctrl + K) escribe una cuenta como 25*4 y te da el resultado ahí mismo; con Enter lo copias.": "In the top bar (Ctrl + K) type a calculation like 25*4 and it gives you the result right there; press Enter to copy it.",
   "Configuración": "Settings",
   "Avisos": "Notifications",
-  "Convertir con Microsoft Office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.": "Converting with Microsoft Office, choosing where to save and searching inside your files are changed in the Documents section of this page.",
   "Actualizaciones": "Updates",
   "En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.": "In “About” you check for updates and can see the welcome again. Your data is stored only on this computer.",
   "Atajos de teclado": "Keyboard shortcuts",
@@ -97,5 +96,6 @@
   "Promedio de tus materias": "Your subjects' average",
   "En la pestaña «Promedio» apuntas cuánto vale cada evaluación y la calificación que sacaste. Nexo te dice cómo vas y cuánto necesitas en lo que falta para aprobar.": "On the “Average” tab you write down how much each assessment is worth and the grade you got. Nexo tells you how you're doing and how much you need on what's left to pass.",
   "Compártelo con un compañero": "Share it with a classmate",
-  "Con «Compartir» guardas tu horario en un archivo o copias un código para pegarlo en un mensaje. Tu compañero lo importa y no tiene que escanearlo ni escribirlo.": "With “Share” you save your schedule to a file or copy a code to paste into a message. Your classmate imports it and doesn't have to scan or type it."
+  "Con «Compartir» guardas tu horario en un archivo o copias un código para pegarlo en un mensaje. Tu compañero lo importa y no tiene que escanearlo ni escribirlo.": "With “Share” you save your schedule to a file or copy a code to paste into a message. Your classmate imports it and doesn't have to scan or type it.",
+  "Convertir con el programa de office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.": "Converting with the office program, choosing where to save and searching inside your files are changed in the Documents section of this page."
 }

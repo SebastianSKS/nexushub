@@ -37,6 +37,7 @@ import { AjusteCanales } from "./AjusteCanales";
 import { AjusteIndicePdfs } from "./AjusteIndicePdfs";
 import { AjusteInicioAutomatico } from "./AjusteInicioAutomatico";
 import { AjusteNoMolestar } from "./AjusteNoMolestar";
+import { AjusteOffice } from "./AjusteOffice";
 import { AjusteSonidoAvisos } from "./AjusteSonidoAvisos";
 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
@@ -261,11 +262,7 @@ export function PaginaConfiguracion() {
             )}
 
             <Seccion titulo={t("Documentos")}>
-              {escritorio && (
-                <TarjetaAjuste glifo="documentos" titulo={t("Convertir con Microsoft Office")} descripcion={t("Si tienes Word, Excel o PowerPoint instalados, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace Office: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.")}>
-                  <Switch checked={a.usarOffice} onChange={(v) => a.cambiar({ usarOffice: v })} label={t("Convertir con Microsoft Office")} />
-                </TarjetaAjuste>
-              )}
+              {escritorio && <AjusteOffice />}
               {escritorio && <AjusteIndicePdfs />}
               {escritorio && (
                 <TarjetaAjuste glifo="carpeta" titulo={t("Elegir dónde guardar")} descripcion={t("Al descargar un resultado se abre «Guardar como», empezando en la carpeta de tus materias (Documentos/Nexo/Tareas). Si lo apagas, se guarda directo en Descargas.")}>

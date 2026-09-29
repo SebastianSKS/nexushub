@@ -1,0 +1,31 @@
+Copyright © 2026 Sebastián (SebastianSKS). All rights reserved.
+
+This repository contains the source code of Nexo. It is published so it can
+be viewed, evaluated and used as a reference, but it is not free or open
+source software: it is all rights reserved.
+
+Unless Sebastián authorizes it in writing, you may not:
+
+  - Copy, redistribute or republish this code or any part of it, in this
+    repository or any other.
+  - Modify, adapt or create derivative works from it, including (but not
+    limited to) porting it to an operating system other than Windows.
+  - Use it, in whole or in part, inside another program, site or service,
+    for profit or not.
+  - Build and distribute your own binaries from this code.
+
+You may: clone or download the repository to read the code, build it
+locally for your own personal use, and propose changes (for example, a
+pull request) which, if accepted, become part of this same project under
+this same license.
+
+The name "Nexo", its logo and visual identity also belong to Sebastián and
+are not included in any permission above, even if one were granted for the
+code itself.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+For permissions, reach out through the repository's issues
+(https://github.com/SebastianSKS/nexushub) or the author's contact email.

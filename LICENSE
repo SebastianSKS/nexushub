@@ -1,0 +1,32 @@
+Copyright © 2026 Sebastián (SebastianSKS). Todos los derechos reservados.
+
+Este repositorio contiene el código fuente de Nexo. Se publica para que se
+pueda ver, evaluar y usar como referencia, pero no es software libre ni de
+código abierto: es todos los derechos reservados.
+
+Salvo que Sebastián lo autorice por escrito, queda prohibido:
+
+  - Copiar, redistribuir o volver a publicar este código o una parte de él,
+    en este repositorio o en cualquier otro.
+  - Modificarlo, adaptarlo o crear trabajos derivados, incluyendo (pero sin
+    limitarse a) portarlo a otro sistema operativo distinto de Windows.
+  - Usarlo, total o parcialmente, dentro de otro programa, sitio o servicio,
+    con o sin fines de lucro.
+  - Compilar y distribuir binarios propios a partir de este código.
+
+Sí está permitido: clonar o descargar el repositorio para leer el código,
+compilarlo localmente para tu propio uso personal, y proponer cambios (por
+ejemplo, un *pull request*) que, de aceptarse, pasan a este mismo proyecto
+bajo esta misma licencia.
+
+El nombre «Nexo», su logotipo y su identidad visual son también de
+Sebastián y no están incluidos en ningún permiso anterior, aunque llegara
+a darse uno sobre el código.
+
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA
+O IMPLÍCITA. EN NINGÚN CASO EL AUTOR SERÁ RESPONSABLE DE NINGÚN RECLAMO,
+DAÑO U OTRA RESPONSABILIDAD QUE SURJA DEL USO DEL SOFTWARE.
+
+Para permisos, escribe a través de los issues del repositorio
+(https://github.com/SebastianSKS/nexushub) o al correo de contacto del
+autor.

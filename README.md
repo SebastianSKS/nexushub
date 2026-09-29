@@ -55,3 +55,7 @@ Pensado para Windows 11. ¿Dudas o algo no funciona? Mira la [ayuda](AYUDA.md) o
 ## Privacidad
 
 Nexo no tiene cuentas ni servidor propio. Tu perfil, calendario, horario y ajustes viven en tu equipo; los archivos de Documentos se procesan aquí mismo. Lo único que sale a internet son las llamadas a YouTube y Spotify que pides tú, y la búsqueda de actualizaciones en GitHub.
+
+## Licencia
+
+© 2026 Sebastián. Todos los derechos reservados — ver [LICENSE](LICENSE). El código se puede ver y compilar para uso personal, pero no redistribuir, portar a otro sistema ni reutilizar sin permiso. El nombre y el logotipo de Nexo también están reservados.

@@ -44,3 +44,7 @@ Designed for Windows 11. Questions or something not working? See the [help](HELP
 ## Privacy
 
 Nexo has no accounts or server of its own. Your profile, calendar, schedule and settings live on your computer; Documents files are processed right there. The only things that go online are the YouTube and Spotify requests you make, and the update check on GitHub.
+
+## License
+
+© 2026 Sebastián. All rights reserved — see [LICENSE.en](LICENSE.en). The code can be viewed and built for personal use, but not redistributed, ported to another system, or reused without permission. Nexo's name and logo are also reserved.

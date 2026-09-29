@@ -1,7 +1,8 @@
 name: CI
 
 # En cada subida y en cada solicitud de cambios: comprueba tipos, idiomas y pruebas, compila la web y revisa que compile
-# la parte de escritorio (Rust). Si algo se rompe, GitHub lo marca con una ✗ antes de que llegue a nadie.
+# la parte de escritorio (Rust) en Windows y en Linux. El job de Linux deja el .deb listo para descargar. Si algo se
+# rompe, GitHub lo marca con una ✗ antes de que llegue a nadie.
 on:
   push:
     branches: [main]
@@ -54,3 +55,43 @@ jobs:
         run: cargo check --manifest-path src-tauri/Cargo.toml --locked
       - name: Pruebas de la parte de escritorio
         run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+
+  # Lo mismo en Linux, y además el instalador de verdad: si el .deb no se puede construir, aquí se ve.
+  linux:
+    name: Linux (Rust / Tauri e instalador)
+    needs: web
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-out
+          path: out
+      - name: Dependencias de Tauri en Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+      # Con LibreOffice instalado, la prueba de conversión de office de src-tauri/src/office.rs se ejecuta de verdad;
+      # sin él, se salta.
+      - name: LibreOffice para probar el motor de conversión
+        run: sudo apt-get install -y --no-install-recommends libreoffice-writer
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Revisar que compile
+        run: cargo check --manifest-path src-tauri/Cargo.toml --locked
+      - name: Pruebas de la parte de escritorio
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+      - name: Construir el instalador (.deb)
+        run: npx tauri build --bundles deb --no-sign
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexushub-linux-deb
+          path: src-tauri/target/release/bundle/deb/*.deb
+          retention-days: 7

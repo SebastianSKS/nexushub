@@ -3,8 +3,8 @@ name = "nexushub"
 version = "0.2.4"
 description = "Video, música, documentos y calendario en una sola ventana, con el lenguaje de diseño Fluent de Windows 11."
 authors = ["Sebastián"]
-license = ""
-repository = ""
+license-file = "../LICENSE"
+repository = "https://github.com/SebastianSKS/nexushub"
 edition = "2021"
 rust-version = "1.77.2"
 

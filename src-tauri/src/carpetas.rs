@@ -256,6 +256,8 @@ fn nombre_existente(crudo: &str) -> Result<&str, String> {
     Ok(crudo)
 }
 
+/// Solo se usa para abrir un PDF en su página con Edge, que solo existe en Windows.
+#[cfg(target_os = "windows")]
 fn es_pdf(nombre: &str) -> bool {
     Path::new(nombre).extension().and_then(|e| e.to_str()).is_some_and(|e| e.eq_ignore_ascii_case("pdf"))
 }

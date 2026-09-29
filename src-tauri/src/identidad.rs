@@ -7,21 +7,16 @@
 //! repite.
 
 /// El icono que Windows dibuja junto al nombre en cada aviso.
+#[cfg(target_os = "windows")]
 const ICONO_AVISO: &[u8] = include_bytes!("../icons/128x128.png");
 
 #[cfg(target_os = "windows")]
 static REGISTRADA: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /// `true` si Windows ya conoce a Nexo por su nombre e icono (los avisos pueden ir con la identidad propia).
+#[cfg(target_os = "windows")]
 pub fn registrada() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        REGISTRADA.load(std::sync::atomic::Ordering::Relaxed)
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        false
-    }
+    REGISTRADA.load(std::sync::atomic::Ordering::Relaxed)
 }
 
 /// Registra el nombre («Nexo») y el icono de la aplicación para las notificaciones. Si algo falla, no pasa nada grave:

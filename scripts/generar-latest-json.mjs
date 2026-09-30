@@ -49,7 +49,7 @@ if (!firma) {
   process.exit(1);
 }
 
-const appimage = `Nexo_${version}_x86_64.AppImage`;
+const appimage = `Nexo_${version}_amd64.AppImage`;
 const plataformas = {
   "windows-x86_64": {
     signature: firma,

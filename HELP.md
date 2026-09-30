@@ -16,7 +16,7 @@ From the same release, grab the `.deb` (Ubuntu, Debian, Mint, Pop!_OS…) or the
 needs no installing:
 
 ```bash
-sudo apt install ./Nexo_…_amd64.deb     # or: chmod +x Nexo_…_x86_64.AppImage and run it
+sudo apt install ./Nexo_…_amd64.deb     # or: chmod +x Nexo_…_amd64.AppImage and run it
 ```
 
 **What is different on Linux**

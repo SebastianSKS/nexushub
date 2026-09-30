@@ -43,7 +43,7 @@
 **On Linux**, from the same release: the `.deb` (Ubuntu, Debian, Mint, Pop!_OS…) or the AppImage, which needs no installing:
 
 ```bash
-sudo apt install ./Nexo_…_amd64.deb     # or: chmod +x Nexo_…_x86_64.AppImage and run it
+sudo apt install ./Nexo_…_amd64.deb     # or: chmod +x Nexo_…_amd64.AppImage and run it
 ```
 
 Two things are not the same on Linux yet: music doesn't play inside Nexo (Spotify doesn't hand out its content protection to non-Chromium browsers, and the one the app uses on Linux isn't one), and document conversion uses LibreOffice instead of Microsoft Office. Everything else works the same, including the tray, the calendar, the schedule and PDFs.

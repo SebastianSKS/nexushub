@@ -65,17 +65,17 @@ cambia es el empaquetado y la firma.
    npm run tauri:build
    ```
    Deja dos cosas en `src-tauri/target/release/bundle/`: el `.deb` en `deb/` y el AppImage en
-   `appimage/` (`Nexo_X.Y.Z_x86_64.AppImage`, con su `.sig` al lado, porque sin firma el
+   `appimage/` (`Nexo_X.Y.Z_amd64.AppImage`, con su `.sig` al lado, porque sin firma el
    autoactualizador no funciona).
 2. Genera el `latest.json` **con la entrada de Linux**, pasando la firma del AppImage:
    ```bash
-   npm run release:manifest -- --linux-sig src-tauri/target/release/bundle/appimage/Nexo_X.Y.Z_x86_64.AppImage.sig
+   npm run release:manifest -- --linux-sig src-tauri/target/release/bundle/appimage/Nexo_X.Y.Z_amd64.AppImage.sig
    ```
    Sin `--linux-sig` el `latest.json` sale solo con Windows: también es válido, pero quien tenga
    Nexo en Linux tendrá que bajar la versión a mano y no le saldrá el aviso de «Actualizar ahora».
 3. Sube al mismo Release los **cinco** archivos:
    - `Nexo_X.Y.Z_x64-setup.exe` y su `.sig` (Windows)
-   - `Nexo_X.Y.Z_x86_64.AppImage` y su `.sig` (Linux)
+   - `Nexo_X.Y.Z_amd64.AppImage` y su `.sig` (Linux)
    - `latest.json`
 4. `npm run release:verificar -- --remoto` comprueba las plataformas publicadas, incluidas las de
    Linux, así que avisa si la firma del AppImage no es la del archivo.

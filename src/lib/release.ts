@@ -104,6 +104,10 @@ export interface LatestJson {
  * `firmas` son las firmas de los archivos `.sig` de esta compilación (clave de plataforma → contenido). Si se pasan,
  * además se comprueba que la firma de latest.json sea la de verdad y no la de otro archivo.
  */
+/** La extensión que le toca a cada plataforma. Sin esto, la url de una plataforma podía apuntar al instalador de
+ * otra (por ejemplo, copiar y pegar mal) y el único chequeo que quedaba —que esté bajo `/v<version>/`— no lo veía. */
+const EXTENSION_ESPERADA: Record<string, string> = { "windows-x86_64": "exe", "linux-x86_64": "AppImage" };
+
 export function problemasDeLatest(latest: LatestJson, version: string, firmas?: Record<string, string>): string[] {
   const problemas: string[] = [];
   if (latest.version !== version) problemas.push(`version dice «${String(latest.version)}» y debería decir «${version}».`);
@@ -115,6 +119,9 @@ export function problemasDeLatest(latest: LatestJson, version: string, firmas?: 
       problemas.push(`${clave}: la url del instalador no es https.`);
     } else if (!new RegExp(`/v${version.replaceAll(".", "\\.")}/[^/]+$`).test(p.url)) {
       problemas.push(`${clave}: la url no apunta a un archivo de /v${version}/: ${p.url}`);
+    } else {
+      const extension = EXTENSION_ESPERADA[clave];
+      if (extension && !p.url.endsWith(`.${extension}`)) problemas.push(`${clave}: la url no apunta a un .${extension} (¿se puso la de otra plataforma?): ${p.url}`);
     }
     if (typeof p?.signature !== "string" || p.signature.length < 100) problemas.push(`${clave}: falta la firma o es demasiado corta.`);
     const esperada = firmas?.[clave];

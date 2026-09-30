@@ -126,4 +126,8 @@ describe("problemasDeLatest", () => {
     const sinFirma = { ...conLinux, platforms: { ...conLinux.platforms, "linux-x86_64": { url: conLinux.platforms["linux-x86_64"].url } } };
     assert.match(problemasDeLatest(sinFirma, "0.1.4").join(), /linux-x86_64: falta la firma/);
   });
+  it("la url de una plataforma no puede ser la de otra (mismo /v<version>/, extensión equivocada)", () => {
+    const cruzada = { ...conLinux, platforms: { ...conLinux.platforms, "linux-x86_64": { ...conLinux.platforms["linux-x86_64"], url: bueno.platforms["windows-x86_64"].url } } };
+    assert.match(problemasDeLatest(cruzada, "0.1.4").join(), /linux-x86_64: la url no apunta a un \.AppImage/);
+  });
 });

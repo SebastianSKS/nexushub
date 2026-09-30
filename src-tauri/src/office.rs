@@ -390,7 +390,9 @@ fn convertir_con_libreoffice(motor: &str, entrada: &Path, salida: &Path, carpeta
         match hijo.try_wait() {
             Ok(Some(estado)) => break Some(estado),
             Ok(None) if inicio.elapsed() > TIEMPO_MAXIMO => {
+                // `kill()` solo manda la señal: sin `wait()` el proceso se queda zombie hasta que Nexo se cierre.
                 let _ = hijo.kill();
+                let _ = hijo.wait();
                 break None;
             }
             Ok(None) => std::thread::sleep(Duration::from_millis(150)),

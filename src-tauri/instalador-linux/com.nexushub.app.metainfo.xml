@@ -59,10 +59,10 @@
   <content_rating type="oars-1.1" />
 
   <releases>
-    <release version="0.2.4" date="2026-09-27">
+    <release version="0.3.0" date="2026-09-29">
       <description>
-        <p>Versión actual. Añade el promedio de calificaciones, compartir el horario con un compañero y el buscador global sobre el texto de tus PDF.</p>
-        <p xml:lang="en">Current version. Adds grade averages, sharing your schedule with a classmate, and global search across the text of your PDFs.</p>
+        <p>Primera versión con Linux: instalador .deb y AppImage, conversión de documentos con LibreOffice y actualizaciones automáticas también en Linux.</p>
+        <p xml:lang="en">First version with Linux: a .deb and AppImage installer, document conversion with LibreOffice, and automatic updates on Linux too.</p>
       </description>
     </release>
   </releases>

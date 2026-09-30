@@ -3,6 +3,7 @@
 [![CI](https://github.com/SebastianSKS/nexushub/actions/workflows/ci.yml/badge.svg)](https://github.com/SebastianSKS/nexushub/actions/workflows/ci.yml)
 [![Latest version](https://img.shields.io/github/v/release/SebastianSKS/nexushub?label=version)](https://github.com/SebastianSKS/nexushub/releases/latest)
 ![Windows](https://img.shields.io/badge/Windows-11-0078D4)
+![Linux](https://img.shields.io/badge/Linux-.deb%20%7C%20AppImage-F7941E)
 ![Languages](https://img.shields.io/badge/languages-Espa%C3%B1ol%20%7C%20English-2ea44f)
 
 **Everything a student needs, in one window**: YouTube videos, Spotify music, PDF and Office tools, a calendar, a class schedule and a calculator, in the Windows 11 (Fluent) look. Everything is stored on your computer; your files never leave it.
@@ -39,7 +40,15 @@
 1. Download `Nexo_…_x64-setup.exe` from the [latest release](https://github.com/SebastianSKS/nexushub/releases/latest).
 2. Run it. If Windows shows “Windows protected your PC”, click *More info › Run anyway* (it's normal for new programs). After that Nexo updates itself.
 
-Designed for Windows 11. Questions or something not working? See the [help](HELP.md) or [report a problem](https://github.com/SebastianSKS/nexushub/issues/new/choose).
+**On Linux**, from the same release: the `.deb` (Ubuntu, Debian, Mint, Pop!_OS…) or the AppImage, which needs no installing:
+
+```bash
+sudo apt install ./Nexo_…_amd64.deb     # or: chmod +x Nexo_…_amd64.AppImage and run it
+```
+
+Two things are not the same on Linux yet: music doesn't play inside Nexo (Spotify doesn't hand out its content protection to non-Chromium browsers, and the one the app uses on Linux isn't one), and document conversion uses LibreOffice instead of Microsoft Office. Everything else works the same, including the tray, the calendar, the schedule and PDFs.
+
+Designed for Windows 11 and Linux. Questions or something not working? See the [help](HELP.md) or [report a problem](https://github.com/SebastianSKS/nexushub/issues/new/choose).
 
 ## Privacy
 

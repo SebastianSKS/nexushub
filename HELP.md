@@ -10,6 +10,27 @@
 
 It installs for your user only: no administrator permissions needed.
 
+## Install on Linux
+
+From the same release, grab the `.deb` (Ubuntu, Debian, Mint, Pop!_OS…) or the AppImage, which
+needs no installing:
+
+```bash
+sudo apt install ./Nexo_…_amd64.deb     # or: chmod +x Nexo_…_amd64.AppImage and run it
+```
+
+**What is different on Linux**
+
+- **Music doesn't play inside Nexo.** Spotify only gives its content protection (DRM) to Chromium
+  browsers, and the window on Linux is WebKit, not Chromium. You can still open anything in the
+  Spotify app or browser as usual.
+- **Document conversion uses LibreOffice** if you have it installed (Writer for Word, Calc for
+  Excel, Impress for PowerPoint), with the same fidelity as saving as PDF from there. If you don't
+  have it, Nexo's own basic engine is used, as on Windows without Office. LibreOffice can't turn a
+  PDF back into a Word, so that one always uses the basic engine.
+- Windows-only extras are simply not there: the list of installed programs for the quick links, and
+  opening a PDF on the exact page with Edge.
+
 ## Update
 
 Nexo checks on its own when it opens and every few hours. If there's a new version, a notice appears with **Update now**; it downloads, installs and Nexo reopens on its own. Your data is kept. You can also check in **Settings › About › Check for updates**.

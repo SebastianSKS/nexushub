@@ -95,16 +95,30 @@ export interface LatestJson {
   platforms?: Record<string, { signature?: unknown; url?: unknown }>;
 }
 
-/** Lo que está mal en un latest.json para la versión y el instalador esperados (lista vacía = todo bien). */
-export function problemasDeLatest(latest: LatestJson, version: string, instalador: string, firmaEsperada?: string): string[] {
+/** Lo que está mal en un latest.json para la versión esperada (lista vacía = todo bien).
+ *
+ * Windows tiene que estar siempre. Las demás plataformas que el release traiga también se comprueban —que la url
+ * sea https y apunte a `/v<version>/`, y que la firma exista—, porque un `linux-x86_64` mal puesto dejaría a
+ * quien usa Linux sin poder actualizar, que es justo lo que este archivo existe para que no pase.
+ *
+ * `firmas` son las firmas de los archivos `.sig` de esta compilación (clave de plataforma → contenido). Si se pasan,
+ * además se comprueba que la firma de latest.json sea la de verdad y no la de otro archivo.
+ */
+export function problemasDeLatest(latest: LatestJson, version: string, firmas?: Record<string, string>): string[] {
   const problemas: string[] = [];
   if (latest.version !== version) problemas.push(`version dice «${String(latest.version)}» y debería decir «${version}».`);
   if (typeof latest.pub_date !== "string" || Number.isNaN(Date.parse(latest.pub_date))) problemas.push("pub_date no es una fecha válida.");
-  const p = latest.platforms?.["windows-x86_64"];
-  if (!p) return [...problemas, "falta platforms.windows-x86_64."];
-  if (typeof p.url !== "string" || !p.url.startsWith("https://")) problemas.push("la url del instalador no es https.");
-  else if (!p.url.endsWith(`/v${version}/${instalador}`)) problemas.push(`la url no apunta a /v${version}/${instalador}: ${p.url}`);
-  if (typeof p.signature !== "string" || p.signature.length < 100) problemas.push("falta la firma o es demasiado corta.");
-  else if (firmaEsperada !== undefined && p.signature !== firmaEsperada.trim()) problemas.push("la firma de latest.json no es la del archivo .sig.");
+  const plataformas = latest.platforms ?? {};
+  if (!plataformas["windows-x86_64"]) problemas.push("falta platforms.windows-x86_64.");
+  for (const [clave, p] of Object.entries(plataformas)) {
+    if (typeof p?.url !== "string" || !p.url.startsWith("https://")) {
+      problemas.push(`${clave}: la url del instalador no es https.`);
+    } else if (!new RegExp(`/v${version.replaceAll(".", "\\.")}/[^/]+$`).test(p.url)) {
+      problemas.push(`${clave}: la url no apunta a un archivo de /v${version}/: ${p.url}`);
+    }
+    if (typeof p?.signature !== "string" || p.signature.length < 100) problemas.push(`${clave}: falta la firma o es demasiado corta.`);
+    const esperada = firmas?.[clave];
+    if (esperada !== undefined && p?.signature !== esperada.trim()) problemas.push(`${clave}: la firma de latest.json no es la del archivo .sig.`);
+  }
   return problemas;
 }

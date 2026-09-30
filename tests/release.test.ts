@@ -104,13 +104,26 @@ describe("versiones", () => {
 describe("problemasDeLatest", () => {
   const firma = "x".repeat(200);
   const bueno = { version: "0.1.4", pub_date: "2026-09-26T08:02:25.664Z", platforms: { "windows-x86_64": { signature: firma, url: "https://github.com/SebastianSKS/nexushub/releases/download/v0.1.4/Nexo_0.1.4_x64-setup.exe" } } };
+  const conLinux = { ...bueno, platforms: { ...bueno.platforms, "linux-x86_64": { signature: "y".repeat(200), url: "https://github.com/SebastianSKS/nexushub/releases/download/v0.1.4/Nexo_0.1.4_x86_64.AppImage" } } };
+
   it("un latest.json correcto no tiene problemas", () => {
-    assert.deepEqual(problemasDeLatest(bueno, "0.1.4", "Nexo_0.1.4_x64-setup.exe", firma), []);
+    assert.deepEqual(problemasDeLatest(bueno, "0.1.4", { "windows-x86_64": firma }), []);
+  });
+  it("acepta las otras plataformas que traiga el release", () => {
+    assert.deepEqual(problemasDeLatest(conLinux, "0.1.4", { "windows-x86_64": firma, "linux-x86_64": "y".repeat(200) }), []);
   });
   it("detecta versión, url, firma y plataforma malas", () => {
-    assert.equal(problemasDeLatest({ ...bueno, version: "0.1.3" }, "0.1.4", "Nexo_0.1.4_x64-setup.exe").length, 1);
-    assert.match(problemasDeLatest({ ...bueno, platforms: { "windows-x86_64": { ...bueno.platforms["windows-x86_64"], url: "http://x/Nexo_0.1.4_x64-setup.exe" } } }, "0.1.4", "Nexo_0.1.4_x64-setup.exe").join(), /https/);
-    assert.match(problemasDeLatest(bueno, "0.1.4", "Nexo_0.1.4_x64-setup.exe", "otra firma").join(), /no es la del archivo/);
-    assert.match(problemasDeLatest({ version: "0.1.4", pub_date: bueno.pub_date, platforms: {} }, "0.1.4", "n.exe").join(), /windows-x86_64/);
+    assert.equal(problemasDeLatest({ ...bueno, version: "0.1.3" }, "0.1.4").length, 1);
+    assert.match(problemasDeLatest({ ...bueno, platforms: { "windows-x86_64": { ...bueno.platforms["windows-x86_64"], url: "http://x/Nexo_0.1.4_x64-setup.exe" } } }, "0.1.4").join(), /https/);
+    assert.match(problemasDeLatest(bueno, "0.1.4", { "windows-x86_64": "otra firma" }).join(), /no es la del archivo/);
+    assert.match(problemasDeLatest({ version: "0.1.4", pub_date: bueno.pub_date, platforms: {} }, "0.1.4").join(), /windows-x86_64/);
+  });
+  it("una url que apunta a otra versión no vale, tampoco en Linux", () => {
+    const mala = { ...conLinux, platforms: { ...conLinux.platforms, "linux-x86_64": { ...conLinux.platforms["linux-x86_64"], url: "https://github.com/SebastianSKS/nexushub/releases/download/v0.1.3/Nexo_0.1.4_x86_64.AppImage" } } };
+    assert.match(problemasDeLatest(mala, "0.1.4").join(), /linux-x86_64: la url no apunta/);
+  });
+  it("una plataforma sin firma no vale, tampoco en Linux", () => {
+    const sinFirma = { ...conLinux, platforms: { ...conLinux.platforms, "linux-x86_64": { url: conLinux.platforms["linux-x86_64"].url } } };
+    assert.match(problemasDeLatest(sinFirma, "0.1.4").join(), /linux-x86_64: falta la firma/);
   });
 });

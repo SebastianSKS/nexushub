@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Metadatos AppStream de Nexo para Linux. Los usan los centros de software (GNOME Software, KDE Discover, elementary
+  AppCenter…) para mostrar la aplicación con su descripción, sus capturas y su licencia, en vez de como un paquete
+  anónimo. La plantilla (src-tauri/tauri.linux.conf.json) la instala en /usr/share/metainfo/.
+-->
+<component type="desktop-application">
+  <id>com.nexushub.app</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+
+  <name>Nexo</name>
+  <summary>Video, música, documentos y calendario en una sola ventana</summary>
+  <summary xml:lang="en">Video, music, documents and calendar in one window</summary>
+
+  <description>
+    <p>
+      Lo que un estudiante necesita en una sola ventana: los videos nuevos de los canales de YouTube que sigues,
+      tu música de Spotify, herramientas de PDF y de Office que funcionan sin internet, tu calendario, tu horario
+      de clases y una calculadora. Todo se guarda en tu equipo.
+    </p>
+    <p xml:lang="en">
+      Everything a student needs in a single window: new videos from the YouTube channels you follow, your Spotify
+      music, PDF and Office tools that work offline, your calendar, your class schedule and a calculator. Everything
+      stays on your own computer.
+    </p>
+    <p>Documentos: unir, dividir, comprimir, rotar, proteger, comparar, marcas de agua, numerar páginas, Office a PDF y PDF a Word, imágenes a PDF y OCR.</p>
+    <p xml:lang="en">Documents: merge, split, compress, rotate, protect, compare, watermarks, page numbers, Office to PDF and PDF to Word, images to PDF and OCR.</p>
+    <p>Privacidad: no hay cuentas ni servidor. Tus archivos se procesan en tu equipo y no salen de él.</p>
+    <p xml:lang="en">Privacy: no accounts and no server of its own. Your files are processed on your computer and never leave it.</p>
+  </description>
+
+  <!-- El acceso al menú de aplicaciones que genera el instalador se llama como el programa: Nexo.desktop. -->
+  <launchable type="desktop-id">Nexo.desktop</launchable>
+
+  <categories>
+    <category>Office</category>
+    <category>Education</category>
+    <category>Utility</category>
+  </categories>
+
+  <keywords>
+    <keyword>pdf</keyword>
+    <keyword>office</keyword>
+    <keyword>calendar</keyword>
+    <keyword>youtube</keyword>
+    <keyword>spotify</keyword>
+    <keyword>student</keyword>
+  </keywords>
+
+  <url type="homepage">https://github.com/SebastianSKS/nexushub</url>
+  <url type="bugtracker">https://github.com/SebastianSKS/nexushub/issues</url>
+  <url type="help">https://github.com/SebastianSKS/nexushub#readme</url>
+
+  <developer id="com.nexushub">
+    <name>Sebastián</name>
+  </developer>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="0.2.4" date="2026-09-27">
+      <description>
+        <p>Versión actual. Añade el promedio de calificaciones, compartir el horario con un compañero y el buscador global sobre el texto de tus PDF.</p>
+        <p xml:lang="en">Current version. Adds grade averages, sharing your schedule with a classmate, and global search across the text of your PDFs.</p>
+      </description>
+    </release>
+  </releases>
+</component>

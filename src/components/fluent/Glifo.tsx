@@ -8,15 +8,15 @@ interface GlifoProps {
   className?: string;
 }
 
-/** Ícono de Segoe Fluent Icons. Decorativo: el nombre accesible lo da el botón que lo contiene. */
+/**
+ * Icono de la aplicación. Decorativo: el nombre accesible lo da el botón que lo contiene.
+ *
+ * Pinta el SVG de `@fluentui/react-icons` en el tamaño que se le pida. Antes era una letra de `Segoe Fluent Icons`,
+ * una fuente que solo existe en Windows: en Linux el navegador pintaba un cuadrado vacío en su lugar.
+ *
+ * El SVG hereda el color del texto (`currentColor`), así que las clases `text-*` de quien lo usa siguen mandando.
+ */
 export function Glifo({ nombre, tam = 16, className }: GlifoProps) {
-  return (
-    <span
-      aria-hidden
-      className={clsx("inline-flex shrink-0 select-none items-center justify-center font-glifo leading-none", className)}
-      style={{ fontSize: tam, width: tam, height: tam }}
-    >
-      {glifo(nombre)}
-    </span>
-  );
+  const Icono = glifo(nombre);
+  return <Icono width={tam} height={tam} className={clsx("shrink-0", className)} aria-hidden />;
 }

@@ -21,6 +21,14 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.0",
+    novedades: [
+      { glifo: "externo", titulo: T("Nexo también en Linux"), texto: T("Hay instalador para Linux: un .deb para Ubuntu, Debian, Mint y Pop!_OS, y un AppImage que se ejecuta sin instalar. Del mismo Release, con la misma bandeja, el mismo calendario, el mismo horario y los mismos PDF. También se actualiza solo.") },
+      { glifo: "documentos", titulo: T("Convierte con LibreOffice"), texto: T("En Linux, si tienes LibreOffice, las conversiones a PDF las hace él: Writer para Word, Calc para Excel e Impress para PowerPoint, con la misma calidad que guardar el archivo como PDF desde ahí. En Windows, sigue usando Microsoft Office igual que hasta ahora.") },
+      { glifo: "informacion", titulo: T("Lo que en Linux no cambia"), texto: T("La música no se reproduce dentro de Nexo: Spotify solo da su protección de contenido a los navegadores Chromium, y la ventana en Linux no lo es. Puedes abrir lo que quieras en la app o en el navegador de Spotify como siempre. Todo lo demás funciona igual que en Windows.") },
+    ],
+  },
+  {
     version: "0.2.4",
     novedades: [
       { glifo: "exito", titulo: T("Se siente más de escritorio"), texto: T("Ya no aparece el menú del navegador (Copiar, Imprimir…) al hacer clic derecho, ni se selecciona toda la pantalla al arrastrar el ratón. Sigue funcionando donde hace falta: en el buscador, tus notas y los demás campos de texto.") },

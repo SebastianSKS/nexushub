@@ -15,7 +15,7 @@ Se instala solo para tu usuario: no pide permisos de administrador.
 Del mismo Release, baja el `.deb` (Ubuntu, Debian, Mint, Pop!_OS…) o el AppImage, que no necesita instalarse:
 
 ```bash
-sudo apt install ./Nexo_…_amd64.deb     # o: chmod +x Nexo_…_x86_64.AppImage y ejecutarlo
+sudo apt install ./Nexo_…_amd64.deb     # o: chmod +x Nexo_…_amd64.AppImage y ejecutarlo
 ```
 
 **Qué cambia en Linux**

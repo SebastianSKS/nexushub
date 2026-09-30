@@ -31,7 +31,7 @@ const version = conf.version;
 const pubkey = conf.plugins?.updater?.pubkey;
 const endpoint = conf.plugins?.updater?.endpoints?.[0];
 const instalador = `Nexo_${version}_x64-setup.exe`;
-const appimage = `Nexo_${version}_x86_64.AppImage`;
+const appimage = `Nexo_${version}_amd64.AppImage`;
 console.log(`Nexo ${version} — ${remoto ? "lo publicado en GitHub" : "lo compilado aquí"}`);
 
 // 1) Los números de versión.

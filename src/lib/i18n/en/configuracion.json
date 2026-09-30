@@ -95,8 +95,6 @@
   "Aplicación": "App",
   "Seguir sonando en la bandeja": "Keep playing in the tray",
   "Al cerrar la ventana, Nexo se oculta a la bandeja del sistema en vez de cerrarse. «Salir» en su menú lo cierra de verdad.": "When you close the window, Nexo hides in the system tray instead of closing. “Exit” in its menu closes it for real.",
-  "Convertir con Microsoft Office": "Convert with Microsoft Office",
-  "Si tienes Word, Excel o PowerPoint instalados, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace Office: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.": "If you have Word, Excel or PowerPoint installed, the conversions (Word, Excel and PowerPoint to PDF, and PDF to Word) are done by Office: the result comes out just like saving it from there. If not, Nexo's basic engine is used.",
   "Elegir dónde guardar": "Choose where to save",
   "Al descargar un resultado se abre «Guardar como», empezando en la carpeta de tus materias (Documentos/Nexo/Tareas). Si lo apagas, se guarda directo en Descargas.": "When you download a result, “Save as” opens, starting in your subjects folder (Documents/Nexo/Tareas). If you turn it off, it's saved straight to Downloads.",
   "Al terminar una conversión": "When a conversion finishes",
@@ -226,5 +224,9 @@
   "Automático": "Automatic",
   "Siempre encendido": "Always on",
   "Apagado": "Off",
-  "{n} materias del promedio": "{n} subjects in your average"
+  "{n} materias del promedio": "{n} subjects in your average",
+  "Convertir con {programa}": "Convert with {programa}",
+  "Si tienes {programa} instalado, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace {programa}: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.": "If you have {programa} installed, the conversions (Word, Excel and PowerPoint to PDF, and PDF to Word) are done by {programa}: the result comes out just like saving it from there. If not, Nexo's basic engine is used.",
+  "Si tienes {programa} instalado, las conversiones a PDF las hace {programa}: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.": "If you have {programa} installed, the conversions to PDF are done by {programa}: the result comes out just like saving it from there. If not, Nexo's basic engine is used.",
+  "el programa de office": "the office program"
 }

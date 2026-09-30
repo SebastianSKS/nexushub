@@ -15,19 +15,26 @@ export function PdfToWordOptionsPanel() {
   const setOption = useDocumentsStore((s) => s.setOption);
   const escritorio = useEsEscritorio();
   const usarOffice = useAjustesStore((s) => s.usarOffice);
-  const [hayWord, setHayWord] = useState(false);
+  const [conWord, setConWord] = useState<string | null>(null);
   useEffect(() => {
-    if (escritorio) void officeDisponible().then((d) => setHayWord(d.word));
+    if (escritorio) void officeDisponible().then((d) => setConWord(d.pdfWord ? d.word.nombre : null));
   }, [escritorio]);
-  const conWord = escritorio === true && usarOffice && hayWord;
+  // Solo Microsoft Word sabe pasar un PDF a Word: LibreOffice abre el PDF como dibujo y sale inservible, así que en
+  // Linux esta opción no se ofrece (el PDF a Word usa el motor básico de Nexo).
+  const offered = escritorio === true && usarOffice && !!conWord;
+  // Puede quedar guardado el modo «word» de cuando sí se podía (otra máquina, o un respaldo restaurado). Como la
+  // opción ya no está, se vuelve al de texto editable: si no, se intentaría un motor que aquí no existe.
+  useEffect(() => {
+    if (!offered && o.mode === "word") setOption("pdfToWord", { mode: "editable" });
+  }, [offered, o.mode, setOption]);
   return (
     <RadioCards
       label={t("Resultado")}
-      value={o.mode}
+      value={offered ? o.mode : "editable"}
       options={[
         { value: "editable", title: t("Texto editable"), description: t("Texto, títulos e imágenes que puedes modificar. No reconstruye tablas ni gráficos dibujados.") },
         { value: "fiel", title: t("Fiel al diseño"), description: t("Cada página como imagen, idéntica al PDF. Se ve igual, pero el texto no se edita.") },
-        ...(conWord ? [{ value: "word" as const, title: t("Con Word"), description: t("Lo convierte tu Microsoft Word: conserva mejor tablas y fuentes. Puede tardar más.") }] : []),
+        ...(offered ? [{ value: "word" as const, title: t("Con {programa}", { programa: conWord! }), description: t("Lo convierte {programa}: conserva mejor tablas y fuentes. Puede tardar más.", { programa: conWord! }) }] : []),
       ]}
       onChange={(mode) => setOption("pdfToWord", { mode })}
     />

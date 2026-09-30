@@ -3,6 +3,7 @@
 [![CI](https://github.com/SebastianSKS/nexushub/actions/workflows/ci.yml/badge.svg)](https://github.com/SebastianSKS/nexushub/actions/workflows/ci.yml)
 [![Última versión](https://img.shields.io/github/v/release/SebastianSKS/nexushub?label=versi%C3%B3n)](https://github.com/SebastianSKS/nexushub/releases/latest)
 ![Windows](https://img.shields.io/badge/Windows-11-0078D4)
+![Linux](https://img.shields.io/badge/Linux-.deb%20%7C%20AppImage-F7941E)
 ![Idiomas](https://img.shields.io/badge/idiomas-Espa%C3%B1ol%20%7C%20English-2ea44f)
 
 **Lo que un estudiante necesita, en una sola ventana**: videos de YouTube, música de Spotify, herramientas de PDF y Office, calendario, horario de clases y calculadora, con el aspecto de Windows 11 (Fluent). Todo se guarda en tu equipo; tus archivos no salen de él.
@@ -50,7 +51,15 @@
 1. Descarga el instalador `Nexo_…_x64-setup.exe` de la [última versión](https://github.com/SebastianSKS/nexushub/releases/latest).
 2. Ejecútalo. Si Windows muestra «Windows protegió su PC», pulsa *Más información › Ejecutar de todas formas* (es normal en programas nuevos). Después Nexo se actualiza solo.
 
-Pensado para Windows 11. ¿Dudas o algo no funciona? Mira la [ayuda](AYUDA.md) o [avisa de un problema](https://github.com/SebastianSKS/nexushub/issues/new/choose).
+**En Linux**, del mismo Release: el `.deb` (Ubuntu, Debian, Mint, Pop!_OS…) o el AppImage, que no necesita instalarse:
+
+```bash
+sudo apt install ./Nexo_…_amd64.deb     # o: chmod +x Nexo_…_amd64.AppImage y ejecutarlo
+```
+
+Dos cosas que en Linux todavía no son iguales: la música dentro de Nexo no se reproduce (Spotify no da su protección de contenido a los navegadores que no son Chromium, y el que usa la app en Linux no lo es), y la conversión de documentos usa LibreOffice en vez de Microsoft Office. El resto funciona igual, incluida la bandeja, el calendario, el horario y los PDF.
+
+Pensado para Windows 11 y Linux. ¿Dudas o algo no funciona? Mira la [ayuda](AYUDA.md) o [avisa de un problema](https://github.com/SebastianSKS/nexushub/issues/new/choose).
 
 ## Privacidad
 

@@ -36,7 +36,9 @@ const config: Config = {
       },
     },
     fontFamily: {
-      glifo: ["'Segoe Fluent Icons'", "'Segoe MDL2 Assets'"],
+      // Antes aquí estaba `glifo: ["'Segoe Fluent Icons'", "'Segoe MDL2 Assets'"]`, para los iconos que eran letras de
+      // esa fuente. Ahora los iconos son SVG (`<Glifo>`), así que no hace falta ninguna fuente para ellos. Esta lista
+      // sí es una lista de reserva: si no hay Segoe UI (Linux, por ejemplo), se va a la del sistema.
       sans: [
         "'Segoe UI Variable'",
         "'Segoe UI'",

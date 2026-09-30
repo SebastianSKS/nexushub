@@ -3,7 +3,10 @@
 //! aquí se muestra el aviso directamente y, al hacer clic, se trae la ventana al frente y se le dice a la interfaz
 //! a qué ruta ir (evento `navegar`).
 
-use tauri::{AppHandle, Emitter};
+use tauri::AppHandle;
+// `Emitter` solo lo hace falta para el evento `navegar`, que solo se emite en Windows (ver `notificar`).
+#[cfg(target_os = "windows")]
+use tauri::Emitter;
 
 /// El sonido con el que Windows acompaña el aviso, según lo elegido en Configuración: «windows» (el de siempre),
 /// «windows-correo», «windows-recordatorio», «windows-sms», «windows-mensaje» o cualquier otra cosa = en silencio

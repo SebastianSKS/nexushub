@@ -52,6 +52,61 @@ Cada nueva versión se publica ahí a mano, en tres pasos.
 6. Quien ya tenga Nexo abierto verá la actualización al pulsar «Buscar actualizaciones» en
    Configuración → Acerca de.
 
+## Y en Linux (opcional, pero recomendado)
+
+Windows y Linux se publican por separado: el instalador de cada sistema se compila **en ese
+sistema**, así que hace falta un equipo Linux para el de Linux. Los pasos 1 y 5 son los mismos
+(la versión va en los mismos archivos y `release:verificar -- --remoto` sirve para los dos); lo que
+cambia es el empaquetado y la firma.
+
+1. En Linux, con las mismas variables de firma puestas:
+   ```bash
+   export TAURI_SIGNING_PRIVATE_KEY="$HOME/ruta/a/nexushub-updater.key"
+   npm run tauri:build
+   ```
+   Deja dos cosas en `src-tauri/target/release/bundle/`: el `.deb` en `deb/` y el AppImage en
+   `appimage/` (`Nexo_X.Y.Z_amd64.AppImage`, con su `.sig` al lado, porque sin firma el
+   autoactualizador no funciona).
+2. Genera el `latest.json` **con la entrada de Linux**, pasando la firma del AppImage:
+   ```bash
+   npm run release:manifest -- --linux-sig src-tauri/target/release/bundle/appimage/Nexo_X.Y.Z_amd64.AppImage.sig
+   ```
+   Sin `--linux-sig` el `latest.json` sale solo con Windows: también es válido, pero quien tenga
+   Nexo en Linux tendrá que bajar la versión a mano y no le saldrá el aviso de «Actualizar ahora».
+3. Sube al mismo Release los **cinco** archivos:
+   - `Nexo_X.Y.Z_x64-setup.exe` y su `.sig` (Windows)
+   - `Nexo_X.Y.Z_amd64.AppImage` y su `.sig` (Linux)
+   - `latest.json`
+4. `npm run release:verificar -- --remoto` comprueba las plataformas publicadas, incluidas las de
+   Linux, así que avisa si la firma del AppImage no es la del archivo.
+
+El `.deb` se puede instalar con `sudo apt install ./Nexo_X.Y.Z_amd64.deb`; el AppImage no necesita
+instalarse (`chmod +x` y se ejecuta), aunque tampoco aparece en el menú de aplicaciones.
+
+### Si compilas tú en Linux
+
+Además de las dependencias de Tauri ([las de su
+documentación](https://v2.tauri.app/start/prerequisites/#linux)), hacen falta dos más, y
+las dos son **paquetes de desarrollo**: sin ellos el programa compila bien pero el
+empaquetado se para.
+
+- `libayatana-appindicator3-dev` (el icono de la bandeja). Sin él:
+  `Can't detect any appindicator library`.
+- `librsvg2-dev` (solo para el AppImage, que usa el complemento *gtk* de linuxdeploy).
+  Sin él: `there is no 'libdir' variable for 'librsvg-2.0' library`.
+
+```bash
+sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev patchelf \
+                 libayatana-appindicator3-dev librsvg2-dev
+```
+
+Los dos se necesitan con su `-dev` aunque la aplicación ya esté instalada en el equipo:
+entonces solo está el paquete de ejecución, que no trae el `.pc` que busca pkg-config.
+
+> En Linux la conversión de documentos usa **LibreOffice** si está instalado, igual que en Windows
+> se usa Microsoft Office. Sin él se usa el motor básico de Nexo. Ojo: LibreOffice no sabe pasar un
+> PDF a Word, así que esa conversión siempre usa el motor básico.
+
 Si algún día quieres que esto se haga solo al hacer `git push` (sin repetir los pasos 2-4 a mano),
 se puede montar con GitHub Actions (`tauri-apps/tauri-action`); avísame cuando quieras montarlo.
 

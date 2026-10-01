@@ -72,7 +72,7 @@ const latest = {
   version,
   notes: notas ?? `Nexo ${version}`,
   pub_date: new Date().toISOString(),
-  platforms,
+  platforms: plataformas,
 };
 
 const destino = path.join(carpeta, "latest.json");

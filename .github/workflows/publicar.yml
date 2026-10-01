@@ -110,6 +110,10 @@ jobs:
         with:
           name: linux-build
           path: src-tauri/target/release/bundle
+      - name: Qué nsis quedó (diagnóstico, se puede quitar luego)
+        run: |
+          detalle=$( (ls -la src-tauri/target/release/bundle/nsis/ 2>&1) | tr '\n' ';' || true)
+          echo "::warning::NSIS: $detalle"
       - name: Qué AppImage quedó (diagnóstico, se puede quitar luego)
         run: |
           detalle=$( (ls -la src-tauri/target/release/bundle/appimage/*.AppImage* 2>&1) | tr '\n' ';' || true)

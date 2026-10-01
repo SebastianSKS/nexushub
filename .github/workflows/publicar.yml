@@ -55,9 +55,14 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Dependencias de Tauri en Linux
+        env:
+          # Sin esto, algún paquete de la cadena (p. ej. de libayatana-appindicator3-dev) puede pedir confirmación
+          # por un prompt de debconf; sin terminal, apt se queda esperando una respuesta que nunca llega — no es
+          # lento, está colgado. `timeout` es la red de seguridad: si aun así se cuelga, falla en 5 min, no en 25.
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+          sudo timeout 120 apt-get update
+          sudo timeout 300 apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf
       - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:

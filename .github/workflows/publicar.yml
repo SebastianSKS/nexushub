@@ -69,6 +69,10 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # linuxdeploy y appimagetool (los usa Tauri para armar el AppImage) son ellos mismos AppImages: sin esto
+          # intentan montarse con FUSE, que no está en los runners de GitHub, y se quedan a medias (la carpeta
+          # Nexo.AppDir sin empaquetar) sin que la compilación avise con un error.
+          APPIMAGE_EXTRACT_AND_RUN: "1"
         run: npm run tauri:build
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -98,10 +102,10 @@ jobs:
         with:
           name: linux-build
           path: src-tauri/target/release/bundle
-      - name: Qué quedó después de bajar los dos artefactos
+      - name: Qué AppImage quedó (diagnóstico, se puede quitar luego)
         run: |
-          lista=$(find src-tauri/target/release/bundle -type f | tr '\n' ';')
-          echo "::warning::ARCHIVOS: $lista"
+          detalle=$( (ls -la src-tauri/target/release/bundle/appimage/*.AppImage* 2>&1) | tr '\n' ';' || true)
+          echo "::warning::APPIMAGE: $detalle"
       - name: Generar latest.json
         run: |
           firma_linux=$(ls src-tauri/target/release/bundle/appimage/*.AppImage.sig)

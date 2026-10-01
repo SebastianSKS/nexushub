@@ -98,6 +98,10 @@ jobs:
         with:
           name: linux-build
           path: src-tauri/target/release/bundle
+      - name: Qué quedó después de bajar los dos artefactos
+        run: |
+          lista=$(find src-tauri/target/release/bundle -type f | tr '\n' ';')
+          echo "::warning::ARCHIVOS: $lista"
       - name: Generar latest.json
         run: |
           firma_linux=$(ls src-tauri/target/release/bundle/appimage/*.AppImage.sig)

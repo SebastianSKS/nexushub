@@ -18,7 +18,40 @@ Cada nueva versión se publica ahí a mano, en tres pasos.
 3. **Nunca subas `src-tauri/nexushub-updater.key`** (la llave privada de firma). Ya está en
    `.gitignore`; solo `nexushub-updater.key.pub` (la pública) puede verse sin problema.
 
-## Cada vez que quieras publicar una versión nueva
+## La forma automática (recomendada, incluye Linux)
+
+`.github/workflows/publicar.yml` compila Windows **y** Linux en servidores de GitHub y publica
+el Release solo: no hace falta tener a mano una máquina Linux para el `.deb`/AppImage.
+
+**La primera vez**, dos secretos del repositorio (Settings → Secrets and variables → Actions →
+New repository secret):
+
+- `TAURI_SIGNING_PRIVATE_KEY`: el contenido completo de `src-tauri/nexushub-updater.key` (pega el
+  archivo entero, no su ruta).
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: su contraseña (puede quedar vacío si la llave no tiene).
+
+**Cada vez que quieras publicar una versión nueva:**
+
+1. Sube el número de versión en los **cinco** archivos de siempre (ver «Env & release» en
+   `AGENTS.md`) y las novedades en `src/lib/novedades.ts`. Commitea y sube a `main`.
+2. Crea y sube una etiqueta con ese número:
+   ```bash
+   git tag v0.3.0
+   git push origin v0.3.0
+   ```
+3. En **Actions → Publicar** verás los tres trabajos (Windows, Linux, Publicar el Release)
+   corriendo. Cuando terminen, el Release ya está publicado con los cinco archivos (el `.exe`
+   y su firma, el `.deb`, el AppImage y su firma, y `latest.json`).
+4. Comprueba lo publicado, como lo haría una copia de Nexo:
+   ```bash
+   npm run release:verificar -- --remoto
+   ```
+
+Si algo sale mal a mitad de camino (por ejemplo, Windows compiló pero Linux falló), **no queda
+ningún Release a medio publicar**: el último paso solo corre si los dos compilaron bien. Borra la
+etiqueta (`git push --delete origin v0.3.0`), arregla lo que falló y vuelve a etiquetar.
+
+## A mano (si no quieres usar el flujo de arriba)
 
 1. Sube el número de versión en **tres** archivos (los tres deben decir lo mismo):
    `package.json`, `src-tauri/tauri.conf.json` y `src-tauri/Cargo.toml`.
@@ -52,7 +85,7 @@ Cada nueva versión se publica ahí a mano, en tres pasos.
 6. Quien ya tenga Nexo abierto verá la actualización al pulsar «Buscar actualizaciones» en
    Configuración → Acerca de.
 
-## Y en Linux (opcional, pero recomendado)
+## Y en Linux, a mano
 
 Windows y Linux se publican por separado: el instalador de cada sistema se compila **en ese
 sistema**, así que hace falta un equipo Linux para el de Linux. Los pasos 1 y 5 son los mismos

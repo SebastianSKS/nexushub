@@ -1,6 +1,6 @@
 import { getTool } from "@/lib/documents/tools";
 import { traducir } from "@/lib/i18n";
-import type { CompressOptions, OcrOptions, OrganizeOptions, PageNumbersOptions, WatermarkOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, ProtectOptions, QueuedFile, ResultItem, RotateOptions, SplitOptions, ToolId, UnlockOptions } from "@/types/documents";
+import type { CompressOptions, OcrOptions, OrganizeOptions, PageNumbersOptions, WatermarkOptions, ImagesToPdfOptions, PdfToImagesOptions, PdfToWordOptions, ProtectOptions, QueuedFile, RecoverOptions, ResultItem, RotateOptions, SplitOptions, ToolId, UnlockOptions } from "@/types/documents";
 import { DocumentError } from "./errors";
 import { compararPdf } from "./motor/comparar-pdf";
 import { abortarSiCancelado, type Ctx, type Salida } from "./motor/comun";
@@ -13,6 +13,7 @@ import { pdfAWord } from "./motor/pdf-a-word";
 import { reconocerTexto } from "./motor/ocr";
 import { dividirPdf, organizarPdf, rotarPdf, unirPdf } from "./motor/pdf-basico";
 import { quitarContrasenaPdf } from "./motor/pdf-desprotegido";
+import { recuperarContrasenaPdf } from "./motor/pdf-recuperado";
 import { numerarPaginas, ponerMarcaDeAgua } from "./motor/pdf-marcas";
 import { protegerPdf } from "./motor/pdf-protegido";
 import { powerpointAPdf } from "./motor/powerpoint-a-pdf";
@@ -81,6 +82,9 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
       break;
     case "unlock-pdf":
       salidas = await quitarContrasenaPdf(archivos, (options as UnlockOptions).password, contexto(2, 98));
+      break;
+    case "recover-pdf":
+      salidas = await recuperarContrasenaPdf(archivos, options as RecoverOptions, contexto(2, 98));
       break;
     case "organize":
       salidas = await organizarPdf(archivos[0]!, (options as OrganizeOptions).order, contexto(2, 98));

@@ -48,6 +48,7 @@ export const SLUGS_HERRAMIENTA: Record<ToolId, string> = {
   rotate: "rotar-paginas",
   "protect-pdf": "proteger-pdf",
   "unlock-pdf": "quitar-contrasena",
+  "recover-pdf": "desbloquear-pdf",
   "compare-pdf": "comparar-pdf",
   organize: "organizar-paginas",
   watermark: "marca-de-agua",

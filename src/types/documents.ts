@@ -11,6 +11,7 @@ export type ToolId =
   | "rotate"
   | "protect-pdf"
   | "unlock-pdf"
+  | "recover-pdf"
   | "compare-pdf"
   | "organize"
   | "watermark"
@@ -80,6 +81,16 @@ export interface UnlockOptions {
   password: string;
 }
 
+export type MetodoRecuperacion = "auto" | "comunes" | "numeros" | "fuerza-bruta";
+export type JuegoCaracteres = "numeros" | "letras" | "letras-numeros";
+export interface RecoverOptions {
+  metodo: MetodoRecuperacion;
+  /** «numeros» y «fuerza-bruta»: longitud máxima a probar. */
+  maxLongitud: number;
+  /** «fuerza-bruta»: qué caracteres combinar. */
+  juego: JuegoCaracteres;
+}
+
 export interface OrganizeOptions {
   /** Páginas originales (base 1) en el orden en que quedarán; las que faltan se eliminan. Vacío = aún sin cargar. */
   order: number[];
@@ -121,6 +132,7 @@ export interface ToolOptionsMap {
   rotate: RotateOptions;
   "protect-pdf": ProtectOptions;
   "unlock-pdf": UnlockOptions;
+  "recover-pdf": RecoverOptions;
   "compare-pdf": Record<string, never>;
   organize: OrganizeOptions;
   watermark: WatermarkOptions;

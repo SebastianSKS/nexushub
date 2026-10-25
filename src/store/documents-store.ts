@@ -14,6 +14,7 @@ import type {
   PdfToWordOptions,
   ProtectOptions,
   QueuedFile,
+  RecoverOptions,
   ResultItem,
   RotateOptions,
   SplitOptions,
@@ -32,6 +33,7 @@ interface OptionsState {
   rotate: RotateOptions;
   protectPdf: ProtectOptions;
   unlockPdf: UnlockOptions;
+  recoverPdf: RecoverOptions;
   organize: OrganizeOptions;
   watermark: WatermarkOptions;
   pageNumbers: PageNumbersOptions;
@@ -47,6 +49,7 @@ const DEFAULT_OPTIONS: OptionsState = {
   rotate: { rotations: {} },
   protectPdf: { password: "" },
   unlockPdf: { password: "" },
+  recoverPdf: { metodo: "auto", maxLongitud: 6, juego: "numeros" },
   organize: { order: [] },
   watermark: { text: "CONFIDENCIAL", opacity: 25, layout: "diagonal", size: "medium", color: "gray" },
   pageNumbers: { position: "bottom-center", format: "n", start: 1, skipFirst: false },

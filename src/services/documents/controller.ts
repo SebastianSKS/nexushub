@@ -36,6 +36,8 @@ function optionsFor(toolId: ToolId): unknown {
       return o.protectPdf;
     case "unlock-pdf":
       return o.unlockPdf;
+    case "recover-pdf":
+      return o.recoverPdf;
     case "organize":
       return o.organize;
     case "watermark":

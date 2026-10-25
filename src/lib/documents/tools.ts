@@ -125,6 +125,16 @@ export const TOOLS: readonly ToolDefinition[] = [
     output: "PDF",
   },
   {
+    id: "recover-pdf",
+    action: T("Desbloquear PDF"),
+    name: T("Desbloquear PDF"),
+    description: T("¿Olvidaste la contraseña? Suéltalo y pulsa Desbloquear: Nexo la busca sola y te abre el PDF."),
+    accepts: ["pdf"],
+    minFiles: 1,
+    maxFiles: 1,
+    output: "PDF",
+  },
+  {
     id: "compare-pdf",
     action: T("Comparar"),
     name: T("Comparar dos PDF"),

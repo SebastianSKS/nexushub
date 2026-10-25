@@ -12,6 +12,7 @@ import { WatermarkOptionsPanel } from "./WatermarkOptionsPanel";
 import { PdfToImagesOptionsPanel } from "./PdfToImagesOptionsPanel";
 import { PdfToWordOptionsPanel } from "./PdfToWordOptionsPanel";
 import { ProtectOptionsPanel } from "./ProtectOptionsPanel";
+import { RecoverOptionsPanel } from "./RecoverOptionsPanel";
 import { RotateOptionsPanel } from "./RotateOptionsPanel";
 import { SplitOptionsPanel } from "./SplitOptionsPanel";
 import { UnlockOptionsPanel } from "./UnlockOptionsPanel";
@@ -44,6 +45,9 @@ export function OptionsPanel({ toolId }: { toolId: ToolId }) {
       break;
     case "unlock-pdf":
       body = <UnlockOptionsPanel />;
+      break;
+    case "recover-pdf":
+      body = <RecoverOptionsPanel />;
       break;
     case "organize":
       body = <OrganizeOptionsPanel />;

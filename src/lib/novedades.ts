@@ -21,6 +21,12 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.1",
+    novedades: [
+      { glifo: "documentos", titulo: T("Desbloquear PDF"), texto: T("¿Olvidaste la contraseña de un PDF tuyo? En Documentos hay una herramienta nueva: suéltalo, pulsa Desbloquear y Nexo busca sola la contraseña (contraseñas comunes, números y combinaciones cortas) y te abre el PDF. Todo pasa en tu equipo, sin subir nada. Las contraseñas sencillas aparecen; una larga y al azar no se puede recuperar así.") },
+    ],
+  },
+  {
     version: "0.3.0",
     novedades: [
       { glifo: "externo", titulo: T("Nexo también en Linux"), texto: T("Hay instalador para Linux: un .deb para Ubuntu, Debian, Mint y Pop!_OS, y un AppImage que se ejecuta sin instalar. Del mismo Release, con la misma bandeja, el mismo calendario, el mismo horario y los mismos PDF. También se actualiza solo.") },

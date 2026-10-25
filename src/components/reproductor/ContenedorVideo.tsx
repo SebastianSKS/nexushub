@@ -40,7 +40,9 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
   // Posición de la miniatura: null = esquina inferior derecha por defecto; si se arrastra, la que dejó el usuario.
   const [miniPos, setMiniPos] = useState<{ x: number; y: number } | null>(null);
   const [ventana, setVentana] = useState({ ancho: 1280, alto: 800 });
+  const [arrastrando, setArrastrando] = useState(false);
   const arrastre = useRef<{ dx: number; dy: number } | null>(null);
+  const posActual = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const leer = () => setVentana({ ancho: window.innerWidth, alto: window.innerHeight });
@@ -81,7 +83,8 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
         : "none";
       el.style.boxShadow = "none";
     } else {
-      el.style.transform = `translate(${mini.x}px, ${mini.y}px)`;
+      // Mientras se arrastra, la posición la lleva el manejador de puntero (transform directo, sin re-render); no la pisamos.
+      if (!arrastre.current) el.style.transform = `translate(${mini.x}px, ${mini.y}px)`;
       el.style.width = `${MINI_ANCHO}px`;
       el.style.height = `${MINI_ALTO}px`;
       el.style.clipPath = "none";
@@ -97,13 +100,24 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
     if ((e.target as HTMLElement).closest("button,a")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     arrastre.current = { dx: e.clientX - mini.x, dy: e.clientY - mini.y };
+    posActual.current = { x: mini.x, y: mini.y };
+    setArrastrando(true);
+    const el = contRef.current;
+    if (el) el.style.transition = "none"; // el arrastre debe seguir al puntero sin retraso
   };
   const arrastrar = (e: PointerEvent<HTMLDivElement>) => {
     if (!arrastre.current) return;
-    setMiniPos(limitar(e.clientX - arrastre.current.dx, e.clientY - arrastre.current.dy));
+    // Se mueve escribiendo el transform directamente: sin re-render por fotograma, el arrastre va fluido.
+    const p = limitar(e.clientX - arrastre.current.dx, e.clientY - arrastre.current.dy);
+    posActual.current = p;
+    const el = contRef.current;
+    if (el) el.style.transform = `translate(${p.x}px, ${p.y}px)`;
   };
   const soltar = (e: PointerEvent<HTMLDivElement>) => {
+    if (!arrastre.current) return;
     arrastre.current = null;
+    setArrastrando(false);
+    if (posActual.current) setMiniPos(posActual.current); // se guarda la posición final en el estado
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
@@ -120,6 +134,9 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
     >
       {/* Aquí YouTube inserta su iframe. React no lo toca: nunca se recrea. */}
       <div ref={hostRef} className="h-full w-full [&>iframe]:h-full [&>iframe]:w-full" />
+
+      {/* Escudo sobre el iframe mientras se arrastra: el iframe de YouTube es de otro origen y, sin esto, «roba» el puntero y el arrastre se traba. */}
+      {modo === "mini" && arrastrando && <div className="absolute inset-0 cursor-move touch-none" aria-hidden />}
 
       {modo === "mini" && (
         <div

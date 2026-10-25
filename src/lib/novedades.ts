@@ -21,6 +21,13 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.2",
+    novedades: [
+      { glifo: "campana", titulo: T("Los avisos llegan aunque cierres la ventana"), texto: T("Antes, al pulsar la X, Nexo se cerraba del todo y dejaba de avisar. Ahora la X lo manda a la bandeja (junto al reloj de Windows): sigue avisando de tus clases, eventos y cumpleaños a su hora aunque no tengas la ventana abierta. Para cerrarlo por completo, haz clic derecho en el icono de la bandeja y pulsa «Salir».") },
+      { glifo: "video", titulo: T("La miniatura de video se mueve mejor"), texto: T("Al arrastrar la miniatura flotante de YouTube por la pantalla ya no se traba ni se queda a medio camino: ahora sigue el cursor de forma fluida.") },
+    ],
+  },
+  {
     version: "0.3.1",
     novedades: [
       { glifo: "documentos", titulo: T("Desbloquear PDF"), texto: T("¿Olvidaste la contraseña de un PDF tuyo? En Documentos hay una herramienta nueva: suéltalo, pulsa Desbloquear y Nexo busca sola la contraseña (contraseñas comunes, números y combinaciones cortas) y te abre el PDF. Todo pasa en tu equipo, sin subir nada. Las contraseñas sencillas aparecen; una larga y al azar no se puede recuperar así.") },

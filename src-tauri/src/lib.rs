@@ -329,6 +329,14 @@ pub fn run() {
             app.manage(EstadoBandeja { ahora, reproducir, siguiente, mostrar, salir, tray });
             Ok(())
         })
+        .on_window_event(|window, event| {
+            // La X no cierra Nexo: lo manda a la bandeja para que siga avisando (clases, eventos, cumpleaños)
+            // aunque no tengas la ventana abierta. Para cerrarlo del todo, «Salir» en el menú de la bandeja.
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                let _ = window.hide();
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

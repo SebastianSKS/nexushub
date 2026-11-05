@@ -8,7 +8,7 @@ import type { ToolId } from "@/types/documents";
  * de consulta (?id=), porque la exportación estática no admite segmentos dinámicos abiertos.
  */
 
-export type SeccionId = "inicio" | "video" | "musica" | "documentos" | "calendario" | "horario" | "calculadora" | "configuracion" | "atajos";
+export type SeccionId = "inicio" | "video" | "musica" | "documentos" | "calendario" | "horario" | "calculadora" | "repaso" | "configuracion" | "atajos";
 
 export interface Seccion {
   id: SeccionId;
@@ -16,7 +16,7 @@ export interface Seccion {
   ruta: string;
   glifo: NombreGlifo;
   /** Atajo Ctrl+n; solo las secciones principales lo tienen. */
-  atajo?: "0" | "1" | "2" | "3" | "4" | "5" | "6";
+  atajo?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
 }
 
 export const SECCIONES: readonly Seccion[] = [
@@ -27,6 +27,7 @@ export const SECCIONES: readonly Seccion[] = [
   { id: "calendario", etiqueta: T("Calendario"), ruta: "/calendario", glifo: "calendario", atajo: "4" },
   { id: "horario", etiqueta: T("Horario"), ruta: "/horario", glifo: "reloj", atajo: "5" },
   { id: "calculadora", etiqueta: T("Calculadora"), ruta: "/calculadora", glifo: "calculadora", atajo: "6" },
+  { id: "repaso", etiqueta: T("Repaso"), ruta: "/repaso", glifo: "repaso", atajo: "7" },
   { id: "configuracion", etiqueta: T("Configuración"), ruta: "/configuracion", glifo: "configuracion" },
   { id: "atajos", etiqueta: T("Atajos de teclado"), ruta: "/atajos", glifo: "atajos" },
 ];
@@ -79,7 +80,7 @@ export function seccionDe(pathname: string): SeccionId | null {
   return SECCIONES.find((s) => p === s.ruta || p.startsWith(`${s.ruta}/`))?.id ?? null;
 }
 
-const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/documentos/carpetas", "/calendario", "/horario", "/calculadora", "/configuracion", "/atajos"]);
+const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/documentos/carpetas", "/calendario", "/horario", "/calculadora", "/repaso", "/configuracion", "/atajos"]);
 
 /** ¿Existe esta ruta? Se usa antes de restaurar la última sesión: una ruta guardada puede haber dejado de existir. */
 export function rutaValida(rutaConConsulta: string): boolean {

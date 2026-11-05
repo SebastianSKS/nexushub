@@ -22,7 +22,7 @@ export type PrimerDiaSemana = "lunes" | "domingo";
 export type ReducirMovimiento = "sistema" | "si" | "no";
 
 /** Las secciones de la barra lateral que se pueden esconder (Inicio y Configuración siempre están). */
-export const SECCIONES_OCULTABLES = ["video", "musica", "documentos", "calendario", "horario", "calculadora"] as const;
+export const SECCIONES_OCULTABLES = ["video", "musica", "documentos", "calendario", "horario", "calculadora", "repaso"] as const;
 export type SeccionOcultable = (typeof SECCIONES_OCULTABLES)[number];
 
 /** Los tamaños de interfaz que se ofrecen (en %). */

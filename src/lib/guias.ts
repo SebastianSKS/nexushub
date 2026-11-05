@@ -8,7 +8,7 @@ import { T } from "./i18n/nucleo.ts";
  * Para explicar algo nuevo: añade un paso aquí (o una guía nueva y su ruta en `guiaDeRuta`); nada más.
  */
 
-export type GuiaId = "bienvenida" | "video" | "musica" | "documentos" | "herramienta" | "carpetas" | "calendario" | "horario" | "calculadora" | "configuracion" | "atajos";
+export type GuiaId = "bienvenida" | "video" | "musica" | "documentos" | "herramienta" | "carpetas" | "calendario" | "horario" | "calculadora" | "repaso" | "configuracion" | "atajos";
 
 export interface PasoGuia {
   glifo: NombreGlifo;
@@ -31,7 +31,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Bienvenida"),
     final: T("Empezar"),
     pasos: [
-      { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Horario y Calculadora, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
+      { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Horario, Calculadora y Repaso, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
       { glifo: "buscar", titulo: T("Encuentra lo que sea"), texto: T("Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF, Word, Excel y PowerPoint. También resuelve cuentas: escribe 25*4 y te da el resultado.") },
       { glifo: "exito", titulo: T("Tus primeros pasos"), texto: T("En Inicio hay una lista corta (nombre, horario, carpetas, un examen y la búsqueda) que se marca sola. Si no la quieres, tiene un botón para ocultarla.") },
       { glifo: "informacion", titulo: T("Ayuda en cada sección"), texto: T("En la barra de arriba hay un signo de interrogación (?). Púlsalo en cualquier sección para ver otra vez su explicación, cuando quieras.") },
@@ -127,6 +127,16 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "calculadora", titulo: T("Promedio de tus materias"), texto: T("En la pestaña «Promedio» apuntas cuánto vale cada evaluación y la calificación que sacaste. Nexo te dice cómo vas y cuánto necesitas en lo que falta para aprobar.") },
     ],
   },
+  repaso: {
+    id: "repaso",
+    nombre: T("Repaso"),
+    final: T("Entendido"),
+    pasos: [
+      { glifo: "repaso", titulo: T("Tarjetas de estudio"), texto: T("Crea un mazo por materia y añade tarjetas: la pregunta por un lado y la respuesta por el otro. También puedes pegar tus apuntes (una línea «término - definición» por tarjeta) y Nexo las arma solo.") },
+      { glifo: "exito", titulo: T("Estudia y califica"), texto: T("En Estudiar ves la pregunta, piensas, miras la respuesta y calificas: «Otra vez», «Bien» o «Fácil». Con el teclado: Espacio para ver la respuesta y 1, 2 o 3 para calificar.") },
+      { glifo: "reloj", titulo: T("Nexo te las repite a tiempo"), texto: T("Las que te cuestan vuelven pronto y las que ya sabes tardan cada vez más, justo antes de que se te olviden. En cada mazo ves cuántas tocan hoy. Todo se guarda solo en este equipo.") },
+    ],
+  },
   configuracion: {
     id: "configuracion",
     nombre: T("Configuración"),
@@ -143,7 +153,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     id: "atajos",
     nombre: T("Atajos de teclado"),
     final: T("Entendido"),
-    pasos: [{ glifo: "atajos", titulo: T("Hazlo más rápido"), texto: T("Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 6 para saltar de sección.") }],
+    pasos: [{ glifo: "atajos", titulo: T("Hazlo más rápido"), texto: T("Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 7 para saltar de sección.") }],
   },
 };
 
@@ -159,6 +169,7 @@ export function guiaDeRuta(ruta: string): GuiaId | null {
   if (r.startsWith("/calendario")) return "calendario";
   if (r.startsWith("/horario")) return "horario";
   if (r.startsWith("/calculadora")) return "calculadora";
+  if (r.startsWith("/repaso")) return "repaso";
   if (r.startsWith("/configuracion")) return "configuracion";
   if (r.startsWith("/atajos")) return "atajos";
   return null;

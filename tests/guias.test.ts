@@ -15,6 +15,8 @@ describe("guías", () => {
     assert.equal(guiaDeRuta("/calendario/"), "calendario");
     assert.equal(guiaDeRuta("/horario"), "horario");
     assert.equal(guiaDeRuta("/calculadora"), "calculadora");
+    assert.equal(guiaDeRuta("/repaso"), "repaso");
+    assert.equal(guiaDeRuta("/repaso/"), "repaso");
     assert.equal(guiaDeRuta("/configuracion"), "configuracion");
     assert.equal(guiaDeRuta("/atajos"), "atajos");
   });

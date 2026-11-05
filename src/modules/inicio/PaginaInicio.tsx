@@ -28,6 +28,7 @@ const DESCRIPCION: Record<string, string> = {
   calendario: T("Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase ninguno."),
   horario: T("Tus clases de la semana. Escanea la imagen del horario y se llena sola."),
   calculadora: T("Normal y científica, con historial."),
+  repaso: T("Tarjetas de estudio que Nexo te repite justo antes de que se te olviden."),
 };
 
 /** Frase sobre lo que pasa hoy en el calendario. */
@@ -64,7 +65,7 @@ export function PaginaInicio() {
       <PlantillaPagina
         migas={[{ etiqueta: "Inicio" }]}
         titulo={tr("Inicio")}
-        descripcion={tr("Video, Música, Documentos, Calendario, Horario y Calculadora, a un clic.")}
+        descripcion={tr("Video, Música, Documentos, Calendario, Horario, Calculadora y Repaso, a un clic.")}
         principal={
           <>
             <section

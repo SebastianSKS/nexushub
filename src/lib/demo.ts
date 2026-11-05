@@ -74,7 +74,7 @@ export function datosDeDemo(ahora: Date): Record<string, string> {
       { id: "demo-p2", nombre: "Programación", creditos: 5, evaluaciones: [evaluacion("demo-p2a", "Proyecto 1", 50, 9.5), evaluacion("demo-p2b", "Proyecto 2", 50, 9)] },
     ],
   };
-  const guias = ["bienvenida", "video", "musica", "documentos", "herramienta", "carpetas", "calendario", "horario", "calculadora", "configuracion", "atajos"];
+  const guias = ["bienvenida", "video", "musica", "documentos", "herramienta", "carpetas", "calendario", "horario", "calculadora", "repaso", "configuracion", "atajos"];
 
   return {
     "nexushub-guias-vistas": JSON.stringify(guias),

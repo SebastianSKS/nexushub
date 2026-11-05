@@ -21,6 +21,12 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.4",
+    novedades: [
+      { glifo: "repaso", titulo: T("Repaso, más a la mano"), texto: T("Repaso ya aparece en Inicio con su propia tarjeta, en la bienvenida y en los atajos (Ctrl + 1 a Ctrl + 7). Y tiene su guía la primera vez que entras: te cuenta cómo crear mazos, pegar tus apuntes y estudiar con el teclado.") },
+    ],
+  },
+  {
     version: "0.3.3",
     novedades: [
       { glifo: "repaso", titulo: T("Repaso: tarjetas de estudio"), texto: T("Una sección nueva (Ctrl + 7) para estudiar con tarjetas: creas un mazo por materia, añades preguntas y respuestas —o pegas tus apuntes y Nexo las arma solo— y Nexo te las repite justo antes de que se te olviden. Todo se queda en tu equipo.") },

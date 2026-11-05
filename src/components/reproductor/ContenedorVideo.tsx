@@ -144,11 +144,12 @@ export function ContenedorVideo({ hostRef }: { hostRef: RefObject<HTMLDivElement
           onPointerMove={arrastrar}
           onPointerUp={soltar}
           onPointerCancel={soltar}
-          className="group/mini absolute inset-x-0 top-0 flex h-9 cursor-move touch-none items-center gap-1 bg-gradient-to-b from-black/80 to-transparent px-1 opacity-0 transition-opacity duration-exit hover:opacity-100 focus-within:opacity-100"
+          className="group/mini absolute inset-x-0 top-0 flex h-9 cursor-move touch-none items-center gap-1 bg-gradient-to-b from-black/85 to-transparent px-1"
         >
+          {/* Siempre visible: es la forma de volver a la vista grande (antes solo aparecía al pasar el cursor y nadie la encontraba). */}
           <Link
             href={rutaVer(idVideo ?? "")}
-            className="rounded-control flex h-7 items-center gap-1.5 px-2 text-caption font-semibold text-white hover:bg-white/15"
+            className="rounded-control flex h-7 items-center gap-1.5 bg-white/15 px-2 text-caption font-semibold text-white hover:bg-white/30"
           >
             <Glifo nombre="contraer" tam={14} />
             {t("Volver al video")}

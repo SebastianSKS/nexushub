@@ -21,6 +21,13 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.3",
+    novedades: [
+      { glifo: "repaso", titulo: T("Repaso: tarjetas de estudio"), texto: T("Una sección nueva (Ctrl + 7) para estudiar con tarjetas: creas un mazo por materia, añades preguntas y respuestas —o pegas tus apuntes y Nexo las arma solo— y Nexo te las repite justo antes de que se te olviden. Todo se queda en tu equipo.") },
+      { glifo: "video", titulo: T("«Volver al video» siempre a la vista"), texto: T("Cuando minimizas un video, la miniatura ahora muestra siempre el botón «Volver al video». Antes solo aparecía al pasar el cursor por encima y era fácil no verlo.") },
+    ],
+  },
+  {
     version: "0.3.2",
     novedades: [
       { glifo: "campana", titulo: T("Los avisos llegan aunque cierres la ventana"), texto: T("Antes, al pulsar la X, Nexo se cerraba del todo y dejaba de avisar. Ahora la X lo manda a la bandeja (junto al reloj de Windows): sigue avisando de tus clases, eventos y cumpleaños a su hora aunque no tengas la ventana abierta. Para cerrarlo por completo, haz clic derecho en el icono de la bandeja y pulsa «Salir».") },

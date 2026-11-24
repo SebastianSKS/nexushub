@@ -270,5 +270,20 @@
   "tu cuenta": "your account",
   "Spotify no pudo reproducir esta pista: {motivo}": "Spotify couldn't play this track: {motivo}",
   "Tu cuenta de Spotify todavía no está autorizada para Nexo.": "Your Spotify account isn't authorized for Nexo yet.",
-  "Spotify limita las aplicaciones nuevas a las cuentas que su creador autoriza. Pídele a quien te pasó Nexo que agregue tu correo de Spotify; mientras tanto puedes usar Video y Documentos con normalidad.": "Spotify limits new apps to the accounts their creator authorizes. Ask whoever gave you Nexo to add your Spotify email; meanwhile you can use Video and Documents as usual."
+  "Spotify limita las aplicaciones nuevas a las cuentas que su creador autoriza. Pídele a quien te pasó Nexo que agregue tu correo de Spotify; mientras tanto puedes usar Video y Documentos con normalidad.": "Spotify limits new apps to the accounts their creator authorizes. Ask whoever gave you Nexo to add your Spotify email; meanwhile you can use Video and Documents as usual.",
+  "Usar mi propia app": "Use my own app",
+  "Si tienes Spotify Premium, usa «Conectar con Spotify Premium» (arriba): inicias sesión en la página de Spotify y oyes canciones completas con todos los controles.": "If you have Spotify Premium, use “Connect with Spotify Premium” (above): you sign in on Spotify's own page and hear full songs with all the controls.",
+  "¿Tu cuenta no está autorizada? Usa tu propia app de Spotify": "Is your account not authorized? Use your own Spotify app",
+  "Abre developer.spotify.com/dashboard e inicia sesión. La cuenta dueña de la app debe tener Spotify Premium activo.": "Open developer.spotify.com/dashboard and sign in. The account that owns the app must have an active Spotify Premium.",
+  "Pega su Client ID aquí": "Paste its Client ID here",
+  "En Settings verás el Client ID. Pégalo abajo y pulsa «Guardar»; después usa «Conectar con Spotify Premium». Nunca hace falta el Client Secret.": "In Settings you'll see the Client ID. Paste it below and press “Save”; then use “Connect with Spotify Premium”. The Client Secret is never needed.",
+  "Usar mi propia app de Spotify": "Use my own Spotify app",
+  "Normalmente no hace falta.": "You normally don't need this.",
+  "«Conectar con Spotify Premium» ya usa la app de Nexo: solo inicias sesión en la página de Spotify. Esto es para cuando tu cuenta no está autorizada en esa app y prefieres usar la tuya.": "“Connect with Spotify Premium” already uses Nexo's app: you just sign in on Spotify's page. This is for when your account isn't authorized in that app and you'd rather use your own.",
+  "Usando tu propia app de Spotify.": "Using your own Spotify app.",
+  "Client ID: {id}…": "Client ID: {id}…",
+  "Volver a la app de Nexo": "Back to Nexo's app",
+  "Se cerró la sesión anterior: pulsa «Conectar con Spotify Premium» para iniciar sesión de nuevo.": "The previous session was closed: press “Connect with Spotify Premium” to sign in again.",
+  "Client ID de tu app": "Your app's Client ID",
+  "Un Client ID tiene 32 letras y números (de la a a la f).": "A Client ID has 32 letters and numbers (a to f)."
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { PlugConnected20Regular } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
@@ -7,6 +8,7 @@ import { Card } from "@/components/fluent/Card";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { clienteIdConfigurado, cerrarSesionSpotify, iniciarConexionSpotify } from "@/services/music/oauth";
 import { useMusicStore } from "@/store/music-store";
+import { SpotifySetupDialog } from "./SpotifySetupDialog";
 
 export async function desconectarSpotify() {
   cerrarSesionSpotify();
@@ -22,6 +24,7 @@ export function PanelConexion() {
   const t = useT();
   const connection = useMusicStore((s) => s.connection);
   const connectAvailable = clienteIdConfigurado();
+  const [guia, setGuia] = useState(false);
 
   let body: React.ReactNode;
   switch (connection.status) {
@@ -73,6 +76,9 @@ export function PanelConexion() {
                   {t("Reintentar")}
                 </Button>
               )}
+              <Button className="h-7" onClick={() => setGuia(true)}>
+                {t("Usar mi propia app")}
+              </Button>
               <Button className="h-7" onClick={() => void desconectarSpotify()}>
                 {t("Cerrar sesión de Spotify")}
               </Button>
@@ -98,15 +104,21 @@ export function PanelConexion() {
             <p className="text-body font-semibold text-fg">{t("Modo Invitado · Vista previa de 30 s")}</p>
             <p className="text-body text-fg-secondary">
               {t("Escuchas con el reproductor oficial de Spotify, sin iniciar sesión.")}{" "}
-              {connectAvailable
-                ? t("Si tienes Spotify Premium, usa «Conectar con Spotify Premium» (arriba) para oír canciones completas con todos los controles.")
-                : t("Si tienes Spotify Premium, usa «Cómo activar Premium» (arriba) para conectar tu cuenta y oír canciones completas.")}
+              {t("Si tienes Spotify Premium, usa «Conectar con Spotify Premium» (arriba): inicias sesión en la página de Spotify y oyes canciones completas con todos los controles.")}
             </p>
+            <button type="button" className="mt-1 text-caption text-accent-text underline-offset-2 hover:underline focus-visible:underline" onClick={() => setGuia(true)}>
+              {t("¿Tu cuenta no está autorizada? Usa tu propia app de Spotify")}
+            </button>
           </div>
         </div>
       );
   }
 
   const bare = connection.status === "not-premium" || connection.status === "error";
-  return bare ? body : <Card className="p-4">{body}</Card>;
+  return (
+    <>
+      {bare ? body : <Card className="p-4">{body}</Card>}
+      <SpotifySetupDialog open={guia} onClose={() => setGuia(false)} />
+    </>
+  );
 }

@@ -2,12 +2,11 @@
 
 import { useT } from "@/lib/i18n";
 import { LogoMarca } from "@/components/fluent/LogoMarca";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowSync20Regular } from "@fluentui/react-icons";
 import { Button } from "@/components/fluent/Button";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
-import { clienteIdConfigurado } from "@/services/music/oauth";
 import { useMusicStore } from "@/store/music-store";
 import { conectarSpotify, PanelConexion } from "./ConnectionPanel";
 import { ConsejosMusica } from "./ConsejosMusica";
@@ -16,18 +15,15 @@ import { AvisoPermisos } from "./PermisosSpotify";
 import { InicioMusica } from "./InicioMusica";
 import { MusicGrid } from "./MusicGrid";
 import { MusicSearchBar } from "./MusicSearchBar";
-import { SpotifySetupDialog } from "./SpotifySetupDialog";
 
 /** /musica — sugeridos y búsqueda. Modo Invitado (embed oficial) o Modo Conectado (Premium). */
 export function PaginaMusica() {
   const t = useT();
   const estado = useMusicStore((s) => s.connection.status);
-  const connectAvailable = clienteIdConfigurado();
   const cargando = useMusicStore((s) => s.status === "loading");
   // Con una búsqueda hecha, los resultados van primero: nada de favoritos ni recientes por delante.
   const buscando = useMusicStore((s) => s.query.trim() !== "");
   const faltanPermisos = useMusicStore((s) => (s.permisosExtra === false && s.query === "") || s.permisosBiblioteca === "faltan");
-  const [guia, setGuia] = useState(false);
 
   // Abre con contenido y detecta qué modos ofrece este equipo.
   useEffect(() => {
@@ -61,13 +57,9 @@ export function PaginaMusica() {
       <Button variant="accent" disabled>
         {t("Conectando…")}
       </Button>
-    ) : connectAvailable ? (
+    ) : (
       <Button variant="accent" icon={<LogoMarca marca="spotify" tam={18} />} onClick={conectarSpotify}>
         {t("Conectar con Spotify Premium")}
-      </Button>
-    ) : (
-      <Button variant="accent" onClick={() => setGuia(true)}>
-        {t("Cómo activar Premium")}
       </Button>
     );
 
@@ -95,7 +87,6 @@ export function PaginaMusica() {
         }
         lateral={<PanelConexion />}
       />
-      <SpotifySetupDialog open={guia} onClose={() => setGuia(false)} />
     </>
   );
 }

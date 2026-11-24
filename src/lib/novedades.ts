@@ -21,6 +21,12 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.5",
+    novedades: [
+      { glifo: "musica", titulo: T("Spotify, sin configurar nada"), texto: T("«Conectar con Spotify Premium» ya funciona de entrada: pulsas, inicias sesión en la página de Spotify (con tu correo, Google, Facebook o Apple) y listo. Ya no hay que crear una app ni editar archivos. Si tu cuenta aún no está autorizada, Nexo te lo dice y te explica qué hacer; y si prefieres usar tu propia app de Spotify, ahora la pegas desde Música.") },
+    ],
+  },
+  {
     version: "0.3.4",
     novedades: [
       { glifo: "repaso", titulo: T("Repaso, más a la mano"), texto: T("Repaso ya aparece en Inicio con su propia tarjeta, en la bienvenida y en los atajos (Ctrl + 1 a Ctrl + 7). Y tiene su guía la primera vez que entras: te cuenta cómo crear mazos, pegar tus apuntes y estudiar con el teclado.") },

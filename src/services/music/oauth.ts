@@ -24,10 +24,56 @@ interface Tokens {
   refresh_token?: string;
 }
 
-export function obtenerClientId(): string | null {
-  return process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID?.trim() || null;
+/**
+ * El Client ID de la aplicación de Spotify de Nexo. No es un secreto: con PKCE no hay Client Secret, y Spotify espera
+ * este valor público en cualquier app de escritorio. Con él, «Conectar con Spotify» funciona de entrada: la persona
+ * inicia sesión en la página de Spotify (correo y contraseña, Google, Facebook o Apple), sin configurar nada.
+ */
+const CLIENT_ID_DE_NEXO = "44823508c86a453faf53f287233b7016";
+const CLAVE_CLIENT_ID_PROPIO = "nexushub-spotify-clientid";
+
+/** Un Client ID de Spotify son 32 caracteres hexadecimales. */
+export function esClientIdValido(texto: string): boolean {
+  return /^[0-9a-f]{32}$/i.test(texto.trim());
 }
-export const clienteIdConfigurado = (): boolean => obtenerClientId() !== null;
+
+/** El Client ID de la app de Spotify propia de esta persona (si pegó uno en la guía), o null. */
+export function clientIdPropio(): string | null {
+  try {
+    const v = window.localStorage.getItem(CLAVE_CLIENT_ID_PROPIO)?.trim() ?? "";
+    return esClientIdValido(v) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Guarda un Client ID propio. Devuelve false si no tiene la forma de uno. Al cambiar de app se cierra la sesión (sus tokens no valen en la otra). */
+export function guardarClientIdPropio(texto: string): boolean {
+  if (!esClientIdValido(texto)) return false;
+  try {
+    window.localStorage.setItem(CLAVE_CLIENT_ID_PROPIO, texto.trim());
+    guardarTokens(null);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Vuelve a la aplicación de Spotify de Nexo. */
+export function quitarClientIdPropio(): void {
+  try {
+    window.localStorage.removeItem(CLAVE_CLIENT_ID_PROPIO);
+    guardarTokens(null);
+  } catch {
+    /* sin almacenamiento */
+  }
+}
+
+/** Primero el de la propia app de la persona, luego el de la compilación (si lo hay) y por último el de Nexo. */
+export function obtenerClientId(): string {
+  return clientIdPropio() ?? (process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID?.trim() || CLIENT_ID_DE_NEXO);
+}
+export const clienteIdConfigurado = (): boolean => true;
 
 /** Debe coincidir EXACTAMENTE con la registrada en el panel de la app de Spotify. */
 export function redirectUri(): string {
@@ -62,7 +108,6 @@ export function haySesionSpotify(): boolean {
 /** Redirige a Spotify a iniciar sesión. Guarda el verificador PKCE para el regreso. */
 export async function iniciarConexionSpotify(volverA?: string): Promise<void> {
   const clientId = obtenerClientId();
-  if (!clientId) return;
 
   const verificador = crearVerificador();
   const estado = crearEstado();
@@ -105,7 +150,6 @@ interface RespuestaToken {
  */
 async function pedirTokens(cuerpo: Record<string, string>): Promise<RespuestaToken | "rechazado" | null> {
   const clientId = obtenerClientId();
-  if (!clientId) return null;
   try {
     const res = await fetchExterno("https://accounts.spotify.com/api/token", {
       method: "POST",

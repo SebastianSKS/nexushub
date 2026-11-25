@@ -101,9 +101,13 @@ fn bandeja_caratula(app: tauri::AppHandle, rgba: Option<Vec<u8>>, lado: u32) -> 
 /// deliberadamente distinta de la del identificador de la aplicación (`com.nexushub.app`, donde vive el
 /// almacenamiento de la ventana), para que sobreviva aunque esa carpeta se borre (desinstalar con «borrar
 /// datos», limpiar el navegador incrustado, etc.).
+///
+/// La versión de desarrollo guarda en otra carpeta, para no escribir encima del respaldo de la aplicación instalada.
+const CARPETA_RESPALDO: &str = if cfg!(debug_assertions) { "NexusHub (pruebas)" } else { "NexusHub" };
+
 fn ruta_respaldo(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
     let base = app.path().data_dir().map_err(|e| e.to_string())?;
-    Ok(base.join("NexusHub").join("respaldo.json"))
+    Ok(base.join(CARPETA_RESPALDO).join("respaldo.json"))
 }
 
 /// Devuelve el último respaldo guardado (JSON en texto), o `None` si nunca se guardó uno.
@@ -112,7 +116,15 @@ fn leer_respaldo(app: tauri::AppHandle) -> Result<Option<String>, String> {
     let ruta = ruta_respaldo(&app)?;
     match std::fs::read_to_string(&ruta) {
         Ok(t) => Ok(Some(t)),
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            // En desarrollo, la primera vez se parte de una LECTURA del respaldo real, para probar con datos de verdad.
+            if cfg!(debug_assertions) {
+                let base = app.path().data_dir().map_err(|e| e.to_string())?;
+                Ok(std::fs::read_to_string(base.join("NexusHub").join("respaldo.json")).ok())
+            } else {
+                Ok(None)
+            }
+        }
         Err(e) => Err(e.to_string()),
     }
 }
@@ -243,6 +255,9 @@ pub fn run() {
             carpetas::carpeta_crear,
             carpetas::carpeta_renombrar,
             carpetas::carpeta_borrar,
+            carpetas::carpetas_archivar,
+            carpetas::carpetas_archivadas,
+            carpetas::carpetas_recuperar,
             carpetas::archivos_listar,
             carpetas::archivo_guardar,
             carpetas::archivo_borrar,

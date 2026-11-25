@@ -2,7 +2,6 @@
 
 import { useT } from "@/lib/i18n";
 import { useEffect } from "react";
-import Link from "next/link";
 import { Button } from "@/components/fluent/Button";
 import { Glifo } from "@/components/fluent/Glifo";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
@@ -44,15 +43,6 @@ export function DocumentosInicio() {
         <>
           {entrada}
           <NoticeStack />
-          <Link href="/documentos/carpetas" className="rounded-control reveal flex items-center gap-4 border border-stroke bg-layer p-4 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent text-white" aria-hidden>
-              <Glifo nombre="carpeta" tam={20} />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-body font-semibold text-fg">{t("Mis tareas")}</span>
-              <span className="block text-caption text-fg-secondary">{t("Una carpeta por materia para guardar tus tareas y trabajos. Se crean desde tu horario, y puedes añadir, renombrar o quitar las que quieras.")}</span>
-            </span>
-          </Link>
           <DropZone onFiles={addFiles} count={files.length} />
           <ToolGrid />
         </>

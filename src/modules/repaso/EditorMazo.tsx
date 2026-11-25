@@ -1,6 +1,6 @@
 "use client";
 
-import { useT } from "@/lib/i18n";
+import { localeActual, useT } from "@/lib/i18n";
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Add20Regular } from "@fluentui/react-icons";
@@ -12,8 +12,9 @@ import { IconButton } from "@/components/fluent/IconButton";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { TextInput } from "@/components/fluent/TextInput";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
-import { pendientesDe, useRepasoStore, type Mazo, type Tarjeta } from "@/store/repaso-store";
-import { rutaEstudio } from "./rutas-repaso";
+import { lasQueCostaron, pendientesDe, proximoRepaso, useRepasoStore, type Mazo, type Sesion, type Tarjeta } from "@/store/repaso-store";
+import { cuandoToca } from "./cuando";
+import { rutaEstudio, rutaPractica } from "./rutas-repaso";
 
 const AREA = "min-h-[96px] w-full rounded-input border border-stroke bg-layer-alt px-3 py-2 text-body text-fg placeholder:text-fg-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
@@ -23,6 +24,10 @@ export function EditorMazo({ mazo }: { mazo: Mazo }) {
   const todas = useRepasoStore((s) => s.tarjetas);
   const tarjetas = useMemo(() => todas.filter((c) => c.mazoId === mazo.id), [todas, mazo.id]);
   const pendientes = useMemo(() => pendientesDe(tarjetas, mazo.id).length, [tarjetas, mazo.id]);
+  const siguiente = proximoRepaso(tarjetas, mazo.id);
+  const sesiones = useRepasoStore((s) => s.sesiones);
+  // Los repasos de este mazo, el más reciente primero.
+  const historial = useMemo(() => sesiones.filter((x) => x.mazoId === mazo.id).reverse().slice(0, 6), [sesiones, mazo.id]);
 
   const [frente, setFrente] = useState("");
   const [reverso, setReverso] = useState("");
@@ -54,12 +59,27 @@ export function EditorMazo({ mazo }: { mazo: Mazo }) {
         titulo={mazo.nombre}
         descripcion={mazo.materia || t("{n} tarjetas", { n: tarjetas.length })}
         accion={
-          <Button variant="accent" disabled={pendientes === 0} onClick={() => router.push(rutaEstudio(mazo.id))}>
-            {pendientes > 0 ? t("Estudiar ({n})", { n: pendientes }) : t("Nada que repasar por ahora")}
-          </Button>
+          <div className="flex gap-2">
+            {pendientes > 0 && (
+              <Button variant="accent" onClick={() => router.push(rutaEstudio(mazo.id))}>
+                {t("Estudiar ({n})", { n: pendientes })}
+              </Button>
+            )}
+            <Button variant={pendientes > 0 ? "standard" : "accent"} disabled={tarjetas.length === 0} onClick={() => router.push(rutaPractica(mazo.id))}>
+              {t("Practicar todo")}
+            </Button>
+          </div>
         }
         principal={
           <div className="flex flex-col gap-5">
+            {pendientes === 0 && tarjetas.length > 0 && (
+              <InfoBar severity="success" title={t("Estás al día con este mazo")}>
+                {siguiente !== null ? t("Lo siguiente toca {cuando}. Si quieres adelantar, «Practicar todo» no cambia el calendario.", { cuando: cuandoToca(siguiente) }) : t("«Practicar todo» te deja repasarlo cuando quieras.")}
+              </InfoBar>
+            )}
+
+            {historial.length > 0 && <Historial sesiones={historial} onRepetir={(id, soloCostaron) => router.push(rutaPractica(mazo.id, id, soloCostaron))} />}
+
             {/* Añadir una tarjeta */}
             <Card className="flex flex-col gap-3 p-4">
               <span className="text-subtitle text-fg">{t("Añadir una tarjeta")}</span>
@@ -117,6 +137,7 @@ export function EditorMazo({ mazo }: { mazo: Mazo }) {
               <span className="text-subtitle text-fg">{t("Resumen")}</span>
               <Linea etiqueta={t("Tarjetas")} valor={String(tarjetas.length)} />
               <Linea etiqueta={t("Para hoy")} valor={String(pendientes)} />
+              {pendientes === 0 && siguiente !== null && <Linea etiqueta={t("Siguiente")} valor={cuandoToca(siguiente)} />}
               {mazo.materia && <Linea etiqueta={t("Materia")} valor={mazo.materia} />}
             </Card>
             <div className="flex gap-2">
@@ -152,6 +173,43 @@ export function EditorMazo({ mazo }: { mazo: Mazo }) {
         </div>
       </Dialog>
     </>
+  );
+}
+
+/** Los repasos ya hechos, para volver a hacer uno entero o solo lo que salió mal. */
+function Historial({ sesiones, onRepetir }: { sesiones: Sesion[]; onRepetir: (sesionId: string, soloCostaron: boolean) => void }) {
+  const t = useT();
+  const cuando = (ms: number) => new Date(ms).toLocaleString(localeActual(), { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-subtitle text-fg">{t("Repasos anteriores")}</span>
+      {sesiones.map((x) => {
+        const costaron = lasQueCostaron(x).length;
+        return (
+          <Card key={x.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 p-3">
+            <div className="min-w-[12rem] flex-1">
+              <p className="text-body text-fg">
+                {cuando(x.fecha)}
+                {x.practica && <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-caption text-accent">{t("práctica")}</span>}
+              </p>
+              <p className="text-caption text-fg-secondary">
+                {costaron === 0 ? t("Tarjetas: {n}, todas a la primera", { n: x.resultados.length }) : t("Tarjetas: {n} · te costaron: {c}", { n: x.resultados.length, c: costaron })}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {costaron > 0 && (
+                <Button className="h-7" onClick={() => onRepetir(x.id, true)}>
+                  {t("Solo las que costaron")}
+                </Button>
+              )}
+              <Button className="h-7" onClick={() => onRepetir(x.id, false)}>
+                {t("Repetir")}
+              </Button>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
 

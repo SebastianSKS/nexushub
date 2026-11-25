@@ -32,21 +32,53 @@ export interface Tarjeta {
 
 export type Calificacion = "otra" | "bien" | "facil";
 
+/** Un repaso ya hecho: qué tarjetas se vieron y cómo salió cada una la primera vez. Sirve para repetirlo. */
+export interface Sesion {
+  id: string;
+  mazoId: string;
+  fecha: number;
+  /** true = práctica: se estudió sin cambiar cuándo toca cada tarjeta. */
+  practica: boolean;
+  /** Una entrada por tarjeta vista, con la primera calificación que se le dio en ese repaso. */
+  resultados: { id: string; cal: Calificacion }[];
+}
+
+/** Cuántos repasos se conservan por mazo (los más recientes). */
+export const MAX_SESIONES_POR_MAZO = 20;
+
 const CLAVE = "nexushub-repaso";
 const DIA = 24 * 60 * 60 * 1000;
 const FACILIDAD_INICIAL = 2.5;
 const FACILIDAD_MIN = 1.3;
+const CALIFICACIONES: readonly Calificacion[] = ["otra", "bien", "facil"];
+
+/** Lee los repasos guardados descartando lo que venga roto (datos de otra versión o editados a mano). */
+export function normalizarSesiones(dato: unknown): Sesion[] {
+  if (!Array.isArray(dato)) return [];
+  return dato
+    .map((v): Sesion | null => {
+      if (typeof v !== "object" || v === null) return null;
+      const x = v as Record<string, unknown>;
+      if (typeof x.id !== "string" || typeof x.mazoId !== "string" || typeof x.fecha !== "number" || !Array.isArray(x.resultados)) return null;
+      const resultados = x.resultados.filter(
+        (r): r is { id: string; cal: Calificacion } => typeof r === "object" && r !== null && typeof (r as { id?: unknown }).id === "string" && CALIFICACIONES.includes((r as { cal?: Calificacion }).cal!),
+      );
+      return resultados.length === 0 ? null : { id: x.id, mazoId: x.mazoId, fecha: x.fecha, practica: x.practica === true, resultados };
+    })
+    .filter((v): v is Sesion => v !== null);
+}
 
 interface Guardado {
   mazos: Mazo[];
   tarjetas: Tarjeta[];
+  sesiones: Sesion[];
 }
 
 function leer(): Guardado {
   try {
     const crudo = window.localStorage.getItem(CLAVE);
-    if (!crudo) return { mazos: [], tarjetas: [] };
-    const d = JSON.parse(crudo) as { mazos?: unknown; tarjetas?: unknown };
+    if (!crudo) return { mazos: [], tarjetas: [], sesiones: [] };
+    const d = JSON.parse(crudo) as { mazos?: unknown; tarjetas?: unknown; sesiones?: unknown };
     const mazos = Array.isArray(d.mazos)
       ? d.mazos
           .map((m): Mazo | null => {
@@ -78,9 +110,9 @@ function leer(): Guardado {
           })
           .filter((c): c is Tarjeta => c !== null)
       : [];
-    return { mazos, tarjetas };
+    return { mazos, tarjetas, sesiones: normalizarSesiones(d.sesiones) };
   } catch {
-    return { mazos: [], tarjetas: [] };
+    return { mazos: [], tarjetas: [], sesiones: [] };
   }
 }
 
@@ -117,6 +149,7 @@ interface RepasoState {
   cargado: boolean;
   mazos: Mazo[];
   tarjetas: Tarjeta[];
+  sesiones: Sesion[];
   cargar: () => void;
   crearMazo: (nombre: string, materia?: string) => string;
   renombrarMazo: (id: string, nombre: string, materia: string) => void;
@@ -127,6 +160,8 @@ interface RepasoState {
   editarTarjeta: (id: string, frente: string, reverso: string) => void;
   borrarTarjeta: (id: string) => void;
   calificar: (id: string, cal: Calificacion) => void;
+  /** Anota en el historial cómo salió una tarjeta dentro de un repaso (solo la primera calificación cuenta). */
+  anotar: (sesionId: string, mazoId: string, practica: boolean, tarjetaId: string, cal: Calificacion, ahora?: number) => void;
 }
 
 /** Separadores admitidos entre término y definición al importar: «-», «–», «:», «=», «|» o tabulador. */
@@ -136,11 +171,11 @@ export const useRepasoStore = create<RepasoState>((set, get) => ({
   cargado: false,
   mazos: [],
   tarjetas: [],
+  sesiones: [],
 
   cargar: () => {
     if (get().cargado) return;
-    const { mazos, tarjetas } = leer();
-    set({ cargado: true, mazos, tarjetas });
+    set({ cargado: true, ...leer() });
   },
 
   crearMazo: (nombre, materia = "") => {
@@ -148,21 +183,22 @@ export const useRepasoStore = create<RepasoState>((set, get) => ({
     const mazo: Mazo = { id: crypto.randomUUID(), nombre: limpio, materia: materia.trim().slice(0, 60), creado: Date.now() };
     const mazos = [...get().mazos, mazo];
     set({ mazos });
-    guardar({ mazos, tarjetas: get().tarjetas });
+    guardar({ mazos, tarjetas: get().tarjetas, sesiones: get().sesiones });
     return mazo.id;
   },
 
   renombrarMazo: (id, nombre, materia) => {
     const mazos = get().mazos.map((m) => (m.id === id ? { ...m, nombre: nombre.trim().slice(0, 80) || m.nombre, materia: materia.trim().slice(0, 60) } : m));
     set({ mazos });
-    guardar({ mazos, tarjetas: get().tarjetas });
+    guardar({ mazos, tarjetas: get().tarjetas, sesiones: get().sesiones });
   },
 
   borrarMazo: (id) => {
     const mazos = get().mazos.filter((m) => m.id !== id);
     const tarjetas = get().tarjetas.filter((t) => t.mazoId !== id);
-    set({ mazos, tarjetas });
-    guardar({ mazos, tarjetas });
+    const sesiones = get().sesiones.filter((x) => x.mazoId !== id);
+    set({ mazos, tarjetas, sesiones });
+    guardar({ mazos, tarjetas, sesiones });
   },
 
   agregarTarjeta: (mazoId, frente, reverso) => {
@@ -172,7 +208,7 @@ export const useRepasoStore = create<RepasoState>((set, get) => ({
     const tarjeta: Tarjeta = { id: crypto.randomUUID(), mazoId, frente: f, reverso: r, facilidad: FACILIDAD_INICIAL, intervalo: 0, repeticiones: 0, vence: 0, creada: Date.now() };
     const tarjetas = [...get().tarjetas, tarjeta];
     set({ tarjetas });
-    guardar({ mazos: get().mazos, tarjetas });
+    guardar({ mazos: get().mazos, tarjetas, sesiones: get().sesiones });
   },
 
   importarTexto: (mazoId, texto) => {
@@ -191,7 +227,7 @@ export const useRepasoStore = create<RepasoState>((set, get) => ({
     if (nuevas.length === 0) return 0;
     const tarjetas = [...get().tarjetas, ...nuevas];
     set({ tarjetas });
-    guardar({ mazos: get().mazos, tarjetas });
+    guardar({ mazos: get().mazos, tarjetas, sesiones: get().sesiones });
     return nuevas.length;
   },
 
@@ -201,23 +237,86 @@ export const useRepasoStore = create<RepasoState>((set, get) => ({
     if (!f || !r) return;
     const tarjetas = get().tarjetas.map((t) => (t.id === id ? { ...t, frente: f, reverso: r } : t));
     set({ tarjetas });
-    guardar({ mazos: get().mazos, tarjetas });
+    guardar({ mazos: get().mazos, tarjetas, sesiones: get().sesiones });
   },
 
   borrarTarjeta: (id) => {
     const tarjetas = get().tarjetas.filter((t) => t.id !== id);
     set({ tarjetas });
-    guardar({ mazos: get().mazos, tarjetas });
+    guardar({ mazos: get().mazos, tarjetas, sesiones: get().sesiones });
   },
 
   calificar: (id, cal) => {
     const tarjetas = get().tarjetas.map((t) => (t.id === id ? programar(t, cal) : t));
     set({ tarjetas });
-    guardar({ mazos: get().mazos, tarjetas });
+    guardar({ mazos: get().mazos, tarjetas, sesiones: get().sesiones });
+  },
+
+  anotar: (sesionId, mazoId, practica, tarjetaId, cal, ahora = Date.now()) => {
+    const previas = get().sesiones;
+    const actual = previas.find((x) => x.id === sesionId);
+    if (actual?.resultados.some((r) => r.id === tarjetaId)) return;
+    const sesion: Sesion = actual
+      ? { ...actual, resultados: [...actual.resultados, { id: tarjetaId, cal }] }
+      : { id: sesionId, mazoId, fecha: ahora, practica, resultados: [{ id: tarjetaId, cal }] };
+    let sesiones = actual ? previas.map((x) => (x.id === sesionId ? sesion : x)) : [...previas, sesion];
+    // De cada mazo se quedan solo las más recientes, para que el historial no crezca sin fin.
+    const delMazo = sesiones.filter((x) => x.mazoId === mazoId);
+    if (delMazo.length > MAX_SESIONES_POR_MAZO) {
+      const sobran = new Set(delMazo.slice(0, delMazo.length - MAX_SESIONES_POR_MAZO).map((x) => x.id));
+      sesiones = sesiones.filter((x) => !sobran.has(x.id));
+    }
+    set({ sesiones });
+    guardar({ mazos: get().mazos, tarjetas: get().tarjetas, sesiones });
   },
 }));
+
+/** Las tarjetas que en ese repaso no salieron a la primera. */
+export function lasQueCostaron(sesion: Pick<Sesion, "resultados">): string[] {
+  return sesion.resultados.filter((r) => r.cal === "otra").map((r) => r.id);
+}
+
+/** Cuándo toca el siguiente repaso del mazo (ms) si ahora no hay nada pendiente; null si no hay tarjetas por venir. */
+export function proximoRepaso(tarjetas: Tarjeta[], mazoId: string, ahora = Date.now()): number | null {
+  const futuras = tarjetas.filter((t) => t.mazoId === mazoId && t.vence > ahora).map((t) => t.vence);
+  return futuras.length === 0 ? null : Math.min(...futuras);
+}
+
+/** Días de calendario entre hoy y una fecha: 0 = hoy, 1 = mañana. */
+export function diasHasta(fecha: number, ahora = Date.now()): number {
+  const aMedianoche = (ms: number) => new Date(ms).setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((aMedianoche(fecha) - aMedianoche(ahora)) / DIA));
+}
 
 /** Tarjetas de un mazo que tocan ahora (vencidas o nuevas). */
 export function pendientesDe(tarjetas: Tarjeta[], mazoId: string, ahora = Date.now()): Tarjeta[] {
   return tarjetas.filter((t) => t.mazoId === mazoId && t.vence <= ahora);
+}
+
+/**
+ * Qué tarjetas entran en una ronda. Estudiar: las que tocan hoy. Practicar: todo el mazo en orden mezclado, o las de un
+ * repaso anterior (todas, o solo las que costaron), saltando las que ya se borraron.
+ */
+export function idsDeRonda(
+  estado: { tarjetas: Tarjeta[]; sesiones: Sesion[] },
+  mazoId: string,
+  practica: boolean,
+  sesionId: string | null = null,
+  soloCostaron = false,
+  azar: () => number = Math.random,
+): string[] {
+  if (!practica) return pendientesDe(estado.tarjetas, mazoId).map((t) => t.id);
+  const delMazo = estado.tarjetas.filter((t) => t.mazoId === mazoId).map((t) => t.id);
+  if (sesionId) {
+    const sesion = estado.sesiones.find((x) => x.id === sesionId && x.mazoId === mazoId);
+    if (!sesion) return [];
+    const existen = new Set(delMazo);
+    return (soloCostaron ? lasQueCostaron(sesion) : sesion.resultados.map((r) => r.id)).filter((id) => existen.has(id));
+  }
+  // Mezcla de Fisher-Yates: en práctica el orden cambia para no aprenderse la posición.
+  for (let i = delMazo.length - 1; i > 0; i--) {
+    const j = Math.floor(azar() * (i + 1));
+    [delMazo[i], delMazo[j]] = [delMazo[j]!, delMazo[i]!];
+  }
+  return delMazo;
 }

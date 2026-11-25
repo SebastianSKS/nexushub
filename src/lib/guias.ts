@@ -31,7 +31,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Bienvenida"),
     final: T("Empezar"),
     pasos: [
-      { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Horario, Calculadora y Repaso, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
+      { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Mis tareas, Horario, Calculadora y Repaso, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
       { glifo: "buscar", titulo: T("Encuentra lo que sea"), texto: T("Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF, Word, Excel y PowerPoint. También resuelve cuentas: escribe 25*4 y te da el resultado.") },
       { glifo: "exito", titulo: T("Tus primeros pasos"), texto: T("En Inicio hay una lista corta (nombre, horario, carpetas, un examen y la búsqueda) que se marca sola. Si no la quieres, tiene un botón para ocultarla.") },
       { glifo: "informacion", titulo: T("Ayuda en cada sección"), texto: T("En la barra de arriba hay un signo de interrogación (?). Púlsalo en cualquier sección para ver otra vez su explicación, cuando quieras.") },
@@ -70,7 +70,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "documentos", titulo: T("Tus archivos, en tu equipo"), texto: T("Convierte y edita PDF, Word, Excel y PowerPoint. Nada se sube a internet: todo se hace en tu propio equipo.") },
       { glifo: "agregar", titulo: T("Arrastra y elige"), texto: T("Suelta tus archivos en la zona punteada (o pégalos con Ctrl + V) y elige la herramienta: convertir, unir, dividir, comprimir, girar, marca de agua, numerar páginas, reconocer texto (OCR)…") },
       { glifo: "descargar", titulo: T("Guarda donde quieras"), texto: T("Al terminar, descarga el resultado: se abre «Guardar como» empezando en la carpeta de tus materias. Puedes cambiarlo en Configuración.") },
-      { glifo: "carpeta", titulo: T("Mis tareas"), texto: T("Arriba está «Mis tareas»: una carpeta por materia para guardar y abrir tus trabajos. Desde ahí también puedes crear un Word, Excel o PowerPoint nuevo.") },
+      { glifo: "carpeta", titulo: T("Mis tareas"), texto: T("Las carpetas de tus materias están en «Mis tareas», en la barra lateral: ahí guardas y abres tus trabajos, y también creas un Word, Excel o PowerPoint nuevo.") },
     ],
   },
   herramienta: {
@@ -114,6 +114,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "camara", titulo: T("Escanéalo en vez de escribirlo"), texto: T("Si te mandaron el horario como imagen, pulsa «Escanear imagen» y se llena solo; revisa y corrige lo que haga falta. También puedes usar «Añadir clase» a mano.") },
       { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Con tu horario, Nexo puede crear las carpetas de tus materias en Mis tareas para que guardes ahí tus trabajos.") },
       { glifo: "compartir", titulo: T("Compártelo con un compañero"), texto: T("Con «Compartir» guardas tu horario en un archivo o copias un código para pegarlo en un mensaje. Tu compañero lo importa y no tiene que escanearlo ni escribirlo.") },
+      { glifo: "calendario", titulo: T("Cuando cambies de semestre"), texto: T("Pulsa el nombre del semestre, arriba, y «Empezar nuevo semestre». El horario anterior queda en «Anteriores», donde puedes verlo o recuperarlo con sus carpetas.") },
     ],
   },
   calculadora: {
@@ -133,7 +134,8 @@ export const GUIAS: Record<GuiaId, Guia> = {
     final: T("Entendido"),
     pasos: [
       { glifo: "repaso", titulo: T("Tarjetas de estudio"), texto: T("Crea un mazo por materia y añade tarjetas: la pregunta por un lado y la respuesta por el otro. También puedes pegar tus apuntes (una línea «término - definición» por tarjeta) y Nexo las arma solo.") },
-      { glifo: "exito", titulo: T("Estudia y califica"), texto: T("En Estudiar ves la pregunta, piensas, miras la respuesta y calificas: «Otra vez», «Bien» o «Fácil». Con el teclado: Espacio para ver la respuesta y 1, 2 o 3 para calificar.") },
+      { glifo: "exito", titulo: T("Estudia y califica"), texto: T("Ves la pregunta, piensas, volteas la tarjeta y dices qué tan bien te la sabías: «No me la sabía», «Bien» o «Fácil». Cada botón te dice cuándo volverá. Con el teclado: Espacio para voltear y 1, 2 o 3 para calificar.") },
+      { glifo: "actualizar", titulo: T("Practica cuando quieras"), texto: T("Con «Practicar todo», o desde «Repasos anteriores», repites un repaso entero o solo lo que te costó. Practicar no cambia cuándo te toca cada tarjeta.") },
       { glifo: "reloj", titulo: T("Nexo te las repite a tiempo"), texto: T("Las que te cuestan vuelven pronto y las que ya sabes tardan cada vez más, justo antes de que se te olviden. En cada mazo ves cuántas tocan hoy. Todo se guarda solo en este equipo.") },
     ],
   },
@@ -153,7 +155,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     id: "atajos",
     nombre: T("Atajos de teclado"),
     final: T("Entendido"),
-    pasos: [{ glifo: "atajos", titulo: T("Hazlo más rápido"), texto: T("Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 7 para saltar de sección.") }],
+    pasos: [{ glifo: "atajos", titulo: T("Hazlo más rápido"), texto: T("Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 8 para saltar de sección.") }],
   },
 };
 

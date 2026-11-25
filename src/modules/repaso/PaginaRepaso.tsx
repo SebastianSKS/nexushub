@@ -11,8 +11,9 @@ import { EstadoVacio } from "@/components/fluent/EstadoVacio";
 import { Glifo } from "@/components/fluent/Glifo";
 import { TextInput } from "@/components/fluent/TextInput";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
-import { pendientesDe, useRepasoStore } from "@/store/repaso-store";
-import { rutaEstudio, rutaMazo } from "./rutas-repaso";
+import { idsDeRonda, pendientesDe, proximoRepaso, useRepasoStore, type Mazo } from "@/store/repaso-store";
+import { cuandoToca } from "./cuando";
+import { rutaEstudio, rutaMazo, rutaPractica } from "./rutas-repaso";
 import { EditorMazo } from "./EditorMazo";
 import { SesionEstudio } from "./SesionEstudio";
 
@@ -22,7 +23,7 @@ export function PaginaRepaso() {
   const router = useRouter();
   const params = useSearchParams();
   const mazoId = params.get("mazo");
-  const estudiando = params.get("modo") === "estudio";
+  const modo = params.get("modo");
 
   const cargado = useRepasoStore((s) => s.cargado);
   const mazos = useRepasoStore((s) => s.mazos);
@@ -50,7 +51,10 @@ export function PaginaRepaso() {
     router.push(rutaMazo(id));
   };
 
-  if (mazoAbierto && estudiando) return <SesionEstudio mazo={mazoAbierto} />;
+  if (mazoAbierto && (modo === "estudio" || modo === "practica")) {
+    // La clave hace que cada ronda empiece de cero aunque se pase de una a otra sin salir de Repaso.
+    return <Ronda key={params.toString()} mazo={mazoAbierto} practica={modo === "practica"} sesionId={params.get("sesion")} soloCostaron={params.get("costaron") === "1"} />;
+  }
   if (mazoAbierto) return <EditorMazo mazo={mazoAbierto} />;
 
   return (
@@ -58,7 +62,7 @@ export function PaginaRepaso() {
       <PlantillaPagina
         migas={[{ etiqueta: t("Repaso") }]}
         titulo={t("Repaso")}
-        descripcion={t("Tarjetas de estudio que se repiten justo antes de que se te olviden.")}
+        descripcion={t("Tarjetas de estudio que se repiten justo antes de que se te olviden. Y puedes practicar cuando quieras.")}
         accion={
           <Button variant="accent" icon={<Add20Regular />} onClick={() => setDialogo(true)}>
             {t("Nuevo mazo")}
@@ -82,6 +86,7 @@ export function PaginaRepaso() {
               {mazos.map((m) => {
                 const total = tarjetas.filter((c) => c.mazoId === m.id).length;
                 const pendientes = pendientesDe(tarjetas, m.id).length;
+                const siguiente = proximoRepaso(tarjetas, m.id);
                 return (
                   <Card key={m.id} reveal className="flex flex-col gap-3 p-4">
                     <button type="button" onClick={() => router.push(rutaMazo(m.id))} className="min-w-0 text-left">
@@ -94,15 +99,25 @@ export function PaginaRepaso() {
                     <div className="flex items-center justify-between gap-2">
                       <span className="min-w-0 truncate text-caption text-fg-secondary">
                         {t("{n} tarjetas", { n: total })}
-                        {pendientes > 0 && <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-accent">{t("{n} para hoy", { n: pendientes })}</span>}
+                        {pendientes > 0 ? (
+                          <span className="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-accent">{t("{n} para hoy", { n: pendientes })}</span>
+                        ) : (
+                          siguiente !== null && <span className="ml-2 text-fg-tertiary">{t("Al día · toca {cuando}", { cuando: cuandoToca(siguiente) })}</span>
+                        )}
                       </span>
                       <div className="flex shrink-0 gap-2">
                         <Button className="h-7" onClick={() => router.push(rutaMazo(m.id))}>
                           {t("Abrir")}
                         </Button>
-                        <Button variant="accent" className="h-7" disabled={pendientes === 0} onClick={() => router.push(rutaEstudio(m.id))}>
-                          {t("Estudiar")}
-                        </Button>
+                        {pendientes > 0 ? (
+                          <Button variant="accent" className="h-7" onClick={() => router.push(rutaEstudio(m.id))}>
+                            {t("Estudiar")}
+                          </Button>
+                        ) : (
+                          <Button variant="accent" className="h-7" disabled={total === 0} onClick={() => router.push(rutaPractica(m.id))}>
+                            {t("Practicar")}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </Card>
@@ -127,4 +142,10 @@ export function PaginaRepaso() {
       </Dialog>
     </>
   );
+}
+
+/** Fija las tarjetas de la ronda al entrar, para que calificar no la cambie a medio camino. */
+function Ronda({ mazo, practica, sesionId, soloCostaron }: { mazo: Mazo; practica: boolean; sesionId: string | null; soloCostaron: boolean }) {
+  const [ids] = useState(() => idsDeRonda(useRepasoStore.getState(), mazo.id, practica, sesionId, soloCostaron));
+  return <SesionEstudio mazo={mazo} ids={ids} practica={practica} />;
 }

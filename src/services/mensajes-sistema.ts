@@ -8,6 +8,7 @@ export const MENSAJES_DEL_SISTEMA = [
   T("Ese nombre no es válido."),
   T("Windows no permite ese nombre; prueba con otro."),
   T("Ya existe una carpeta con ese nombre."),
+  T("«Anteriores» es donde Nexo guarda los semestres pasados; usa otro nombre."),
   T("Ya existe un archivo con ese nombre."),
   T("Esa carpeta ya no existe."),
   T("Ese archivo ya no existe."),

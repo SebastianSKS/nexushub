@@ -171,7 +171,7 @@ export function PaginaCarpetas() {
   return (
     <>
       <PlantillaPagina
-        migas={abierta ? [{ etiqueta: t("Documentos"), href: "/documentos" }, { etiqueta: t("Mis tareas"), href: "/documentos/carpetas" }, { etiqueta: abierta }] : [{ etiqueta: t("Documentos"), href: "/documentos" }, { etiqueta: t("Mis tareas") }]}
+        migas={abierta ? [{ etiqueta: t("Mis tareas"), href: "/documentos/carpetas" }, { etiqueta: abierta }] : [{ etiqueta: t("Mis tareas") }]}
         titulo={abierta ?? "Mis tareas"}
         descripcion={abierta ? t("Los archivos de esta materia. Están en tu computadora, en una carpeta de verdad.") : t("Una carpeta por materia para guardar tus tareas y trabajos. Están en tu computadora, en Documentos › Nexo › Tareas.")}
         accion={

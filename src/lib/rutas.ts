@@ -8,7 +8,7 @@ import type { ToolId } from "@/types/documents";
  * de consulta (?id=), porque la exportación estática no admite segmentos dinámicos abiertos.
  */
 
-export type SeccionId = "inicio" | "video" | "musica" | "documentos" | "calendario" | "horario" | "calculadora" | "repaso" | "configuracion" | "atajos";
+export type SeccionId = "inicio" | "video" | "musica" | "documentos" | "calendario" | "tareas" | "horario" | "calculadora" | "repaso" | "configuracion" | "atajos";
 
 export interface Seccion {
   id: SeccionId;
@@ -16,7 +16,9 @@ export interface Seccion {
   ruta: string;
   glifo: NombreGlifo;
   /** Atajo Ctrl+n; solo las secciones principales lo tienen. */
-  atajo?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
+  atajo?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
+  /** Va abajo en la barra lateral, junto al perfil (Configuración y Atajos). */
+  abajo?: boolean;
 }
 
 export const SECCIONES: readonly Seccion[] = [
@@ -25,15 +27,17 @@ export const SECCIONES: readonly Seccion[] = [
   { id: "musica", etiqueta: T("Música"), ruta: "/musica", glifo: "musica", atajo: "2" },
   { id: "documentos", etiqueta: T("Documentos"), ruta: "/documentos", glifo: "documentos", atajo: "3" },
   { id: "calendario", etiqueta: T("Calendario"), ruta: "/calendario", glifo: "calendario", atajo: "4" },
+  // Vive bajo /documentos (así lo tienen los enlaces y la última sesión guardada), pero es una sección propia de la barra.
+  { id: "tareas", etiqueta: T("Mis tareas"), ruta: "/documentos/carpetas", glifo: "carpeta", atajo: "8" },
   { id: "horario", etiqueta: T("Horario"), ruta: "/horario", glifo: "reloj", atajo: "5" },
   { id: "calculadora", etiqueta: T("Calculadora"), ruta: "/calculadora", glifo: "calculadora", atajo: "6" },
   { id: "repaso", etiqueta: T("Repaso"), ruta: "/repaso", glifo: "repaso", atajo: "7" },
-  { id: "configuracion", etiqueta: T("Configuración"), ruta: "/configuracion", glifo: "configuracion" },
-  { id: "atajos", etiqueta: T("Atajos de teclado"), ruta: "/atajos", glifo: "atajos" },
+  { id: "configuracion", etiqueta: T("Configuración"), ruta: "/configuracion", glifo: "configuracion", abajo: true },
+  { id: "atajos", etiqueta: T("Atajos de teclado"), ruta: "/atajos", glifo: "atajos", abajo: true },
 ];
 
-export const SECCIONES_PRINCIPALES = SECCIONES.filter((s) => s.atajo);
-export const SECCIONES_INFERIORES = SECCIONES.filter((s) => !s.atajo);
+export const SECCIONES_PRINCIPALES = SECCIONES.filter((s) => !s.abajo);
+export const SECCIONES_INFERIORES = SECCIONES.filter((s) => s.abajo);
 
 /** Herramientas de Documentos: ToolId ↔ segmento de la URL (/documentos/unir-pdf). */
 export const SLUGS_HERRAMIENTA: Record<ToolId, string> = {
@@ -77,7 +81,9 @@ export function normalizarRuta(pathname: string): string {
 
 export function seccionDe(pathname: string): SeccionId | null {
   const p = normalizarRuta(pathname);
-  return SECCIONES.find((s) => p === s.ruta || p.startsWith(`${s.ruta}/`))?.id ?? null;
+  // Si dos secciones encajan («/documentos» y «/documentos/carpetas»), gana la más específica.
+  const encajan = SECCIONES.filter((s) => p === s.ruta || p.startsWith(`${s.ruta}/`));
+  return encajan.sort((a, b) => b.ruta.length - a.ruta.length)[0]?.id ?? null;
 }
 
 const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/documentos/carpetas", "/calendario", "/horario", "/calculadora", "/repaso", "/configuracion", "/atajos"]);

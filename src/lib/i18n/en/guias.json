@@ -84,7 +84,7 @@
   "En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.": "In “About” you check for updates and can see the welcome again. Your data is stored only on this computer.",
   "Atajos de teclado": "Keyboard shortcuts",
   "Hazlo más rápido": "Do it faster",
-  "Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 7 para saltar de sección.": "Here are all the shortcuts. The most useful ones: Ctrl + K to search and Ctrl + 1 to Ctrl + 7 to jump between sections.",
+  "Aquí están todos los atajos. Los más útiles: Ctrl + K para buscar y Ctrl + 1 a Ctrl + 8 para saltar de sección.": "Here are all the shortcuts. The most useful ones: Ctrl + K to search and Ctrl + 1 to Ctrl + 8 to jump between sections.",
   "Tarjetas de estudio": "Study cards",
   "Crea un mazo por materia y añade tarjetas: la pregunta por un lado y la respuesta por el otro. También puedes pegar tus apuntes (una línea «término - definición» por tarjeta) y Nexo las arma solo.": "Create a deck per subject and add cards: the question on one side and the answer on the other. You can also paste your notes (one “term - definition” line per card) and Nexo builds them for you.",
   "Estudia y califica": "Study and rate",
@@ -103,5 +103,12 @@
   "En la pestaña «Promedio» apuntas cuánto vale cada evaluación y la calificación que sacaste. Nexo te dice cómo vas y cuánto necesitas en lo que falta para aprobar.": "On the “Average” tab you write down how much each assessment is worth and the grade you got. Nexo tells you how you're doing and how much you need on what's left to pass.",
   "Compártelo con un compañero": "Share it with a classmate",
   "Con «Compartir» guardas tu horario en un archivo o copias un código para pegarlo en un mensaje. Tu compañero lo importa y no tiene que escanearlo ni escribirlo.": "With “Share” you save your schedule to a file or copy a code to paste into a message. Your classmate imports it and doesn't have to scan or type it.",
-  "Convertir con el programa de office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.": "Converting with the office program, choosing where to save and searching inside your files are changed in the Documents section of this page."
+  "Convertir con el programa de office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.": "Converting with the office program, choosing where to save and searching inside your files are changed in the Documents section of this page.",
+  "Video, Música, Documentos, Calendario, Mis tareas, Horario, Calculadora y Repaso, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.": "Video, Music, Documents, Calendar, My assignments, Schedule, Calculator and Review, all in one window. This is just the welcome: each section explains how it works the first time you enter. “Skip” skips it.",
+  "Las carpetas de tus materias están en «Mis tareas», en la barra lateral: ahí guardas y abres tus trabajos, y también creas un Word, Excel o PowerPoint nuevo.": "Your subject folders are in “My assignments”, in the sidebar: that's where you save and open your work, and you can also create a new Word, Excel or PowerPoint file.",
+  "Ves la pregunta, piensas, volteas la tarjeta y dices qué tan bien te la sabías: «No me la sabía», «Bien» o «Fácil». Cada botón te dice cuándo volverá. Con el teclado: Espacio para voltear y 1, 2 o 3 para calificar.": "You see the question, think, flip the card and say how well you knew it: “I didn't know it”, “Good” or “Easy”. Each button tells you when it will come back. With the keyboard: Space to flip and 1, 2 or 3 to rate.",
+  "Practica cuando quieras": "Practice whenever you like",
+  "Con «Practicar todo», o desde «Repasos anteriores», repites un repaso entero o solo lo que te costó. Practicar no cambia cuándo te toca cada tarjeta.": "With “Practice all”, or from “Past reviews”, you repeat a whole review or only what was hard for you. Practicing doesn't change when each card is due.",
+  "Cuando cambies de semestre": "When you change semester",
+  "Pulsa el nombre del semestre, arriba, y «Empezar nuevo semestre». El horario anterior queda en «Anteriores», donde puedes verlo o recuperarlo con sus carpetas.": "Click the semester name at the top, then “Start a new semester”. The old schedule goes to “Past”, where you can view it or restore it with its folders."
 }

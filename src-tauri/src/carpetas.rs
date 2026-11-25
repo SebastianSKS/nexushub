@@ -5,7 +5,8 @@
 //! - solo se trabaja DENTRO de esa carpeta base; los nombres que llegan de la interfaz se limpian (nada de
 //!   `..`, barras ni caracteres que Windows no admite) y nunca se puede salir de ella;
 //! - nada se sobrescribe: si ya existe un archivo con ese nombre, el nuevo se guarda como «nombre (2)»;
-//! - una carpeta solo se elimina si está vacía, así un clic equivocado nunca borra tareas.
+//! - una carpeta solo se elimina si está vacía, así un clic equivocado nunca borra tareas;
+//! - al cambiar de semestre, las carpetas se MUEVEN a `Tareas/Anteriores/<semestre>` (nunca se borran ni se pisan).
 
 use serde::Serialize;
 use std::path::{Path, PathBuf};
@@ -16,6 +17,16 @@ const MAX_ARCHIVO: usize = 120;
 const MAX_BYTES: usize = 200 * 1024 * 1024;
 /// Los PDF más grandes que esto no se leen para el buscador (tardarían y ocuparían demasiado).
 const MAX_BYTES_INDICE: u64 = 80 * 1024 * 1024;
+
+/// En la versión de desarrollo las tareas viven en una carpeta aparte: ahí se puede probar (archivar, renombrar,
+/// borrar) sin tocar las de verdad.
+const CARPETA_RAIZ: &str = if cfg!(debug_assertions) { "Nexo (pruebas)" } else { "Nexo" };
+/// Donde quedan las carpetas de los semestres que ya terminaron. No es una materia: no se lista ni se puede crear a mano.
+const ANTERIORES: &str = "Anteriores";
+
+fn es_anteriores(nombre: &str) -> bool {
+    nombre.eq_ignore_ascii_case(ANTERIORES)
+}
 
 #[derive(Serialize)]
 pub struct Carpeta {
@@ -37,12 +48,13 @@ fn base(app: &AppHandle) -> Result<PathBuf, String> {
     // La carpeta se llamaba «NexusHub» antes de que la aplicación se llamara Nexo: si existe la de antes y aún no la nueva, se
     // le cambia el nombre (con las carpetas de materias adentro). Si no se pudo (un archivo abierto, por ejemplo), se sigue
     // usando la de antes y se reintenta la próxima vez: nunca se pierde ni se duplica nada.
-    let nueva = docs.join("Nexo");
+    let nueva = docs.join(CARPETA_RAIZ);
     let vieja = docs.join("NexusHub");
-    if !nueva.exists() && vieja.exists() {
+    let migrar = !cfg!(debug_assertions);
+    if migrar && !nueva.exists() && vieja.exists() {
         let _ = std::fs::rename(&vieja, &nueva);
     }
-    let raiz = if !nueva.exists() && vieja.exists() { vieja } else { nueva };
+    let raiz = if migrar && !nueva.exists() && vieja.exists() { vieja } else { nueva };
     let ruta = raiz.join("Tareas");
     std::fs::create_dir_all(&ruta).map_err(|e| format!("No se pudo crear la carpeta de tareas: {e}"))?;
     Ok(ruta)
@@ -102,9 +114,14 @@ pub fn carpetas_ruta(app: AppHandle) -> Result<String, String> {
 
 #[tauri::command]
 pub fn carpetas_listar(app: AppHandle) -> Result<Vec<Carpeta>, String> {
+    resumir(&base(&app)?)
+}
+
+/// Las carpetas que hay dentro de `ruta` (sin contar «Anteriores»), con cuántos archivos tiene cada una.
+fn resumir(ruta: &Path) -> Result<Vec<Carpeta>, String> {
     let mut lista = Vec::new();
-    for entrada in std::fs::read_dir(base(&app)?).map_err(|e| e.to_string())?.flatten() {
-        if !entrada.path().is_dir() {
+    for entrada in std::fs::read_dir(ruta).map_err(|e| e.to_string())?.flatten() {
+        if !entrada.path().is_dir() || es_anteriores(&entrada.file_name().to_string_lossy()) {
             continue;
         }
         let mut archivos = 0usize;
@@ -129,6 +146,9 @@ pub fn carpetas_listar(app: AppHandle) -> Result<Vec<Carpeta>, String> {
 #[tauri::command]
 pub fn carpeta_crear(app: AppHandle, nombre: String) -> Result<String, String> {
     let limpio = nombre_seguro(&nombre)?;
+    if es_anteriores(&limpio) {
+        return Err("«Anteriores» es donde Nexo guarda los semestres pasados; usa otro nombre.".into());
+    }
     let ruta = base(&app)?.join(&limpio);
     if ruta.exists() {
         return Err("Ya existe una carpeta con ese nombre.".into());
@@ -140,6 +160,9 @@ pub fn carpeta_crear(app: AppHandle, nombre: String) -> Result<String, String> {
 #[tauri::command]
 pub fn carpeta_renombrar(app: AppHandle, actual: String, nuevo: String) -> Result<String, String> {
     let limpio = nombre_seguro(&nuevo)?;
+    if es_anteriores(&limpio) {
+        return Err("«Anteriores» es donde Nexo guarda los semestres pasados; usa otro nombre.".into());
+    }
     let desde = carpeta_de(&app, &actual)?;
     let hasta = base(&app)?.join(&limpio);
     if !desde.is_dir() {
@@ -151,6 +174,80 @@ pub fn carpeta_renombrar(app: AppHandle, actual: String, nuevo: String) -> Resul
     }
     std::fs::rename(&desde, &hasta).map_err(|e| e.to_string())?;
     Ok(limpio)
+}
+
+#[derive(Serialize)]
+pub struct Archivado {
+    movidas: Vec<String>,
+    /// Las que no se pudieron mover (ya no existen o Windows las tiene en uso).
+    fallidas: Vec<String>,
+}
+
+/// Mueve las carpetas pedidas a `Anteriores/<semestre>`. Nunca pisa nada: si ya hay una con ese nombre, queda como
+/// «nombre (2)».
+fn archivar_en(raiz: &Path, semestre: &str, nombres: &[String]) -> Result<Archivado, String> {
+    let destino = raiz.join(ANTERIORES).join(nombre_seguro(semestre)?);
+    let mut resultado = Archivado { movidas: Vec::new(), fallidas: Vec::new() };
+    for nombre in nombres {
+        let desde = match nombre_existente(nombre) {
+            Ok(n) if !es_anteriores(n) => raiz.join(n),
+            _ => {
+                resultado.fallidas.push(nombre.clone());
+                continue;
+            }
+        };
+        if !desde.is_dir() {
+            resultado.fallidas.push(nombre.clone());
+            continue;
+        }
+        std::fs::create_dir_all(&destino).map_err(|e| format!("No se pudo crear la carpeta del semestre: {e}"))?;
+        match std::fs::rename(&desde, destino.join(nombre_libre(&destino, nombre))) {
+            Ok(()) => resultado.movidas.push(nombre.clone()),
+            Err(_) => resultado.fallidas.push(nombre.clone()),
+        }
+    }
+    Ok(resultado)
+}
+
+/// Al cambiar de semestre: guarda las carpetas elegidas en «Anteriores».
+#[tauri::command]
+pub fn carpetas_archivar(app: AppHandle, semestre: String, nombres: Vec<String>) -> Result<Archivado, String> {
+    archivar_en(&base(&app)?, &semestre, &nombres)
+}
+
+/// Las carpetas que se guardaron de un semestre pasado.
+#[tauri::command]
+pub fn carpetas_archivadas(app: AppHandle, semestre: String) -> Result<Vec<Carpeta>, String> {
+    let ruta = base(&app)?.join(ANTERIORES).join(nombre_seguro(&semestre)?);
+    if ruta.is_dir() {
+        resumir(&ruta)
+    } else {
+        Ok(Vec::new())
+    }
+}
+
+fn recuperar_en(raiz: &Path, semestre: &str) -> Result<Archivado, String> {
+    let origen = raiz.join(ANTERIORES).join(nombre_seguro(semestre)?);
+    let mut resultado = Archivado { movidas: Vec::new(), fallidas: Vec::new() };
+    let Ok(entradas) = std::fs::read_dir(&origen) else { return Ok(resultado) };
+    let nombres: Vec<String> = entradas.flatten().filter(|e| e.path().is_dir()).map(|e| e.file_name().to_string_lossy().to_string()).collect();
+    for nombre in nombres {
+        // Si hay una carpeta vacía con el mismo nombre, deja su lugar (`remove_dir` solo borra si está vacía).
+        // Si tiene archivos se queda como está y la recuperada llega con otro nombre.
+        let _ = std::fs::remove_dir(raiz.join(&nombre));
+        match std::fs::rename(origen.join(&nombre), raiz.join(nombre_libre(raiz, &nombre))) {
+            Ok(()) => resultado.movidas.push(nombre),
+            Err(_) => resultado.fallidas.push(nombre),
+        }
+    }
+    let _ = std::fs::remove_dir(&origen); // solo si ya quedó vacía
+    Ok(resultado)
+}
+
+/// Al recuperar un semestre: regresa sus carpetas de «Anteriores» a «Mis tareas».
+#[tauri::command]
+pub fn carpetas_recuperar(app: AppHandle, semestre: String) -> Result<Archivado, String> {
+    recuperar_en(&base(&app)?, &semestre)
 }
 
 /// Solo elimina carpetas VACÍAS: si tiene archivos, avisa en vez de borrarlos.
@@ -289,10 +386,10 @@ pub async fn pdfs_listar(app: AppHandle) -> Result<Vec<PdfListado>, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let mut lista = Vec::new();
         for c in std::fs::read_dir(&raiz).map_err(|e| e.to_string())?.flatten() {
-            if !c.path().is_dir() {
+            let carpeta = c.file_name().to_string_lossy().to_string();
+            if !c.path().is_dir() || es_anteriores(&carpeta) {
                 continue;
             }
-            let carpeta = c.file_name().to_string_lossy().to_string();
             if let Ok(rd) = std::fs::read_dir(c.path()) {
                 for f in rd.flatten() {
                     let nombre = f.file_name().to_string_lossy().to_string();
@@ -467,6 +564,85 @@ pub fn descarga_mostrar(ruta: String) -> Result<(), String> {
 #[cfg(test)]
 mod pruebas {
     use super::*;
+
+    /// Una carpeta de pruebas propia, vacía.
+    fn temporal(caso: &str) -> PathBuf {
+        let ruta = std::env::temp_dir().join(format!("nexo-pruebas-{caso}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&ruta);
+        std::fs::create_dir_all(&ruta).unwrap();
+        ruta
+    }
+
+    #[test]
+    fn archivar_mueve_las_carpetas_con_sus_archivos() {
+        let raiz = temporal("mover");
+        std::fs::create_dir(raiz.join("Redes")).unwrap();
+        std::fs::write(raiz.join("Redes").join("practica.txt"), "hola").unwrap();
+        std::fs::create_dir(raiz.join("Cálculo")).unwrap();
+        let r = archivar_en(&raiz, "Ago 2026 – Ene 2027", &["Redes".into()]).unwrap();
+        assert_eq!(r.movidas, vec!["Redes".to_string()]);
+        assert!(r.fallidas.is_empty());
+        assert!(!raiz.join("Redes").exists());
+        assert!(raiz.join("Cálculo").is_dir(), "lo que no se pidió no se toca");
+        let guardado = raiz.join("Anteriores").join("Ago 2026 – Ene 2027").join("Redes").join("practica.txt");
+        assert_eq!(std::fs::read_to_string(guardado).unwrap(), "hola");
+        let _ = std::fs::remove_dir_all(&raiz);
+    }
+
+    #[test]
+    fn archivar_nunca_pisa_una_carpeta_ya_guardada() {
+        let raiz = temporal("pisar");
+        let previa = raiz.join("Anteriores").join("2026").join("Redes");
+        std::fs::create_dir_all(&previa).unwrap();
+        std::fs::write(previa.join("vieja.txt"), "vieja").unwrap();
+        std::fs::create_dir(raiz.join("Redes")).unwrap();
+        let r = archivar_en(&raiz, "2026", &["Redes".into()]).unwrap();
+        assert_eq!(r.movidas.len(), 1);
+        assert!(previa.join("vieja.txt").is_file());
+        assert!(raiz.join("Anteriores").join("2026").join("Redes (2)").is_dir());
+        let _ = std::fs::remove_dir_all(&raiz);
+    }
+
+    #[test]
+    fn archivar_no_sale_de_la_carpeta_ni_se_archiva_a_si_misma() {
+        let raiz = temporal("seguro");
+        std::fs::create_dir(raiz.join("Anteriores")).unwrap();
+        let pedidas: Vec<String> = ["..", "../fuera", "a/b", "Anteriores", "no existe"].iter().map(|s| s.to_string()).collect();
+        let r = archivar_en(&raiz, "2026", &pedidas).unwrap();
+        assert!(r.movidas.is_empty());
+        assert_eq!(r.fallidas.len(), pedidas.len());
+        assert!(raiz.join("Anteriores").is_dir());
+        let _ = std::fs::remove_dir_all(&raiz);
+    }
+
+    #[test]
+    fn recuperar_regresa_las_carpetas_con_sus_archivos() {
+        let raiz = temporal("recuperar");
+        std::fs::create_dir(raiz.join("Redes")).unwrap();
+        std::fs::write(raiz.join("Redes").join("practica.txt"), "hola").unwrap();
+        archivar_en(&raiz, "2026", &["Redes".into()]).unwrap();
+        std::fs::create_dir(raiz.join("Redes")).unwrap(); // una vacía creada después no estorba
+        let r = recuperar_en(&raiz, "2026").unwrap();
+        assert_eq!(r.movidas, vec!["Redes".to_string()]);
+        assert_eq!(std::fs::read_to_string(raiz.join("Redes").join("practica.txt")).unwrap(), "hola");
+        assert!(!raiz.join("Anteriores").join("2026").exists());
+        assert!(recuperar_en(&raiz, "no existe").unwrap().movidas.is_empty());
+        let _ = std::fs::remove_dir_all(&raiz);
+    }
+
+    #[test]
+    fn recuperar_nunca_pisa_una_carpeta_con_archivos() {
+        let raiz = temporal("recuperar-sin-pisar");
+        std::fs::create_dir(raiz.join("Redes")).unwrap();
+        std::fs::write(raiz.join("Redes").join("vieja.txt"), "vieja").unwrap();
+        archivar_en(&raiz, "2026", &["Redes".into()]).unwrap();
+        std::fs::create_dir(raiz.join("Redes")).unwrap();
+        std::fs::write(raiz.join("Redes").join("nueva.txt"), "nueva").unwrap();
+        assert_eq!(recuperar_en(&raiz, "2026").unwrap().movidas.len(), 1);
+        assert!(raiz.join("Redes").join("nueva.txt").is_file());
+        assert!(raiz.join("Redes (2)").join("vieja.txt").is_file());
+        let _ = std::fs::remove_dir_all(&raiz);
+    }
 
     #[test]
     fn indexa_pdf_y_office_nuevo_sin_importar_mayusculas() {

@@ -40,6 +40,14 @@ export const listarCarpetas = () => pedir<Carpeta[]>("carpetas_listar");
 export const crearCarpeta = (nombre: string) => pedir<string>("carpeta_crear", { nombre });
 export const renombrarCarpeta = (actual: string, nuevo: string) => pedir<string>("carpeta_renombrar", { actual, nuevo });
 export const borrarCarpeta = (nombre: string) => pedir<void>("carpeta_borrar", { nombre });
+/** La carpeta donde quedan las de semestres pasados (no es una materia). */
+export const CARPETA_ANTERIORES = "Anteriores";
+/** Mueve carpetas a «Anteriores/<semestre>». No borra nada ni pisa lo ya guardado. */
+export const archivarCarpetas = (semestre: string, nombres: string[]) => pedir<{ movidas: string[]; fallidas: string[] }>("carpetas_archivar", { semestre, nombres });
+
+export const carpetasArchivadas = (semestre: string) => pedir<Carpeta[]>("carpetas_archivadas", { semestre });
+
+export const recuperarCarpetas = (semestre: string) => pedir<{ movidas: string[]; fallidas: string[] }>("carpetas_recuperar", { semestre });
 export const listarArchivos = (carpeta: string) => pedir<ArchivoCarpeta[]>("archivos_listar", { carpeta });
 export const borrarArchivo = (carpeta: string, nombre: string) => pedir<void>("archivo_borrar", { carpeta, nombre });
 export const renombrarArchivo = (carpeta: string, actual: string, nuevo: string) => pedir<string>("archivo_renombrar", { carpeta, actual, nuevo });

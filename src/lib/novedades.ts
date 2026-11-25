@@ -21,6 +21,14 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.6",
+    novedades: [
+      { glifo: "carpeta", titulo: T("Mis tareas, en la barra lateral"), texto: T("Las carpetas de tus materias ahora están a un clic, debajo de Calendario. También llegas con Ctrl + 8.") },
+      { glifo: "repaso", titulo: T("Repaso, más intuitivo"), texto: T("Toca la tarjeta para voltearla y, antes de calificar, verás cuándo volverá a salir. Practica cuando quieras sin mover tu calendario, repite repasos anteriores o estudia solo las tarjetas que te costaron.") },
+      { glifo: "calendario", titulo: T("Cambio de semestre"), texto: T("En Horario, pulsa el nombre del semestre para empezar uno nuevo: el anterior se guarda. En «Anteriores» ves cada uno con su semana en colores y puedes recuperarlo. Si quieres, Nexo archiva las carpetas de esas materias en Tareas › Anteriores (no se borra nada; mientras están ahí no salen en Mis tareas ni en el buscador) y las regresa al recuperarlo.") },
+    ],
+  },
+  {
     version: "0.3.5",
     novedades: [
       { glifo: "musica", titulo: T("Spotify, sin configurar nada"), texto: T("«Conectar con Spotify Premium» ya funciona de entrada: pulsas, inicias sesión en la página de Spotify (con tu correo, Google, Facebook o Apple) y listo. Ya no hay que crear una app ni editar archivos. Si tu cuenta aún no está autorizada, Nexo te lo dice y te explica qué hacer; y si prefieres usar tu propia app de Spotify, ahora la pegas desde Música.") },

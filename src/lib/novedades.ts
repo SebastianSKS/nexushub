@@ -21,6 +21,13 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.8",
+    novedades: [
+      { glifo: "etiqueta", titulo: T("Nexo ahora se llama Xook"), texto: T("«Xook» quiere decir leer o estudiar en maya yucateco. Cambian el nombre y el logo; tus datos, tus carpetas de tareas y tus copias de seguridad siguen igual. En Windows, como en el menú Inicio, el programa todavía aparece como «Nexo».") },
+      { glifo: "video", titulo: T("Video, con nuevo diseño"), texto: T("El video más nuevo de tus canales sale destacado con sus colores, y los demás van sin cajas y con la foto de cada canal. Al ver un video, ahora va primero, con un resplandor de sus colores y los controles debajo en orden.") },
+    ],
+  },
+  {
     version: "0.3.7",
     novedades: [
       { glifo: "musica", titulo: T("El fondo se viste de tu música"), texto: T("Mientras suena algo, el fondo de toda la app toma los colores de la portada y se mueve despacio; al cambiar de canción cambia con ellos. Si prefieres el fondo de siempre, apágalo en Configuración › Apariencia › Fondo según la música.") },

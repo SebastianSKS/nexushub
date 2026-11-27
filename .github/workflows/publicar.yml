@@ -113,7 +113,7 @@ jobs:
       - name: Generar latest.json
         run: |
           firma_linux=$(ls src-tauri/target/release/bundle/appimage/*.AppImage.sig)
-          node scripts/generar-latest-json.mjs "Nexo ${GITHUB_REF_NAME#v}" --linux-sig "$firma_linux"
+          node scripts/generar-latest-json.mjs "Xook ${GITHUB_REF_NAME#v}" --linux-sig "$firma_linux"
       - name: Revisar que lo compilado esté completo antes de publicarlo
         run: node scripts/verificar-release.mjs
       - name: Publicar el Release
@@ -122,8 +122,8 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Nexo ${GITHUB_REF_NAME#v}" \
-            --notes "Nexo ${GITHUB_REF_NAME#v}. Novedades: https://github.com/${GITHUB_REPOSITORY}/blob/main/src/lib/novedades.ts" \
+            --title "Xook ${GITHUB_REF_NAME#v}" \
+            --notes "Xook ${GITHUB_REF_NAME#v}. Novedades: https://github.com/${GITHUB_REPOSITORY}/blob/main/src/lib/novedades.ts" \
             src-tauri/target/release/bundle/nsis/*.exe \
             src-tauri/target/release/bundle/nsis/*.exe.sig \
             src-tauri/target/release/bundle/nsis/latest.json \

@@ -24,7 +24,7 @@ import { useNotasStore } from "@/store/notas-store";
 import type { Command } from "@/types";
 
 /**
- * Buscador global (Ctrl+K o clic en la barra). Busca en TODO Nexo —tareas y eventos, clases del horario,
+ * Buscador global (Ctrl+K o clic en la barra). Busca en TODO Xook —tareas y eventos, clases del horario,
  * cumpleaños, apuntes, canales y sus videos, favoritos y herramientas de Documentos— y además ofrece los
  * comandos de siempre (ir a una sección, abrir Configuración…). Si escribes una cuenta, la resuelve.
  */
@@ -181,7 +181,7 @@ export function GlobalSearch() {
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={open && results[activeIndex] ? optionId(activeIndex) : undefined}
-          placeholder={t("Buscar en Nexo")}
+          placeholder={t("Buscar en Xook")}
           value={query}
           onFocus={() => setOpen(true)}
           onChange={(e) => {

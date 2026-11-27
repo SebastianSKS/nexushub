@@ -43,7 +43,7 @@ export type OpcionesAviso = OpcionesDePlan;
 
 /**
  * Envía una notificación del sistema, si hay permiso y no es hora de «No molestar». Suena como se haya elegido en
- * Configuración: uno de Windows (lo pone el propio aviso), uno de Nexo (se toca aquí, y el aviso va sin sonido) o ninguno.
+ * Configuración: uno de Windows (lo pone el propio aviso), uno de Xook (se toca aquí, y el aviso va sin sonido) o ninguno.
  * Devuelve true si se envió.
  */
 export async function notificarSistema(titulo: string, cuerpo: string, etiqueta?: string, ruta?: string, opciones: OpcionesAviso = {}): Promise<boolean> {

@@ -218,7 +218,7 @@ export async function docxToPdfInBrowser(
 ): Promise<DocxConversion> {
   if (extensionOf(file.name) !== ".docx") {
     throw new DocumentError(
-      traducir("«{name}» es un .doc antiguo y Nexo solo lee el formato .docx.", { name: file.name }),
+      traducir("«{name}» es un .doc antiguo y Xook solo lee el formato .docx.", { name: file.name }),
       traducir("Ábrelo en Word y guárdalo como .docx (Archivo → Guardar como), o pídele a quien te lo dio el .docx."),
     );
   }
@@ -353,7 +353,7 @@ export async function docxToPdfInBrowser(
   const bytes = await doc.save();
 
   const warnings = [
-    traducir("El PDF se genera dentro de Nexo a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar."),
+    traducir("El PDF se genera dentro de Xook a partir del contenido del documento: párrafos, títulos, negrita, cursiva, listas, tablas e imágenes. Columnas, cuadros de texto, encabezados, pies de página y las fuentes originales pueden cambiar."),
   ];
   if (skippedImages > 0) warnings.push(traducir("Se omitieron {skippedImages} imagen(es) en un formato que no se puede incrustar (solo PNG y JPEG).", { skippedImages }));
   if (replaced > 0) warnings.push(traducir("Algunos caracteres fuera del alfabeto latino (por ejemplo, emojis o escrituras no latinas) se sustituyeron por «?»."));

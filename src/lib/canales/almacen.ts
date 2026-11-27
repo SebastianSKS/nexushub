@@ -122,7 +122,7 @@ export function interpretarImportacion(texto: string): { canales: Canal[]; inval
   }
   const almacen = datos as Partial<AlmacenCanales> | null;
   if (!almacen || almacen.version !== 1 || !Array.isArray(almacen.canales)) {
-    return { error: traducir("Ese archivo no tiene el formato de Nexo. Usa un archivo creado con «Exportar mis canales».") };
+    return { error: traducir("Ese archivo no tiene el formato de Xook. Usa un archivo creado con «Exportar mis canales».") };
   }
   const limpios = limpiarLista(almacen.canales);
   if (limpios.length === 0) return { error: traducir("El archivo no contiene ningún canal válido.") };

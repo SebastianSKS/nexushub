@@ -8,8 +8,10 @@ import { IconButton } from "@/components/fluent/IconButton";
 import { abrirExterno } from "@/lib/entorno";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { formatDuration } from "@/lib/video/format";
+import { useCanalesStore } from "@/store/canales-store";
 import { useProgresoVideoStore } from "@/store/progreso-video-store";
 import type { VideoCanal } from "@/types/canal";
+import { AvatarCanal } from "./AvatarCanal";
 
 interface TarjetaVideoProps {
   video: VideoCanal;
@@ -31,7 +33,8 @@ interface TarjetaVideoProps {
  */
 export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, duracion, onReproducir, onEncolar, onAlternarFavorito }: TarjetaVideoProps) {
   const t = useT();
-  const meta = [video.canalNombre, fechaRelativa(video.publicado)].filter(Boolean).join(" · ");
+  const fecha = fechaRelativa(video.publicado);
+  const avatar = useCanalesStore((s) => s.canales.find((c) => c.id === video.canalId)?.avatar ?? null);
   // Cuánto va visto (la barra roja de abajo de la miniatura, como en YouTube).
   const visto = useProgresoVideoStore((s) => s.progreso[video.videoId]);
   const urlYouTube = `https://www.youtube.com/watch?v=${video.videoId}`;
@@ -42,12 +45,8 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
   };
 
   return (
-    <div
-      className={clsx(
-        "rounded-control reveal group relative border bg-layer p-2 shadow-card transition-colors duration-exit ease-fluent hover:bg-layer-alt",
-        activo ? "border-accent" : "border-stroke",
-      )}
-    >
+    // Sin caja: la miniatura es la tarjeta, como en YouTube; el fondo solo aparece al pasar el cursor.
+    <div className="group relative -m-1.5 rounded-[14px] p-1.5 transition-colors duration-exit ease-fluent hover:bg-layer-alt">
       <button
         type="button"
         onClick={abrir}
@@ -57,7 +56,7 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
         aria-current={activo ? "true" : undefined}
         className="block w-full text-left"
       >
-        <span className="relative block aspect-video w-full overflow-hidden rounded-control bg-layer-alt">
+        <span className={clsx("relative block aspect-video w-full overflow-hidden rounded-[10px] bg-layer-alt", activo && "ring-2 ring-accent ring-offset-0")}>
           {/* eslint-disable-next-line @next/next/no-img-element -- miniatura remota de YouTube */}
           <img
             src={video.miniatura}
@@ -108,12 +107,16 @@ export function TarjetaVideo({ video, activo, enCola, incrustable, favorito, dur
           )}
         </span>
 
-        <span className="mt-2 block px-1 pb-1">
-          <span className="line-clamp-2 block text-body font-semibold text-fg" title={video.titulo}>
-            {video.titulo}
-          </span>
-          <span className="mt-1 block truncate text-caption text-fg-secondary" title={meta}>
-            {meta}
+        <span className="mt-2.5 flex gap-2.5 px-0.5">
+          <AvatarCanal nombre={video.canalNombre} avatar={avatar} tam={32} />
+          <span className="min-w-0 flex-1">
+            <span className="line-clamp-2 block text-body font-semibold leading-snug text-fg" title={video.titulo}>
+              {video.titulo}
+            </span>
+            <span className="mt-1 block truncate text-caption text-fg-secondary" title={video.canalNombre}>
+              {video.canalNombre}
+            </span>
+            <span className="block truncate text-caption text-fg-tertiary">{fecha}</span>
           </span>
         </span>
       </button>

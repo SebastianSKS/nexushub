@@ -33,7 +33,7 @@ function CuadroGuia({ guia, onCerrar }: { guia: Guia; onCerrar: () => void }) {
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label={guia.id === "bienvenida" ? t("Bienvenida a Nexo") : t("Guía: {nombre}", { nombre: t(guia.nombre) })}
+      aria-label={guia.id === "bienvenida" ? t("Bienvenida a Xook") : t("Guía: {nombre}", { nombre: t(guia.nombre) })}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: ENTER }}
       exit={{ opacity: 0, transition: EXIT }}

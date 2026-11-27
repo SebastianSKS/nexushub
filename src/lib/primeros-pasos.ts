@@ -2,7 +2,7 @@ import type { NombreGlifo } from "./glifos.ts";
 import { T } from "./i18n/nucleo.ts";
 
 /**
- * La lista de «primeros pasos» de Inicio: cinco cosas que enseñan el valor de Nexo en pocos minutos (poner tu nombre, cargar
+ * La lista de «primeros pasos» de Inicio: cinco cosas que enseñan el valor de Xook en pocos minutos (poner tu nombre, cargar
  * el horario, crear las carpetas de tus materias, añadir un examen y probar Ctrl+K). Cada paso se marca solo cuando la
  * persona lo hace. Es lógica pura, sin pantalla: qué pasos hay, cuáles van por cuáles, y CUÁNDO se muestra la lista para no
  * pisar las guías, las novedades ni a quien ya lo hizo todo.
@@ -15,7 +15,7 @@ export interface PasoDef {
   glifo: NombreGlifo;
   titulo: string;
   texto: string;
-  /** Adónde lleva el botón del paso (una ruta de Nexo). Sin ruta, cada paso hace lo suyo (abrir el perfil, el buscador). */
+  /** Adónde lleva el botón del paso (una ruta de Xook). Sin ruta, cada paso hace lo suyo (abrir el perfil, el buscador). */
   ruta?: string;
   /** Texto del botón. */
   accion: string;
@@ -24,10 +24,10 @@ export interface PasoDef {
 }
 
 export const PASOS: readonly PasoDef[] = [
-  { id: "nombre", glifo: "persona", titulo: T("Pon tu nombre"), texto: T("Para que Nexo te salude y sepas que es tuyo. Se queda solo en tu equipo."), accion: T("Poner mi nombre") },
-  { id: "horario", glifo: "reloj", titulo: T("Carga tu horario"), texto: T("Toma una captura o una foto de tu horario y Nexo lo llena solo, con un aviso antes de cada clase."), ruta: "/horario", accion: T("Cargar horario") },
+  { id: "nombre", glifo: "persona", titulo: T("Pon tu nombre"), texto: T("Para que Xook te salude y sepas que es tuyo. Se queda solo en tu equipo."), accion: T("Poner mi nombre") },
+  { id: "horario", glifo: "reloj", titulo: T("Carga tu horario"), texto: T("Toma una captura o una foto de tu horario y Xook lo llena solo, con un aviso antes de cada clase."), ruta: "/horario", accion: T("Cargar horario") },
   { id: "carpetas", glifo: "carpeta", titulo: T("Crea las carpetas de tus materias"), texto: T("Una por materia, para guardar tus tareas. Se crean desde tu horario con un clic."), ruta: "/documentos/carpetas", accion: T("Ver mis tareas"), soloEscritorio: true },
-  { id: "examen", glifo: "examen", titulo: T("Añade tu primer examen o tarea"), texto: T("Con fecha y hora, y Nexo te avisa antes para que no se te pase."), ruta: "/calendario", accion: T("Abrir el calendario") },
+  { id: "examen", glifo: "examen", titulo: T("Añade tu primer examen o tarea"), texto: T("Con fecha y hora, y Xook te avisa antes para que no se te pase."), ruta: "/calendario", accion: T("Abrir el calendario") },
   { id: "buscador", glifo: "buscar", titulo: T("Prueba la búsqueda (Ctrl + K)"), texto: T("Escribe una materia, una tarea o una palabra: también busca dentro de tus PDF, Word, Excel y PowerPoint."), accion: T("Probar la búsqueda") },
 ];
 

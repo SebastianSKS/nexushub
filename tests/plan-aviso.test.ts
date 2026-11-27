@@ -6,17 +6,17 @@ const base: AjustesDeAviso = { sonidoAvisos: "nexo-campana", silencioActivo: fal
 const a = (h: number) => new Date(2026, 8, 26, h);
 
 describe("planDeAviso", () => {
-  it("con un sonido de Nexo: el aviso de Windows va en silencio y Nexo toca el suyo", () => {
+  it("con un sonido de Xook: el aviso de Windows va en silencio y Xook toca el suyo", () => {
     const p = planDeAviso(base, a(12));
     assert.deepEqual(p, { enviar: true, sonidoDelAviso: "silencio", tocarNexo: "nexo-campana", conSonidoDeWindows: false });
   });
 
-  it("con un sonido de Windows: lo pone el aviso y Nexo no toca nada", () => {
+  it("con un sonido de Windows: lo pone el aviso y Xook no toca nada", () => {
     const p = planDeAviso({ ...base, sonidoAvisos: "windows-recordatorio" }, a(12));
     assert.deepEqual(p, { enviar: true, sonidoDelAviso: "windows-recordatorio", tocarNexo: null, conSonidoDeWindows: true });
   });
 
-  it("sin sonido: ni Windows ni Nexo", () => {
+  it("sin sonido: ni Windows ni Xook", () => {
     const p = planDeAviso({ ...base, sonidoAvisos: "ninguno" }, a(12));
     assert.deepEqual(p, { enviar: true, sonidoDelAviso: "silencio", tocarNexo: null, conSonidoDeWindows: false });
   });

@@ -33,11 +33,11 @@ const lleno = () =>
     "nexushub-spotify-tokens": "SECRETO",
     "nexushub-spotify-pkce": "temporal",
     "nexushub-ultima-ruta": "/video",
-    "otra-app-clave": "no es de Nexo",
+    "otra-app-clave": "no es de Xook",
   });
 
 describe("crearCopia", () => {
-  it("lleva lo de Nexo y deja fuera credenciales, temporales y cosas de otras aplicaciones", () => {
+  it("lleva lo de Xook y deja fuera credenciales, temporales y cosas de otras aplicaciones", () => {
     const c = crearCopia(lleno(), "0.2.0", ahora);
     assert.deepEqual(Object.keys(c.datos).sort(), ["nexushub-ajustes", "nexushub-canales", "nexushub-eventos", "nexushub-horario", "nexushub-perfil"]);
     assert.doesNotMatch(JSON.stringify(c), /SECRETO/);
@@ -54,7 +54,7 @@ describe("crearCopia", () => {
 describe("leerCopia", () => {
   const buena = () => JSON.stringify(crearCopia(lleno(), "0.2.0", ahora));
 
-  it("lo que exporta Nexo lo lee de vuelta", () => {
+  it("lo que exporta Xook lo lee de vuelta", () => {
     const r = leerCopia(buena());
     assert.ok(r.ok);
     if (r.ok) {
@@ -63,7 +63,7 @@ describe("leerCopia", () => {
     }
   });
 
-  it("rechaza lo que no es JSON, no es un objeto o no es de Nexo", () => {
+  it("rechaza lo que no es JSON, no es un objeto o no es de Xook", () => {
     for (const malo of ["", "hola", "[]", "null", "5", '{"app":"Otra"}', '{"app":"Nexo"}']) {
       const r = leerCopia(malo);
       assert.equal(r.ok, false, malo);
@@ -157,7 +157,7 @@ describe("aplicarCopia", () => {
 
 describe("nombres y claves", () => {
   it("el nombre lleva la fecha con ceros", () => {
-    assert.equal(nombreDeCopia(new Date(2026, 0, 5)), "Nexo-copia-2026-01-05.json");
+    assert.equal(nombreDeCopia(new Date(2026, 0, 5)), "Xook-copia-2026-01-05.json");
   });
   it("esClaveDeCopia", () => {
     assert.ok(esClaveDeCopia("nexushub-cumples"));

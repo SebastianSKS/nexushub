@@ -40,7 +40,7 @@ function contenido(id: ConsejoId): { titulo: string; texto: string; ruta: string
   switch (id) {
     case "primera-clase":
       return {
-        titulo: traducir("Tu horario ya está en Nexo"),
+        titulo: traducir("Tu horario ya está en Xook"),
         texto: a.avisoClaseMin > 0 ? traducir("Te avisaremos {n} minutos antes de cada clase. Lo cambias en Configuración › Avisos.", { n: a.avisoClaseMin }) : traducir("Los avisos de clase están apagados; puedes encenderlos en Configuración › Avisos."),
         ruta: rutaAjustes("avisos"),
         etiqueta: traducir("Ir a Configuración"),

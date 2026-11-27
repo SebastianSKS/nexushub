@@ -128,7 +128,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     id: "recover-pdf",
     action: T("Desbloquear PDF"),
     name: T("Desbloquear PDF"),
-    description: T("¿Olvidaste la contraseña? Suéltalo y pulsa Desbloquear: Nexo la busca sola y te abre el PDF."),
+    description: T("¿Olvidaste la contraseña? Suéltalo y pulsa Desbloquear: Xook la busca sola y te abre el PDF."),
     accepts: ["pdf"],
     minFiles: 1,
     maxFiles: 1,

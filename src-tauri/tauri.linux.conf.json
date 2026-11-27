@@ -3,7 +3,7 @@
   "bundle": {
     "targets": ["deb", "appimage"],
     "shortDescription": "Video, música, documentos y calendario en una sola ventana, con el lenguaje de diseño Fluent de Windows 11.",
-    "longDescription": "Nexo reúne YouTube, Spotify, conversión de documentos, calendario, horario de clases y calculadora en una sola aplicación de escritorio, con el lenguaje de diseño Fluent de Windows 11. Todo se guarda en tu equipo; tus archivos no salen de él. Las conversiones usan LibreOffice si lo tienes instalado.",
+    "longDescription": "Xook reúne YouTube, Spotify, conversión de documentos, calendario, horario de clases y calculadora en una sola aplicación de escritorio, con el lenguaje de diseño Fluent de Windows 11. Todo se guarda en tu equipo; tus archivos no salen de él. Las conversiones usan LibreOffice si lo tienes instalado.",
     "linux": {
       "deb": {
         "desktopTemplate": "instalador-linux/nexo.desktop",

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { Add20Regular, Dismiss20Regular } from "@fluentui/react-icons";
 import { Switch } from "@/components/fluent/Switch";
+import { EcualizadorVisual } from "@/components/reproductor/EcualizadorVisual";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { pistaDeVideo } from "@/lib/canales/pistas";
 import { rutaVer } from "@/lib/rutas";
@@ -29,11 +30,12 @@ function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: bool
   const visto = useProgresoVideoStore((s) => s.progreso[pista.id]);
   const meta = [pista.artista, el.publicado ? fechaRelativa(el.publicado) : ""].filter(Boolean).join(" · ");
   const enCola = el.indice !== null;
+  const suena = useReproductorStore((s) => s.reproduciendo);
 
   return (
     <div className={clsx("group relative flex gap-2.5 rounded-control p-1.5 transition-colors duration-exit ease-fluent hover:bg-layer-alt", actual && "bg-layer-alt")}>
       <button type="button" onClick={onAbrir} aria-label={t("Reproducir {titulo}, de {artista}", { titulo: pista.titulo, artista: pista.artista })} aria-current={actual ? "true" : undefined} className="flex min-w-0 flex-1 gap-2.5 text-left">
-        <span className="relative block aspect-video w-[152px] shrink-0 overflow-hidden rounded-[8px] bg-layer-alt">
+        <span className="relative block aspect-video w-[128px] shrink-0 overflow-hidden rounded-[8px] bg-layer-alt">
           {/* eslint-disable-next-line @next/next/no-img-element -- miniatura remota de YouTube */}
           <img src={pista.caratula} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
           {pista.duracion > 0 && (
@@ -42,8 +44,9 @@ function Tarjeta({ el, actual, onAbrir, onAccion }: { el: Elemento; actual: bool
             </span>
           )}
           {actual && (
-            <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-caption font-semibold text-white" aria-hidden>
-              {t("Reproduciendo")}
+            // Las barras se mueven mientras suena y se quedan quietas en pausa.
+            <span className="absolute inset-0 flex items-center justify-center bg-black/55" title={t("Reproduciendo")} aria-hidden>
+              <EcualizadorVisual activo={suena} />
             </span>
           )}
           {visto && !actual && (
@@ -134,7 +137,7 @@ export function ColaVideos() {
             type="button"
             aria-pressed={soloCanal === c.valor}
             onClick={() => setSoloCanal(c.valor)}
-            className={clsx("max-w-full truncate rounded-control h-8 px-3 text-body transition-colors duration-exit ease-fluent", soloCanal === c.valor ? "bg-fg text-mica" : "bg-layer-alt text-fg hover:bg-layer")}
+            className={clsx("max-w-full truncate rounded-full h-8 px-3.5 text-body transition-colors duration-exit ease-fluent", soloCanal === c.valor ? "bg-fg text-mica" : "bg-layer-alt text-fg hover:bg-layer")}
           >
             {c.texto}
           </button>

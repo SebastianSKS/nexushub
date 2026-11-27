@@ -6,7 +6,7 @@ import { useHora } from "@/hooks/useHora";
 import { useT } from "@/lib/i18n";
 import { useAjustesStore, type FormatoHora } from "@/store/ajustes-store";
 
-/** «Formato de hora»: 24 horas (14:30) o 12 horas con a. m./p. m. (2:30 p. m.), en todo Nexo. */
+/** «Formato de hora»: 24 horas (14:30) o 12 horas con a. m./p. m. (2:30 p. m.), en todo Xook. */
 export function AjusteFormatoHora() {
   const t = useT();
   const { hora } = useHora();

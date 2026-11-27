@@ -73,8 +73,8 @@ export function PaginaRepaso() {
             <EstadoVacio
               glifo="repaso"
               titulo={t("Aún no tienes mazos")}
-              texto={t("Un mazo es un grupo de tarjetas (pregunta y respuesta) de una materia. Nexo te las repite con el tiempo para que se te queden.")}
-              pasos={[t("Crea un mazo (por ejemplo, «Cálculo»)."), t("Añade tarjetas, o pega tus apuntes y Nexo las arma solo."), t("Pulsa Estudiar: respondes y calificas qué tan bien te la supiste.")]}
+              texto={t("Un mazo es un grupo de tarjetas (pregunta y respuesta) de una materia. Xook te las repite con el tiempo para que se te queden.")}
+              pasos={[t("Crea un mazo (por ejemplo, «Cálculo»)."), t("Añade tarjetas, o pega tus apuntes y Xook las arma solo."), t("Pulsa Estudiar: respondes y calificas qué tan bien te la supiste.")]}
               acciones={
                 <Button variant="accent" icon={<Add20Regular />} onClick={() => setDialogo(true)}>
                   {t("Nuevo mazo")}

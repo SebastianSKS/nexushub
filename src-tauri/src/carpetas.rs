@@ -45,7 +45,7 @@ pub struct Archivo {
 
 fn base(app: &AppHandle) -> Result<PathBuf, String> {
     let docs = app.path().document_dir().map_err(|e| e.to_string())?;
-    // La carpeta se llamaba «NexusHub» antes de que la aplicación se llamara Nexo: si existe la de antes y aún no la nueva, se
+    // La carpeta se llamaba «NexusHub» antes de que la aplicación se llamara Xook: si existe la de antes y aún no la nueva, se
     // le cambia el nombre (con las carpetas de materias adentro). Si no se pudo (un archivo abierto, por ejemplo), se sigue
     // usando la de antes y se reintenta la próxima vez: nunca se pierde ni se duplica nada.
     let nueva = docs.join(CARPETA_RAIZ);
@@ -147,7 +147,7 @@ fn resumir(ruta: &Path) -> Result<Vec<Carpeta>, String> {
 pub fn carpeta_crear(app: AppHandle, nombre: String) -> Result<String, String> {
     let limpio = nombre_seguro(&nombre)?;
     if es_anteriores(&limpio) {
-        return Err("«Anteriores» es donde Nexo guarda los semestres pasados; usa otro nombre.".into());
+        return Err("«Anteriores» es donde Xook guarda los semestres pasados; usa otro nombre.".into());
     }
     let ruta = base(&app)?.join(&limpio);
     if ruta.exists() {
@@ -161,7 +161,7 @@ pub fn carpeta_crear(app: AppHandle, nombre: String) -> Result<String, String> {
 pub fn carpeta_renombrar(app: AppHandle, actual: String, nuevo: String) -> Result<String, String> {
     let limpio = nombre_seguro(&nuevo)?;
     if es_anteriores(&limpio) {
-        return Err("«Anteriores» es donde Nexo guarda los semestres pasados; usa otro nombre.".into());
+        return Err("«Anteriores» es donde Xook guarda los semestres pasados; usa otro nombre.".into());
     }
     let desde = carpeta_de(&app, &actual)?;
     let hasta = base(&app)?.join(&limpio);

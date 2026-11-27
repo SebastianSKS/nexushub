@@ -1,4 +1,4 @@
-// JSZip pesa unos 100 KB: se carga solo cuando hay un archivo de Office que leer (no al abrir Nexo).
+// JSZip pesa unos 100 KB: se carga solo cuando hay un archivo de Office que leer (no al abrir Xook).
 import type JSZip from "jszip";
 
 /**

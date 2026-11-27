@@ -4,7 +4,7 @@ import { normalizarModoAhorro, type ModoAhorro } from "./rendimiento.ts";
 import { horaValida, SILENCIO_PREDETERMINADO } from "./silencio.ts";
 
 /**
- * Los ajustes de Nexo, su valor de fábrica y —lo más importante— cómo se leen de lo guardado: cada campo se comprueba
+ * Los ajustes de Xook, su valor de fábrica y —lo más importante— cómo se leen de lo guardado: cada campo se comprueba
  * y, si viene roto o de una versión vieja, se usa el valor de fábrica. Así un archivo dañado nunca deja la aplicación sin
  * abrir. Es lógica pura (sin pantalla) para poder probarla. El almacén que la usa está en `store/ajustes-store.ts`.
  */
@@ -12,7 +12,7 @@ import { horaValida, SILENCIO_PREDETERMINADO } from "./silencio.ts";
 export type PreferenciaTema = "claro" | "oscuro" | "sistema";
 export type EfectoVentana = "mica" | "acrilico" | "ninguno";
 export type AlTerminar = "nada" | "descargar" | "abrir-carpeta";
-/** Con qué pantalla se abre Nexo: la última que se estaba usando, o una sección fija. */
+/** Con qué pantalla se abre Xook: la última que se estaba usando, o una sección fija. */
 export type SeccionInicial = "inicio" | "ultima" | "video" | "musica" | "documentos" | "calendario";
 /** Cómo se escriben las horas: 24 horas (14:30) o 12 con a. m./p. m. (2:30 p. m.). */
 export type FormatoHora = "24h" | "12h";
@@ -63,11 +63,11 @@ export interface Ajustes {
   seccionInicial: SeccionInicial;
   /** Leer el texto de los PDF de tus carpetas de materias (en este equipo) para poder buscar dentro de ellos con Ctrl+K. */
   buscarEnPdfs: boolean;
-  /** El idioma de Nexo: «sistema» (el mismo que Windows), español o inglés. */
+  /** El idioma de Xook: «sistema» (el mismo que Windows), español o inglés. */
   idioma: PreferenciaIdioma;
-  /** El sonido de los avisos: uno de Nexo, uno de Windows o ninguno. */
+  /** El sonido de los avisos: uno de Xook, uno de Windows o ninguno. */
   sonidoAvisos: SonidoAviso;
-  /** Volumen (0–100) de los sonidos de Nexo. */
+  /** Volumen (0–100) de los sonidos de Xook. */
   volumenAvisos: number;
   /** «No molestar»: sin avisos ni sonidos entre estas horas (0–23). */
   silencioActivo: boolean;

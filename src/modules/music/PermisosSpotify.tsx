@@ -43,7 +43,7 @@ export function DialogoPermisos() {
         <li>{t("Crear y editar tus playlists")}</li>
         <li>{t("Ver los álbumes que guardaste")}</li>
       </ul>
-      <p className="mt-3 text-caption text-fg-tertiary">{t("Se abrirá Spotify para que confirmes y Nexo te trae de vuelta a esta misma pantalla. No pedimos nada más: no podemos ver tu contraseña.")}</p>
+      <p className="mt-3 text-caption text-fg-tertiary">{t("Se abrirá Spotify para que confirmes y Xook te trae de vuelta a esta misma pantalla. No pedimos nada más: no podemos ver tu contraseña.")}</p>
       <div className="mt-4 flex justify-end gap-2">
         <Button onClick={cerrar}>{t("Ahora no")}</Button>
         <Button

@@ -3,7 +3,7 @@ import { normalize } from "@/lib/text";
 import { iconosDeApps, listarApps, type AppInstalada } from "@/services/apps";
 
 /**
- * Los logos ORIGINALES de los programas que Nexo menciona (Word, Excel, PowerPoint, Bloc de notas, el visor de PDF…): se
+ * Los logos ORIGINALES de los programas que Xook menciona (Word, Excel, PowerPoint, Bloc de notas, el visor de PDF…): se
  * los pedimos a Windows tal como los muestra, así siempre son los de verdad y los de la versión que el usuario tiene
  * instalada. Se guardan para no volver a pedirlos. Si el programa no está instalado, quien dibuja usa su inicial en un
  * cuadro de color.

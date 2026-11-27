@@ -34,7 +34,7 @@ export function sinRutasDeUsuario(texto: string): string {
 /** El bloque de texto listo para copiar. */
 export function armarDiagnostico(d: DatosDiagnostico): string {
   const lineas = [
-    "Nexo — información para reportar un problema",
+    "Xook — información para reportar un problema",
     `Versión: ${d.version || "desconocida"}`,
     `Entorno: ${d.entorno}`,
     `Idioma: ${d.idioma}`,
@@ -53,7 +53,7 @@ export function armarDiagnostico(d: DatosDiagnostico): string {
 }
 
 /** La dirección para abrir un reporte nuevo en GitHub con el diagnóstico ya puesto (recortado: las direcciones largas fallan). */
-export function direccionDeReporte(repo: string, diagnostico: string, titulo = "Problema en Nexo"): string {
+export function direccionDeReporte(repo: string, diagnostico: string, titulo = "Problema en Xook"): string {
   const cuerpo = recortar(diagnostico, 1500);
   const q = new URLSearchParams({ title: titulo, body: `**¿Qué estabas haciendo?**\n\n\n**Información**\n\n\`\`\`\n${cuerpo}\n\`\`\`\n` });
   return `https://github.com/${repo}/issues/new?${q.toString()}`;

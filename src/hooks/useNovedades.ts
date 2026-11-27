@@ -6,12 +6,12 @@ import { compararVersiones, novedadesEntre } from "@/lib/novedades";
 import { useGuiasStore } from "@/store/guias-store";
 import { guardarVersionVista, leerVersionVista, useNovedadesStore } from "@/store/novedades-store";
 
-/** Con la que se supone que empezó quien ya usaba Nexo antes de que existiera este cuadro (la primera versión). */
+/** Con la que se supone que empezó quien ya usaba Xook antes de que existiera este cuadro (la primera versión). */
 const VERSION_ANTERIOR = "0.1.0";
 
 /**
- * Después de actualizar, la primera vez que se abre Nexo muestra qué cambió desde la versión que se tenía.
- * A quien instala Nexo por primera vez no le muestra nada (para eso está la bienvenida) y solo anota su versión.
+ * Después de actualizar, la primera vez que se abre Xook muestra qué cambió desde la versión que se tenía.
+ * A quien instala Xook por primera vez no le muestra nada (para eso está la bienvenida) y solo anota su versión.
  * Espera a que no haya una guía a la vista para no apilar cuadros.
  */
 export function useNovedades() {

@@ -50,7 +50,7 @@ export function buildCommands(query: string, ir: (ruta: string) => void): Comman
       group: traducir("Ayuda"),
       run: () => ir("/atajos"),
     },
-    // Al final: así Enter abre lo que Nexo encontró, y Música queda para cuando no hay otra cosa.
+    // Al final: así Enter abre lo que Xook encontró, y Música queda para cuando no hay otra cosa.
     ...search,
   ];
 }

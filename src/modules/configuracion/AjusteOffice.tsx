@@ -25,8 +25,8 @@ export function AjusteOffice() {
   const programa = datos?.suite || t("el programa de office");
   const titulo = t("Convertir con {programa}", { programa });
   const descripcion = datos?.pdfWord
-    ? t("Si tienes {programa} instalado, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace {programa}: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.", { programa })
-    : t("Si tienes {programa} instalado, las conversiones a PDF las hace {programa}: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Nexo.", { programa });
+    ? t("Si tienes {programa} instalado, las conversiones (Word, Excel y PowerPoint a PDF, y PDF a Word) las hace {programa}: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Xook.", { programa })
+    : t("Si tienes {programa} instalado, las conversiones a PDF las hace {programa}: el resultado sale igual que guardarlo desde ahí. Si no, se usa el motor básico de Xook.", { programa });
 
   return (
     <TarjetaAjuste glifo="documentos" titulo={titulo} descripcion={descripcion}>

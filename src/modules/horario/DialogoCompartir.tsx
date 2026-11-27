@@ -64,7 +64,7 @@ export function DialogoCompartir({ abierto, alCerrar }: { abierto: boolean; alCe
   const elegirArchivo = async (archivo: File | undefined) => {
     if (!archivo) return;
     setAviso(null);
-    if (archivo.size > MAX_BYTES_HORARIO) return setDesdeArchivo({ ok: false, motivo: "El archivo es demasiado grande para ser un horario de Nexo." });
+    if (archivo.size > MAX_BYTES_HORARIO) return setDesdeArchivo({ ok: false, motivo: "El archivo es demasiado grande para ser un horario de Xook." });
     setPegado("");
     setDesdeArchivo(leerHorarioCompartido(await archivo.text(), () => crypto.randomUUID()));
   };

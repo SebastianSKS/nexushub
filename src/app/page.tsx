@@ -10,5 +10,5 @@ export default function Raiz() {
   useEffect(() => {
     router.replace(rutaDeInicio());
   }, [router]);
-  return <p className="p-8 text-body text-fg-secondary">Abriendo Nexo…</p>;
+  return <p className="p-8 text-body text-fg-secondary">Abriendo Xook…</p>;
 }

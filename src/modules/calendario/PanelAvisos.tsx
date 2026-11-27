@@ -39,7 +39,7 @@ export function PanelAvisos() {
   const pedirPermiso = async () => setPermiso(await pedirPermisoNotificaciones());
 
   const probar = async () => {
-    const ok = await notificarSistema("Nexo", t("Así se verán tus avisos de cumpleaños."), "prueba", "/calendario", { ignorarSilencio: true });
+    const ok = await notificarSistema("Xook", t("Así se verán tus avisos de cumpleaños."), "prueba", "/calendario", { ignorarSilencio: true });
     setPrueba(ok ? t("Enviamos una notificación de prueba: debería aparecer en la esquina de tu pantalla.") : t("No se pudo enviar la notificación de prueba."));
   };
 
@@ -91,7 +91,7 @@ export function PanelAvisos() {
             {t("Verás los avisos dentro de la aplicación.")}
           </InfoBar>
         )}
-        <p className="text-caption text-fg-tertiary">{t("Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Sistema).")}</p>
+        <p className="text-caption text-fg-tertiary">{t("Los avisos funcionan mientras Xook esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Sistema).")}</p>
       </div>
     </Card>
   );

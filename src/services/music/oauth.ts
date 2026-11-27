@@ -25,7 +25,7 @@ interface Tokens {
 }
 
 /**
- * El Client ID de la aplicación de Spotify de Nexo. No es un secreto: con PKCE no hay Client Secret, y Spotify espera
+ * El Client ID de la aplicación de Spotify de Xook. No es un secreto: con PKCE no hay Client Secret, y Spotify espera
  * este valor público en cualquier app de escritorio. Con él, «Conectar con Spotify» funciona de entrada: la persona
  * inicia sesión en la página de Spotify (correo y contraseña, Google, Facebook o Apple), sin configurar nada.
  */
@@ -59,7 +59,7 @@ export function guardarClientIdPropio(texto: string): boolean {
   }
 }
 
-/** Vuelve a la aplicación de Spotify de Nexo. */
+/** Vuelve a la aplicación de Spotify de Xook. */
 export function quitarClientIdPropio(): void {
   try {
     window.localStorage.removeItem(CLAVE_CLIENT_ID_PROPIO);
@@ -69,7 +69,7 @@ export function quitarClientIdPropio(): void {
   }
 }
 
-/** Primero el de la propia app de la persona, luego el de la compilación (si lo hay) y por último el de Nexo. */
+/** Primero el de la propia app de la persona, luego el de la compilación (si lo hay) y por último el de Xook. */
 export function obtenerClientId(): string {
   return clientIdPropio() ?? (process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID?.trim() || CLIENT_ID_DE_NEXO);
 }
@@ -145,7 +145,7 @@ interface RespuestaToken {
  *  - "rechazado" si Spotify contestó que el código o el refresh token ya no valen (HTTP 400/401): la sesión
  *    de verdad se acabó y hay que volver a iniciar sesión;
  *  - null si no se pudo saber (sin internet, tiempo agotado, Spotify caído…): la sesión guardada sigue
- *    siendo buena y se reintenta luego. Antes, cualquier fallo borraba la sesión: bastaba abrir Nexo
+ *    siendo buena y se reintenta luego. Antes, cualquier fallo borraba la sesión: bastaba abrir Xook
  *    un momento sin conexión para tener que iniciar sesión otra vez.
  */
 async function pedirTokens(cuerpo: Record<string, string>): Promise<RespuestaToken | "rechazado" | null> {

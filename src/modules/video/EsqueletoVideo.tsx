@@ -1,12 +1,15 @@
-/** Esqueleto con la misma forma que TarjetaVideo: miniatura 16:9, dos líneas de título y una de canal. */
+/** Esqueleto con la misma forma que TarjetaVideo: miniatura 16:9, foto del canal, dos líneas de título y una de canal. */
 export function EsqueletoVideo() {
   return (
-    <div className="rounded-control border border-stroke bg-layer p-2" aria-hidden>
-      <div className="skeleton aspect-video w-full rounded-control" />
-      <div className="px-1 pb-1 pt-3">
-        <div className="skeleton h-4 w-full" />
-        <div className="skeleton mt-1.5 h-4 w-3/4" />
-        <div className="skeleton mt-3 h-3 w-1/2" />
+    <div aria-hidden>
+      <div className="skeleton aspect-video w-full rounded-[10px]" />
+      <div className="flex gap-2.5 pt-2.5">
+        <div className="skeleton h-8 w-8 shrink-0 !rounded-full" />
+        <div className="min-w-0 flex-1">
+          <div className="skeleton h-4 w-full" />
+          <div className="skeleton mt-1.5 h-4 w-3/4" />
+          <div className="skeleton mt-2 h-3 w-1/2" />
+        </div>
       </div>
     </div>
   );

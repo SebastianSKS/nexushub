@@ -1,5 +1,5 @@
 /**
- * Los sonidos de los avisos de Nexo. Son propios: se «tocan» al momento con el audio del navegador (unas cuantas notas
+ * Los sonidos de los avisos de Xook. Son propios: se «tocan» al momento con el audio del navegador (unas cuantas notas
  * sueltas), sin archivos que descargar ni derechos de nadie. También se puede elegir un sonido de Windows, o ninguno.
  */
 
@@ -54,7 +54,7 @@ export const volumenAGanancia = (volumen: number): number => {
 let contexto: AudioContext | null = null;
 
 /**
- * Toca un sonido de Nexo. Devuelve cuánto dura (en segundos) o 0 si no se pudo (sin audio, o volumen en 0). Nunca lanza:
+ * Toca un sonido de Xook. Devuelve cuánto dura (en segundos) o 0 si no se pudo (sin audio, o volumen en 0). Nunca lanza:
  * un aviso sin sonido es mejor que uno que falla.
  */
 export function reproducirSonidoNexo(id: IdSonidoNexo, volumen: number): number {

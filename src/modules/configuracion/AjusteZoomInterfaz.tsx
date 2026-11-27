@@ -14,7 +14,7 @@ export function AjusteZoomInterfaz() {
   const cambiar = useAjustesStore((s) => s.cambiar);
   if (!escritorio) return null;
   return (
-    <TarjetaAjuste glifo="pantalla" titulo={t("Tamaño de la interfaz")} descripcion={t("Agranda o achica todo Nexo: textos, botones y cuadros.")}>
+    <TarjetaAjuste glifo="pantalla" titulo={t("Tamaño de la interfaz")} descripcion={t("Agranda o achica todo Xook: textos, botones y cuadros.")}>
       <Selector<number>
         label={t("Tamaño de la interfaz")}
         value={zoom}

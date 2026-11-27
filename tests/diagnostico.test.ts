@@ -65,7 +65,7 @@ describe("direccionDeReporte", () => {
   it("abre un reporte nuevo en el repositorio con el diagnóstico dentro", () => {
     const url = new URL(direccionDeReporte("SebastianSKS/nexushub", "Versión: 1"));
     assert.equal(url.origin + url.pathname, "https://github.com/SebastianSKS/nexushub/issues/new");
-    assert.equal(url.searchParams.get("title"), "Problema en Nexo");
+    assert.equal(url.searchParams.get("title"), "Problema en Xook");
     assert.match(url.searchParams.get("body") ?? "", /Versión: 1/);
   });
   it("el cuerpo no se pasa de largo (las direcciones muy largas fallan)", () => {

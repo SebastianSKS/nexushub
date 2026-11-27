@@ -5,7 +5,7 @@
   "YouTube no pudo reproducir este video. Inténtalo de nuevo o salta al siguiente.": "YouTube couldn't play this video. Try again or skip to the next one.",
   "No se pudo cargar el reproductor de YouTube. Comprueba tu conexión a internet e inténtalo de nuevo.": "The YouTube player could not be loaded. Check your internet connection and try again.",
   "Ese archivo no es un JSON válido. Usa un archivo creado con «Exportar mis canales».": "That file isn't valid JSON. Use a file created with “Export my channels”.",
-  "Ese archivo no tiene el formato de Nexo. Usa un archivo creado con «Exportar mis canales».": "That file doesn't have Nexo's format. Use a file created with “Export my channels”.",
+  "Ese archivo no tiene el formato de Xook. Usa un archivo creado con «Exportar mis canales».": "That file doesn't have Xook's format. Use a file created with “Export my channels”.",
   "El archivo no contiene ningún canal válido.": "The file doesn't contain any valid channel.",
   "No encontré ese canal. Revisa el enlace o abre el canal en YouTube y copia la dirección desde la barra del navegador.": "I couldn't find that channel. Check the link, or open the channel on YouTube and copy the address from the browser's bar.",
   "Escribe o pega el enlace de un canal de YouTube.": "Type or paste the link to a YouTube channel.",
@@ -77,7 +77,7 @@
   "Actualizar canal": "Update channel",
   "No sigues este canal.": "You don't follow this channel.",
   "Ver mis canales": "See my channels",
-  "El enlace apunta a un canal que no está en tu lista. Puede que lo quitaras, o que el enlace venga de otra copia de Nexo.": "The link points to a channel that isn't in your list. You may have removed it, or the link may come from another copy of Nexo.",
+  "El enlace apunta a un canal que no está en tu lista. Puede que lo quitaras, o que el enlace venga de otra copia de Xook.": "The link points to a channel that isn't in your list. You may have removed it, or the link may come from another copy of Xook.",
   "Video de YouTube": "YouTube video",
   "Cargando video…": "Loading video…",
   "Video no válido": "Invalid video",
@@ -125,5 +125,8 @@
   "Aquí verás los videos nuevos de tus canales de YouTube, todos juntos en un solo muro.": "Here you'll see the new videos from your YouTube channels, all together on a single wall.",
   "Abre un canal en YouTube y copia su enlace.": "Open a channel on YouTube and copy its link.",
   "Pulsa «Agregar canal» (arriba a la derecha) y pégalo.": "Press “Add channel” (top right) and paste it.",
-  "Listo: sus videos nuevos aparecen aquí.": "Done: its new videos appear here."
+  "Listo: sus videos nuevos aparecen aquí.": "Done: its new videos appear here.",
+  "Seguir viendo": "Keep watching",
+  "Ver ahora": "Watch now",
+  "Velocidad normal": "Normal speed"
 }

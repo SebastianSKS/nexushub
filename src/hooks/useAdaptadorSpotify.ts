@@ -23,7 +23,7 @@ const uriDe = (id: string) => `spotify:${id}`;
 
 /**
  * Cuerpo de PUT /me/player/play. Las canciones se piden de una en una: la cola (siguiente, aleatorio, repetir, «añadir a la
- * cola») es de Nexo y NO toca la cola de tu Spotify. Álbumes, playlists y artistas se dan como contexto.
+ * cola») es de Xook y NO toca la cola de tu Spotify. Álbumes, playlists y artistas se dan como contexto.
  */
 function cuerpoPlay(pista: Pista) {
   return pista.id.startsWith("track:") ? { uris: [uriDe(pista.id)] } : { context_uri: uriDe(pista.id) };
@@ -233,11 +233,11 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       if (cancelado) return;
       if (me.status === 403) {
         // Las aplicaciones de Spotify en modo de desarrollo solo dejan entrar a las cuentas que su dueño autorizó a mano.
-        store.setConnection({ status: "error", message: traducir("Tu cuenta de Spotify todavía no está autorizada para Nexo."), hint: traducir("Spotify limita las aplicaciones nuevas a las cuentas que su creador autoriza. Pídele a quien te pasó Nexo que agregue tu correo de Spotify; mientras tanto puedes usar Video y Documentos con normalidad.") });
+        store.setConnection({ status: "error", message: traducir("Tu cuenta de Spotify todavía no está autorizada para Xook."), hint: traducir("Spotify limita las aplicaciones nuevas a las cuentas que su creador autoriza. Pídele a quien te pasó Xook que agregue tu correo de Spotify; mientras tanto puedes usar Video y Documentos con normalidad.") });
         return;
       }
       if (me.status !== 200 || !me.data) {
-        store.setConnection({ status: "error", message: traducir("Spotify no respondió con tu perfil."), hint: me.status === 0 ? traducir("No se pudo contactar con Spotify: comprueba tu internet o desactiva el bloqueador (en Brave, el escudo) para esta página.") : traducir("Cierra la sesión de Spotify en Nexo y conéctate de nuevo.") });
+        store.setConnection({ status: "error", message: traducir("Spotify no respondió con tu perfil."), hint: me.status === 0 ? traducir("No se pudo contactar con Spotify: comprueba tu internet o desactiva el bloqueador (en Brave, el escudo) para esta página.") : traducir("Cierra la sesión de Spotify en Xook y conéctate de nuevo.") });
         return;
       }
       const nombre = me.data.display_name || traducir("tu cuenta");
@@ -255,7 +255,7 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       if (cancelado || !window.Spotify) return;
 
       const player = new window.Spotify.Player({
-        name: "Nexo",
+        name: "Xook",
         volume: useReproductorStore.getState().volumen / 100,
         getOAuthToken: (cb) => void obtenerAccessToken().then((t) => t && cb(t)),
       });
@@ -312,8 +312,8 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
         const previo = ultimoRef.current;
         ultimoRef.current = { id: t.id, playing: !s.paused };
 
-        // Una canción SUELTA (lo normal: la cola es de Nexo) termina así: Spotify la deja en pausa, al principio o al final,
-        // habiendo estado sonando. Entonces Nexo pasa a la siguiente de la cola.
+        // Una canción SUELTA (lo normal: la cola es de Xook) termina así: Spotify la deja en pausa, al principio o al final,
+        // habiendo estado sonando. Entonces Xook pasa a la siguiente de la cola.
         const terminada =
           !!pista?.id.startsWith("track:") &&
           !!previo?.playing &&
@@ -346,13 +346,13 @@ export function useAdaptadorSpotify(hostRef: RefObject<HTMLDivElement | null>) {
       });
       player.addListener("account_error", () => useMusicStore.getState().setConnection({ status: "not-premium", name: nombre }));
       player.addListener("authentication_error", () =>
-        useMusicStore.getState().setConnection({ status: "error", message: traducir("Spotify rechazó la sesión."), hint: traducir("Cierra la sesión de Spotify en Nexo y conéctate de nuevo.") }),
+        useMusicStore.getState().setConnection({ status: "error", message: traducir("Spotify rechazó la sesión."), hint: traducir("Cierra la sesión de Spotify en Xook y conéctate de nuevo.") }),
       );
       player.addListener("initialization_error", () =>
         useMusicStore.getState().setConnection({
           status: "error",
           message: traducir("Este navegador no puede reproducir música de Spotify."),
-          hint: traducir("Spotify exige protección de contenido (DRM). Abre Nexo en Microsoft Edge, Chrome o Firefox. Los navegadores integrados en otras aplicaciones no la incluyen."),
+          hint: traducir("Spotify exige protección de contenido (DRM). Abre Xook en Microsoft Edge, Chrome o Firefox. Los navegadores integrados en otras aplicaciones no la incluyen."),
         }),
       );
       player.addListener("playback_error", (e) => useReproductorStore.getState().informar({ reproduciendo: false, error: traducir("Spotify no pudo reproducir esta pista: {motivo}", { motivo: e.message }) }));

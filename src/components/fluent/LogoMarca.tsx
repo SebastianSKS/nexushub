@@ -4,7 +4,7 @@ import { siSpotify, siYoutube } from "simple-icons";
 import { LogoPrograma } from "@/components/fluent/LogoPrograma";
 import type { ClavePrograma } from "@/services/iconos-programas";
 
-/** Lo que Nexo puede mostrar con su logo original: un programa de Windows (Word, PDF…) o un servicio (Spotify, YouTube). */
+/** Lo que Xook puede mostrar con su logo original: un programa de Windows (Word, PDF…) o un servicio (Spotify, YouTube). */
 export type MarcaId = ClavePrograma | "spotify" | "youtube";
 
 const SERVICIOS = {
@@ -13,8 +13,8 @@ const SERVICIOS = {
 } as const;
 
 /**
- * El logo original de algo que Nexo nombra. Los programas de Windows salen tal como Windows los muestra (`LogoPrograma`);
- * los servicios, con su forma y su color oficial. Úsalo siempre que Nexo mencione uno de estos nombres.
+ * El logo original de algo que Xook nombra. Los programas de Windows salen tal como Windows los muestra (`LogoPrograma`);
+ * los servicios, con su forma y su color oficial. Úsalo siempre que Xook mencione uno de estos nombres.
  */
 export function LogoMarca({ marca, tam = 20 }: { marca: MarcaId; tam?: number }) {
   if (marca === "spotify" || marca === "youtube") {

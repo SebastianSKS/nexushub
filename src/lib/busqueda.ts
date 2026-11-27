@@ -70,7 +70,7 @@ function pistaDeCoincidencia(c: CoincidenciaPdf): string {
 }
 
 /**
- * Lo que se encuentra en Nexo con lo que escribiste: tareas y eventos, clases del horario, cumpleaños,
+ * Lo que se encuentra en Xook con lo que escribiste: tareas y eventos, clases del horario, cumpleaños,
  * apuntes, canales y sus videos, favoritos, herramientas de Documentos… y si es una cuenta, su resultado.
  * Cada resultado lleva a donde vive (a veces abriendo directamente esa cosa).
  */

@@ -46,7 +46,7 @@ export function StatusBar() {
         ) : !enLinea ? (
           <>
             <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-[var(--warning-fg,#f7630c)]" />
-            <span title={t("Video y Música necesitan internet; el resto de Nexo funciona igual.")}>{t("Sin conexión")}</span>
+            <span title={t("Video y Música necesitan internet; el resto de Xook funciona igual.")}>{t("Sin conexión")}</span>
           </>
         ) : (
           <>

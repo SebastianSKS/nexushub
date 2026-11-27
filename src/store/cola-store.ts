@@ -4,7 +4,7 @@ import type { QueuedFile, ResultItem, ToolId } from "@/types/documents";
 
 /**
  * La cola de conversiones de Documentos: cada trabajo guarda su herramienta, sus archivos y las opciones que tenía al
- * pulsar el botón, así que se puede seguir preparando otro mientras tanto. Vive solo mientras Nexo está abierto (los
+ * pulsar el botón, así que se puede seguir preparando otro mientras tanto. Vive solo mientras Xook está abierto (los
  * resultados son archivos en memoria). Quien los ejecuta, uno tras otro, es services/documents/cola.ts.
  */
 

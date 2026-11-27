@@ -28,10 +28,10 @@ export function textoDeHorario(clases: readonly Clase[], ahora: Date = new Date(
   return JSON.stringify(crearHorarioCompartido(clases, ahora), null, 2);
 }
 
-/** «Nexo-horario-2026-09-27.json». */
+/** «Xook-horario-2026-09-27.json». */
 export function nombreDeArchivoHorario(ahora: Date = new Date()): string {
   const dos = (n: number) => String(n).padStart(2, "0");
-  return `Nexo-horario-${ahora.getFullYear()}-${dos(ahora.getMonth() + 1)}-${dos(ahora.getDate())}.json`;
+  return `Xook-horario-${ahora.getFullYear()}-${dos(ahora.getMonth() + 1)}-${dos(ahora.getDate())}.json`;
 }
 
 /** Un horario de verdad tiene unas pocas decenas de clases: un archivo más grande que esto no es un horario. */
@@ -45,17 +45,17 @@ export type LecturaHorario = { ok: true; clases: Clase[]; descartadas: number } 
  * el resto se conserva) y recibe un id nuevo: así importar nunca pisa una clase que ya tienes. `motivo` va sin traducir (con T).
  */
 export function leerHorarioCompartido(texto: string, nuevoId: () => string): LecturaHorario {
-  if (texto.length > MAX_BYTES_HORARIO) return { ok: false, motivo: T("El archivo es demasiado grande para ser un horario de Nexo.") };
+  if (texto.length > MAX_BYTES_HORARIO) return { ok: false, motivo: T("El archivo es demasiado grande para ser un horario de Xook.") };
   let crudo: unknown;
   try {
     crudo = JSON.parse(texto);
   } catch {
-    return { ok: false, motivo: T("El archivo no se pudo leer: no es un horario de Nexo.") };
+    return { ok: false, motivo: T("El archivo no se pudo leer: no es un horario de Xook.") };
   }
   const raiz = crudo && typeof crudo === "object" ? (crudo as Record<string, unknown>) : null;
-  if (!raiz || raiz.formato !== FORMATO_HORARIO) return { ok: false, motivo: T("Ese archivo no es un horario de Nexo.") };
+  if (!raiz || raiz.formato !== FORMATO_HORARIO) return { ok: false, motivo: T("Ese archivo no es un horario de Xook.") };
   if (typeof raiz.version === "number" && raiz.version > VERSION_HORARIO) {
-    return { ok: false, motivo: T("Ese horario se guardó con una versión más nueva de Nexo. Actualiza Nexo para poder importarlo.") };
+    return { ok: false, motivo: T("Ese horario se guardó con una versión más nueva de Xook. Actualiza Xook para poder importarlo.") };
   }
   if (!Array.isArray(raiz.clases)) return { ok: false, motivo: T("El horario del archivo no trae clases.") };
 
@@ -126,8 +126,8 @@ export function codigoDeHorario(clases: readonly Clase[]): string {
 /** Lee un código de horario (aunque venga con saltos de línea o espacios de más, como lo parte un mensaje). */
 export function leerCodigoDeHorario(codigo: string, nuevoId: () => string): LecturaHorario {
   const limpio = codigo.replace(/\s+/g, "");
-  if (!limpio.startsWith(PREFIJO_CODIGO)) return { ok: false, motivo: T("Ese texto no es un código de horario de Nexo.") };
-  if (limpio.length > MAX_BYTES_HORARIO) return { ok: false, motivo: T("El código es demasiado largo para ser un horario de Nexo.") };
+  if (!limpio.startsWith(PREFIJO_CODIGO)) return { ok: false, motivo: T("Ese texto no es un código de horario de Xook.") };
+  if (limpio.length > MAX_BYTES_HORARIO) return { ok: false, motivo: T("El código es demasiado largo para ser un horario de Xook.") };
   let filas: unknown;
   try {
     filas = JSON.parse(deBase64Url(limpio.slice(PREFIJO_CODIGO.length)));

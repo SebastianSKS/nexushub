@@ -71,7 +71,7 @@ describe("sembrarDemo y reiniciarDemo", () => {
     assert.equal(a.getItem("nexushub-notas"), "[]");
   });
 
-  it("restablecer borra lo de Nexo y solo lo de Nexo", () => {
+  it("restablecer borra lo de Xook y solo lo de Xook", () => {
     const a = new Almacen();
     sembrarDemo(a, lunesPorLaManana);
     a.setItem("otra-cosa", "x");

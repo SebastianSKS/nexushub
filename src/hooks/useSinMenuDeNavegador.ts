@@ -11,7 +11,7 @@ function esEditable(el: EventTarget | null): boolean {
 }
 
 /**
- * Nexo es, por dentro, una página web (WebView2) — así que sin esto se cuela el menú del navegador
+ * Xook es, por dentro, una página web (WebView2) — así que sin esto se cuela el menú del navegador
  * («Copiar», «Imprimir», «Más herramientas») y el texto de toda la interfaz se puede arrastrar y
  * seleccionar como si fuera una hoja web, con el color de acento pintando media pantalla. Solo en la
  * aplicación de escritorio: en el navegador esos comportamientos son los normales y hay que dejarlos.

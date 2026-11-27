@@ -2,12 +2,12 @@ import { create } from "zustand";
 import { esEscritorio } from "@/lib/entorno";
 
 /**
- * Las actualizaciones de Nexo (desde el Release más reciente de GitHub, ver ACTUALIZACIONES.md).
+ * Las actualizaciones de Xook (desde el Release más reciente de GitHub, ver ACTUALIZACIONES.md).
  * Un solo estado para todo: la revisión automática al abrir, el aviso «Actualizar ahora» y la tarjeta de Configuración.
  */
 
 /**
- * «descargando» baja el instalador; «instalando» lo lanza (en Windows Nexo se cierra solo y el instalador lo vuelve a abrir);
+ * «descargando» baja el instalador; «instalando» lo lanza (en Windows Xook se cierra solo y el instalador lo vuelve a abrir);
  * «lista» solo se ve donde el sistema no reabre la aplicación; «error» es que no se pudo COMPROBAR y «fallo» que se encontró
  * la versión pero no se pudo bajar o instalar (se puede reintentar).
  */
@@ -27,7 +27,7 @@ interface ActualizacionesState {
   notas: string | null;
   /** 0–100 mientras se descarga (null si no se sabe el tamaño). */
   progreso: number | null;
-  /** La persona pulsó «Más tarde»: el aviso no vuelve a salir hasta la próxima vez que se abra Nexo. */
+  /** La persona pulsó «Más tarde»: el aviso no vuelve a salir hasta la próxima vez que se abra Xook. */
   pospuesta: boolean;
   /** Busca una versión nueva. Con `silenciosa`, si falla o no hay nada, no molesta con nada. */
   buscar: (silenciosa?: boolean) => Promise<void>;
@@ -93,7 +93,7 @@ export const useActualizacionesStore = create<ActualizacionesState>((set, get) =
           await pausa(2500);
         }
       }
-      // En Windows, instalar cierra Nexo: antes se guarda el respaldo al momento y se le da un instante al almacenamiento de la ventana.
+      // En Windows, instalar cierra Xook: antes se guarda el respaldo al momento y se le da un instante al almacenamiento de la ventana.
       set({ estado: "instalando", progreso: 100 });
       window.dispatchEvent(new Event(EVENTO_GUARDAR_RESPALDO));
       await pausa(1500);

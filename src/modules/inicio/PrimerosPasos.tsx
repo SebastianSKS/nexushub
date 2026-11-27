@@ -12,7 +12,7 @@ import type { PasoId } from "@/lib/primeros-pasos";
 import { useAppStore } from "@/store/app-store";
 
 /**
- * «Primeros pasos»: cinco cosas para sacarle provecho a Nexo desde el primer día, con casillas que se marcan solas cuando la
+ * «Primeros pasos»: cinco cosas para sacarle provecho a Xook desde el primer día, con casillas que se marcan solas cuando la
  * persona las hace. Va en Inicio, no es una ventana: no tapa nada, no se mete con las guías (espera a que la bienvenida y
  * cualquier otra guía se cierren) y se puede ocultar. Al terminar se despide sola.
  */
@@ -33,7 +33,7 @@ export function PrimerosPasos({ onNombre }: { onNombre: () => void }) {
           <div className="min-w-0">
             <h2 className="text-subtitle text-fg">{celebrando ? t("¡Listo! Ya conoces lo básico") : t("Primeros pasos")}</h2>
             <p className="mt-0.5 text-caption text-fg-secondary">
-              {celebrando ? t("Todo lo demás lo vas descubriendo con «¿Cómo funciona?» en cada sección.") : t("{hechos} de {total} — para sacarle provecho a Nexo desde hoy.", { hechos: progreso.hechos, total: progreso.total })}
+              {celebrando ? t("Todo lo demás lo vas descubriendo con «¿Cómo funciona?» en cada sección.") : t("{hechos} de {total} — para sacarle provecho a Xook desde hoy.", { hechos: progreso.hechos, total: progreso.total })}
             </p>
           </div>
           {!celebrando && (

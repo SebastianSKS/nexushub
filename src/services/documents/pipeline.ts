@@ -35,7 +35,7 @@ const nuevoId = () => crypto.randomUUID();
 
 /**
  * Ejecuta una herramienta. TODO ocurre en tu equipo, sin servidor: los archivos nunca salen de él. Las conversiones
- * de Office usan Microsoft Office si está instalado (ver motor/office.ts) y, si no, el motor propio de Nexo.
+ * de Office usan Microsoft Office si está instalado (ver motor/office.ts) y, si no, el motor propio de Xook.
  */
 export async function runTool(toolId: ToolId, files: QueuedFile[], options: unknown, hooks: RunHooks): Promise<RunOutcome> {
   const tool = getTool(toolId);
@@ -112,7 +112,7 @@ export async function runTool(toolId: ToolId, files: QueuedFile[], options: unkn
         const rep = ctx.report;
         ctx.report = (f, m) => rep(f, etiqueta(m));
 
-        // Word, Excel, PowerPoint y PDF a Word: con Microsoft Office si está instalado (calidad de Office); si no, el motor de Nexo.
+        // Word, Excel, PowerPoint y PDF a Word: con Microsoft Office si está instalado (calidad de Office); si no, el motor de Xook.
         const conOffice = await intentarConOffice(toolId, file, options, ctx);
         if (conOffice) {
           salidas.push(...conOffice);

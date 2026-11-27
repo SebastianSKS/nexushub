@@ -60,7 +60,7 @@ export function PanelPromedio() {
         <EstadoVacio
           glifo="calculadora"
           titulo={t("Aún no tienes materias en el promedio")}
-          texto={t("Apunta tus calificaciones y Nexo te dice cómo vas en cada materia y cuánto necesitas sacar en lo que falta para aprobar.")}
+          texto={t("Apunta tus calificaciones y Xook te dice cómo vas en cada materia y cuánto necesitas sacar en lo que falta para aprobar.")}
           pasos={[t("Añade una materia (o tráelas desde tu horario)."), t("Pon cuánto vale cada evaluación y la calificación que ya sacaste."), t("Mira cuánto necesitas en lo que falta.")]}
         />
       ) : (

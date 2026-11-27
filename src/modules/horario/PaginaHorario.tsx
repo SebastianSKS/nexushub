@@ -89,8 +89,8 @@ export function PaginaHorario() {
             <EstadoVacio
               glifo="camara"
               titulo={t("Aún no tienes horario")}
-              texto={t("Toma una foto de tu horario y Nexo lo llena solo: saca las materias, los días y las horas.")}
-              pasos={[t("Toma una captura o una foto del horario que te dieron."), t("Pulsa «Escanear imagen» y elígela."), t("Revisa las clases y guarda: Nexo te avisará antes de cada una.")]}
+              texto={t("Toma una foto de tu horario y Xook lo llena solo: saca las materias, los días y las horas.")}
+              pasos={[t("Toma una captura o una foto del horario que te dieron."), t("Pulsa «Escanear imagen» y elígela."), t("Revisa las clases y guarda: Xook te avisará antes de cada una.")]}
               acciones={
                 <>
                   <Button variant="accent" icon={<Glifo nombre="camara" />} onClick={() => setEscaneo(true)}>{t("Escanear imagen")}</Button>

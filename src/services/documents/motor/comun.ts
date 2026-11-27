@@ -3,7 +3,7 @@ import { traducir } from "@/lib/i18n";
 import { DocumentError } from "../errors";
 
 /**
- * Motor de documentos de Nexo: TODO se procesa dentro de la aplicación, sin programas externos
+ * Motor de documentos de Xook: TODO se procesa dentro de la aplicación, sin programas externos
  * (ni LibreOffice, ni Ghostscript, ni poppler) y sin servidor. Los archivos nunca salen del equipo.
  */
 

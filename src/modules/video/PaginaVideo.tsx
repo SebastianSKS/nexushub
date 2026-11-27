@@ -39,15 +39,17 @@ export function PaginaVideo() {
         titulo={t("Video")}
         descripcion={t("Tu propio muro: las novedades de los canales de YouTube que sigues.")}
         accion={
-          <Button variant="accent" icon={<Add20Regular />} onClick={() => setDialogo(true)}>
-            {t("Agregar canal")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <BuscadorVideos />
+            <Button variant="accent" icon={<Add20Regular />} onClick={() => setDialogo(true)}>
+              {t("Agregar canal")}
+            </Button>
+          </div>
         }
         principal={
           <>
-            <BuscadorVideos />
+            <MuroVideos ids={canales.map((c) => c.id)} titulo={t("Novedades de tus canales")} destacar />
             <FavoritosVideo />
-            <MuroVideos ids={canales.map((c) => c.id)} titulo={t("Novedades de tus canales")} />
           </>
         }
         lateral={<PanelCanales />}

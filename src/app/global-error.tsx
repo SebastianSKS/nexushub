@@ -8,8 +8,8 @@
 export default function ErrorGlobal({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
   const ingles = typeof navigator !== "undefined" && /^en/i.test(navigator.language);
   const texto = ingles
-    ? { titulo: "Nexo hit a problem", cuerpo: "Your data is safe. Close and reopen Nexo, or try again from here.", boton: "Try again" }
-    : { titulo: "Nexo tuvo un problema", cuerpo: "Tus datos están a salvo. Cierra y vuelve a abrir Nexo, o intenta de nuevo desde aquí.", boton: "Reintentar" };
+    ? { titulo: "Xook hit a problem", cuerpo: "Your data is safe. Close and reopen Xook, or try again from here.", boton: "Try again" }
+    : { titulo: "Xook tuvo un problema", cuerpo: "Tus datos están a salvo. Cierra y vuelve a abrir Xook, o intenta de nuevo desde aquí.", boton: "Reintentar" };
   return (
     <html lang={ingles ? "en" : "es"}>
       <body style={{ margin: 0, minHeight: "100vh", display: "grid", placeItems: "center", background: "#202020", color: "#fff", fontFamily: "'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }}>

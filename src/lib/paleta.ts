@@ -1,5 +1,5 @@
 /**
- * Los colores de una portada para pintar el fondo de Nexo: hasta tres tonos distintos, lo bastante vivos para que se
+ * Los colores de una portada para pintar el fondo de Xook: hasta tres tonos distintos, lo bastante vivos para que se
  * noten y lo bastante apagados para que el texto se siga leyendo. Lógica pura (recibe los píxeles) para poder probarla.
  */
 

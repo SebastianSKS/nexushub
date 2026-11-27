@@ -17,11 +17,11 @@ export function BannerDemo() {
   return (
     <div role="note" className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-stroke bg-layer-alt px-4 py-1.5 text-caption text-fg-secondary">
       <p className="min-w-0 flex-1">
-        <strong className="font-semibold text-fg">{t("Estás probando Nexo en el navegador, con datos de ejemplo.")}</strong>{" "}
+        <strong className="font-semibold text-fg">{t("Estás probando Xook en el navegador, con datos de ejemplo.")}</strong>{" "}
         {t("Los avisos del sistema, las carpetas de tus materias y la búsqueda dentro de tus archivos solo existen en la aplicación para Windows.")}
       </p>
       <a className="font-semibold text-accent-text underline underline-offset-2" href={DESCARGA} target="_blank" rel="noopener noreferrer">
-        {t("Descargar Nexo")}
+        {t("Descargar Xook")}
       </a>
       <button
         type="button"

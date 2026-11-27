@@ -62,7 +62,7 @@ import {
  *
  * Antes eran letras de `Segoe Fluent Icons`: un número del área de uso privado de la fuente (0xE72B, 0xE8A5…) que se
  * pintaba en un `<span>`. En Windows salía bien; en cualquier otro sistema la fuente no está, el navegador no
- * encuentra el carácter y pinta un cuadrado vacío. Como Linux también usa Nexo, ahora son los iconos SVG de
+ * encuentra el carácter y pinta un cuadrado vacío. Como Linux también usa Xook, ahora son los iconos SVG de
  * `@fluentui/react-icons` (los mismos del lenguaje de diseño Fluent, con licencia MIT), que no dependen de ninguna
  * fuente instalada.
  *

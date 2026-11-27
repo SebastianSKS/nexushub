@@ -9,10 +9,10 @@ mod carpetas;
 mod identidad;
 mod office;
 
-/// El argumento con el que Windows inicia Nexo al encender el equipo: sin ventana, solo en la bandeja.
+/// El argumento con el que Windows inicia Xook al encender el equipo: sin ventana, solo en la bandeja.
 const ARGUMENTO_OCULTO: &str = "--oculto";
 
-/// ¿Nexo se abrió con el argumento de «iniciar oculto»?
+/// ¿Xook se abrió con el argumento de «iniciar oculto»?
 fn iniciado_oculto() -> bool {
     std::env::args().any(|a| a == ARGUMENTO_OCULTO)
 }
@@ -77,8 +77,8 @@ fn actualizar_bandeja(
     estado.reproducir.set_enabled(hay_pista).map_err(|e| e.to_string())?;
     estado.siguiente.set_enabled(siguiente_activo).map_err(|e| e.to_string())?;
     let tooltip = match titulo {
-        Some(t) => format!("Nexo — {t}"),
-        None => "Nexo".to_string(),
+        Some(t) => format!("Xook — {t}"),
+        None => "Xook".to_string(),
     };
     estado.tray.set_tooltip(Some(tooltip.as_str())).map_err(|e| e.to_string())?;
     Ok(())
@@ -208,7 +208,7 @@ fn leer_historial_respaldo(app: tauri::AppHandle) -> Result<Vec<String>, String>
     Ok(copias.into_iter().filter_map(|(_, p)| std::fs::read_to_string(p).ok()).collect())
 }
 
-/// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar Nexo» del menú).
+/// Trae la ventana principal al frente (clic izquierdo en el icono o «Mostrar Xook» del menú).
 pub(crate) fn mostrar_ventana(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.show();
@@ -221,7 +221,7 @@ pub(crate) fn mostrar_ventana(app: &tauri::AppHandle) {
 pub fn run() {
     let mut builder = tauri::Builder::default();
 
-    // Una sola instancia: si el usuario abre Nexo de nuevo, se enfoca la ventana que ya está
+    // Una sola instancia: si el usuario abre Xook de nuevo, se enfoca la ventana que ya está
     // abierta en vez de arrancar una segunda. Debe registrarse antes que cualquier otro plugin.
     #[cfg(desktop)]
     {
@@ -237,7 +237,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())
-        // Al iniciar con Windows, Nexo arranca directo en la bandeja (`--oculto`) para no abrir una ventana al encender el equipo.
+        // Al iniciar con Windows, Xook arranca directo en la bandeja (`--oculto`) para no abrir una ventana al encender el equipo.
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             Some(vec![ARGUMENTO_OCULTO]),
@@ -295,7 +295,7 @@ pub fn run() {
                 }
             }
             // Si ya estaba activado «Iniciar con Windows», se vuelve a registrar: así lleva `--oculto` y la ruta actual del programa
-            // (que cambia si Nexo se reinstala en otro sitio).
+            // (que cambia si Xook se reinstala en otro sitio).
             {
                 use tauri_plugin_autostart::ManagerExt;
                 let inicio = app.autolaunch();
@@ -304,7 +304,7 @@ pub fn run() {
                 }
             }
 
-            // Que las notificaciones de Windows salgan con el nombre y el icono de Nexo (y no como «Windows PowerShell»).
+            // Que las notificaciones de Windows salgan con el nombre y el icono de Xook (y no como «Windows PowerShell»).
             #[cfg(target_os = "windows")]
             identidad::registrar(app.handle());
 
@@ -312,7 +312,7 @@ pub fn run() {
             let ahora = IconMenuItem::with_id(app, "ahora", "Nada en reproducción", false, None::<tauri::image::Image>, None::<&str>)?;
             let reproducir = MenuItem::with_id(app, "reproducir", "Reproducir", false, None::<&str>)?;
             let siguiente = MenuItem::with_id(app, "siguiente", "Siguiente", false, None::<&str>)?;
-            let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar Nexo", true, None::<&str>)?;
+            let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar Xook", true, None::<&str>)?;
             let salir = MenuItem::with_id(app, "salir", "Salir", true, None::<&str>)?;
             let separador = PredefinedMenuItem::separator(app)?;
             let separador_ahora = PredefinedMenuItem::separator(app)?;
@@ -320,7 +320,7 @@ pub fn run() {
 
             let tray = TrayIconBuilder::with_id("bandeja")
                 .icon(app.default_window_icon().cloned().expect("falta el icono de la app"))
-                .tooltip("Nexo")
+                .tooltip("Xook")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id().as_ref() {
@@ -345,7 +345,7 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            // La X no cierra Nexo: lo manda a la bandeja para que siga avisando (clases, eventos, cumpleaños)
+            // La X no cierra Xook: lo manda a la bandeja para que siga avisando (clases, eventos, cumpleaños)
             // aunque no tengas la ventana abierta. Para cerrarlo del todo, «Salir» en el menú de la bandeja.
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();

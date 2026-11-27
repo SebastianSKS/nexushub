@@ -48,7 +48,7 @@ export function AjusteCopiaSeguridad() {
   const elegir = async (archivo: File | undefined) => {
     if (!archivo) return;
     setAviso(null);
-    if (archivo.size > MAX_BYTES_COPIA) return setAviso({ tipo: "error", texto: t("El archivo es demasiado grande para ser una copia de Nexo.") });
+    if (archivo.size > MAX_BYTES_COPIA) return setAviso({ tipo: "error", texto: t("El archivo es demasiado grande para ser una copia de Xook.") });
     const lectura = leerCopia(await archivo.text());
     if (!lectura.ok) return setAviso({ tipo: "error", texto: t(lectura.motivo) });
     setPendiente(lectura.copia);
@@ -59,7 +59,7 @@ export function AjusteCopiaSeguridad() {
     try {
       aplicarCopia(pendiente, window.localStorage);
       setPendiente(null);
-      setAviso({ tipo: "success", texto: t("Copia restaurada. Nexo se va a recargar…") });
+      setAviso({ tipo: "success", texto: t("Copia restaurada. Xook se va a recargar…") });
       window.setTimeout(() => window.location.reload(), 900);
     } catch {
       setPendiente(null);
@@ -101,7 +101,7 @@ export function AjusteCopiaSeguridad() {
             {partes.length > 0 ? t("La copia trae: {lista}.", { lista: partes.join(", ") }) : t("La copia trae tus ajustes.")}
             {pendiente?.creada && ` ${t("Se hizo el {fecha}.", { fecha: new Date(pendiente.creada).toLocaleDateString() })}`}
           </p>
-          <p className="text-caption text-fg-secondary">{t("Lo que trae la copia reemplaza a lo que tienes ahora; lo que la copia no trae se queda como está. Nexo se recargará al terminar.")}</p>
+          <p className="text-caption text-fg-secondary">{t("Lo que trae la copia reemplaza a lo que tienes ahora; lo que la copia no trae se queda como está. Xook se recargará al terminar.")}</p>
           <div className="flex justify-end gap-2">
             <Button onClick={() => setPendiente(null)}>{t("Cancelar")}</Button>
             <Button variant="accent" onClick={restaurar}>

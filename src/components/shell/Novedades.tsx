@@ -30,7 +30,7 @@ export function Novedades() {
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label={t("Novedades de Nexo {version}", { version: version ?? "" })}
+          aria-label={t("Novedades de Xook {version}", { version: version ?? "" })}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: ENTER }}
           exit={{ opacity: 0, transition: EXIT }}
@@ -51,7 +51,7 @@ export function Novedades() {
               </IconButton>
             </div>
             <div>
-              <h2 className="text-subtitle text-fg">{t("Novedades de Nexo {version}", { version: version ?? "" })}</h2>
+              <h2 className="text-subtitle text-fg">{t("Novedades de Xook {version}", { version: version ?? "" })}</h2>
               <p className="mt-1 text-body text-fg-secondary">{t("Esto es lo que cambió desde la última vez que lo abriste.")}</p>
             </div>
             <div className="-mr-2 flex min-h-0 flex-col gap-4 overflow-y-auto pr-2">

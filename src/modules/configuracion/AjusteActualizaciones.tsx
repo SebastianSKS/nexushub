@@ -13,11 +13,11 @@ const texto = (estado: EstadoActualizacion, version: string | null, progreso: nu
     case "al-dia":
       return traducir("Ya tienes la última versión.");
     case "disponible":
-      return traducir("Hay una versión nueva: Nexo {version}.", { version: version ?? "" });
+      return traducir("Hay una versión nueva: Xook {version}.", { version: version ?? "" });
     case "descargando":
       return progreso !== null ? traducir("Descargando la actualización… {n} %", { n: progreso }) : traducir("Descargando la actualización…");
     case "instalando":
-      return traducir("Instalando… Nexo se cerrará un momento y se abrirá solo.");
+      return traducir("Instalando… Xook se cerrará un momento y se abrirá solo.");
     case "lista":
       return traducir("Instalada. Reinicia para terminar.");
     case "fallo":
@@ -25,7 +25,7 @@ const texto = (estado: EstadoActualizacion, version: string | null, progreso: nu
     case "error":
       return traducir("No se pudo comprobar. Revisa tu conexión a internet.");
     default:
-      return traducir("Nexo busca solo al abrir. También puedes comprobarlo ahora.");
+      return traducir("Xook busca solo al abrir. También puedes comprobarlo ahora.");
   }
 };
 

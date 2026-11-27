@@ -29,7 +29,7 @@ export function AjusteInicioAutomatico() {
   if (!disponible) return null;
 
   return (
-    <TarjetaAjuste glifo="energia" titulo={t("Iniciar con Windows")} descripcion={error ? t("No se pudo comprobar. Puede que Windows lo bloquee con una política del sistema.") : t("Abre Nexo, minimizado en la bandeja, al encender el equipo.")}>
+    <TarjetaAjuste glifo="energia" titulo={t("Iniciar con Windows")} descripcion={error ? t("No se pudo comprobar. Puede que Windows lo bloquee con una política del sistema.") : t("Abre Xook, minimizado en la bandeja, al encender el equipo.")}>
       <Switch
         checked={activo}
         label={t("Iniciar con Windows")}

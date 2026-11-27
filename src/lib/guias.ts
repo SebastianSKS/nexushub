@@ -2,7 +2,7 @@ import type { NombreGlifo } from "@/lib/glifos";
 import { T } from "./i18n/nucleo.ts";
 
 /**
- * Las guías de Nexo: una bienvenida y una explicación corta por cada sección. Cada una sale sola la primera vez que se
+ * Las guías de Xook: una bienvenida y una explicación corta por cada sección. Cada una sale sola la primera vez que se
  * entra a esa sección, y el signo de interrogación (?) de la barra de arriba la vuelve a mostrar cuando se quiera.
  *
  * Para explicar algo nuevo: añade un paso aquí (o una guía nueva y su ruta en `guiaDeRuta`); nada más.
@@ -31,11 +31,11 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Bienvenida"),
     final: T("Empezar"),
     pasos: [
-      { glifo: "informacion", titulo: T("Bienvenido a Nexo"), texto: T("Video, Música, Documentos, Calendario, Mis tareas, Horario, Calculadora y Repaso, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
+      { glifo: "informacion", titulo: T("Bienvenido a Xook"), texto: T("Video, Música, Documentos, Calendario, Mis tareas, Horario, Calculadora y Repaso, todo en una sola ventana. Esta es solo la bienvenida: cada sección te explica cómo funciona la primera vez que entres. «Omitir» la salta.") },
       { glifo: "buscar", titulo: T("Encuentra lo que sea"), texto: T("Pulsa Ctrl + K (o la barra de arriba) y busca tareas, clases, canales, canciones, apuntes e incluso palabras dentro de tus PDF, Word, Excel y PowerPoint. También resuelve cuentas: escribe 25*4 y te da el resultado.") },
       { glifo: "exito", titulo: T("Tus primeros pasos"), texto: T("En Inicio hay una lista corta (nombre, horario, carpetas, un examen y la búsqueda) que se marca sola. Si no la quieres, tiene un botón para ocultarla.") },
       { glifo: "informacion", titulo: T("Ayuda en cada sección"), texto: T("En la barra de arriba hay un signo de interrogación (?). Púlsalo en cualquier sección para ver otra vez su explicación, cuando quieras.") },
-      { glifo: "carpeta", titulo: T("Tus materias, ordenadas"), texto: T("Horario, Calendario y Documentos trabajan juntos: cada materia tiene su carpeta en Documentos › Nexo › Tareas, y Nexo te avisa antes de cada clase.") },
+      { glifo: "carpeta", titulo: T("Tus materias, ordenadas"), texto: T("Horario, Calendario y Documentos trabajan juntos: cada materia tiene su carpeta en Documentos › Xook › Tareas, y Xook te avisa antes de cada clase.") },
       { glifo: "configuracion", titulo: T("Hazlo tuyo"), texto: T("En Configuración eliges el tema, el color, los avisos y más. Todo se guarda solo en este equipo.") },
     ],
   },
@@ -46,7 +46,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     pasos: [
       { glifo: "video", titulo: T("Tu muro de novedades"), texto: T("Aquí ves juntos los videos nuevos de los canales de YouTube que sigues, sin anuncios de por medio. Los más recientes van primero.") },
       { glifo: "agregar", titulo: T("Agrega tus canales"), texto: T("Usa «Agregar canal» (arriba a la derecha) y pega el enlace de un canal o de una lista de YouTube. Arrastra los canales para reordenarlos y toca uno para ver solo sus videos.") },
-      { glifo: "reproducir", titulo: T("Mira sin salir de Nexo"), texto: T("Al abrir un video se reproduce dentro de Nexo. Puedes cambiar la velocidad, guardarlo en favoritos y ponerlo en cola para ver uno tras otro. Nexo recuerda por dónde ibas.") },
+      { glifo: "reproducir", titulo: T("Mira sin salir de Xook"), texto: T("Al abrir un video se reproduce dentro de Xook. Puedes cambiar la velocidad, guardarlo en favoritos y ponerlo en cola para ver uno tras otro. Xook recuerda por dónde ibas.") },
       { glifo: "buscar", titulo: T("Búscalo rápido"), texto: T("El buscador de arriba (Ctrl + K) también encuentra videos y canales por su título.") },
     ],
   },
@@ -55,11 +55,11 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Música"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "musica", titulo: T("Spotify dentro de Nexo"), texto: T("Escucha música sin salir de Nexo. Puedes usarla como invitado o conectar tu cuenta de Spotify para tener tus playlists y guardar canciones.") },
+      { glifo: "musica", titulo: T("Spotify dentro de Xook"), texto: T("Escucha música sin salir de Xook. Puedes usarla como invitado o conectar tu cuenta de Spotify para tener tus playlists y guardar canciones.") },
       { glifo: "buscar", titulo: T("Busca y escucha"), texto: T("Escribe una canción, un artista, un álbum o una playlist. Al elegir una canción, la música sigue sola con canciones parecidas: no tienes que armar una cola.") },
       { glifo: "favorito", titulo: T("Tus favoritos y tu biblioteca"), texto: T("Marca canciones con el corazón para guardarlas. Con Spotify conectado verás también «Canciones que te gustan», tus playlists, tus artistas y tus álbumes.") },
       { glifo: "reproducir", titulo: T("Reproductor grande y letras"), texto: T("La barra de abajo tiene los controles. Ábrela en grande para ver la letra sincronizada, y programa el temporizador si quieres que la música pare sola al dormir.") },
-      { glifo: "informacion", titulo: T("Permisos de Spotify"), texto: T("Si una función pide un permiso nuevo (seguir artistas, editar playlists), Nexo te lo explica y te trae de vuelta al mismo lugar. Es solo una vez.") },
+      { glifo: "informacion", titulo: T("Permisos de Spotify"), texto: T("Si una función pide un permiso nuevo (seguir artistas, editar playlists), Xook te lo explica y te trae de vuelta al mismo lugar. Es solo una vez.") },
     ],
   },
   documentos: {
@@ -89,7 +89,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Mis tareas"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Aquí se guardan tus tareas. Son carpetas reales de tu computadora, en Documentos › Nexo › Tareas, y Nexo puede crearlas desde tu horario.") },
+      { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Aquí se guardan tus tareas. Son carpetas reales de tu computadora, en Documentos › Xook › Tareas, y Xook puede crearlas desde tu horario.") },
       { glifo: "agregar", titulo: T("Añade y crea"), texto: T("Entra a una carpeta y arrastra tus archivos, o usa «Añadir archivos». «Nuevo archivo» crea un Word, Excel, PowerPoint o texto en blanco justo ahí.") },
       { glifo: "externo", titulo: T("Ábrelos con su programa"), texto: T("Toca un archivo para abrirlo con su programa. Con los botones de la derecha lo renombras o lo eliminas; una carpeta solo se elimina si está vacía.") },
       { glifo: "buscar", titulo: T("Busca dentro de tus archivos"), texto: T("Con Ctrl + K puedes buscar una palabra dentro de los PDF, Word, Excel y PowerPoint de tus materias. Los PDF se abren justo en esa página.") },
@@ -102,7 +102,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     pasos: [
       { glifo: "calendario", titulo: T("Todo lo que tienes pendiente"), texto: T("Tareas, exámenes, citas y cumpleaños de tus amigos, cada cosa con su color.") },
       { glifo: "agregar", titulo: T("Añade lo tuyo"), texto: T("Usa «Añadir tarea o evento» para crear uno, con hora y hasta repetido cada semana o cada mes. «Añadir cumpleaños» guarda los de tus amigos.") },
-      { glifo: "campana", titulo: T("Que no se te pase nada"), texto: T("Nexo te avisa con una notificación de Windows. Elige cuándo avisar desde el panel de avisos.") },
+      { glifo: "campana", titulo: T("Que no se te pase nada"), texto: T("Xook te avisa con una notificación de Windows. Elige cuándo avisar desde el panel de avisos.") },
       { glifo: "editar", titulo: T("Vistas y notas rápidas"), texto: T("Cambia entre la vista de mes y la de semana. Las notas rápidas guardan pendientes sueltos que no tienen fecha.") },
     ],
   },
@@ -111,9 +111,9 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Horario"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "reloj", titulo: T("Tus clases de la semana"), texto: T("Ve tus clases de cada día, con su aula y su docente. Nexo te avisa unos minutos antes de cada una.") },
+      { glifo: "reloj", titulo: T("Tus clases de la semana"), texto: T("Ve tus clases de cada día, con su aula y su docente. Xook te avisa unos minutos antes de cada una.") },
       { glifo: "camara", titulo: T("Escanéalo en vez de escribirlo"), texto: T("Si te mandaron el horario como imagen, pulsa «Escanear imagen» y se llena solo; revisa y corrige lo que haga falta. También puedes usar «Añadir clase» a mano.") },
-      { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Con tu horario, Nexo puede crear las carpetas de tus materias en Mis tareas para que guardes ahí tus trabajos.") },
+      { glifo: "carpeta", titulo: T("Una carpeta por materia"), texto: T("Con tu horario, Xook puede crear las carpetas de tus materias en Mis tareas para que guardes ahí tus trabajos.") },
       { glifo: "compartir", titulo: T("Compártelo con un compañero"), texto: T("Con «Compartir» guardas tu horario en un archivo o copias un código para pegarlo en un mensaje. Tu compañero lo importa y no tiene que escanearlo ni escribirlo.") },
       { glifo: "calendario", titulo: T("Cuando cambies de semestre"), texto: T("Pulsa el nombre del semestre, arriba, y «Empezar nuevo semestre». El horario anterior queda en «Anteriores», donde puedes verlo o recuperarlo con sus carpetas.") },
     ],
@@ -126,7 +126,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
       { glifo: "calculadora", titulo: T("Normal y científica"), texto: T("Pulsa los botones o escribe con el teclado. Cambia entre la calculadora normal y la científica (con grados o radianes) cuando lo necesites.") },
       { glifo: "reloj", titulo: T("Historial"), texto: T("Tus cuentas quedan en el historial. Toca un resultado para usarlo en la siguiente cuenta.") },
       { glifo: "buscar", titulo: T("Cuentas desde la búsqueda"), texto: T("En la barra de arriba (Ctrl + K) escribe una cuenta como 25*4 y te da el resultado ahí mismo; con Enter lo copias.") },
-      { glifo: "calculadora", titulo: T("Promedio de tus materias"), texto: T("En la pestaña «Promedio» apuntas cuánto vale cada evaluación y la calificación que sacaste. Nexo te dice cómo vas y cuánto necesitas en lo que falta para aprobar.") },
+      { glifo: "calculadora", titulo: T("Promedio de tus materias"), texto: T("En la pestaña «Promedio» apuntas cuánto vale cada evaluación y la calificación que sacaste. Xook te dice cómo vas y cuánto necesitas en lo que falta para aprobar.") },
     ],
   },
   repaso: {
@@ -134,10 +134,10 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Repaso"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "repaso", titulo: T("Tarjetas de estudio"), texto: T("Crea un mazo por materia y añade tarjetas: la pregunta por un lado y la respuesta por el otro. También puedes pegar tus apuntes (una línea «término - definición» por tarjeta) y Nexo las arma solo.") },
+      { glifo: "repaso", titulo: T("Tarjetas de estudio"), texto: T("Crea un mazo por materia y añade tarjetas: la pregunta por un lado y la respuesta por el otro. También puedes pegar tus apuntes (una línea «término - definición» por tarjeta) y Xook las arma solo.") },
       { glifo: "exito", titulo: T("Estudia y califica"), texto: T("Ves la pregunta, piensas, volteas la tarjeta y dices qué tan bien te la sabías: «No me la sabía», «Bien» o «Fácil». Cada botón te dice cuándo volverá. Con el teclado: Espacio para voltear y 1, 2 o 3 para calificar.") },
       { glifo: "actualizar", titulo: T("Practica cuando quieras"), texto: T("Con «Practicar todo», o desde «Repasos anteriores», repites un repaso entero o solo lo que te costó. Practicar no cambia cuándo te toca cada tarjeta.") },
-      { glifo: "reloj", titulo: T("Nexo te las repite a tiempo"), texto: T("Las que te cuestan vuelven pronto y las que ya sabes tardan cada vez más, justo antes de que se te olviden. En cada mazo ves cuántas tocan hoy. Todo se guarda solo en este equipo.") },
+      { glifo: "reloj", titulo: T("Xook te las repite a tiempo"), texto: T("Las que te cuestan vuelven pronto y las que ya sabes tardan cada vez más, justo antes de que se te olviden. En cada mazo ves cuántas tocan hoy. Todo se guarda solo en este equipo.") },
     ],
   },
   configuracion: {

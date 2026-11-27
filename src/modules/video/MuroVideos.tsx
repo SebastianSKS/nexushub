@@ -14,10 +14,11 @@ import { estaIncrustable, useCanalesStore } from "@/store/canales-store";
 import { useFavoritosStore } from "@/store/favoritos-store";
 import { useReproductorStore } from "@/store/reproductor-store";
 import type { VideoCanal } from "@/types/canal";
+import { DestacadoVideo } from "./DestacadoVideo";
 import { EsqueletoVideo } from "./EsqueletoVideo";
 import { TarjetaVideo } from "./TarjetaVideo";
 
-const CUADRICULA = "grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4";
+const CUADRICULA = "grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-x-5 gap-y-6 px-0.5";
 
 /** Une los videos de los canales indicados, sin repetidos, del más reciente al más antiguo. */
 function combinar(ids: string[], feeds: Record<string, { videos: VideoCanal[] }>): VideoCanal[] {
@@ -37,7 +38,7 @@ function filtrar(videos: VideoCanal[], consulta: string): VideoCanal[] {
 }
 
 /** Muro de videos de los canales indicados (todos = Novedades). Al pulsar uno se abre /video/ver?id=. */
-export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
+export function MuroVideos({ ids, titulo, destacar = false }: { ids: string[]; titulo: string; destacar?: boolean }) {
   const t = useT();
   const router = useRouter();
   const canales = useCanalesStore((s) => s.canales);
@@ -67,6 +68,10 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
   const encolar = (video: VideoCanal) => useReproductorStore.getState().encolar(pistaDeVideo(video, duraciones));
   const esFavorito = (video: VideoCanal) => favoritos.some((f) => f.id === video.videoId && f.fuente === "youtube");
   const alternarFavorito = (video: VideoCanal) => useFavoritosStore.getState().alternarFavorito(pistaDeVideo(video, duraciones));
+
+  // El más nuevo que se puede ver aquí va en grande. Buscando no: ahí todos los resultados valen lo mismo.
+  const destacado = destacar && !busqueda.trim() && visibles.length > 3 ? visibles.find((v) => estaIncrustable(v, verificacion).incrustable) : undefined;
+  const enRejilla = destacado ? visibles.filter((v) => v.videoId !== destacado.videoId) : visibles;
 
   if (iniciado && canales.length === 0) {
     return (
@@ -133,8 +138,19 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
           </Card>
         )
       ) : (
-        <div className={CUADRICULA}>
-          {visibles.map((video) => {
+        <div className="flex flex-col gap-6">
+          {destacado && (
+            <DestacadoVideo
+              video={destacado}
+              duracion={duraciones[destacado.videoId] ?? null}
+              activo={actualId === destacado.videoId}
+              enCola={actualId === destacado.videoId || cola.some((p) => p.id === destacado.videoId)}
+              onReproducir={() => reproducir(destacado)}
+              onEncolar={() => encolar(destacado)}
+            />
+          )}
+          <div className={CUADRICULA}>
+          {enRejilla.map((video) => {
             const inc = estaIncrustable(video, verificacion);
             return (
               <TarjetaVideo
@@ -151,6 +167,7 @@ export function MuroVideos({ ids, titulo }: { ids: string[]; titulo: string }) {
               />
             );
           })}
+          </div>
         </div>
       )}
     </section>

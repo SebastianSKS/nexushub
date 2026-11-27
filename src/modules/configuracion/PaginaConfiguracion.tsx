@@ -72,7 +72,7 @@ export function PaginaConfiguracion() {
     perfil: (
       <>
         <Ancla id="perfil">
-          <TarjetaAjuste titulo={nombre ?? t("Sin perfil")} descripcion={nombre ? t("Tu nombre y tu foto se guardan solo en este equipo.") : t("Opcional: un nombre y una foto para que Nexo te salude.")}>
+          <TarjetaAjuste titulo={nombre ?? t("Sin perfil")} descripcion={nombre ? t("Tu nombre y tu foto se guardan solo en este equipo.") : t("Opcional: un nombre y una foto para que Xook te salude.")}>
             <Avatar nombre={nombre} foto={foto} tam={40} />
             <Button onClick={() => setPerfil(true)}>{nombre ? t("Editar perfil") : t("Iniciar sesión")}</Button>
           </TarjetaAjuste>
@@ -130,7 +130,7 @@ export function PaginaConfiguracion() {
           </TarjetaAjuste>
         </Ancla>
         <Ancla id="fondo-musical">
-          <TarjetaAjuste glifo="musica" titulo={t("Fondo según la música")} descripcion={t("Mientras suena algo, el fondo de Nexo toma los colores de su portada y se mueve despacio; en pausa se queda quieto. Con el modo de bajo consumo no se muestra.")}>
+          <TarjetaAjuste glifo="musica" titulo={t("Fondo según la música")} descripcion={t("Mientras suena algo, el fondo de Xook toma los colores de su portada y se mueve despacio; en pausa se queda quieto. Con el modo de bajo consumo no se muestra.")}>
             <Switch checked={a.fondoMusical} onChange={(v) => a.cambiar({ fondoMusical: v })} label={t("Fondo según la música")} />
           </TarjetaAjuste>
         </Ancla>
@@ -157,7 +157,7 @@ export function PaginaConfiguracion() {
     idioma: (
       <>
         <Ancla id="idioma">
-          <TarjetaAjuste glifo="pantalla" titulo={t("Idioma")} descripcion={t("El idioma de todo Nexo: menús, guías, novedades y avisos. «Igual que Windows» usa el de tu sistema.")}>
+          <TarjetaAjuste glifo="pantalla" titulo={t("Idioma")} descripcion={t("El idioma de todo Xook: menús, guías, novedades y avisos. «Igual que Windows» usa el de tu sistema.")}>
             <Selector<PreferenciaIdioma>
               label={t("Idioma")}
               value={a.idioma}
@@ -239,8 +239,8 @@ export function PaginaConfiguracion() {
           </TarjetaAjuste>
         </Ancla>
         <Ancla id="probar-aviso">
-          <TarjetaAjuste glifo="informacion" titulo={t("Probar una notificación")} descripcion={t("Para comprobar que Windows te las muestra. Avisan mientras Nexo esté abierto, aunque sea en la bandeja.")}>
-            <Button onClick={() => void notificarSistema("Nexo", t("Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración."), "prueba", rutaAjustes("avisos"), { ignorarSilencio: true })}>{t("Enviar aviso de prueba")}</Button>
+          <TarjetaAjuste glifo="informacion" titulo={t("Probar una notificación")} descripcion={t("Para comprobar que Windows te las muestra. Avisan mientras Xook esté abierto, aunque sea en la bandeja.")}>
+            <Button onClick={() => void notificarSistema("Xook", t("Así se verán tus avisos de clases y tareas. Al pulsarlo vuelves a Configuración."), "prueba", rutaAjustes("avisos"), { ignorarSilencio: true })}>{t("Enviar aviso de prueba")}</Button>
           </TarjetaAjuste>
         </Ancla>
       </>
@@ -248,7 +248,7 @@ export function PaginaConfiguracion() {
     reproduccion: (
       <>
         <Ancla id="volumen">
-          <TarjetaAjuste glifo="volumen" titulo={t("Volumen predeterminado")} descripcion={t("Con el que empieza a sonar todo al abrir Nexo.")}>
+          <TarjetaAjuste glifo="volumen" titulo={t("Volumen predeterminado")} descripcion={t("Con el que empieza a sonar todo al abrir Xook.")}>
             <div className="flex w-[260px] items-center gap-3">
               <Slider label={t("Volumen predeterminado")} value={a.volumenPorDefecto} max={100} valueText={`${a.volumenPorDefecto} %`} onCommit={(v) => a.cambiar({ volumenPorDefecto: v })} onChange={(v) => a.cambiar({ volumenPorDefecto: v })} />
               <span className="tabular w-10 text-right text-caption text-fg-secondary">{a.volumenPorDefecto} %</span>
@@ -298,7 +298,7 @@ export function PaginaConfiguracion() {
     sistema: (
       <>
         <Ancla id="pantalla-inicial">
-          <TarjetaAjuste glifo="pantalla" titulo={t("Al abrir Nexo, mostrar")} descripcion={t("La pantalla con la que arranca. «La última que usaste» retoma donde lo dejaste (sin volver a Configuración).")}>
+          <TarjetaAjuste glifo="pantalla" titulo={t("Al abrir Xook, mostrar")} descripcion={t("La pantalla con la que arranca. «La última que usaste» retoma donde lo dejaste (sin volver a Configuración).")}>
             <Selector<SeccionInicial>
               label={t("Pantalla de inicio")}
               value={a.seccionInicial}
@@ -317,7 +317,7 @@ export function PaginaConfiguracion() {
         <Ancla id="inicio-windows">{escritorio && <AjusteInicioAutomatico />}</Ancla>
         <Ancla id="bandeja">
           {escritorio && (
-            <TarjetaAjuste glifo="pantalla" titulo={t("Seguir sonando en la bandeja")} descripcion={t("Al cerrar la ventana, Nexo se oculta a la bandeja del sistema en vez de cerrarse. «Salir» en su menú lo cierra de verdad.")}>
+            <TarjetaAjuste glifo="pantalla" titulo={t("Seguir sonando en la bandeja")} descripcion={t("Al cerrar la ventana, Xook se oculta a la bandeja del sistema en vez de cerrarse. «Salir» en su menú lo cierra de verdad.")}>
               <Switch checked={a.segundoPlano} onChange={(v) => a.cambiar({ segundoPlano: v })} label={t("Seguir sonando en la bandeja")} />
             </TarjetaAjuste>
           )}
@@ -348,7 +348,7 @@ export function PaginaConfiguracion() {
         <Ancla id="actualizaciones"><AjusteActualizaciones /></Ancla>
         <Ancla id="novedades">
           {escritorio && (
-            <TarjetaAjuste glifo="informacion" titulo={t("Novedades")} descripcion={t("Qué trajeron las últimas versiones de Nexo.")}>
+            <TarjetaAjuste glifo="informacion" titulo={t("Novedades")} descripcion={t("Qué trajeron las últimas versiones de Xook.")}>
               <Button
                 onClick={() =>
                   void import("@tauri-apps/api/app").then(async ({ getVersion }) => {
@@ -365,11 +365,12 @@ export function PaginaConfiguracion() {
         <Ancla id="acerca-de">
           <ExpansorAjuste
             glifo="informacion"
-            titulo="Nexo"
+            titulo="Xook"
             descripcion={version ? `${t("Video, música, documentos y calendario en una sola ventana.")} ${t("Versión {v}.", { v: version })}` : t("Video, música, documentos y calendario en una sola ventana.")}
             filas={
               <>
-                <FilaAjuste titulo={t("Tus archivos")} descripcion={t("Las conversiones de Documentos se hacen dentro de la aplicación: los archivos no salen de tu equipo.")} />
+                <FilaAjuste titulo={t("El nombre")} descripcion={t("«Xook» quiere decir leer o estudiar en maya yucateco.")} />
+                    <FilaAjuste titulo={t("Tus archivos")} descripcion={t("Las conversiones de Documentos se hacen dentro de la aplicación: los archivos no salen de tu equipo.")} />
                 <FilaAjuste titulo={t("Tus datos")} descripcion={t("Ajustes, perfil, canales y cumpleaños se guardan solo en este equipo. Si borras los datos del navegador, se pierden.")} />
                 <FilaAjuste titulo={t("Servicios externos")} descripcion={t("Video usa YouTube y Música usa Spotify; se cargan desde sus propios servidores cuando los abres.")} />
               </>

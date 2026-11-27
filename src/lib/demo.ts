@@ -100,7 +100,7 @@ export function sembrarDemo(almacen: Almacen, ahora: Date = new Date()): boolean
   }
 }
 
-/** Borra todo lo de Nexo del navegador para que la demo vuelva a llenarse desde cero. */
+/** Borra todo lo de Xook del navegador para que la demo vuelva a llenarse desde cero. */
 export function reiniciarDemo(almacen: Pick<Storage, "length" | "key" | "removeItem">): void {
   try {
     const claves: string[] = [];

@@ -117,7 +117,7 @@ export function SesionEstudio({ mazo, ids, practica }: { mazo: Mazo; ids: string
                   <Dato valor={costaron.length} etiqueta={t("te costaron")} />
                 </div>
                 <p className="text-body text-fg-secondary">
-                  {ronda.practica ? t("Fue práctica: no cambió cuándo te toca cada tarjeta.") : siguiente ? t("Tu próximo repaso de este mazo toca {cuando}.", { cuando: cuandoToca(siguiente) }) : t("Nexo te las volverá a mostrar cuando toque.")}
+                  {ronda.practica ? t("Fue práctica: no cambió cuándo te toca cada tarjeta.") : siguiente ? t("Tu próximo repaso de este mazo toca {cuando}.", { cuando: cuandoToca(siguiente) }) : t("Xook te las volverá a mostrar cuando toque.")}
                 </p>
               </>
             )}

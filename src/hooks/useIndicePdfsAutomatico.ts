@@ -8,7 +8,7 @@ import { ahorroDeAhora, useAjustesStore } from "@/store/ajustes-store";
 
 /**
  * Mantiene al día el índice de los PDF de tus carpetas (para buscar dentro de ellos con Ctrl+K): unos segundos después de
- * abrir Nexo —para no competir con el arranque— y cada vez que vuelves a la ventana (por si guardaste PDF desde fuera).
+ * abrir Xook —para no competir con el arranque— y cada vez que vuelves a la ventana (por si guardaste PDF desde fuera).
  * Al apagar el ajuste, el índice se borra.
  */
 export function useIndicePdfsAutomatico() {
@@ -24,7 +24,7 @@ export function useIndicePdfsAutomatico() {
       if (estabaActivo) void borrarIndice();
       return;
     }
-    // Al abrir Nexo se espera un rato (más en un equipo modesto) para no competir con el arranque.
+    // Al abrir Xook se espera un rato (más en un equipo modesto) para no competir con el arranque.
     const inicial = planDeIndexado(ahorroDeAhora(useAjustesStore.getState().modoAhorro)).esperaInicialMs;
     const espera = window.setTimeout(() => void sincronizarIndice(), estabaActivo === null ? inicial : 500);
     const alVolver = () => void sincronizarIndice(120_000);

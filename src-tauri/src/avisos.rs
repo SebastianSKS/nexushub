@@ -10,7 +10,7 @@ use tauri::Emitter;
 
 /// El sonido con el que Windows acompaña el aviso, según lo elegido en Configuración: «windows» (el de siempre),
 /// «windows-correo», «windows-recordatorio», «windows-sms», «windows-mensaje» o cualquier otra cosa = en silencio
-/// (Nexo pone entonces su propio sonido desde la interfaz, o ninguno).
+/// (Xook pone entonces su propio sonido desde la interfaz, o ninguno).
 #[cfg(target_os = "windows")]
 fn sonido_de(nombre: Option<&str>) -> Option<tauri_winrt_notification::Sound> {
     use tauri_winrt_notification::Sound;
@@ -32,7 +32,7 @@ pub fn notificar(app: AppHandle, titulo: String, cuerpo: String, ruta: Option<St
     #[cfg(target_os = "windows")]
     {
         use tauri_winrt_notification::Toast;
-        // Con la identidad de la aplicación (nombre «Nexo» e icono, ver identidad.rs). Solo si no se pudo registrar y se
+        // Con la identidad de la aplicación (nombre «Xook» e icono, ver identidad.rs). Solo si no se pudo registrar y se
         // ejecuta desde la carpeta de compilación (sin instalar) se usa la de PowerShell, que Windows sí conoce.
         let en_compilacion = tauri::utils::platform::current_exe()
             .ok()

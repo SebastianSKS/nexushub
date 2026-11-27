@@ -32,7 +32,7 @@ export function PdfToWordOptionsPanel() {
     });
   }, [escritorio]);
   // Solo Microsoft Word sabe pasar un PDF a Word: LibreOffice abre el PDF como dibujo y sale inservible, así que en
-  // Linux esta opción no se ofrece (el PDF a Word usa el motor básico de Nexo).
+  // Linux esta opción no se ofrece (el PDF a Word usa el motor básico de Xook).
   const seOfrece = escritorio === true && usarOffice && !!conWord;
   // Puede quedar guardado el modo «word» de cuando sí se podía (otra máquina, o un respaldo restaurado). Como la
   // opción ya no está, se vuelve al de texto editable: si no, se intentaría un motor que aquí no existe.

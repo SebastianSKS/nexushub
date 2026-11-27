@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { novedadesEntre, type NovedadesDeVersion } from "@/lib/novedades";
 
-/** La versión de Nexo con la que se abrió la última vez. Empieza con «nexushub-»: entra en la copia de respaldo. */
+/** La versión de Xook con la que se abrió la última vez. Empieza con «nexushub-»: entra en la copia de respaldo. */
 export const CLAVE_VERSION_VISTA = "nexushub-version-vista";
 
 interface NovedadesState {

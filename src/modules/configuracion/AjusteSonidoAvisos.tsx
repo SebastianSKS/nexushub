@@ -10,7 +10,7 @@ import { notificarSistema } from "@/lib/notificar";
 import { esSonidoNexo, esSonidoWindows, reproducirSonidoNexo, type SonidoAviso } from "@/lib/sonidos";
 import { useAjustesStore } from "@/store/ajustes-store";
 
-/** «Sonido de los avisos»: uno de Nexo (propios), uno de Windows o ninguno; con volumen para los de Nexo y un botón para probarlo. */
+/** «Sonido de los avisos»: uno de Xook (propios), uno de Windows o ninguno; con volumen para los de Xook y un botón para probarlo. */
 export function AjusteSonidoAvisos() {
   const t = useT();
   const sonido = useAjustesStore((s) => s.sonidoAvisos);
@@ -33,11 +33,11 @@ export function AjusteSonidoAvisos() {
 
   const probar = (id: SonidoAviso) => {
     if (esSonidoNexo(id)) reproducirSonidoNexo(id, volumen);
-    else if (esSonidoWindows(id)) void notificarSistema("Nexo", t("Así suena este aviso."), "prueba-sonido", rutaAjustes("avisos"), { ignorarSilencio: true, sonido: id });
+    else if (esSonidoWindows(id)) void notificarSistema("Xook", t("Así suena este aviso."), "prueba-sonido", rutaAjustes("avisos"), { ignorarSilencio: true, sonido: id });
   };
 
   return (
-    <TarjetaAjuste glifo="campana" titulo={t("Sonido de los avisos")} descripcion={t("Con qué suenan las notificaciones de Nexo. Los de Nexo son propios; los de Windows son los del sistema.")}>
+    <TarjetaAjuste glifo="campana" titulo={t("Sonido de los avisos")} descripcion={t("Con qué suenan las notificaciones de Xook. Los de Xook son propios; los de Windows son los del sistema.")}>
       <div className="flex flex-wrap items-center justify-end gap-3">
         {esSonidoNexo(sonido) && (
           <div className="flex w-[150px] items-center gap-2">

@@ -10,7 +10,7 @@ import { abortarSiCancelado, MIME_DOCX, MIME_PDF, type Ctx, type Salida } from "
  * Conversión con el programa de office instalado en el equipo: en Windows, Microsoft Office; en Linux, LibreOffice.
  * Cada uno exporta con su propio motor, que es la mejor fidelidad posible (igual que guardar el archivo como PDF
  * desde el programa). Solo en la aplicación de escritorio y si está instalado; si no, o si falla, se usa el motor
- * básico de Nexo (el resto del pipeline).
+ * básico de Xook (el resto del pipeline).
  *
  * El nombre de cada programa lo pone el programa (no está escrito aquí) porque cambia con el sistema: «Microsoft
  * Word» en Windows, «LibreOffice Writer» en Linux.
@@ -63,7 +63,7 @@ export function officeDisponible(): Promise<OfficeDisponible> {
   return disponible;
 }
 
-/** ¿Esta herramienta se hará con el programa de office? (para avisarlo antes de convertir). null = con el motor de Nexo. */
+/** ¿Esta herramienta se hará con el programa de office? (para avisarlo antes de convertir). null = con el motor de Xook. */
 export async function programaOfficePara(toolId: ToolId, opciones?: unknown): Promise<string | null> {
   const m = MOTOR[toolId];
   if (!m || !esEscritorio() || !useAjustesStore.getState().usarOffice) return null;
@@ -80,7 +80,7 @@ async function convertir(motor: MotorOffice, archivo: File): Promise<ArrayBuffer
 
 /**
  * Intenta convertir con el programa de office. Devuelve el resultado, o null si no corresponde (o falló) y hay que
- * usar el motor de Nexo; en ese caso deja un aviso junto al resultado explicando por qué la calidad puede ser menor.
+ * usar el motor de Xook; en ese caso deja un aviso junto al resultado explicando por qué la calidad puede ser menor.
  */
 export async function intentarConOffice(toolId: ToolId, archivo: File, opciones: unknown, ctx: Ctx): Promise<Salida[] | null> {
   const m = MOTOR[toolId];
@@ -91,7 +91,7 @@ export async function intentarConOffice(toolId: ToolId, archivo: File, opciones:
   const programa = (await officeDisponible())[m.programa];
   const nombre = programa.nombre;
   if (!programa.disponible) {
-    ctx.warn(traducir("{nombre} no está instalado en este equipo: se usó el motor básico de Nexo. Con {nombre} instalado, el resultado sale igual que guardándolo desde {nombre}.", { nombre }));
+    ctx.warn(traducir("{nombre} no está instalado en este equipo: se usó el motor básico de Xook. Con {nombre} instalado, el resultado sale igual que guardándolo desde {nombre}.", { nombre }));
     return null;
   }
   abortarSiCancelado(ctx.signal);
@@ -107,7 +107,7 @@ export async function intentarConOffice(toolId: ToolId, archivo: File, opciones:
     const motivo = typeof e === "string" ? e : traducir("no se pudo abrir el archivo");
     // El programa se queja en español y con su propio nombre; aquí solo se quita el prefijo para dejar el motivo.
     const limpio = motivo.replace(/^(Office|El programa de office) no pudo convertir el archivo:?\s*/i, "").trim();
-    ctx.warn(traducir("No se pudo usar {nombre} ({motivo}). Se usó el motor básico de Nexo: revisa el resultado.", { nombre, motivo: delSistema(limpio) || traducir("no se pudo abrir el archivo") }));
+    ctx.warn(traducir("No se pudo usar {nombre} ({motivo}). Se usó el motor básico de Xook: revisa el resultado.", { nombre, motivo: delSistema(limpio) || traducir("no se pudo abrir el archivo") }));
     return null;
   }
 }

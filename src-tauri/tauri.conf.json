@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Nexo",
+        "title": "Xook",
         "width": 1280,
         "height": 800,
         "minWidth": 900,
@@ -46,9 +46,9 @@
       "icons/icon.ico"
     ],
     "publisher": "Sebastián",
-    "copyright": "© 2026 Nexo",
+    "copyright": "© 2026 Xook",
     "shortDescription": "Video, música, documentos y calendario en una sola ventana.",
-    "longDescription": "Nexo reúne YouTube, Spotify, conversión de documentos y un calendario de cumpleaños en una sola aplicación con el lenguaje de diseño Fluent de Windows 11.",
+    "longDescription": "Xook reúne YouTube, Spotify, conversión de documentos y un calendario de cumpleaños en una sola aplicación con el lenguaje de diseño Fluent de Windows 11.",
     "windows": {
       "webviewInstallMode": { "type": "downloadBootstrapper" },
       "nsis": {

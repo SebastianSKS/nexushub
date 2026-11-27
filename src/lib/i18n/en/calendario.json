@@ -120,7 +120,7 @@
   "Para permitirlas, pulsa el candado de la barra de direcciones, abre «Notificaciones» y elige «Permitir». Mientras tanto verás los avisos dentro de la aplicación.": "To allow them, click the padlock in the address bar, open “Notifications” and choose “Allow”. Meanwhile you'll see the notices inside the app.",
   "Este equipo no admite notificaciones del sistema.": "This computer doesn't support system notifications.",
   "Verás los avisos dentro de la aplicación.": "You'll see the notices inside the app.",
-  "Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Sistema).": "Notices work while Nexo is open. To have it notify you all the time, turn on starting with Windows and leave it in the tray (Settings › System).",
+  "Los avisos funcionan mientras Xook esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Sistema).": "Notices work while Xook is open. To have it notify you all the time, turn on starting with Windows and leave it in the tray (Settings › System).",
   "Próximos cumpleaños": "Upcoming birthdays",
   "Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» arriba.": "You haven't added anyone yet. Press “Add birthday” above.",
   "cumple {edad}": "turns {edad}",
@@ -166,7 +166,7 @@
   "Tu calendario está vacío": "Your calendar is empty",
   "Aquí van tus tareas, exámenes, citas y los cumpleaños de tus amigos, cada uno con su color y su aviso.": "This is where your tasks, exams, appointments and your friends' birthdays go, each with its color and its notice.",
   "Pulsa «Añadir tarea o evento» y ponle fecha (y hora, si tiene).": "Press “Add task or event” and give it a date (and a time, if it has one).",
-  "Nexo te avisa antes: ese día, un día antes o una semana antes, como elijas.": "Nexo notifies you beforehand: that day, a day before or a week before, as you choose.",
+  "Xook te avisa antes: ese día, un día antes o una semana antes, como elijas.": "Xook notifies you beforehand: that day, a day before or a week before, as you choose.",
   "Los cumpleaños se añaden aparte y se repiten cada año.": "Birthdays are added separately and repeat every year.",
-  "Añade los cumpleaños de tus amigos y Nexo te avisa para que no se te pase ninguno.": "Add your friends' birthdays and Nexo notifies you so you don't miss any."
+  "Añade los cumpleaños de tus amigos y Xook te avisa para que no se te pase ninguno.": "Add your friends' birthdays and Xook notifies you so you don't miss any."
 }

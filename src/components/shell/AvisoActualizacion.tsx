@@ -9,9 +9,9 @@ import { ENTER, EXIT } from "@/lib/motion";
 import { useActualizacionesStore } from "@/store/actualizaciones-store";
 
 /**
- * «Hay una versión nueva»: una tarjeta abajo a la derecha, con «Actualizar ahora» y «Más tarde». Sale sola cuando Nexo, al
+ * «Hay una versión nueva»: una tarjeta abajo a la derecha, con «Actualizar ahora» y «Más tarde». Sale sola cuando Xook, al
  * abrir, encuentra una versión más nueva. Descarga e instala con una barra de avance y, al terminar, ofrece reiniciar.
- * Si se pospone, no vuelve a salir hasta la próxima vez que se abra Nexo.
+ * Si se pospone, no vuelve a salir hasta la próxima vez que se abra Xook.
  */
 export function AvisoActualizacion() {
   const t = useT();
@@ -38,9 +38,9 @@ export function AvisoActualizacion() {
               <Glifo nombre="actualizar" tam={14} />
             </span>
             <div className="min-w-0">
-              <p className="text-body font-semibold text-fg">{estado === "lista" ? t("Actualización lista") : estado === "instalando" ? t("Instalando la actualización…") : estado === "fallo" ? t("La actualización no se pudo instalar") : estado === "descargando" ? t("Descargando la actualización…") : t("Nexo {version} está disponible", { version: version ?? "" })}</p>
+              <p className="text-body font-semibold text-fg">{estado === "lista" ? t("Actualización lista") : estado === "instalando" ? t("Instalando la actualización…") : estado === "fallo" ? t("La actualización no se pudo instalar") : estado === "descargando" ? t("Descargando la actualización…") : t("Xook {version} está disponible", { version: version ?? "" })}</p>
               <p className="text-caption text-fg-secondary">
-                {estado === "lista" ? t("Reinicia Nexo para terminar. Tus datos se conservan.") : estado === "instalando" ? t("Nexo se cierra un momento y se abre solo. Tus datos se conservan.") : estado === "fallo" ? t("Revisa tu conexión a internet e inténtalo de nuevo. Tus datos están a salvo.") : estado === "descargando" ? t("Puedes seguir usando Nexo mientras baja.") : t("Trae cosas nuevas y mejoras. Se instala en un momento y tus datos se conservan.")}
+                {estado === "lista" ? t("Reinicia Xook para terminar. Tus datos se conservan.") : estado === "instalando" ? t("Xook se cierra un momento y se abre solo. Tus datos se conservan.") : estado === "fallo" ? t("Revisa tu conexión a internet e inténtalo de nuevo. Tus datos están a salvo.") : estado === "descargando" ? t("Puedes seguir usando Xook mientras baja.") : t("Trae cosas nuevas y mejoras. Se instala en un momento y tus datos se conservan.")}
               </p>
             </div>
           </div>

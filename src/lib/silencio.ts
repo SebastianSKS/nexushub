@@ -1,5 +1,5 @@
 /**
- * «No molestar»: horas en las que Nexo no manda notificaciones del sistema (ni suena). Se elige de una hora a otra y puede
+ * «No molestar»: horas en las que Xook no manda notificaciones del sistema (ni suena). Se elige de una hora a otra y puede
  * cruzar la medianoche (de 22:00 a 07:00). Las horas van de 0 a 23; si «desde» y «hasta» son la misma, no se silencia nada
  * (sería todo el día o ninguno, y para eso está el interruptor).
  */
@@ -19,7 +19,7 @@ export function horaValida(x: unknown, reserva: number): number {
   return typeof x === "number" && Number.isInteger(x) && x >= 0 && x <= 23 ? x : reserva;
 }
 
-/** ¿A esta hora y minuto, Nexo debe callarse? */
+/** ¿A esta hora y minuto, Xook debe callarse? */
 export function enHorasDeSilencio(ahora: Date, c: HorasDeSilencio): boolean {
   if (!c.activo || c.desde === c.hasta) return false;
   const h = ahora.getHours();

@@ -8,7 +8,7 @@ import { useNovedadesStore } from "@/store/novedades-store";
 
 /**
  * Muestra las guías solas, una sola vez cada una:
- * - la primera vez que se abre Nexo en este equipo, la bienvenida;
+ * - la primera vez que se abre Xook en este equipo, la bienvenida;
  * - después, la explicación de cada sección la primera vez que se entra a ella.
  * Lo que ya se vio queda guardado (y en la copia de respaldo), así que una actualización o un cierre raro no las repite.
  */

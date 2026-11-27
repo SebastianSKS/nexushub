@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { duracionDe, esSonidoAviso, esSonidoNexo, esSonidoWindows, SONIDO_PREDETERMINADO, SONIDOS_NEXO, SONIDOS_NEXO_IDS, SONIDOS_WINDOWS_IDS, volumenAGanancia } from "../src/lib/sonidos.ts";
 
-describe("partituras de Nexo", () => {
+describe("partituras de Xook", () => {
   it("cada sonido tiene notas audibles, con volumen razonable", () => {
     for (const id of SONIDOS_NEXO_IDS) {
       const notas = SONIDOS_NEXO[id];
@@ -50,7 +50,7 @@ describe("volumenAGanancia", () => {
 });
 
 describe("elección de sonido", () => {
-  it("reconoce los de Nexo, los de Windows y «ninguno»", () => {
+  it("reconoce los de Xook, los de Windows y «ninguno»", () => {
     assert.ok(esSonidoNexo("nexo-gota") && !esSonidoNexo("windows"));
     assert.ok(esSonidoWindows("windows-correo") && !esSonidoWindows("nexo-gota"));
     for (const s of [...SONIDOS_NEXO_IDS, ...SONIDOS_WINDOWS_IDS, "ninguno"]) assert.ok(esSonidoAviso(s), s);

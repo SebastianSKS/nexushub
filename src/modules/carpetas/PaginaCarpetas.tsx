@@ -173,7 +173,7 @@ export function PaginaCarpetas() {
       <PlantillaPagina
         migas={abierta ? [{ etiqueta: t("Mis tareas"), href: "/documentos/carpetas" }, { etiqueta: abierta }] : [{ etiqueta: t("Mis tareas") }]}
         titulo={abierta ?? "Mis tareas"}
-        descripcion={abierta ? t("Los archivos de esta materia. Están en tu computadora, en una carpeta de verdad.") : t("Una carpeta por materia para guardar tus tareas y trabajos. Están en tu computadora, en Documentos › Nexo › Tareas.")}
+        descripcion={abierta ? t("Los archivos de esta materia. Están en tu computadora, en una carpeta de verdad.") : t("Una carpeta por materia para guardar tus tareas y trabajos. Están en tu computadora, en Documentos › Xook › Tareas.")}
         accion={
           disponible && (
             <div className="flex flex-wrap justify-end gap-2">
@@ -194,7 +194,7 @@ export function PaginaCarpetas() {
         }
         principal={
           escritorio === null ? null : !disponible ? (
-            <InfoBar severity="info" title={t("Esto funciona en la aplicación de escritorio")}>{t("Las carpetas de tareas son carpetas de tu computadora, así que solo están en la versión instalada de Nexo.")}</InfoBar>
+            <InfoBar severity="info" title={t("Esto funciona en la aplicación de escritorio")}>{t("Las carpetas de tareas son carpetas de tu computadora, así que solo están en la versión instalada de Xook.")}</InfoBar>
           ) : (
             <>
               {aviso && <InfoBar severity={aviso.tipo} title={aviso.texto} onClose={() => setAviso(null)} />}
@@ -217,7 +217,7 @@ export function PaginaCarpetas() {
                     glifo="carpeta"
                     titulo={t("Aún no tienes carpetas")}
                     texto={t("Una carpeta por materia, en tu computadora, para guardar tus tareas y trabajos.")}
-                    pasos={[t("Créalas con «Nueva carpeta», o deja que Nexo las cree desde tu horario."), t("Arrastra ahí tus archivos, o crea un Word, Excel o PowerPoint en blanco."), t("Con Ctrl+K puedes buscar dentro de esos PDF y documentos.")]}
+                    pasos={[t("Créalas con «Nueva carpeta», o deja que Xook las cree desde tu horario."), t("Arrastra ahí tus archivos, o crea un Word, Excel o PowerPoint en blanco."), t("Con Ctrl+K puedes buscar dentro de esos PDF y documentos.")]}
                     acciones={
                       <>
                         <Button variant="accent" onClick={() => setDialogo({ tipo: "nueva" })}>{t("Nueva carpeta")}</Button>

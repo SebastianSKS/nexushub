@@ -3,7 +3,7 @@ import { esSonidoNexo, esSonidoWindows, type IdSonidoNexo, type SonidoAviso } fr
 
 /**
  * Qué hacer con un aviso del sistema, decidido a partir de los ajustes (lógica pura, para poder probarla): si se manda o
- * se calla por «No molestar», qué sonido le toca poner al propio aviso de Windows y si Nexo debe tocar uno suyo.
+ * se calla por «No molestar», qué sonido le toca poner al propio aviso de Windows y si Xook debe tocar uno suyo.
  */
 export interface AjustesDeAviso {
   sonidoAvisos: SonidoAviso;
@@ -21,9 +21,9 @@ export interface OpcionesDePlan {
 
 export interface PlanDeAviso {
   enviar: boolean;
-  /** Lo que se le pasa al aviso de Windows: el sonido de Windows elegido, o «silencio» (suena Nexo, o nada). */
+  /** Lo que se le pasa al aviso de Windows: el sonido de Windows elegido, o «silencio» (suena Xook, o nada). */
   sonidoDelAviso: string;
-  /** El sonido de Nexo que hay que tocar desde la interfaz, o null. */
+  /** El sonido de Xook que hay que tocar desde la interfaz, o null. */
   tocarNexo: IdSonidoNexo | null;
   /** ¿Lleva sonido de Windows? (para la API web y el plugin, que solo saben de «con» o «sin» sonido). */
   conSonidoDeWindows: boolean;

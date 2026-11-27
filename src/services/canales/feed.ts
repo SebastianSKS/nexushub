@@ -14,10 +14,10 @@ interface FeedParseado {
   videos: VideoCanal[];
 }
 
-/** Caché en memoria de esta pestaña: dura mientras Nexo esté abierto. */
+/** Caché en memoria de esta pestaña: dura mientras Xook esté abierto. */
 const cache = new Map<string, { at: number; value: FeedParseado }>();
 
-/** El lector de XML (unos 100 KB) se carga la primera vez que hace falta, no al abrir Nexo. */
+/** El lector de XML (unos 100 KB) se carga la primera vez que hace falta, no al abrir Xook. */
 let parser: XMLParser | null = null;
 async function lectorXml(): Promise<XMLParser> {
   if (!parser) {

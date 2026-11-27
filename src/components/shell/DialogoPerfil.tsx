@@ -70,7 +70,7 @@ export function DialogoPerfil({ abierto, onCerrar }: { abierto: boolean; onCerra
     <Dialog open={abierto} onClose={onCerrar} title={conSesion ? t("Tu perfil") : t("Iniciar sesión")} maxWidth={440}>
       <form onSubmit={guardar} className="flex flex-col gap-4">
         <p className="text-body text-fg-secondary">
-          {conSesion ? t("Cambia tu nombre o tu foto cuando quieras.") : t("Es opcional: sirve para saludarte por tu nombre. Nexo funciona igual sin perfil.")}
+          {conSesion ? t("Cambia tu nombre o tu foto cuando quieras.") : t("Es opcional: sirve para saludarte por tu nombre. Xook funciona igual sin perfil.")}
         </p>
 
         <div className="flex items-center gap-4">

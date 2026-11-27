@@ -13,7 +13,7 @@ describe("los pasos", () => {
     for (const p of PASOS) assert.ok(p.titulo && p.texto && p.accion, p.id);
   });
 
-  it("las rutas son de Nexo", () => {
+  it("las rutas son de Xook", () => {
     for (const p of PASOS) if (p.ruta) assert.match(p.ruta, /^\/[a-z]/, p.id);
   });
 

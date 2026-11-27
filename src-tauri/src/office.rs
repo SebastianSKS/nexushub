@@ -32,7 +32,7 @@ pub struct OfficeDisponible {
     excel: ProgramaOffice,
     powerpoint: ProgramaOffice,
     /// Si además sabe convertir un PDF en un Word. Solo Microsoft Word: LibreOffice abre el PDF como dibujo y el
-    /// resultado no sirve, así que en Linux esa opción no se ofrece (el PDF a Word usa el motor básico de Nexo).
+    /// resultado no sirve, así que en Linux esa opción no se ofrece (el PDF a Word usa el motor básico de Xook).
     pub pdf_word: bool,
     /// Cómo se llama en conjunto el programa de este equipo («Microsoft Office», «LibreOffice»), para los textos
     /// de Configuración.
@@ -134,7 +134,7 @@ pub async fn office_disponible() -> Result<OfficeDisponible, String> {
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux")))]
         {
-            // En cualquier otro sistema solo queda el motor básico de Nexo.
+            // En cualquier otro sistema solo queda el motor básico de Xook.
             let no = |nombre: &str| ProgramaOffice { disponible: false, nombre: nombre.to_string() };
             Ok(OfficeDisponible { word: no("Microsoft Word"), excel: no("Microsoft Excel"), powerpoint: no("Microsoft PowerPoint"), pdf_word: false, suite: String::new() })
         }
@@ -323,14 +323,14 @@ fn hay_libreoffice() -> bool {
     static HAY: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *HAY.get_or_init(|| {
         let Some(ruta) = localizar_libreoffice() else {
-            log::info!("No se encontró LibreOffice: se usará el motor básico de Nexo.");
+            log::info!("No se encontró LibreOffice: se usará el motor básico de Xook.");
             return false;
         };
         // `--version` no necesita ni perfil ni archivos: solo comprueba que el programa arranca de verdad.
         match std::process::Command::new(ruta).arg("--version").stdin(std::process::Stdio::null()).output() {
             Ok(salida) if salida.status.success() => true,
             _ => {
-                log::info!("LibreOffice está instalado pero no arranca: se usará el motor básico de Nexo.");
+                log::info!("LibreOffice está instalado pero no arranca: se usará el motor básico de Xook.");
                 false
             }
         }
@@ -390,7 +390,7 @@ fn convertir_con_libreoffice(motor: &str, entrada: &Path, salida: &Path, carpeta
         match hijo.try_wait() {
             Ok(Some(estado)) => break Some(estado),
             Ok(None) if inicio.elapsed() > TIEMPO_MAXIMO => {
-                // `kill()` solo manda la señal: sin `wait()` el proceso se queda zombie hasta que Nexo se cierre.
+                // `kill()` solo manda la señal: sin `wait()` el proceso se queda zombie hasta que Xook se cierre.
                 let _ = hijo.kill();
                 let _ = hijo.wait();
                 break None;
@@ -451,7 +451,7 @@ mod pruebas {
             return;
         }
         // Un RTF se escribe a mano en tres líneas: no hace falta guardar ningún archivo de ejemplo en el repo.
-        let bytes = br"{\rtf1\ansi\deff0 {\fonttbl {\f0 Arial;}}\f0\fs24 Hola, Nexo.\par}";
+        let bytes = br"{\rtf1\ansi\deff0 {\fonttbl {\f0 Arial;}}\f0\fs24 Hola, Xook.\par}";
 
         let unica = format!("prueba-{}", std::process::id());
         let carpeta = std::env::temp_dir().join("Nexo").join(unica);

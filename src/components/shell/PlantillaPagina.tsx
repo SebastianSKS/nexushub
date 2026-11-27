@@ -16,6 +16,8 @@ interface PlantillaPaginaProps {
   principal: ReactNode;
   /** Panel lateral de 320 px (opciones, resumen). Debajo del principal si la ventana mide menos de 1100 px. */
   lateral?: ReactNode;
+  /** Sin título ni descripción arriba: la página pone el suyo (el reproductor, donde el video va primero). */
+  sinCabecera?: boolean;
 }
 
 /**
@@ -27,7 +29,7 @@ interface PlantillaPaginaProps {
  *
  * Toda pantalla usa esta estructura; ninguna inventa su propio formato.
  */
-export function PlantillaPagina({ migas, titulo, descripcion, accion, motivo, principal, lateral }: PlantillaPaginaProps) {
+export function PlantillaPagina({ migas, titulo, descripcion, accion, motivo, principal, lateral, sinCabecera = false }: PlantillaPaginaProps) {
   const setPadre = useNavStore((s) => s.setPadre);
 
   // Escape sube un nivel: el padre es la miga anterior a la actual.
@@ -41,6 +43,7 @@ export function PlantillaPagina({ migas, titulo, descripcion, accion, motivo, pr
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-6 pb-8 pt-2 min-[1100px]:px-8">
       <Migas migas={migas} />
 
+      {!sinCabecera && (
       <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -60,6 +63,7 @@ export function PlantillaPagina({ migas, titulo, descripcion, accion, motivo, pr
           </div>
         )}
       </header>
+      )}
 
       <div className={lateral ? "grid items-start gap-6 min-[1100px]:grid-cols-[minmax(0,1fr)_320px]" : ""}>
         <div className="flex min-w-0 flex-col gap-5">{principal}</div>

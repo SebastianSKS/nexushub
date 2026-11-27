@@ -69,7 +69,7 @@ function BotonAyuda() {
 }
 
 /**
- * Barra de título de 32 px, arrastrable: [←] icono + Nexo · buscador global · controles de ventana.
+ * Barra de título de 32 px, arrastrable: [←] icono + Xook · buscador global · controles de ventana.
  * El «atrás» vive AQUÍ (patrón de Windows) y es HISTORIAL: router.back(). Se atenúa cuando no hay a dónde regresar.
  */
 export function BarraTitulo() {
@@ -111,7 +111,7 @@ export function BarraTitulo() {
         <div data-tauri-drag-region className="flex items-center gap-2 pl-1">
           <NexusMark size={16} />
           <span data-tauri-drag-region className="text-caption text-fg">
-            Nexo
+            Xook
           </span>
         </div>
       </div>

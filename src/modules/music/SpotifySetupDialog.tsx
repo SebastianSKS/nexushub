@@ -24,7 +24,7 @@ const STEPS = [
 ];
 
 /**
- * Opcional: usar la app de Spotify propia en vez de la de Nexo. Solo hace falta si la cuenta no está autorizada en la de Nexo
+ * Opcional: usar la app de Spotify propia en vez de la de Xook. Solo hace falta si la cuenta no está autorizada en la de Xook
  * (Spotify limita las apps nuevas a las cuentas que su dueño agrega a mano). Ya no hay que editar ningún archivo.
  */
 export function SpotifySetupDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -50,7 +50,7 @@ export function SpotifySetupDialog({ open, onClose }: { open: boolean; onClose: 
   return (
     <Dialog open={open} onClose={onClose} title={t("Usar mi propia app de Spotify")} maxWidth={620}>
       <InfoBar severity="info" title={t("Normalmente no hace falta.")} className="mb-4">
-        {t("«Conectar con Spotify Premium» ya usa la app de Nexo: solo inicias sesión en la página de Spotify. Esto es para cuando tu cuenta no está autorizada en esa app y prefieres usar la tuya.")}
+        {t("«Conectar con Spotify Premium» ya usa la app de Xook: solo inicias sesión en la página de Spotify. Esto es para cuando tu cuenta no está autorizada en esa app y prefieres usar la tuya.")}
       </InfoBar>
       <ol className="flex flex-col gap-3">
         {STEPS.map((s, i) => (
@@ -77,7 +77,7 @@ export function SpotifySetupDialog({ open, onClose }: { open: boolean; onClose: 
               <span className="text-fg-secondary">{t("Client ID: {id}…", { id: propio.slice(0, 8) })}</span>
             </p>
             <div className="flex flex-wrap gap-2">
-              <Button onClick={volver}>{t("Volver a la app de Nexo")}</Button>
+              <Button onClick={volver}>{t("Volver a la app de Xook")}</Button>
               <Button variant="accent" onClick={onClose}>
                 {t("Listo")}
               </Button>

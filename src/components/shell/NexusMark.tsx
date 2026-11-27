@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-/** Logo de la aplicación: una «N» blanca sobre un cuadrado azul con degradado, con su nodo amarillo (el «nexo»). Mismos colores que el icono. */
+/** Logo de la aplicación: una «X» blanca sobre un cuadrado azul con degradado, con su punto amarillo. Mismos colores que el icono. */
 export function NexusMark({ size = 24 }: { size?: number }) {
   const id = useId().replace(/:/g, "");
   return (
@@ -18,7 +18,7 @@ export function NexusMark({ size = 24 }: { size?: number }) {
       </defs>
       <rect x="0.75" y="0.75" width="22.5" height="22.5" rx="5.25" fill={`url(#f${id})`} />
       <rect x="0.75" y="0.75" width="22.5" height="11" rx="5.25" fill="#fff" opacity="0.14" />
-      <path fill={`url(#l${id})`} d="M6.3 17.9V6.1h3l5.4 7.2V6.1h3v11.8h-3L9.3 10.7v7.2z" />
+      <path fill={`url(#l${id})`} d="M6.3 6.1h3.5L12 9.4l2.2-3.3h3.5L13.9 12l3.8 5.9h-3.5L12 14.6l-2.2 3.3H6.3L10.1 12z" />
       <circle cx="18.1" cy="5.9" r="1.9" fill="#ffd23f" />
     </svg>
   );

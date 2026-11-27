@@ -14,7 +14,7 @@ const PROGRAMA: Partial<Record<ToolId, "word" | "excel" | "powerpoint">> = { "wo
 
 /**
  * Dice, antes de convertir, con qué motor se hará: con el programa de office si está instalado (misma calidad que
- * guardarlo desde ahí) o con el motor básico de Nexo. Solo aparece en las conversiones de Office, en la aplicación de
+ * guardarlo desde ahí) o con el motor básico de Xook. Solo aparece en las conversiones de Office, en la aplicación de
  * escritorio.
  */
 export function MotorOffice({ toolId }: { toolId: ToolId }) {
@@ -38,9 +38,9 @@ export function MotorOffice({ toolId }: { toolId: ToolId }) {
   const [texto, bien] = usa
     ? [t("Se convertirá con {programa}: el resultado sale igual que guardarlo desde {programa}.", { programa: usa }), true]
     : !usarOffice
-        ? [t("Estás usando el motor básico de Nexo. Puedes activar el programa de office en Configuración › Documentos.")]
+        ? [t("Estás usando el motor básico de Xook. Puedes activar el programa de office en Configuración › Documentos.")]
         : hay && !hay.disponible
-          ? [t("{programa} no está instalado: se usa el motor básico de Nexo. La calidad puede ser menor con documentos complejos.", { programa: hay.nombre })]
+          ? [t("{programa} no está instalado: se usa el motor básico de Xook. La calidad puede ser menor con documentos complejos.", { programa: hay.nombre })]
           : [];
   if (!texto) return null;
 

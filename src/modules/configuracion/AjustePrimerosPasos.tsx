@@ -17,7 +17,7 @@ export function AjustePrimerosPasos() {
     <TarjetaAjuste
       glifo="informacion"
       titulo={t("Primeros pasos")}
-      descripcion={progreso.completo ? t("Ya completaste todos los pasos. ¡Buen trabajo!") : t("La lista de Inicio que te lleva por lo básico de Nexo. Si la ocultaste, puedes verla otra vez.")}
+      descripcion={progreso.completo ? t("Ya completaste todos los pasos. ¡Buen trabajo!") : t("La lista de Inicio que te lleva por lo básico de Xook. Si la ocultaste, puedes verla otra vez.")}
     >
       {!progreso.completo && (
         <Button

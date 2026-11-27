@@ -3,13 +3,16 @@
 import { useT, traducir } from "@/lib/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Next20Regular, Previous20Regular } from "@fluentui/react-icons";
+import Link from "next/link";
+import { Next20Regular, Open20Regular, Previous20Regular } from "@fluentui/react-icons";
 import { BotonEnlace } from "@/components/fluent/BotonEnlace";
 import { Button } from "@/components/fluent/Button";
 import { Glifo } from "@/components/fluent/Glifo";
+import { IconButton } from "@/components/fluent/IconButton";
 import { InfoBar } from "@/components/fluent/InfoBar";
 import { Selector } from "@/components/fluent/Selector";
 import { HuecoReproductor } from "@/components/reproductor/HuecoReproductor";
+import { useColoresCaratula } from "@/hooks/useColoresCaratula";
 import { PlantillaPagina } from "@/components/shell/PlantillaPagina";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { pistaDeVideo } from "@/lib/canales/pistas";
@@ -24,6 +27,7 @@ import { useFavoritosStore } from "@/store/favoritos-store";
 import { useProgresoVideoStore, VELOCIDADES } from "@/store/progreso-video-store";
 import { useReproductorStore, type Pista } from "@/store/reproductor-store";
 import type { VideoCanal } from "@/types/canal";
+import { AvatarCanal } from "./AvatarCanal";
 import { ColaVideos } from "./ColaVideos";
 import { PanelDev } from "./PaginaVideo";
 
@@ -112,6 +116,21 @@ export function PaginaVer() {
   const descripcion = pista ? [pista.artista, video ? fechaRelativa(video.publicado) : ""].filter(Boolean).join(" · ") : "";
   const urlYouTube = `https://www.youtube.com/watch?v=${id}`;
   const pistaFavorito: Pista | null = pista ?? (video ? pistaDeVideo(video, {}) : null);
+  const avatar = useCanalesStore((s) => s.canales.find((c) => c.id === video?.canalId)?.avatar ?? null);
+  // El resplandor alrededor del video, con los colores de su miniatura (se apaga junto con «Fondo según la música»).
+  const resplandor = useAjustesStore((s) => s.fondoMusical);
+  const colores = useColoresCaratula(resplandor ? (pista?.caratula ?? video?.miniatura ?? "") : "");
+  const canal = pista?.artista ?? video?.canalNombre ?? "";
+
+  const datosCanal = (
+    <>
+      <AvatarCanal nombre={canal || "?"} avatar={avatar} tam={40} />
+      <span className="min-w-0">
+        <span className="block truncate text-body font-semibold text-fg">{canal}</span>
+        <span className="block truncate text-caption text-fg-secondary">{video ? fechaRelativa(video.publicado) : "YouTube"}</span>
+      </span>
+    </>
+  );
 
   return (
     <>
@@ -119,63 +138,83 @@ export function PaginaVer() {
         migas={[{ etiqueta: "Video", href: "/video" }, ...canalCrumb, { etiqueta: titulo }]}
         titulo={titulo}
         descripcion={descripcion || t("Reproductor de video")}
-        accion={
-          valido && (
-            <div className="flex gap-2">
-              <Button
-                icon={<Glifo nombre={favorito ? "favoritoLleno" : "favorito"} />}
-                disabled={!pistaFavorito}
-                onClick={() => pistaFavorito && useFavoritosStore.getState().alternarFavorito(pistaFavorito)}
-              >
-                {favorito ? t("En favoritos") : t("Añadir a favoritos")}
-              </Button>
-              <Button variant="accent" onClick={() => void abrirExterno(urlYouTube)}>
-                {t("Abrir en YouTube")}
-              </Button>
-            </div>
-          )
-        }
+        sinCabecera={valido}
         principal={
           !valido ? (
             <InfoBar severity="error" title={t("Este enlace no lleva a un video.")} action={<BotonEnlace href="/video">{t("Ir a Video")}</BotonEnlace>}>
               {t("Falta el identificador del video o no es válido (debe tener 11 caracteres).")}
             </InfoBar>
           ) : (
-            <>
-              <div className="mx-auto w-full max-w-[calc((100vh-300px)*16/9)]">
+            <div className="mx-auto flex w-full max-w-[calc((100vh-290px)*16/9)] flex-col gap-4">
+              {/* El video de verdad se dibuja encima del hueco; el resplandor es la sombra del hueco, que asoma alrededor. */}
+              <div
+                className="rounded-control transition-shadow duration-[1200ms] ease-fluent"
+                style={colores ? { boxShadow: `0 22px 70px -18px rgb(${colores[0].join(" ")} / 0.75), 0 0 80px -26px rgb(${colores[1].join(" ")} / 0.7), 0 -10px 60px -30px rgb(${colores[2].join(" ")} / 0.6)` } : undefined}
+              >
                 <HuecoReproductor />
               </div>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-body text-fg-secondary">{t("Velocidad")}</span>
+
+              <h1 className="mt-1 text-subtitle text-fg">{titulo}</h1>
+
+              <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+                {video ? (
+                  <Link href={rutaCanal(video.canalId)} className="rounded-control -m-1 flex min-w-0 items-center gap-3 p-1 pr-3 transition-colors duration-exit ease-fluent hover:bg-layer-alt">
+                    {datosCanal}
+                  </Link>
+                ) : (
+                  <div className="flex min-w-0 items-center gap-3">{canal && datosCanal}</div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {hayCola && (
+                    <div className="flex">
+                      <IconButton label={t("Anterior")} onClick={() => useReproductorStore.getState().anterior()}>
+                        <Previous20Regular />
+                      </IconButton>
+                      <IconButton label={t("Siguiente")} onClick={() => useReproductorStore.getState().siguiente()}>
+                        <Next20Regular />
+                      </IconButton>
+                    </div>
+                  )}
                   <Selector<number>
                     label={t("Velocidad de reproducción")}
                     value={velocidad}
-                    options={VELOCIDADES.map((v) => ({ value: v, label: v === 1 ? t("Normal") : `${v}×` }))}
+                    options={VELOCIDADES.map((v) => ({ value: v, label: v === 1 ? t("Velocidad normal") : `${v}×` }))}
                     onChange={(v) => {
                       useProgresoVideoStore.getState().setVelocidad(v);
                       obtenerReproductor()?.setPlaybackRate(v);
                     }}
-                    className="w-[110px]"
+                    className="w-[168px]"
                   />
+                  <Button
+                    icon={<Glifo nombre={favorito ? "favoritoLleno" : "favorito"} />}
+                    disabled={!pistaFavorito}
+                    onClick={() => pistaFavorito && useFavoritosStore.getState().alternarFavorito(pistaFavorito)}
+                  >
+                    {favorito ? t("En favoritos") : t("Añadir a favoritos")}
+                  </Button>
+                  <Button icon={<Open20Regular />} onClick={() => void abrirExterno(urlYouTube)}>
+                    {t("Abrir en YouTube")}
+                  </Button>
                 </div>
-                {retomadoEn > 0 && !empezoDeCero && (
-                  <p className="flex items-center gap-2 text-body text-fg-secondary">
-                    {t("Retomaste desde {tiempo}.", { tiempo: formatDuration(retomadoEn) })}
-                    <Button
-                      variant="subtle"
-                      className="h-7"
-                      onClick={() => {
-                        obtenerReproductor()?.seekTo(0, true);
-                        useProgresoVideoStore.getState().olvidar(id);
-                        setEmpezoDeCero(true);
-                      }}
-                    >
-                      {t("Empezar de nuevo")}
-                    </Button>
-                  </p>
-                )}
               </div>
+
+              {retomadoEn > 0 && !empezoDeCero && (
+                <p className="flex flex-wrap items-center gap-2 text-body text-fg-secondary">
+                  {t("Retomaste desde {tiempo}.", { tiempo: formatDuration(retomadoEn) })}
+                  <Button
+                    variant="subtle"
+                    className="h-7"
+                    onClick={() => {
+                      obtenerReproductor()?.seekTo(0, true);
+                      useProgresoVideoStore.getState().olvidar(id);
+                      setEmpezoDeCero(true);
+                    }}
+                  >
+                    {t("Empezar de nuevo")}
+                  </Button>
+                </p>
+              )}
               {error && (
                 <InfoBar
                   severity="error"
@@ -189,17 +228,7 @@ export function PaginaVer() {
                   }
                 />
               )}
-              {hayCola && (
-                <div className="flex gap-2">
-                  <Button icon={<Previous20Regular />} onClick={() => useReproductorStore.getState().anterior()}>
-                    {t("Anterior")}
-                  </Button>
-                  <Button icon={<Next20Regular />} onClick={() => useReproductorStore.getState().siguiente()}>
-                    {t("Siguiente")}
-                  </Button>
-                </div>
-              )}
-            </>
+            </div>
           )
         }
         lateral={valido ? <ColaVideos /> : undefined}

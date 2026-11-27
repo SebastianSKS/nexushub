@@ -21,7 +21,7 @@ export function ProximosCumples({ amigos, onAmigo, onNuevo }: { amigos: Amigo[];
       <h2 className="mb-3 text-body font-semibold text-fg">{t("Próximos cumpleaños")}</h2>
       {lista.length === 0 ? (
         <div className="flex flex-col items-start gap-2">
-          <p className="text-body text-fg-secondary">{t("Añade los cumpleaños de tus amigos y Nexo te avisa para que no se te pase ninguno.")}</p>
+          <p className="text-body text-fg-secondary">{t("Añade los cumpleaños de tus amigos y Xook te avisa para que no se te pase ninguno.")}</p>
           {onNuevo && <Button onClick={onNuevo}>{t("Añadir cumpleaños")}</Button>}
         </div>
       ) : (

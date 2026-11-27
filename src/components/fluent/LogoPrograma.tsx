@@ -5,7 +5,7 @@ import { cargarIconosProgramas, RESERVA_PROGRAMA, useIconosProgramas, type Clave
 
 /**
  * El logo original de un programa (Word, Excel…), tal como Windows lo muestra. Si el programa no está instalado
- * (o todavía no llega), un cuadro con su color y su inicial. Úsalo siempre que Nexo nombre uno de estos programas.
+ * (o todavía no llega), un cuadro con su color y su inicial. Úsalo siempre que Xook nombre uno de estos programas.
  */
 export function LogoPrograma({ programa, tam = 36 }: { programa: ClavePrograma; tam?: number }) {
   const { color, inicial } = RESERVA_PROGRAMA[programa];

@@ -32,8 +32,8 @@ describe("crearHorarioCompartido y textoDeHorario", () => {
 
 describe("nombreDeArchivoHorario", () => {
   it("lleva la fecha con ceros", () => {
-    assert.equal(nombreDeArchivoHorario(new Date(2026, 0, 5)), "Nexo-horario-2026-01-05.json");
-    assert.equal(nombreDeArchivoHorario(ahora), "Nexo-horario-2026-09-27.json");
+    assert.equal(nombreDeArchivoHorario(new Date(2026, 0, 5)), "Xook-horario-2026-01-05.json");
+    assert.equal(nombreDeArchivoHorario(ahora), "Xook-horario-2026-09-27.json");
   });
 });
 
@@ -58,7 +58,7 @@ describe("leerHorarioCompartido", () => {
       assert.equal(r.ok, false, malo);
     }
     const r = leerHorarioCompartido("hola", ids());
-    assert.equal(!r.ok && r.motivo, "El archivo no se pudo leer: no es un horario de Nexo.");
+    assert.equal(!r.ok && r.motivo, "El archivo no se pudo leer: no es un horario de Xook.");
   });
   it("una versión más nueva se rechaza pidiendo actualizar", () => {
     const r = leerHorarioCompartido(JSON.stringify({ formato: FORMATO_HORARIO, version: 99, clases: [clase()] }), ids());
@@ -151,7 +151,7 @@ describe("código de horario", () => {
   });
   it("un texto cualquiera no es un código", () => {
     const r = leerCodigoDeHorario("hola, este es mi horario", ids());
-    assert.equal(!r.ok && r.motivo, "Ese texto no es un código de horario de Nexo.");
+    assert.equal(!r.ok && r.motivo, "Ese texto no es un código de horario de Xook.");
   });
   it("un código cortado o dañado da un motivo claro", () => {
     const c = codigoDeHorario(varias);

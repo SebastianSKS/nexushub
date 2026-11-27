@@ -73,7 +73,7 @@ export function DialogoCarpetasHorario({ abierto, materias, onCerrar }: { abiert
         <div className="flex flex-col gap-4">
           {creadas > 0 && (
             <InfoBar severity="success" title={creadas === 1 ? t("1 carpeta creada") : t("{n} carpetas creadas", { n: creadas })}>
-              {t("Quedan en Documentos › Nexo › Tareas. Ahí guardas los trabajos de cada materia.")}
+              {t("Quedan en Documentos › Xook › Tareas. Ahí guardas los trabajos de cada materia.")}
             </InfoBar>
           )}
           {error && <InfoBar severity="warning" title={t("Algo no salió")}>{error}</InfoBar>}

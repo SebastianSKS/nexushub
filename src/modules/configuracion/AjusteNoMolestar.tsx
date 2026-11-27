@@ -7,7 +7,7 @@ import { TarjetaAjuste } from "@/components/fluent/TarjetaAjuste";
 import { useT } from "@/lib/i18n";
 import { useAjustesStore } from "@/store/ajustes-store";
 
-/** «No molestar»: entre dos horas (puede cruzar la medianoche) Nexo no manda notificaciones del sistema ni suena. */
+/** «No molestar»: entre dos horas (puede cruzar la medianoche) Xook no manda notificaciones del sistema ni suena. */
 export function AjusteNoMolestar() {
   const t = useT();
   const { enPunto } = useHora();
@@ -21,7 +21,7 @@ export function AjusteNoMolestar() {
     <TarjetaAjuste
       glifo="campana"
       titulo={t("No molestar")}
-      descripcion={activo ? t("Sin avisos ni sonidos de {desde} a {hasta}. Lo que pase mientras tanto no se repite después.", { desde: enPunto(desde), hasta: enPunto(hasta) }) : t("Elige unas horas (por ejemplo de noche) en las que Nexo no te avise ni suene.")}
+      descripcion={activo ? t("Sin avisos ni sonidos de {desde} a {hasta}. Lo que pase mientras tanto no se repite después.", { desde: enPunto(desde), hasta: enPunto(hasta) }) : t("Elige unas horas (por ejemplo de noche) en las que Xook no te avise ni suene.")}
     >
       <div className="flex flex-wrap items-center justify-end gap-2">
         {activo && (

@@ -1,5 +1,5 @@
 /**
- * Nexo en equipos modestos. En una computadora con poca memoria o pocos núcleos, la transparencia de la ventana (Mica, Acrílico),
+ * Xook en equipos modestos. En una computadora con poca memoria o pocos núcleos, la transparencia de la ventana (Mica, Acrílico),
  * las animaciones y leer archivos en segundo plano pesan más de lo que se nota. El «modo de bajo consumo» los recorta: ventana
  * sin transparencia, menos movimiento y un indexado más pausado. Se enciende solo si el equipo parece modesto (o a mano).
  * Lógica pura: aquí solo se decide; quien la usa (ajustes, indexado) aplica lo decidido.
@@ -41,7 +41,7 @@ export const normalizarModoAhorro = (x: unknown): ModoAhorro => (x === "si" || x
 
 /** Cuánto espera y cuánto respira el indexado de archivos (búsqueda en PDF y Office) según el modo. */
 export interface PlanDeIndexado {
-  /** Cuánto se espera tras abrir Nexo antes de empezar a leer (para no competir con el arranque). */
+  /** Cuánto se espera tras abrir Xook antes de empezar a leer (para no competir con el arranque). */
   esperaInicialMs: number;
   /** Pausa entre un archivo y el siguiente: deja respirar a la interfaz. */
   pausaEntreArchivosMs: number;

@@ -11,7 +11,7 @@ describe("colorDeTexto", () => {
     for (const oscuro of ["#000000", "#1b4fd8", "#8b0000", "#333333"]) assert.equal(colorDeTexto(oscuro), "#ffffff", oscuro);
   });
   it("los colores de las clases del horario se leen bien", () => {
-    // los seis colores que Nexo ofrece: cada uno con un texto que contraste
+    // los seis colores que Xook ofrece: cada uno con un texto que contraste
     assert.equal(colorDeTexto("#f0812a"), "#ffffff");
     assert.equal(colorDeTexto("#2ec4a6"), "#ffffff");
   });

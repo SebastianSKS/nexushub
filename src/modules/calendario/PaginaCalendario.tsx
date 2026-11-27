@@ -159,7 +159,7 @@ export function PaginaCalendario() {
                 glifo="calendario"
                 titulo={t("Tu calendario está vacío")}
                 texto={t("Aquí van tus tareas, exámenes, citas y los cumpleaños de tus amigos, cada uno con su color y su aviso.")}
-                pasos={[t("Pulsa «Añadir tarea o evento» y ponle fecha (y hora, si tiene)."), t("Nexo te avisa antes: ese día, un día antes o una semana antes, como elijas."), t("Los cumpleaños se añaden aparte y se repiten cada año.")]}
+                pasos={[t("Pulsa «Añadir tarea o evento» y ponle fecha (y hora, si tiene)."), t("Xook te avisa antes: ese día, un día antes o una semana antes, como elijas."), t("Los cumpleaños se añaden aparte y se repiten cada año.")]}
                 acciones={
                   <>
                     <Button variant="accent" icon={<Glifo nombre="agregar" />} onClick={() => abrirEvento({ dia: hoy.getDate(), mes: hoy.getMonth() + 1, anio: hoy.getFullYear() })}>

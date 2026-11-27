@@ -41,12 +41,12 @@
   <!-- Hoja principal -->
   <rect x="226" y="236" width="500" height="580" rx="104" fill="#ffffff" opacity="0.14" transform="rotate(-5 476 526)"/>
 
-  <!-- Letra N: dos barras y una diagonal -->
+  <!-- Letra X -->
   <g filter="url(#sombra)">
-    <path fill="url(#letra)" d="M268 764 V262 H396 L628 570 V262 H756 V764 H628 L396 456 V764 Z"/>
+    <path fill="url(#letra)" d="M268 262 H420 L512 402 L604 262 H756 L592 513 L756 764 H604 L512 624 L420 764 H268 L432 513 Z"/>
   </g>
 
-  <!-- Nodo (el «nexo») -->
+  <!-- Punto amarillo -->
   <circle cx="772" cy="252" r="58" fill="#ffd23f" filter="url(#sombraSuave)"/>
   <circle cx="772" cy="252" r="58" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="8"/>
 </svg>

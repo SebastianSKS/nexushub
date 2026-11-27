@@ -43,7 +43,7 @@ export function PaginaCanal() {
       principal={
         noSeguido ? (
           <InfoBar severity="warning" title={t("No sigues este canal.")} action={<BotonEnlace href="/video">{t("Ver mis canales")}</BotonEnlace>}>
-            {t("El enlace apunta a un canal que no está en tu lista. Puede que lo quitaras, o que el enlace venga de otra copia de Nexo.")}
+            {t("El enlace apunta a un canal que no está en tu lista. Puede que lo quitaras, o que el enlace venga de otra copia de Xook.")}
           </InfoBar>
         ) : (
           <>

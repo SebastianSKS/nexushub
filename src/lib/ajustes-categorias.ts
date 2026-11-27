@@ -74,7 +74,7 @@ export const AJUSTES: readonly AjusteBuscable[] = [
   { id: "donde-guardar", categoria: "documentos", titulo: T("Elegir dónde guardar"), claves: "descargas carpeta guardar como save folder downloads", escritorio: true },
   { id: "al-terminar", categoria: "documentos", titulo: T("Al terminar una conversión"), claves: "descargar solo conversion finish download" },
 
-  { id: "pantalla-inicial", categoria: "sistema", titulo: T("Al abrir Nexo, mostrar"), claves: "pantalla de inicio arranque seccion inicial start screen" },
+  { id: "pantalla-inicial", categoria: "sistema", titulo: T("Al abrir Xook, mostrar"), claves: "pantalla de inicio arranque seccion inicial start screen" },
   { id: "inicio-windows", categoria: "sistema", titulo: T("Iniciar con Windows"), claves: "arranque automatico encender startup launch boot", escritorio: true },
   { id: "bandeja", categoria: "sistema", titulo: T("Seguir sonando en la bandeja"), claves: "segundo plano cerrar minimizar tray background close", escritorio: true },
   { id: "bajo-consumo", categoria: "sistema", titulo: T("Modo de bajo consumo"), claves: "rendimiento bateria lento memoria performance battery low power" },
@@ -89,7 +89,7 @@ export const AJUSTES: readonly AjusteBuscable[] = [
   { id: "bienvenida", categoria: "acerca", titulo: T("Bienvenida y guías"), claves: "tutorial como funciona welcome guides" },
   { id: "actualizaciones", categoria: "acerca", titulo: T("Actualizaciones"), claves: "actualizar nueva version update updates", escritorio: true },
   { id: "novedades", categoria: "acerca", titulo: T("Novedades"), claves: "cambios que hay de nuevo what's new changelog", escritorio: true },
-  { id: "acerca-de", categoria: "acerca", titulo: T("Acerca de Nexo"), claves: "version privacidad datos about privacy" },
+  { id: "acerca-de", categoria: "acerca", titulo: T("Acerca de Xook"), claves: "version privacidad datos about privacy" },
 ];
 
 export const categoriaDe = (id: string | null | undefined): Categoria | null => CATEGORIAS.find((c) => c.id === id) ?? null;

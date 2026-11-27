@@ -20,7 +20,7 @@ import { ProximosEventos } from "../calendario/ProximosEventos";
 import { AccesosDirectos } from "./AccesosDirectos";
 import { ClasesDeHoy } from "./ClasesDeHoy";
 
-/** Lo que hace cada sección, en una línea, para quien abre Nexo por primera vez. */
+/** Lo que hace cada sección, en una línea, para quien abre Xook por primera vez. */
 const DESCRIPCION: Record<string, string> = {
   video: T("Los videos nuevos de los canales de YouTube que sigues, en un solo muro."),
   musica: T("Tu música de Spotify, con favoritos, recientes y reproductor grande."),
@@ -28,7 +28,7 @@ const DESCRIPCION: Record<string, string> = {
   calendario: T("Tareas, exámenes, citas y cumpleaños, con avisos para que no se te pase ninguno."),
   horario: T("Tus clases de la semana. Escanea la imagen del horario y se llena sola."),
   calculadora: T("Normal y científica, con historial."),
-  repaso: T("Tarjetas de estudio que Nexo te repite justo antes de que se te olviden."),
+  repaso: T("Tarjetas de estudio que Xook te repite justo antes de que se te olviden."),
 };
 
 /** Frase sobre lo que pasa hoy en el calendario. */
@@ -75,7 +75,7 @@ export function PaginaInicio() {
             >
               <Avatar nombre={nombre} foto={foto} tam={64} className="ring-2 ring-white/60" />
               <div className="min-w-0 flex-1">
-                <p className="text-title">{nombre ? `${hoy ? saludo(hoy.getHours()) : tr("Hola")}, ${nombre}` : tr("Te damos la bienvenida a Nexo")}</p>
+                <p className="text-title">{nombre ? `${hoy ? saludo(hoy.getHours()) : tr("Hola")}, ${nombre}` : tr("Te damos la bienvenida a Xook")}</p>
                 <p className="mt-1 text-body opacity-95">{hoy ? frase(deHoy) : " "}</p>
                 <p className="mt-0.5 text-caption opacity-80">{hoy ? mayuscula(fechaLarga(hoy)) : " "}</p>
               </div>

@@ -1,5 +1,5 @@
 /**
- * El corazón de los idiomas de Nexo, sin React ni nada de la aplicación (así se puede probar suelto).
+ * El corazón de los idiomas de Xook, sin React ni nada de la aplicación (así se puede probar suelto).
  *
  * Cómo funciona: el texto en español ES la clave. `t("Guardar")` devuelve «Guardar» en español y «Save» en inglés; si a
  * una clave le falta la traducción, se muestra el español (nunca sale una clave rara ni un hueco). Las traducciones al inglés

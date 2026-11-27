@@ -37,7 +37,7 @@ export function useBandeja() {
             reproducir: traducir("Reproducir"),
             pausar: traducir("Pausar"),
             siguiente: traducir("Siguiente"),
-            mostrar: traducir("Mostrar Nexo"),
+            mostrar: traducir("Mostrar Xook"),
             salir: traducir("Salir"),
             nada: traducir("Nada en reproducción"),
           },

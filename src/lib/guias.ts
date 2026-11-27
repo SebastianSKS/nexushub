@@ -69,6 +69,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     pasos: [
       { glifo: "documentos", titulo: T("Tus archivos, en tu equipo"), texto: T("Convierte y edita PDF, Word, Excel y PowerPoint. Nada se sube a internet: todo se hace en tu propio equipo.") },
       { glifo: "agregar", titulo: T("Arrastra y elige"), texto: T("Suelta tus archivos en la zona punteada (o pégalos con Ctrl + V) y elige la herramienta: convertir, unir, dividir, comprimir, girar, marca de agua, numerar páginas, reconocer texto (OCR)…") },
+      { glifo: "reloj", titulo: T("Haz una cola"), texto: T("No hace falta esperar: pulsa Convertir, cambia de herramienta y añade la siguiente. Se hacen una tras otra y cada resultado se queda en la cola para descargarlo. O suelta tus Word, Excel y PowerPoint en Documentos y pulsa «Iniciar cola» para volverlos PDF.") },
       { glifo: "descargar", titulo: T("Guarda donde quieras"), texto: T("Al terminar, descarga el resultado: se abre «Guardar como» empezando en la carpeta de tus materias. Puedes cambiarlo en Configuración.") },
       { glifo: "carpeta", titulo: T("Mis tareas"), texto: T("Las carpetas de tus materias están en «Mis tareas», en la barra lateral: ahí guardas y abres tus trabajos, y también creas un Word, Excel o PowerPoint nuevo.") },
     ],
@@ -78,7 +79,7 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Herramienta de Documentos"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "agregar", titulo: T("Agrega tus archivos"), texto: T("Suelta el archivo aquí o elígelo desde tu equipo. Si ya lo tenías en la cola de Documentos, aparece solo.") },
+      { glifo: "agregar", titulo: T("Agrega tus archivos"), texto: T("Suelta el archivo aquí o elígelo desde tu equipo. Si ya lo habías soltado en Documentos, aparece solo.") },
       { glifo: "configuracion", titulo: T("Ajusta las opciones"), texto: T("Cada herramienta tiene sus opciones (calidad, páginas, texto…). Los valores que vienen puestos suelen estar bien.") },
       { glifo: "descargar", titulo: T("Procesa y descarga"), texto: T("Pulsa el botón principal, espera a que termine y descarga el resultado. Después puedes abrir la carpeta donde quedó.") },
     ],
@@ -144,9 +145,9 @@ export const GUIAS: Record<GuiaId, Guia> = {
     nombre: T("Configuración"),
     final: T("Entendido"),
     pasos: [
-      { glifo: "paleta", titulo: T("Hazlo tuyo"), texto: T("Elige tema claro u oscuro, cualquier color de acento, el tamaño de la interfaz, las animaciones y qué secciones ves en la barra lateral.") },
+      { glifo: "paleta", titulo: T("Cada cosa en su categoría"), texto: T("Elige una categoría a la izquierda y verás solo sus ajustes. «Inicio» te regresa a donde estabas. También puedes escribir un ajuste en el buscador de arriba (Ctrl + K) y te lleva directo a él.") },
       { glifo: "campana", titulo: T("Avisos"), texto: T("Decide si te avisa antes de cada clase o de un examen con hora, con qué sonido, y en qué horas no quieres que te moleste.") },
-      { glifo: "documentos", titulo: T("Documentos"), texto: T("Convertir con el programa de office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la sección Documentos de esta página.") },
+      { glifo: "documentos", titulo: T("Documentos"), texto: T("Convertir con el programa de office, elegir dónde guardar y buscar dentro de tus archivos se cambian en la categoría Documentos.") },
       { glifo: "descargar", titulo: T("Tus datos, a salvo"), texto: T("Guarda una copia de seguridad para pasar todo a otra computadora, o restáurala aquí. No incluye tu sesión de Spotify.") },
       { glifo: "actualizar", titulo: T("Actualizaciones"), texto: T("En «Acerca de» buscas actualizaciones y puedes ver otra vez la bienvenida. Tus datos se guardan solo en este equipo.") },
     ],

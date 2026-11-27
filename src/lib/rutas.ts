@@ -79,6 +79,9 @@ export function normalizarRuta(pathname: string): string {
   return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
 }
 
+/** ¿Es una pantalla de Configuración? (con o sin categoría). */
+export const esRutaDeAjustes = (ruta: string): boolean => /^\/configuracion\/?($|[?#])/.test(ruta);
+
 export function seccionDe(pathname: string): SeccionId | null {
   const p = normalizarRuta(pathname);
   // Si dos secciones encajan («/documentos» y «/documentos/carpetas»), gana la más específica.
@@ -86,7 +89,7 @@ export function seccionDe(pathname: string): SeccionId | null {
   return encajan.sort((a, b) => b.ruta.length - a.ruta.length)[0]?.id ?? null;
 }
 
-const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/documentos", "/documentos/carpetas", "/calendario", "/horario", "/calculadora", "/repaso", "/configuracion", "/atajos"]);
+const FIJAS = new Set(["/inicio", "/video", "/video/canal", "/video/ver", "/musica", "/musica/lista", "/musica/artista", "/musica/biblioteca", "/musica/me-gusta", "/documentos", "/documentos/carpetas", "/calendario", "/horario", "/horario/anteriores", "/calculadora", "/repaso", "/configuracion", "/atajos"]);
 
 /** ¿Existe esta ruta? Se usa antes de restaurar la última sesión: una ruta guardada puede haber dejado de existir. */
 export function rutaValida(rutaConConsulta: string): boolean {

@@ -1,5 +1,6 @@
 "use client";
 
+import { rutaAjustes } from "@/lib/ajustes-categorias";
 import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { Reorder } from "framer-motion";
@@ -31,7 +32,7 @@ export function PanelCanales() {
         ))}
       </Reorder.Group>
 
-      <Link href="/configuracion#canales" className="rounded-control px-1 text-caption text-accent-text hover:underline">
+      <Link href={rutaAjustes("reproduccion", "canales")} className="rounded-control px-1 text-caption text-accent-text hover:underline">
         {t("Importar, exportar o restaurar canales")}
       </Link>
     </section>

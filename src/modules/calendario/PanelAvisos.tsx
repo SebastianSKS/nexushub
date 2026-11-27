@@ -91,7 +91,7 @@ export function PanelAvisos() {
             {t("Verás los avisos dentro de la aplicación.")}
           </InfoBar>
         )}
-        <p className="text-caption text-fg-tertiary">{t("Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Aplicación).")}</p>
+        <p className="text-caption text-fg-tertiary">{t("Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Sistema).")}</p>
       </div>
     </Card>
   );

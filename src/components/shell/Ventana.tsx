@@ -35,6 +35,7 @@ import { PanelNavegacion } from "./PanelNavegacion";
 import { StatusBar } from "./StatusBar";
 import { AvisoActualizacion } from "./AvisoActualizacion";
 import { BannerDemo } from "./BannerDemo";
+import { FondoMusical } from "./FondoMusical";
 import { Guias } from "./Guias";
 import { Novedades } from "./Novedades";
 
@@ -101,6 +102,7 @@ export function Ventana({ children }: { children: ReactNode }) {
         {t("Saltar al contenido")}
       </a>
       <div className="mica flex h-screen w-screen flex-col overflow-hidden rounded-window border border-stroke">
+        <FondoMusical />
         <BarraTitulo />
         <BannerDemo />
         <div className="flex min-h-0 flex-1">

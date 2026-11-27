@@ -310,3 +310,60 @@
   :root:not([data-movimiento="normal"]) .marquesina-mov { animation: none; }
 }
 :root[data-movimiento="reducido"] .marquesina-mov { animation: none; }
+
+/* --- Fondo según la música (Configuración › Apariencia) ---------------------------------
+   Va detrás de todo el contenido, dentro de .mica (que aísla el z-index). Solo se mueve con transform,
+   que la tarjeta gráfica hace sin volver a pintar.                                                     */
+.fondo-musical {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.55;
+}
+:root[data-theme="light"] .fondo-musical {
+  opacity: 0.5;
+}
+.mancha {
+  position: absolute;
+  width: 90vmax;
+  height: 90vmax;
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--mancha) 0%, transparent 64%);
+  will-change: transform;
+}
+.mancha-1 {
+  left: -36vmax;
+  top: -42vmax;
+  animation: mancha-1 17s ease-in-out infinite alternate;
+}
+.mancha-2 {
+  right: -40vmax;
+  top: -18vmax;
+  animation: mancha-2 23s ease-in-out infinite alternate;
+}
+.mancha-3 {
+  left: 14vw;
+  bottom: -56vmax;
+  animation: mancha-3 19s ease-in-out infinite alternate;
+}
+@keyframes mancha-1 {
+  50% { transform: translate(26vw, 8vh) scale(1.18); }
+  100% { transform: translate(40vw, 34vh) scale(0.92); }
+}
+@keyframes mancha-2 {
+  50% { transform: translate(-30vw, 28vh) scale(0.88); }
+  100% { transform: translate(-48vw, 4vh) scale(1.2); }
+}
+@keyframes mancha-3 {
+  50% { transform: translate(-22vw, -30vh) scale(1.25); }
+  100% { transform: translate(34vw, -18vh) scale(0.95); }
+}
+.fondo-musical[data-suena="false"] .mancha {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-movimiento="normal"]) .mancha { animation: none; }
+}
+:root[data-movimiento="reducido"] .mancha { animation: none; }

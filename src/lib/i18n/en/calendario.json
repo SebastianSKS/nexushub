@@ -120,7 +120,7 @@
   "Para permitirlas, pulsa el candado de la barra de direcciones, abre «Notificaciones» y elige «Permitir». Mientras tanto verás los avisos dentro de la aplicación.": "To allow them, click the padlock in the address bar, open “Notifications” and choose “Allow”. Meanwhile you'll see the notices inside the app.",
   "Este equipo no admite notificaciones del sistema.": "This computer doesn't support system notifications.",
   "Verás los avisos dentro de la aplicación.": "You'll see the notices inside the app.",
-  "Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Aplicación).": "Notices work while Nexo is open. To have it notify you all the time, turn on starting with Windows and leave it in the tray (Settings › App).",
+  "Los avisos funcionan mientras Nexo esté abierto. Para que avise siempre, actívalo al iniciar Windows y déjalo en la bandeja (Configuración › Sistema).": "Notices work while Nexo is open. To have it notify you all the time, turn on starting with Windows and leave it in the tray (Settings › System).",
   "Próximos cumpleaños": "Upcoming birthdays",
   "Aún no has añadido a nadie. Pulsa «Añadir cumpleaños» arriba.": "You haven't added anyone yet. Press “Add birthday” above.",
   "cumple {edad}": "turns {edad}",

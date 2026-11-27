@@ -1,3 +1,4 @@
+import { rutaAjustes } from "@/lib/ajustes-categorias";
 import { create } from "zustand";
 import { esEscritorio } from "@/lib/entorno";
 import { traducir } from "@/lib/i18n";
@@ -41,7 +42,7 @@ function contenido(id: ConsejoId): { titulo: string; texto: string; ruta: string
       return {
         titulo: traducir("Tu horario ya está en Nexo"),
         texto: a.avisoClaseMin > 0 ? traducir("Te avisaremos {n} minutos antes de cada clase. Lo cambias en Configuración › Avisos.", { n: a.avisoClaseMin }) : traducir("Los avisos de clase están apagados; puedes encenderlos en Configuración › Avisos."),
-        ruta: "/configuracion",
+        ruta: rutaAjustes("avisos"),
         etiqueta: traducir("Ir a Configuración"),
         glifo: "reloj",
       };
@@ -49,7 +50,7 @@ function contenido(id: ConsejoId): { titulo: string; texto: string; ruta: string
       return {
         titulo: traducir("Listo, ya tienes un evento con hora"),
         texto: a.avisoEventoMin > 0 ? traducir("Te avisaremos {n} minutos antes de que empiece. Lo cambias en Configuración › Avisos.", { n: a.avisoEventoMin }) : traducir("El aviso antes de los eventos con hora está apagado; puedes encenderlo en Configuración › Avisos."),
-        ruta: "/configuracion",
+        ruta: rutaAjustes("avisos"),
         etiqueta: traducir("Ir a Configuración"),
         glifo: "calendario",
       };

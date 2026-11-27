@@ -21,6 +21,16 @@ export interface NovedadesDeVersion {
 /** De la más nueva a la más vieja. */
 export const NOVEDADES: readonly NovedadesDeVersion[] = [
   {
+    version: "0.3.7",
+    novedades: [
+      { glifo: "musica", titulo: T("El fondo se viste de tu música"), texto: T("Mientras suena algo, el fondo de toda la app toma los colores de la portada y se mueve despacio; al cambiar de canción cambia con ellos. Si prefieres el fondo de siempre, apágalo en Configuración › Apariencia › Fondo según la música.") },
+      { glifo: "documentos", titulo: T("Documentos: haz una cola"), texto: T("Ya no hay que esperar a que termine una conversión para empezar otra: pulsa Convertir, cambia de herramienta y añade la siguiente (Word a PDF, luego Excel a PDF…). Se hacen una tras otra y cada resultado se queda en la cola. Si sueltas archivos mezclados ya no se quita ninguno, y en Documentos, «Iniciar cola» convierte a PDF todos tus Word, Excel, PowerPoint e imágenes.") },
+      { glifo: "configuracion", titulo: T("Configuración, por categorías"), texto: T("Al entrar a Configuración, la barra lateral muestra las categorías (Apariencia, Avisos, Documentos…) y ves solo los ajustes de la que elijas. «Inicio», arriba, te regresa a la pantalla en la que estabas; también con Esc.") },
+      { glifo: "buscar", titulo: T("El buscador encuentra tus ajustes"), texto: T("Pulsa Ctrl + K y escribe «tema», «no molestar» o «idioma»: te lleva directo a ese ajuste y lo marca. Buscar en Música ahora sale al final, así Enter ya no te manda ahí sin querer.") },
+      { glifo: "inicio", titulo: T("Abre donde te quedaste, también ahí"), texto: T("Si al abrir Nexo eliges «La última usada», ahora también regresa a Semestres anteriores y a las páginas de artista, biblioteca y Me gusta de Música.") },
+    ],
+  },
+  {
     version: "0.3.6",
     novedades: [
       { glifo: "carpeta", titulo: T("Mis tareas, en la barra lateral"), texto: T("Las carpetas de tus materias ahora están a un clic, debajo de Calendario. También llegas con Ctrl + 8.") },

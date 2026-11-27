@@ -9,7 +9,7 @@ import { Search20Regular } from "@fluentui/react-icons";
 import { useRouter } from "next/navigation";
 import { Glifo } from "@/components/fluent/Glifo";
 import { LogoMarca } from "@/components/fluent/LogoMarca";
-import { prepararBusqueda, buscarContenido } from "@/lib/busqueda";
+import { prepararBusqueda, buscarContenido, buscarEnAjustes } from "@/lib/busqueda";
 import { buildCommands, filterCommands } from "@/lib/commands";
 import { ENTER, EXIT } from "@/lib/motion";
 import { plegar } from "@/lib/text";
@@ -85,7 +85,7 @@ export function GlobalSearch() {
   const version = useDatosBuscables();
   const results = useMemo<Command[]>(() => {
     const ir = (r: string) => router.push(r);
-    return [...buscarContenido(query, ir), ...filterCommands(buildCommands(query, ir), query)];
+    return [...buscarContenido(query, ir), ...buscarEnAjustes(query, ir), ...filterCommands(buildCommands(query, ir), query)];
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` fuerza a rehacer la búsqueda cuando cambian los datos
   }, [query, router, version, idioma]);
 

@@ -1,25 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { normalizarRuta, RUTA_INICIAL, rutaValida, SECCIONES } from "@/lib/rutas";
+import { Suspense, useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { esRutaDeAjustes, normalizarRuta, RUTA_INICIAL, rutaValida, SECCIONES } from "@/lib/rutas";
+import { useNavStore } from "@/store/nav-store";
 import { leerSeccionInicial } from "@/store/ajustes-store";
 
 export const CLAVE_ULTIMA_RUTA = "nexushub-ultima-ruta";
 
-/** Recuerda la última ruta visitada para restaurarla al abrir la aplicación. */
+/** Recuerda la última ruta visitada: para restaurarla al abrir y para regresar a ella al salir de Configuración. */
 export function MemoriaSesion() {
+  // useSearchParams exige una frontera Suspense en la exportación estática.
+  return (
+    <Suspense fallback={null}>
+      <Recordador />
+    </Suspense>
+  );
+}
+
+function Recordador() {
   const pathname = usePathname();
+  const consulta = useSearchParams().toString();
 
   useEffect(() => {
     const ruta = normalizarRuta(pathname);
     if (ruta === "/") return; // la raíz solo redirige; no es una sección
+    const completa = consulta ? `${ruta}?${consulta}` : ruta;
+    if (rutaValida(completa) && !esRutaDeAjustes(completa)) useNavStore.getState().recordar(completa);
     try {
-      window.localStorage.setItem(CLAVE_ULTIMA_RUTA, ruta + window.location.search);
+      window.localStorage.setItem(CLAVE_ULTIMA_RUTA, completa);
     } catch {
       /* almacenamiento bloqueado: simplemente no se recuerda */
     }
-  }, [pathname]);
+  }, [pathname, consulta]);
 
   return null;
 }

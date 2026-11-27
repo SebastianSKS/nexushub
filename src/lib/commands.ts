@@ -35,11 +35,10 @@ export function buildCommands(query: string, ir: (ruta: string) => void): Comman
 
   return [
     ...navigation,
-    ...search,
     {
       id: "settings",
       label: traducir("Abrir Configuración"),
-      keywords: ["ajustes", "tema", "apariencia", "acento", "configuracion", "settings", "theme", "language", "idioma"],
+      keywords: ["ajustes", "configuracion", "settings"],
       group: traducir("Ayuda"),
       run: () => ir("/configuracion"),
     },
@@ -51,6 +50,8 @@ export function buildCommands(query: string, ir: (ruta: string) => void): Comman
       group: traducir("Ayuda"),
       run: () => ir("/atajos"),
     },
+    // Al final: así Enter abre lo que Nexo encontró, y Música queda para cuando no hay otra cosa.
+    ...search,
   ];
 }
 

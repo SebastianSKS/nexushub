@@ -13,7 +13,7 @@ interface DropZoneProps {
   /** Extensiones aceptadas por el selector de archivos, p. ej. ".pdf,.docx". */
   accept?: string;
   multiple?: boolean;
-  /** Archivos ya en la cola (se muestra el contador). */
+  /** Archivos ya preparados (se muestra el contador). */
   count?: number;
   compact?: boolean;
   title?: string;
@@ -104,7 +104,7 @@ export function DropZone({ onFiles, accept, multiple = true, count = 0, compact 
           style={{ backgroundColor: "color-mix(in srgb, var(--accent) 22%, var(--layer))" }}
           aria-live="polite"
         >
-          {count} {count === 1 ? t("archivo en la cola") : t("archivos en la cola")}
+          {count} {count === 1 ? t("archivo preparado") : t("archivos preparados")}
         </span>
       )}
       <input

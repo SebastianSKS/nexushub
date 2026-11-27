@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { togglePlayback } from "@/lib/playback";
-import { SECCIONES_PRINCIPALES } from "@/lib/rutas";
+import { esRutaDeAjustes, SECCIONES_PRINCIPALES } from "@/lib/rutas";
 import { isInteractiveTarget, isTypingTarget } from "@/lib/shortcuts";
 import { useAppStore } from "@/store/app-store";
 import { useNavStore } from "@/store/nav-store";
@@ -55,7 +55,9 @@ export function useGlobalShortcuts() {
 
       if (e.key === "Escape") {
         if (hayCapaAbierta()) return; // lo cierra el propio diálogo, menú o buscador
-        const padre = useNavStore.getState().padre;
+        // Desde Configuración se regresa a la pantalla en la que estabas.
+        const { padre: arriba, volverA } = useNavStore.getState();
+        const padre = esRutaDeAjustes(window.location.pathname) ? volverA : arriba;
         if (padre) {
           e.preventDefault();
           router.push(padre);

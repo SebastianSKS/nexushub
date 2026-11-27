@@ -1,5 +1,6 @@
 "use client";
 
+import { rutaAjustes } from "@/lib/ajustes-categorias";
 import { Button } from "@/components/fluent/Button";
 import { Selector } from "@/components/fluent/Selector";
 import { Slider } from "@/components/fluent/Slider";
@@ -32,7 +33,7 @@ export function AjusteSonidoAvisos() {
 
   const probar = (id: SonidoAviso) => {
     if (esSonidoNexo(id)) reproducirSonidoNexo(id, volumen);
-    else if (esSonidoWindows(id)) void notificarSistema("Nexo", t("Así suena este aviso."), "prueba-sonido", "/configuracion", { ignorarSilencio: true, sonido: id });
+    else if (esSonidoWindows(id)) void notificarSistema("Nexo", t("Así suena este aviso."), "prueba-sonido", rutaAjustes("avisos"), { ignorarSilencio: true, sonido: id });
   };
 
   return (

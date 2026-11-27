@@ -33,6 +33,8 @@ export interface Ajustes {
   /** Color de acento en hexadecimal (#RRGGBB). */
   acento: string;
   efecto: EfectoVentana;
+  /** Mientras suena algo, el fondo de la ventana toma los colores de su portada y se mueve. */
+  fondoMusical: boolean;
   volumenPorDefecto: number;
   reproduccionAutomatica: boolean;
   alTerminar: AlTerminar;
@@ -90,6 +92,7 @@ export const AJUSTES_PREDETERMINADOS: Ajustes = {
   tema: "oscuro",
   acento: ACENTO_PREDETERMINADO,
   efecto: "mica",
+  fondoMusical: true,
   volumenPorDefecto: 70,
   reproduccionAutomatica: true,
   alTerminar: "nada",
@@ -130,6 +133,7 @@ export function normalizarAjustes(crudo: unknown): Ajustes {
     tema: d.tema === "claro" || d.tema === "sistema" ? d.tema : "oscuro",
     acento: typeof d.acento === "string" && /^#[0-9a-f]{6}$/i.test(d.acento) ? d.acento : ACENTO_PREDETERMINADO,
     efecto: d.efecto === "acrilico" || d.efecto === "ninguno" ? d.efecto : "mica",
+    fondoMusical: d.fondoMusical !== false,
     volumenPorDefecto: entre(d.volumenPorDefecto, 0, 100, 70),
     reproduccionAutomatica: d.reproduccionAutomatica !== false,
     alTerminar: d.alTerminar === "descargar" ? "descargar" : "nada",

@@ -15,6 +15,7 @@ import { cumpleEn } from "@/lib/calendario/fechas";
 import { useAppStore } from "@/store/app-store";
 import { useCalendarioStore } from "@/store/calendario-store";
 import { BotonPerfil } from "./BotonPerfil";
+import { MenuAjustes } from "./MenuAjustes";
 import { PlaylistsNav } from "./PlaylistsNav";
 
 const EXPANDIDO = 280;
@@ -66,12 +67,14 @@ function Item({ seccion, activa, colapsado, insignia = 0 }: { seccion: Seccion; 
 /**
  * NavigationView de WinUI: 280 px expandido, 48 px colapsado (y se colapsa solo por debajo de 1000 px
  * de ancho de ventana). La sección activa sale de la URL. La píldora de selección SIEMPRE se desliza
- * entre ítems: es el mismo elemento (layoutId), nunca aparece y desaparece.
+ * entre ítems: es el mismo elemento (layoutId), nunca aparece y desaparece. Dentro de Configuración, las secciones dejan
+ * su lugar a las categorías de ajustes (ver MenuAjustes).
  */
 export function PanelNavegacion() {
   const t = useT();
   const pathname = usePathname();
   const activa = seccionDe(pathname);
+  const enAjustes = activa === "configuracion";
   const colapsado = useAppStore((s) => s.sidebarCollapsed);
   const alternar = useAppStore((s) => s.toggleSidebar);
   const ref = useRef<HTMLElement>(null);
@@ -95,7 +98,7 @@ export function PanelNavegacion() {
   return (
     <motion.nav
       ref={ref}
-      aria-label={t("Navegación principal")}
+      aria-label={enAjustes ? t("Categorías de Configuración") : t("Navegación principal")}
       initial={false}
       animate={{ width: colapsado ? COLAPSADO : EXPANDIDO }}
       transition={ENTER}
@@ -113,25 +116,34 @@ export function PanelNavegacion() {
         <Glifo nombre="menu" tam={16} />
       </button>
 
-      <ul className="flex flex-col gap-0.5">
-        {/* Las que se escondieron en Configuración no salen aquí (siguen con su atajo y en Ctrl+K), salvo la que estás viendo. */}
-        {SECCIONES_PRINCIPALES.filter((s) => activa === s.id || !(ocultas as readonly string[]).includes(s.id)).map((s) => (
-          <li key={s.id}>
-            <Item seccion={s} activa={activa === s.id} colapsado={colapsado} insignia={s.id === "calendario" ? cumplesHoy : 0} />
-          </li>
-        ))}
-      </ul>
+      {enAjustes ? (
+        // useSearchParams (la categoría elegida) exige una frontera Suspense en la exportación estática.
+        <Suspense fallback={null}>
+          <MenuAjustes colapsado={colapsado} />
+        </Suspense>
+      ) : (
+        <>
+          <ul className="flex flex-col gap-0.5">
+            {/* Las que se escondieron en Configuración no salen aquí (siguen con su atajo y en Ctrl+K), salvo la que estás viendo. */}
+            {SECCIONES_PRINCIPALES.filter((s) => activa === s.id || !(ocultas as readonly string[]).includes(s.id)).map((s) => (
+              <li key={s.id}>
+                <Item seccion={s} activa={activa === s.id} colapsado={colapsado} insignia={s.id === "calendario" ? cumplesHoy : 0} />
+              </li>
+            ))}
+          </ul>
 
-      <Suspense fallback={null}>
-        <PlaylistsNav />
-      </Suspense>
+          <Suspense fallback={null}>
+            <PlaylistsNav />
+          </Suspense>
 
-      <div className="mt-auto flex flex-col gap-0.5 border-t border-stroke pt-2">
-        <BotonPerfil colapsado={colapsado} />
-        {SECCIONES_INFERIORES.map((s) => (
-          <Item key={s.id} seccion={s} activa={activa === s.id} colapsado={colapsado} />
-        ))}
-      </div>
+          <div className="mt-auto flex flex-col gap-0.5 border-t border-stroke pt-2">
+            <BotonPerfil colapsado={colapsado} />
+            {SECCIONES_INFERIORES.map((s) => (
+              <Item key={s.id} seccion={s} activa={activa === s.id} colapsado={colapsado} />
+            ))}
+          </div>
+        </>
+      )}
     </motion.nav>
   );
 }

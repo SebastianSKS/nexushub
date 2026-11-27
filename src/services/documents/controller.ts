@@ -2,53 +2,76 @@ import { useConsejosStore } from "@/store/consejos-store";
 import { notificarSistema } from "@/lib/notificar";
 import { traducir } from "@/lib/i18n";
 import { rutaHerramienta } from "@/lib/rutas";
+import { planAPdf } from "@/lib/documents/convertir-todo";
 import { getTool } from "@/lib/documents/tools";
 import { parseRanges } from "@/lib/documents/ranges";
 import { useAjustesStore } from "@/store/ajustes-store";
 import { useAppStore } from "@/store/app-store";
-import { useDocumentsStore } from "@/store/documents-store";
+import { useColaStore, type Trabajo } from "@/store/cola-store";
+import { CLAVE_DE_OPCIONES, useDocumentsStore } from "@/store/documents-store";
 import type { ToolId } from "@/types/documents";
-import { describeError, isAbort } from "./errors";
+import { crearProcesador } from "./cola";
 import { descargar, zipResults } from "./download";
 import { runTool } from "./pipeline";
 
-let current: AbortController | null = null;
+// Solo en desarrollo: deja los stores a mano en la consola para probar herramientas sin la interfaz.
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") Object.assign(window, { __docs: useDocumentsStore, __cola: useColaStore });
 
-// Solo en desarrollo: deja el store a mano en la consola para probar herramientas sin la interfaz.
-if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") (window as unknown as { __docs?: unknown }).__docs = useDocumentsStore;
+const nombreDe = (t: Trabajo) => traducir(getTool(t.toolId).name);
+
+/** Los cuadros «Guardar como» salen de uno en uno y sin frenar la cola. */
+let guardando: Promise<void> = Promise.resolve();
+
+/** Ajuste «Al terminar una conversión → Descargar solo»: un archivo se guarda tal cual; varios, en un ZIP. */
+function descargarSolo(trabajo: Trabajo): void {
+  if (useAjustesStore.getState().alTerminar !== "descargar" || trabajo.resultados.length === 0) return;
+  guardando = guardando.then(async () => {
+    const [primero, ...resto] = trabajo.resultados;
+    try {
+      const d = resto.length === 0 ? await descargar(primero!.blob, primero!.name) : await descargar(await zipResults(trabajo.resultados), `${nombreDe(trabajo)}.zip`);
+      if (!d.cancelado) useColaStore.getState().anotarGuardado(trabajo.id, resto.length === 0 ? primero!.id : "zip", d);
+    } catch (e) {
+      useDocumentsStore.getState().pushNotice({ severity: "error", title: traducir("No se pudo guardar el resultado."), message: e instanceof Error ? e.message : traducir("Descárgalo desde el panel de resultados.") });
+    }
+  });
+}
+
+const mensajeListo = (n: number) => (n === 1 ? traducir("Tu archivo está listo para descargar.") : traducir("Tus {n} archivos están listos para descargar.", { n }));
+
+const procesador = crearProcesador({
+  ejecutar: (trabajo, ganchos) => runTool(trabajo.toolId, trabajo.files, trabajo.options, ganchos),
+  alAvanzar: (trabajo) => {
+    const enEspera = useColaStore.getState().trabajos.filter((t) => t.estado === "esperando").length;
+    const cola = enEspera > 0 ? ` · ${traducir("{n} en espera", { n: enEspera })}` : "";
+    useAppStore.getState().setOperation({ label: `${nombreDe(trabajo)}: ${trabajo.mensaje || traducir("preparando")}${cola}`, progress: trabajo.progreso });
+  },
+  alTerminar: (trabajo) => {
+    // Solo en desarrollo: deja el último resultado a mano para inspeccionarlo desde la consola.
+    if (process.env.NODE_ENV !== "production") Object.assign(window, { __resultadoDocs: { results: trabajo.resultados, warnings: trabajo.avisos } });
+    if (trabajo.resultados.length > 0) useConsejosStore.getState().ofrecer("primer-resultado");
+    useAppStore.getState().addFilesProcessed(trabajo.files.length);
+    useDocumentsStore.getState().pushNotice({ severity: "success", title: traducir("{herramienta}: listo.", { herramienta: nombreDe(trabajo) }), message: mensajeListo(trabajo.resultados.length) });
+    descargarSolo(trabajo);
+  },
+  alFallar: (trabajo) => {
+    useDocumentsStore.getState().pushNotice({ severity: "error", title: `${nombreDe(trabajo)}: ${trabajo.error!.message}`, message: trabajo.error!.hint });
+  },
+  // El aviso de Windows sale al acabar toda la tanda, no uno por cada trabajo.
+  alVaciar: (hechos) => {
+    useAppStore.getState().setOperation(null);
+    const conResultado = hechos.filter((t) => t.resultados.length > 0);
+    if (conResultado.length === 1) {
+      const t = conResultado[0]!;
+      notificarSistema(traducir("{herramienta}: listo", { herramienta: nombreDe(t) }), mensajeListo(t.resultados.length), "conversion-lista", rutaHerramienta(t.toolId));
+    } else if (conResultado.length > 1) {
+      notificarSistema(traducir("{n} conversiones listas", { n: conResultado.length }), mensajeListo(conResultado.reduce((n, t) => n + t.resultados.length, 0)), "conversion-lista", "/documentos");
+    }
+  },
+});
 
 function optionsFor(toolId: ToolId): unknown {
-  const o = useDocumentsStore.getState().options;
-  switch (toolId) {
-    case "compress":
-      return o.compress;
-    case "images-to-pdf":
-      return o.imagesToPdf;
-    case "pdf-to-images":
-      return o.pdfToImages;
-    case "pdf-to-word":
-      return o.pdfToWord;
-    case "split":
-      return o.split;
-    case "rotate":
-      return o.rotate;
-    case "protect-pdf":
-      return o.protectPdf;
-    case "unlock-pdf":
-      return o.unlockPdf;
-    case "recover-pdf":
-      return o.recoverPdf;
-    case "organize":
-      return o.organize;
-    case "watermark":
-      return o.watermark;
-    case "page-numbers":
-      return o.pageNumbers;
-    case "ocr":
-      return o.ocr;
-    default:
-      return {};
-  }
+  const clave = CLAVE_DE_OPCIONES[toolId];
+  return clave ? useDocumentsStore.getState().options[clave] : {};
 }
 
 /** Devuelve el motivo por el que aún no se puede procesar, o null si todo está listo. */
@@ -74,63 +97,27 @@ export function getBlocker(toolId: ToolId, pageCount?: number): string | null {
   return null;
 }
 
-/** Ejecuta la herramienta activa y refleja el avance en la barra de estado. */
-export async function startRun(): Promise<void> {
+/** Pone en la cola lo que está preparado en la herramienta activa y la deja libre para el siguiente. */
+export function encolarActual(): void {
   const docs = useDocumentsStore.getState();
-  const app = useAppStore.getState();
-  if (!docs.toolId || current) return;
-
-  const tool = getTool(docs.toolId);
-  const files = docs.files;
-  current = new AbortController();
+  if (!docs.toolId || getBlocker(docs.toolId, docs.pageCount) !== null) return;
+  useColaStore.getState().agregar({ toolId: docs.toolId, files: docs.files, options: structuredClone(optionsFor(docs.toolId)) });
   docs.clearNotices();
-  docs.beginRun();
-  app.setOperation({ label: `${traducir(tool.name)}: ${traducir("preparando")}`, progress: 0 });
-
-  try {
-    const outcome = await runTool(docs.toolId, files, optionsFor(docs.toolId), {
-      signal: current.signal,
-      onProgress: (progress, message) => {
-        useDocumentsStore.getState().setProgress(progress, message);
-        useAppStore.getState().setOperation({ label: `${traducir(tool.name)}: ${message}`, progress });
-      },
-    });
-    const store = useDocumentsStore.getState();
-    // Solo en desarrollo: deja el último resultado a mano para inspeccionarlo desde la consola.
-    if (process.env.NODE_ENV !== "production") (window as unknown as { __resultadoDocs?: unknown }).__resultadoDocs = outcome;
-    store.finishRun(outcome.results, outcome.warnings);
-    if (outcome.results.length > 0) useConsejosStore.getState().ofrecer("primer-resultado");
-    // Ajuste «Al terminar una conversión → Descargar solo»: un archivo se guarda tal cual; varios, en un ZIP.
-    if (useAjustesStore.getState().alTerminar === "descargar" && outcome.results.length > 0) {
-      try {
-        if (outcome.results.length === 1) await descargar(outcome.results[0]!.blob, outcome.results[0]!.name);
-        else await descargar(await zipResults(outcome.results), `${traducir(tool.name)}.zip`);
-      } catch (e) {
-        store.pushNotice({ severity: "error", title: traducir("No se pudo guardar el resultado."), message: e instanceof Error ? e.message : traducir("Descárgalo desde el panel de resultados.") });
-      }
-    }
-    app.addFilesProcessed(files.length);
-    const mensaje =
-      outcome.results.length === 1 ? traducir("Tu archivo está listo para descargar.") : traducir("Tus {n} archivos están listos para descargar.", { n: outcome.results.length });
-    store.pushNotice({ severity: "success", title: traducir("{herramienta}: listo.", { herramienta: traducir(tool.name) }), message: mensaje });
-    if (outcome.results.length > 0) notificarSistema(traducir("{herramienta}: listo", { herramienta: traducir(tool.name) }), mensaje, "conversion-lista", rutaHerramienta(tool.id));
-    // Las advertencias (modo básico, ya optimizado…) se muestran junto al resultado, no como avisos flotantes.
-  } catch (err) {
-    const store = useDocumentsStore.getState();
-    if (isAbort(err)) {
-      store.resetRun();
-      store.pushNotice({ severity: "info", title: traducir("Operación cancelada."), message: traducir("No se guardó ningún resultado.") });
-    } else {
-      const { message, hint } = describeError(err);
-      store.failRun();
-      store.pushNotice({ severity: "error", title: message, message: hint });
-    }
-  } finally {
-    current = null;
-    useAppStore.getState().setOperation(null);
-  }
+  docs.clearFiles();
+  void procesador.arrancar();
 }
 
-export function cancelRun(): void {
-  current?.abort();
+/** «Iniciar cola» (en Documentos): un trabajo por cada tipo de archivo; los que no se convierten (los PDF) se quedan. */
+export function encolarTodoAPdf(): void {
+  const docs = useDocumentsStore.getState();
+  const plan = planAPdf(docs.files);
+  if (plan.length === 0) return;
+  docs.clearNotices();
+  for (const { toolId, files } of plan) useColaStore.getState().agregar({ toolId, files, options: structuredClone(optionsFor(toolId)) });
+  const encolados = new Set(plan.flatMap((p) => p.files.map((f) => f.id)));
+  useDocumentsStore.setState({ files: docs.files.filter((f) => !encolados.has(f.id)) });
+  void procesador.arrancar();
 }
+
+export const cancelarTrabajo = (id: string): void => procesador.cancelar(id);
+export const cancelarCola = (): void => procesador.cancelarTodo();

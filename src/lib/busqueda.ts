@@ -1,6 +1,8 @@
 import { horaLegible } from "@/lib/hora-legible";
 import { infoCategoria } from "@/lib/calendario/categorias";
 import { traducir } from "@/lib/i18n";
+import { buscarAjustes, rutaAjustes } from "@/lib/ajustes-categorias";
+import { esEscritorio } from "@/lib/entorno";
 import { fechaLarga, fechaDesdeIso, mayuscula, nombreMes } from "@/lib/calendario/fechas";
 import { fechaRelativa } from "@/lib/canales/fecha";
 import { leerCanales } from "@/lib/canales/almacen";
@@ -34,6 +36,17 @@ function coincide(terminos: string[], ...textos: (string | undefined)[]): boolea
 function ordenar<T>(items: T[], titulo: (x: T) => string, q: string): T[] {
   const n = normalize(q.trim());
   return [...items].sort((a, b) => Number(!normalize(titulo(a)).startsWith(n)) - Number(!normalize(titulo(b)).startsWith(n)));
+}
+
+/** Las categorías y los ajustes de Configuración que encajan: cada resultado abre solo su categoría. */
+export function buscarEnAjustes(query: string, ir: (ruta: string) => void): Command[] {
+  return buscarAjustes(query, (clave) => traducir(clave), esEscritorio())
+    .slice(0, POR_GRUPO + 1)
+    .map((h) =>
+      h.tipo === "categoria"
+        ? { id: `ajustes-${h.categoria.id}`, group: traducir("Configuración"), label: traducir(h.categoria.titulo), hint: traducir(h.categoria.descripcion), keywords: [], icon: h.categoria.glifo, run: () => ir(rutaAjustes(h.categoria.id)) }
+        : { id: `ajuste-${h.ajuste.id}`, group: traducir("Configuración"), label: traducir(h.ajuste.titulo), hint: `${traducir("Configuración")} › ${traducir(h.categoria.titulo)}`, keywords: [], icon: h.categoria.glifo, run: () => ir(rutaAjustes(h.categoria.id, h.ajuste.id)) },
+    );
 }
 
 /** Prepara los almacenes que se leen al buscar (leen de este equipo; no hacen ninguna petición a internet). */

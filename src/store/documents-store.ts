@@ -15,14 +15,11 @@ import type {
   ProtectOptions,
   QueuedFile,
   RecoverOptions,
-  ResultItem,
   RotateOptions,
   SplitOptions,
   ToolId,
   UnlockOptions,
 } from "@/types/documents";
-
-export type RunStatus = "idle" | "running" | "done" | "error";
 
 interface OptionsState {
   compress: CompressOptions;
@@ -56,12 +53,30 @@ const DEFAULT_OPTIONS: OptionsState = {
   ocr: { output: "pdf" },
 };
 
+/** Qué grupo de opciones usa cada herramienta (las que no aparecen no tienen opciones). */
+export const CLAVE_DE_OPCIONES: Partial<Record<ToolId, keyof OptionsState>> = {
+  compress: "compress",
+  "images-to-pdf": "imagesToPdf",
+  "pdf-to-images": "pdfToImages",
+  "pdf-to-word": "pdfToWord",
+  split: "split",
+  rotate: "rotate",
+  "protect-pdf": "protectPdf",
+  "unlock-pdf": "unlockPdf",
+  "recover-pdf": "recoverPdf",
+  organize: "organize",
+  watermark: "watermark",
+  "page-numbers": "pageNumbers",
+  ocr: "ocr",
+};
+
 /** Lo que depende del archivo abierto y vuelve a su valor inicial al cambiar de archivo. */
 const OPCIONES_POR_ARCHIVO = { split: DEFAULT_OPTIONS.split, rotate: DEFAULT_OPTIONS.rotate, organize: DEFAULT_OPTIONS.organize };
 
 interface DocumentsState {
-
   files: QueuedFile[];
+  /** Los que no son para la herramienta abierta: esperan aquí y vuelven a la lista al salir de ella. */
+  apartados: QueuedFile[];
   toolId: ToolId | null;
   options: OptionsState;
 
@@ -70,14 +85,7 @@ interface DocumentsState {
   /** Selección de páginas (base 1) en Rotar. */
   selectedPages: number[];
 
-  runStatus: RunStatus;
-  progress: number;
-  progressMessage: string;
-  results: ResultItem[];
-  warnings: string[];
-
   notices: Notice[];
-
 
   addFiles: (files: File[]) => void;
   removeFile: (id: string) => void;
@@ -85,16 +93,12 @@ interface DocumentsState {
   clearFiles: () => void;
 
   selectTool: (id: ToolId | null) => void;
+  /** Vuelve a dejar preparado un trabajo de la cola (para corregir algo y repetirlo). */
+  reabrir: (trabajo: { toolId: ToolId; files: QueuedFile[]; options: unknown }) => void;
   setOption: <K extends keyof OptionsState>(key: K, value: OptionsState[K]) => void;
 
   setPageCount: (n: number | undefined) => void;
   setSelectedPages: (pages: number[]) => void;
-
-  beginRun: () => void;
-  setProgress: (progress: number, message: string) => void;
-  finishRun: (results: ResultItem[], warnings: string[]) => void;
-  failRun: () => void;
-  resetRun: () => void;
 
   pushNotice: (n: Omit<Notice, "id">) => void;
   dismissNotice: (id: string) => void;
@@ -105,15 +109,11 @@ interface DocumentsState {
 const RESET_PER_FILE = {
   pageCount: undefined as number | undefined,
   selectedPages: [] as number[],
-  runStatus: "idle" as RunStatus,
-  progress: 0,
-  progressMessage: "",
-  results: [] as ResultItem[],
-  warnings: [] as string[],
 };
 
 export const useDocumentsStore = create<DocumentsState>((set, get) => ({
   files: [],
+  apartados: [],
   toolId: null,
   options: DEFAULT_OPTIONS,
 
@@ -164,23 +164,25 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     })),
 
   selectTool: (id) => {
-    const { files, pushNotice } = get();
-    let next = files;
+    const { files, apartados, toolId, pushNotice } = get();
+    // La misma herramienta: se deja todo como estaba.
+    if (id !== null && id === toolId) return;
+    const todos = [...files, ...apartados];
+    let next = todos;
     if (id) {
       const tool = getTool(id);
-      // Con una cola mezclada, se conservan solo los archivos que la herramienta admite.
-      const accepted = files.filter((f) => f.kind && tool.accepts.includes(f.kind));
-      if (accepted.length > 0 && accepted.length < files.length) {
-        const left = files.length - accepted.length;
-        next = accepted;
+      // Con archivos mezclados, la herramienta toma los suyos y los demás esperan (no se pierden).
+      const suyos = todos.filter((f) => f.kind && tool.accepts.includes(f.kind));
+      next = suyos.slice(0, tool.maxFiles);
+      const ajenos = todos.length - suyos.length;
+      if (ajenos > 0 && next.length > 0) {
         pushNotice({
           severity: "info",
-          title: left === 1 ? traducir("1 archivo quedó fuera de {herramienta}.", { herramienta: traducir(tool.name) }) : traducir("{n} archivos quedaron fuera de {herramienta}.", { n: left, herramienta: traducir(tool.name) }),
-          message: traducir("No corresponden a esta herramienta. Vuelve a soltarlos si los necesitas para otra."),
+          title: ajenos === 1 ? traducir("1 archivo se queda esperando.") : traducir("{n} archivos se quedan esperando.", { n: ajenos }),
+          message: traducir("No son para {herramienta}. Siguen en Documentos para convertirlos con la suya.", { herramienta: traducir(tool.name) }),
         });
       }
-      if (next.length > tool.maxFiles) {
-        next = next.slice(0, tool.maxFiles);
+      if (suyos.length > next.length) {
         pushNotice({
           severity: "info",
           title: traducir("{herramienta} trabaja con un archivo a la vez.", { herramienta: traducir(tool.name) }),
@@ -191,21 +193,31 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     set((s) => ({
       toolId: id,
       files: next,
+      apartados: todos.filter((f) => !next.includes(f)),
       ...RESET_PER_FILE,
       options: { ...s.options, ...OPCIONES_POR_ARCHIVO },
     }));
   },
 
+  reabrir: ({ toolId, files, options }) =>
+    set((s) => {
+      const clave = CLAVE_DE_OPCIONES[toolId];
+      const ids = new Set(files.map((f) => f.id));
+      return {
+        toolId,
+        files,
+        // Lo que hubiera preparado no se pierde.
+        apartados: [...s.apartados, ...s.files].filter((f) => !ids.has(f.id)),
+        ...RESET_PER_FILE,
+        // Sobre los valores de fábrica: aunque al trabajo le faltara alguna opción, la pantalla las encuentra todas.
+        options: { ...s.options, ...OPCIONES_POR_ARCHIVO, ...(clave ? { [clave]: { ...DEFAULT_OPTIONS[clave], ...structuredClone(options as object) } } : {}) },
+      };
+    }),
+
   setOption: (key, value) => set((s) => ({ options: { ...s.options, [key]: value } })),
 
   setPageCount: (pageCount) => set({ pageCount }),
   setSelectedPages: (selectedPages) => set({ selectedPages }),
-
-  beginRun: () => set({ runStatus: "running", progress: 0, progressMessage: "Preparando", results: [], warnings: [] }),
-  setProgress: (progress, progressMessage) => set((s) => ({ progress: Math.max(s.progress, progress), progressMessage })),
-  finishRun: (results, warnings) => set({ runStatus: "done", progress: 100, progressMessage: "Listo", results, warnings }),
-  failRun: () => set({ runStatus: "error", progress: 0 }),
-  resetRun: () => set({ runStatus: "idle", progress: 0, progressMessage: "", results: [], warnings: [] }),
 
   pushNotice: (n) => {
     const id = crypto.randomUUID();
